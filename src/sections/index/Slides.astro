@@ -1,0 +1,108 @@
+---
+import Slide from "../../components/Slide.astro";
+
+const howtos = [
+  {
+    title: "Nawigacja",
+    body: "Wybierz sprawę, którą chcesz załatwić z katalogu dostępnych dokumentów i usług prawnych",
+    image: {
+      src: "/image-2.png",
+      widths: [350, 900, 1406],
+      width: 1406,
+      height: 762,
+      sizes: "100%, (min-width: 1024px) 900px",
+    },
+  },
+  {
+    title: "Informacja",
+    body: "Poznasz dokładniej wymagania formalne oraz obowiązki dotyczące dokumentów",
+    image: {
+      src: "/image-3.png",
+      widths: [350, 760, 1222],
+      width: 1222,
+      height: 762,
+      sizes: "100%, (min-width: 1024px) 760px",
+    },
+  },
+  {
+    title: "Wywiad",
+    body: "Spersonalizujesz dokument odpowiadając na pytania i wybierając dodatkowe zapisy",
+    image: {
+      src: "/image-4.png",
+      widths: [350, 900, 1405],
+      width: 1405,
+      height: 762,
+      sizes: "100%, (min-width: 1024px) 900px",
+    },
+  },
+  {
+    title: "Dokument",
+    body: "Wygenerujesz dokumenty potrzebne do załatwienia sprawy",
+    image: {
+      src: "/image-5.png",
+      widths: [350, 760, 1222],
+      width: 1222,
+      height: 762,
+      sizes: "100%, (min-width: 1024px) 760px",
+    },
+  },
+  {
+    title: "Dane i podpis",
+    body: "Możesz skorzystać z cyfrowego podpisu oraz uwierzytelnić tożsamość za pomocą Profilu Zaufanego, e-dowodu osobistego lub logując się do swojego banku",
+    image: {
+      src: "/image-6.png",
+      widths: [400, 650],
+      width: 650,
+      height: 624,
+      sizes: "100%, (min-width: 768px) 400px",
+    },
+  },
+  {
+    title: "Przechowywanie",
+    body: "Dokumenty będą dostępne na Twoim koncie. Możesz pobierać, wysyłać i tworzyć podobne w dowolnym momencie",
+    image: {
+      src: "/image-7.png",
+      widths: [350, 760, 1260],
+      width: 1260,
+      height: 782,
+      sizes: "100%, (min-width: 1024px) 760px",
+    },
+  },
+];
+---
+
+<section id="jaktodziala">
+  <h2>Jak to działa?</h2>
+  <div>
+    {
+      howtos.map(({ title, body, image }, index) => (
+        <Slide title={title} body={body} number={index + 1} image={image} />
+      ))
+    }
+  </div>
+  <a href="#">Stwórz pierwszy dokument</a>
+</section>
+
+<style>
+  section {
+    @apply flex items-center flex-col gap-60;
+    @apply w-full;
+    @apply pt-80;
+  }
+
+  section > div {
+    @apply flex flex-col gap-80;
+  }
+
+  section > div :global(figure:nth-child(even)) {
+    @apply lg:flex-row-reverse;
+  }
+
+  section > a {
+    @apply btn btn-default btn-big;
+  }
+
+  section > aside {
+    @apply absolute -z-10;
+  }
+</style>

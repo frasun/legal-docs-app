@@ -1,0 +1,102 @@
+---
+import { Image } from "@astrojs/image/components";
+import checkmark from "../../images/icon-checkmark.svg";
+
+const customers = [
+  {
+    type: "Osoby indywidualne",
+    benefits: [
+      "Pomożemy m.in. w sprawach związanych z nieruchomościami, sprzedażą i kupnem przedmiotów, przygotowaniu testamentu, zaplanowaniu spadku oraz w innych sprawach rodzinnych",
+      "Dokładnie poznasz swoje obowiązki prawne i stworzysz precyzyjne dokumenty",
+      "Usługa jest w pełni automatyczna i dostępna przez internet 24/7",
+    ],
+  },
+  {
+    type: "Freelancerzy",
+    benefits: [
+      "Podpisanie umowy do kolejnego zlecenia stanie się banalnie proste",
+      "Dzięki licznym opcjom uwierzytelniania można zawierać umowy całkowicie zdalnie, przez internet",
+      "Przechowuj wszystkie swoje umowy w jednym miejscu. Wszystkie stworzone dokumenty dostępne są z poziomu panelu użytkownika",
+    ],
+  },
+  {
+    type: "Małe i średnie firmy",
+    benefits: [
+      "Możemy ulepszyć procesy związane z zatrudnieniem i współpracą z partnerami",
+      "Z serwisu może korzystać wiele osób w ramach jednej organizacji. Dostęp do dokumentów można przekazać też zewnętrznym dostawcom i usługodawcom takim jak biuro rachunkowe",
+      "Tworzenie wielu podobnych dokumentów jest szybkie i wygodne. Historia zmian może być pomocna w kontrolingu operacyjnym",
+    ],
+  },
+  {
+    type: "Prawnicy, adwokaci, notariusze",
+    benefits: [
+      "Nasze wzory są stale aktualizowane względem przepisów kodeksu prawnego",
+      "Intuicyjny generator pomoże zoptymalizować i ułatwić codzienne zadania",
+      "Tworzenie podobnych dokumentów jest szybkie i wygodne dzięki inteligentnym szablonom",
+      "Dzięki licznym opcjom uwierzytelniania można zawierać umowy całkowicie zdalnie, przez internet",
+    ],
+  },
+];
+---
+
+<section id="dlakogo">
+  <h2>Dla kogo?</h2>
+  <div>
+    {
+      customers.map(({ type, benefits }) => (
+        <div>
+          <h4>{type}</h4>
+          <ul>
+            {benefits.map((benefit) => (
+              <li>
+                <Image src={checkmark} width={24} height={24} alt="checkmark" />
+                {benefit}
+              </li>
+            ))}
+          </ul>
+          <footer>
+            <a href="#" data-group={type}>
+              Dowiedz się więcej
+            </a>
+          </footer>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  #dlakogo {
+    @apply pt-80;
+    @apply flex flex-col gap-30;
+  }
+
+  section > div {
+    @apply grid lg:grid-cols-2 gap-40;
+  }
+
+  section > div > div {
+    @apply bg-light rounded-lg p-30;
+  }
+
+  h2 {
+    @apply text-center;
+  }
+
+  ul li {
+    @apply py-20;
+    @apply flex gap-20 items-start;
+  }
+
+  ul li:not(:last-child) {
+    @apply border-b border-dark10;
+  }
+
+  footer {
+    @apply flex justify-end pt-20;
+  }
+
+  footer a {
+    @apply btn btn-alt;
+  }
+</style>

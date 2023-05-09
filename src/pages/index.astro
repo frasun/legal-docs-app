@@ -1,0 +1,39 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Appbar from "../sections/index/Appbar.astro";
+import Search from "../sections/index/Search.astro";
+import Categories from "../sections/index/Categories.astro";
+import Slides from "../sections/index/Slides.astro";
+import Customers from "../sections/index/Customers.astro";
+import Alternatives from "../sections/index/Alternatives.astro";
+import CTA from "../sections/index/CTA.astro";
+import Footer from "../sections/index/Footer.astro";
+---
+
+<Layout title="Prawniczek">
+  <Appbar />
+  <main>
+    <section id="browse">
+      <Search />
+      <Categories />
+    </section>
+    <Slides />
+    <Customers />
+    <Alternatives />
+  </main>
+  <CTA />
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    @apply container;
+    @apply flex items-center justify-center flex-wrap;
+    @apply gap-50;
+  }
+
+  #browse {
+    @apply pt-15 md:pt-50 lg:pt-60;
+    @apply flex flex-col gap-60;
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+import { Image } from "@astrojs/image/components";
+
+export interface Props {
+  title: string;
+  href: string;
+  icon: string;
+}
+
+const { href, title, icon } = Astro.props;
+---
+
+<a href={href} title={title}>
+  <figure>
+    <Image src={icon} alt={title} width={36} height={36} loading="eager" />
+  </figure>
+  <span>
+    {title}
+  </span>
+</a>
+
+<style>
+  a {
+    @apply flex flex-col items-center gap-10 px-10;
+    @apply text-sm;
+    @apply w-[140px];
+    @apply text-dark75 hover:text-orangeDark active:text-orangeDark;
+    @apply text-lg;
+  }
+
+  a figure {
+    @apply p-20;
+    /* @apply btn btn-alt; */
+    @apply rounded-xl;
+    @apply bg-dark10;
+    @apply basis-[90px] w-[90px];
+    @apply flex;
+    @apply items-center justify-center;
+  }
+
+  a span {
+    @apply text-ellipsis;
+    @apply max-w-full overflow-hidden;
+  }
+
+  a:hover figure {
+    @apply bg-orange;
+  }
+
+  a:active figure {
+    @apply bg-orangeDark;
+  }
+</style>

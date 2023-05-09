@@ -1,0 +1,205 @@
+<style is:global>
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  @layer base {
+    @font-face {
+      font-display: swap;
+      font-family: "Bitter";
+      font-style: italic;
+      font-weight: 500;
+      src: local("Bitter Medium Italic"),
+        url("../fonts/bitter-v32-latin_latin-ext-500italic.woff2")
+          format("woff2"),
+        url("../fonts/bitter-v32-latin_latin-ext-500italic.woff") format("woff");
+    }
+
+    @font-face {
+      font-display: swap;
+      font-family: "Chivo";
+      font-style: normal;
+      font-weight: 700;
+      src: local("Chivo Bold"),
+        url("../fonts/chivo-v18-latin_latin-ext-700.woff2") format("woff2"),
+        url("../fonts/chivo-v18-latin_latin-ext-700.woff") format("woff");
+    }
+
+    @font-face {
+      font-display: swap;
+      font-family: "Chivo";
+      font-style: normal;
+      font-weight: 400;
+      src: local("Chivo Regular"),
+        url("../fonts/chivo-v18-latin_latin-ext-regular.woff2") format("woff2"),
+        url("../fonts/chivo-v18-latin_latin-ext-regular.woff") format("woff");
+    }
+
+    body {
+      @apply tracking-tight antialiased;
+      @apply bg-gray text-dark65;
+      @apply tracking-tight;
+    }
+
+    a {
+      @apply text-dark65 hover:text-orangeDark;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      @apply font-serif font-medium italic text-dark90 tracking-tight;
+    }
+
+    h1 {
+      @apply text-2xl md:text-3xl;
+    }
+
+    h2 {
+      @apply text-2xl;
+    }
+
+    h3 {
+      @apply text-h3;
+    }
+
+    h4 {
+      @apply text-xl;
+    }
+  }
+
+  @layer components {
+    [type="text"],
+    [type="email"],
+    [type="url"],
+    [type="password"],
+    [type="number"],
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="search"],
+    [type="tel"],
+    [type="time"],
+    [type="week"],
+    [multiple],
+    textarea,
+    select {
+      @apply rounded-xl;
+      @apply border-2 border-dark10 border-solid;
+      @apply py-10 px-20;
+      @apply text-dark75;
+      @apply text-ellipsis;
+      @apply tracking-tighter;
+    }
+
+    [type="text"]::placeholder,
+    [type="email"]::placeholder,
+    [type="url"]::placeholder,
+    [type="password"]::placeholder,
+    [type="number"]::placeholder,
+    [type="date"]::placeholder,
+    [type="datetime-local"]::placeholder,
+    [type="month"]::placeholder,
+    [type="search"]::placeholder,
+    [type="tel"]::placeholder,
+    [type="time"]::placeholder,
+    [type="week"]::placeholder,
+    [multiple]::placeholder,
+    textarea::placeholder,
+    select::placeholder {
+      @apply text-dark40;
+    }
+
+    [type="text"]:hover,
+    [type="email"]:hover,
+    [type="url"]:hover,
+    [type="password"]:hover,
+    [type="number"]:hover,
+    [type="date"]:hover,
+    [type="datetime-local"]:hover,
+    [type="month"]:hover,
+    [type="search"]:hover,
+    [type="tel"]:hover,
+    [type="time"]:hover,
+    [type="week"]:hover,
+    [multiple]:hover,
+    textarea:hover,
+    select:hover {
+      @apply text-dark75;
+      @apply border-dark30;
+    }
+
+    [type="text"]:hover::placeholder,
+    [type="email"]:hover::placeholder,
+    [type="url"]:hover::placeholder,
+    [type="password"]:hover::placeholder,
+    [type="number"]:hover::placeholder,
+    [type="date"]:hover::placeholder,
+    [type="datetime-local"]:hover::placeholder,
+    [type="month"]:hover::placeholder,
+    [type="search"]:hover::placeholder,
+    [type="tel"]:hover::placeholder,
+    [type="time"]:hover::placeholder,
+    [type="week"]:hover::placeholder,
+    [multiple]:hover::placeholder,
+    textarea:hover::placeholder,
+    select:hover::placeholder {
+      @apply text-dark55;
+    }
+
+    [type="text"]:focus,
+    [type="email"]:focus,
+    [type="url"]:focus,
+    [type="password"]:focus,
+    [type="number"]:focus,
+    [type="date"]:focus,
+    [type="datetime-local"]:focus,
+    [type="month"]:focus,
+    [type="search"]:focus,
+    [type="tel"]:focus,
+    [type="time"]:focus,
+    [type="week"]:focus,
+    [multiple]:focus,
+    textarea:focus,
+    select:focus {
+      @apply text-dark90;
+      @apply border-orange;
+      @apply shadow-none ring-transparent;
+    }
+
+    [type="text"]:focus::placeholder,
+    [type="email"]:focus::placeholder,
+    [type="url"]:focus::placeholder,
+    [type="password"]:focus::placeholder,
+    [type="number"]:focus::placeholder,
+    [type="date"]:focus::placeholder,
+    [type="datetime-local"]:focus::placeholder,
+    [type="month"]:focus::placeholder,
+    [type="search"]:focus::placeholder,
+    [type="tel"]:focus::placeholder,
+    [type="time"]:focus::placeholder,
+    [type="week"]:focus::placeholder,
+    [multiple]:focus::placeholder,
+    textarea:focus::placeholder,
+    select:focus::placeholder {
+      @apply text-dark30;
+    }
+
+    label {
+      @apply cursor-pointer py-[2px];
+    }
+
+    input[type="checkbox"] {
+      @apply text-orange;
+      @apply w-[1.15rem] h-[1.15rem];
+      @apply border-2 rounded-sm;
+    }
+
+    input[type="checkbox"]:focus {
+      --tw-ring-color: transparent;
+
+      @apply outline-none outline-offset-0;
+    }
+  }
+</style>

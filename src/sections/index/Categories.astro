@@ -1,0 +1,61 @@
+---
+import CategoryBlock from "../../components/CategoryBlock.astro";
+import catIcon1 from "../../images/cat-1.svg";
+import catIcon2 from "../../images/cat-2.svg";
+import catIcon3 from "../../images/cat-3.svg";
+import catIcon4 from "../../images/cat-4.svg";
+import catIcon5 from "../../images/cat-5.svg";
+import catIcon6 from "../../images/cat-6.svg";
+import catIcon7 from "../../images/cat-7.svg";
+import catIcon8 from "../../images/cat-8.svg";
+import catIcon9 from "../../images/cat-9.svg";
+import catIcon10 from "../../images/cat-10.svg";
+
+const categories = [
+  { name: "Motoryzacja", icon: catIcon1 },
+  { name: "Nieruchmości", icon: catIcon2 },
+  { name: "Podróże", icon: catIcon3 },
+  { name: "Praca", icon: catIcon4 },
+  { name: "Rodzina", icon: catIcon5 },
+  { name: "Sport", icon: catIcon6 },
+  { name: "Zdrowie", icon: catIcon7 },
+  { name: "Biznes", icon: catIcon8 },
+  { name: "Zakupy", icon: catIcon9 },
+  { name: "Zwierzęta", icon: catIcon10 },
+];
+---
+
+<section>
+  <h4>lub przeglądaj w kategoriach</h4>
+  <div id="categories">
+    {
+      categories.map(({ name, icon }) => (
+        <CategoryBlock title={name} href="#" icon={icon} />
+      ))
+    }
+  </div>
+  <footer>
+    <a href="#">Zobacz wszystkie dokumenty</a>
+  </footer>
+</section>
+
+<style>
+  section {
+    /* @apply lg:px-60; */
+    @apply text-center w-full;
+    @apply flex flex-col gap-40;
+  }
+
+  section > div {
+    @apply flex flex-wrap items-center justify-center lg:grid lg:grid-cols-5 gap-30;
+    @apply m-auto;
+  }
+
+  footer > a {
+    @apply btn btn-alt;
+  }
+
+  section > h4 {
+    @apply text-dark55;
+  }
+</style>

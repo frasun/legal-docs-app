@@ -1,0 +1,35 @@
+---
+import { Image } from "@astrojs/image/components";
+import Menu from "../../components/Menu.astro";
+import logo from "../../images/logo.svg";
+---
+
+<header>
+  <a href="/" id="logo">
+    <Image src={logo} alt="logo" width={155} height={42} />
+  </a>
+  <Menu />
+</header>
+
+<style>
+  header {
+    @apply container;
+    @apply flex items-center flex-wrap justify-between;
+    @apply py-15;
+    @apply sticky top-0;
+    @apply bg-gray;
+    @apply z-40;
+  }
+</style>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const logo = document.getElementById("logo");
+
+    logo.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+</script>

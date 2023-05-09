@@ -1,0 +1,138 @@
+---
+import { Image } from "@astrojs/image/components";
+import menuIcon from "../images/icon-menu.svg";
+import closeIcon from "../images/icon-close.svg";
+
+const menuItems = [
+  { id: "", label: "Dokumenty" },
+  { id: "jaktodziala", label: "Jak to działa?" },
+  { id: "dlakogo", label: "Dla kogo?" },
+];
+---
+
+<nav id="menuNav">
+  <div>
+    {menuItems.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
+  </div>
+  <aside>
+    <a href="#">Załóż konto</a>
+    <a href="#">Zaloguj się</a>
+  </aside>
+</nav>
+<button id="menuToggle">
+  <Image id="menuOpen" src={menuIcon} alt="open menu" width={24} height={24} />
+  <Image
+    id="menuClose"
+    src={closeIcon}
+    alt="close menu"
+    width={24}
+    height={24}
+  />
+</button>
+
+<style>
+  #menuNav {
+    @apply flex lg:items-center justify-end flex-col lg:flex-row;
+    @apply gap-40;
+    @apply basis-full shrink-0 lg:basis-auto;
+    @apply order-3 lg:order-2;
+    @apply absolute lg:relative;
+    @apply left-0 right-0 top-0;
+    @apply bg-white lg:bg-transparent;
+    @apply px-20 pb-20 py-[80px] lg:p-0;
+    @apply -z-10 lg:z-0;
+    @apply -translate-y-[200%] lg:translate-y-0;
+  }
+
+  @screen lg {
+    #menuNav {
+      --tw-translate-y: 0;
+    }
+  }
+
+  #menuNav > div {
+    @apply flex flex-wrap flex-col lg:flex-row gap-20;
+  }
+
+  #menuNav > div > a {
+    @apply lg:text-sm;
+  }
+
+  #menuNav > aside {
+    @apply flex gap-15;
+  }
+
+  #menuNav > aside > a {
+    @apply btn btn-default;
+  }
+
+  #menuToggle {
+    @apply btn btn-alt;
+    @apply order-2 lg:order-3;
+    @apply lg:hidden;
+    @apply relative;
+  }
+
+  #menuToggle[data-open="true"] #menuOpen,
+  #menuToggle #menuClose,
+  #menuToggle[data-open="false"] #menuClose {
+    @apply hidden;
+  }
+
+  #menuToggle #menuOpen,
+  #menuToggle[data-open="true"] #menuClose {
+    @apply inline-block;
+  }
+</style>
+
+<script>
+  import * as utils from "../utils/backdrop";
+
+  const MENU_BREAKDOWN = 1024;
+  const TRANSITION_TRANSFORM = "transition-transform";
+  const MENU_ZINDEX = "z-30";
+  const TRANSLATE_PROP = "--tw-translate-y";
+  const TRANSITION_DURATION = 300;
+
+  const menuToggle = document.getElementById("menuToggle");
+  const menuNav = document.getElementById("menuNav");
+
+  let _isMobile = () => window.innerWidth < MENU_BREAKDOWN;
+  let _menuOpen = false;
+
+  ///
+
+  function toggleMenu(isOpen, transition = true, callback?) {
+    transition
+      ? menuNav.classList.add(TRANSITION_TRANSFORM)
+      : menuNav.classList.remove(TRANSITION_TRANSFORM);
+
+    if (!isOpen && _isMobile()) {
+      menuNav.style.setProperty(TRANSLATE_PROP, "0");
+    } else {
+      menuNav.style.removeProperty(TRANSLATE_PROP);
+    }
+    menuToggle.setAttribute("data-open", Boolean(!isOpen).toString());
+
+    menuNav.addEventListener("transitionend", () => {
+      menuNav.classList.remove(TRANSITION_TRANSFORM);
+      callback && callback();
+    });
+
+    isOpen
+      ? utils.removeBackdrop(transition)
+      : utils.addBackdrop(() => {
+          toggleMenu(true);
+        }, MENU_ZINDEX);
+
+    _menuOpen = !isOpen;
+  }
+
+  menuToggle.addEventListener("click", () => toggleMenu(_menuOpen));
+
+  window.addEventListener("resize", () => {
+    if (_menuOpen) {
+      toggleMenu(true, false);
+    }
+  });
+</script>

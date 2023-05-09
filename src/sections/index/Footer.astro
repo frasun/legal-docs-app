@@ -1,0 +1,35 @@
+---
+const footerMenu = [
+  {
+    title: "O nas",
+    url: "#",
+  },
+  { title: "Pomoc", url: "#" },
+  { title: "Kontakt", url: "mailto:info@prawniczek.pl" },
+];
+---
+
+<footer>
+  <nav>
+    {footerMenu.map(({ title, url }) => <a href={url}>{title}</a>)}
+  </nav>
+  <aside>
+    &copy; Prawniczek 2023<br />
+    Wszelkie prawa zastrzeżone
+  </aside>
+</footer>
+
+<style>
+  footer {
+    @apply container flex flex-wrap flex-col md:flex-row gap-30;
+    @apply py-30;
+  }
+
+  footer > nav {
+    @apply flex-grow flex gap-20;
+  }
+
+  footer > aside {
+    @apply md:text-right text-xxs;
+  }
+</style>
