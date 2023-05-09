@@ -1,5 +1,12 @@
 import { db } from "../db";
 
+const seedData = [
+  {
+    name: "Motoryzacja",
+    slug: "motoryzacja",
+  },
+];
+
 export async function seed() {
   const createTable = await db.schema
     .createTable("categories")
@@ -13,12 +20,7 @@ export async function seed() {
 
   const addCategories = await db
     .insertInto("categories")
-    .values([
-      {
-        name: "Motoryzacja",
-        slug: "motoryzacja",
-      },
-    ])
+    .values(seedData)
     .execute();
 
   console.log("Seeded database with categories");

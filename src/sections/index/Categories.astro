@@ -1,8 +1,6 @@
 ---
-import { db } from "../../../db/db";
-import { seed } from "../../../db/categories/seed";
-
 import CategoryBlock from "../../components/CategoryBlock.astro";
+import { getCategories } from "../../../db/categories/category";
 
 const icons = {
   motoryzacja: "cat-1",
@@ -17,26 +15,14 @@ const icons = {
   zwierzeta: "cat-10",
 };
 
-let categories2;
-
-try {
-  categories2 = await db.selectFrom("categories").selectAll().execute();
-} catch (e: any) {
-  if (e.message === `relation "categories" does not exist`) {
-    await seed();
-
-    categories2 = await db.selectFrom("categories").selectAll().execute();
-  } else {
-    throw e;
-  }
-}
+const categories = await getCategories();
 ---
 
 <section>
   <h4>lub przeglądaj w kategoriach</h4>
   <div id="categories">
     {
-      categories2.map(({ name, slug }) => (
+      categories.map(({ name, slug }) => (
         <CategoryBlock title={name} href="#" icon={icons[String(slug)]} />
       ))
     }
