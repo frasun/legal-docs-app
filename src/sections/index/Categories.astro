@@ -1,4 +1,7 @@
 ---
+import { db } from "../../../db/db";
+import { seed } from "../../../db/categories/seed";
+
 import CategoryBlock from "../../components/CategoryBlock.astro";
 import catIcon1 from "../../images/cat-1.svg";
 import catIcon2 from "../../images/cat-2.svg";
@@ -11,26 +14,40 @@ import catIcon8 from "../../images/cat-8.svg";
 import catIcon9 from "../../images/cat-9.svg";
 import catIcon10 from "../../images/cat-10.svg";
 
-const categories = [
-  { name: "Motoryzacja", icon: catIcon1 },
-  { name: "Nieruchmości", icon: catIcon2 },
-  { name: "Podróże", icon: catIcon3 },
-  { name: "Praca", icon: catIcon4 },
-  { name: "Rodzina", icon: catIcon5 },
-  { name: "Sport", icon: catIcon6 },
-  { name: "Zdrowie", icon: catIcon7 },
-  { name: "Biznes", icon: catIcon8 },
-  { name: "Zakupy", icon: catIcon9 },
-  { name: "Zwierzęta", icon: catIcon10 },
-];
+const icons = {
+  motoryzacja: catIcon1,
+  nieruchomosci: catIcon2,
+  podroze: catIcon3,
+  praca: catIcon4,
+  rodzina: catIcon5,
+  sport: catIcon6,
+  zdrowie: catIcon7,
+  biznes: catIcon8,
+  zakupy: catIcon9,
+  zwierzeta: catIcon10,
+};
+
+let categories2;
+
+try {
+  categories2 = await db.selectFrom("categories").selectAll().execute();
+} catch (e: any) {
+  if (e.message === `relation "categories" does not exist`) {
+    await seed();
+
+    categories2 = await db.selectFrom("categories").selectAll().execute();
+  } else {
+    throw e;
+  }
+}
 ---
 
 <section>
   <h4>lub przeglądaj w kategoriach</h4>
   <div id="categories">
     {
-      categories.map(({ name, icon }) => (
-        <CategoryBlock title={name} href="#" icon={icon} />
+      categories2.map(({ name, slug }) => (
+        <CategoryBlock title={name} href="#" icon={icons[String(slug)]} />
       ))
     }
   </div>
