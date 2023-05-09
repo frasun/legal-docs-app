@@ -1,6 +1,5 @@
 ---
-import { Image } from "@astrojs/image/components";
-import logo from "../../images/logo.svg";
+import Logo from "../../images/logo.astro";
 
 const alternatives = [
   {
@@ -27,7 +26,7 @@ const alternatives = [
 <section>
   <header>
     <h3>Inne rozwiązania</h3>
-    <Image src={logo} alt="logo" width={135} height={32} />
+    <Logo />
   </header>
   <div>
     {
@@ -38,7 +37,7 @@ const alternatives = [
             <p>{body}</p>
           </div>
           <blockquote>
-            <Image src={logo} alt="logo" width={135} height={32} />
+            <Logo />
             <p>{reply}</p>
           </blockquote>
         </>
@@ -62,7 +61,7 @@ const alternatives = [
     @apply items-center pb-10;
   }
 
-  section > header img {
+  section > header :global(svg) {
     @apply hidden md:block;
   }
 
@@ -80,8 +79,12 @@ const alternatives = [
     @apply mb-30 md:mb-0;
   }
 
-  blockquote img {
+  blockquote :global(svg) {
     @apply mb-10;
     @apply block md:hidden;
+  }
+  section > header :global(svg),
+  blockquote :global(svg) {
+    @apply w-[135px];
   }
 </style>

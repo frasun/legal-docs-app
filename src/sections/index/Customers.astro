@@ -1,6 +1,5 @@
 ---
-import { Image } from "@astrojs/image/components";
-import checkmark from "../../images/icon-checkmark.svg";
+import Checkmark from "../../images/icon-checkmark.astro";
 
 const customers = [
   {
@@ -49,7 +48,7 @@ const customers = [
           <ul>
             {benefits.map((benefit) => (
               <li>
-                <Image src={checkmark} width={24} height={24} alt="checkmark" />
+                <Checkmark />
                 {benefit}
               </li>
             ))}
@@ -90,6 +89,10 @@ const customers = [
 
   ul li:not(:last-child) {
     @apply border-b border-dark10;
+  }
+
+  ul li :global(svg) {
+    @apply min-w-[24px];
   }
 
   footer {

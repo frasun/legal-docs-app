@@ -3,28 +3,18 @@ import { db } from "../../../db/db";
 import { seed } from "../../../db/categories/seed";
 
 import CategoryBlock from "../../components/CategoryBlock.astro";
-import catIcon1 from "../../images/cat-1.svg";
-import catIcon2 from "../../images/cat-2.svg";
-import catIcon3 from "../../images/cat-3.svg";
-import catIcon4 from "../../images/cat-4.svg";
-import catIcon5 from "../../images/cat-5.svg";
-import catIcon6 from "../../images/cat-6.svg";
-import catIcon7 from "../../images/cat-7.svg";
-import catIcon8 from "../../images/cat-8.svg";
-import catIcon9 from "../../images/cat-9.svg";
-import catIcon10 from "../../images/cat-10.svg";
 
 const icons = {
-  motoryzacja: catIcon1,
-  nieruchomosci: catIcon2,
-  podroze: catIcon3,
-  praca: catIcon4,
-  rodzina: catIcon5,
-  sport: catIcon6,
-  zdrowie: catIcon7,
-  biznes: catIcon8,
-  zakupy: catIcon9,
-  zwierzeta: catIcon10,
+  motoryzacja: "cat-1",
+  nieruchomosci: "cat-2",
+  podroze: "cat-3",
+  praca: "cat-4",
+  rodzina: "cat-5",
+  sport: "cat-6",
+  zdrowie: "cat-7",
+  biznes: "cat-8",
+  zakupy: "cat-9",
+  zwierzeta: "cat-10",
 };
 
 let categories2;

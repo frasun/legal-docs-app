@@ -1,12 +1,11 @@
 ---
-import { Image } from "@astrojs/image/components";
 import Menu from "../../components/Menu.astro";
-import logo from "../../images/logo.svg";
+import Logo from "../../images/logo.astro";
 ---
 
 <header>
   <a href="/" id="logo">
-    <Image src={logo} alt="logo" width={155} height={42} />
+    <Logo />
   </a>
   <Menu />
 </header>

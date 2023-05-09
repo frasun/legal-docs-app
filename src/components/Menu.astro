@@ -1,7 +1,5 @@
 ---
-import { Image } from "@astrojs/image/components";
-import menuIcon from "../images/icon-menu.svg";
-import closeIcon from "../images/icon-close.svg";
+import { Icon } from "astro-icon";
 
 const menuItems = [
   { id: "", label: "Dokumenty" },
@@ -20,14 +18,8 @@ const menuItems = [
   </aside>
 </nav>
 <button id="menuToggle">
-  <Image id="menuOpen" src={menuIcon} alt="open menu" width={24} height={24} />
-  <Image
-    id="menuClose"
-    src={closeIcon}
-    alt="close menu"
-    width={24}
-    height={24}
-  />
+  <Icon name="menu" id="menuOpen" width={24} height={24} />
+  <Icon name="close" id="menuClose" width={24} height={24} />
 </button>
 
 <style>
@@ -92,7 +84,6 @@ const menuItems = [
   const TRANSITION_TRANSFORM = "transition-transform";
   const MENU_ZINDEX = "z-30";
   const TRANSLATE_PROP = "--tw-translate-y";
-  const TRANSITION_DURATION = 300;
 
   const menuToggle = document.getElementById("menuToggle");
   const menuNav = document.getElementById("menuNav");

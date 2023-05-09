@@ -1,6 +1,6 @@
 ---
-import { Image, Picture } from "@astrojs/image/components";
-import searchIcon from "../../images/icon-search.svg";
+import { Icon } from "astro-icon";
+import { Picture } from "@astrojs/image/components";
 ---
 
 <section>
@@ -12,13 +12,7 @@ import searchIcon from "../../images/icon-search.svg";
       spellcheck="false"
     />
     <button>Szukaj</button>
-    <Image
-      src={searchIcon}
-      alt="search"
-      width={24}
-      height={24}
-      loading="eager"
-    />
+    <Icon name="search" id="menuOpen" width={24} height={24} />
   </form>
   <Picture
     src="/image-1.png"
@@ -59,7 +53,7 @@ import searchIcon from "../../images/icon-search.svg";
     @apply py-10;
   }
 
-  form > img {
+  form :global(> svg) {
     @apply absolute left-20 top-0 translate-y-1/2 mt-[4px];
   }
 
