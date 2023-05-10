@@ -3,7 +3,7 @@ const plugin = require('tailwindcss/plugin')
 
 module.exports = {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
-	theme: {		
+	theme: {
 		spacing: {
 			0: '0',
 			10: '.625rem',
@@ -19,7 +19,7 @@ module.exports = {
 			white: '#fff',
 			white95: 'rgba(255, 255, 255, .95)',
 			light: '#FDFDFC',
-			gray: '#F5F3EE',			
+			gray: '#F5F3EE',
 			orange: '#EE544A',
 			orangeDark: '#EA271B',
 			yellow: 'rgba(255, 199, 90, 0.2)',
@@ -34,7 +34,7 @@ module.exports = {
 		},
 		fontFamily: {
 			sans: ['Chivo', 'ui-sans-serif', 'sans-serif'],
-			serif: ['Bitter', 'ui-serif', 'Georgia','"Times New Roman"', 'Times', 'serif'],
+			serif: ['Bitter', 'ui-serif', 'Georgia', '"Times New Roman"', 'Times', 'serif'],
 		},
 		fontSize: {
 			xxs: ['0.8125rem', { lineHeight: '1.25em' }], //12
@@ -55,7 +55,7 @@ module.exports = {
 		},
 		fontWeight: {
 			normal: '400',
-      		medium: '500',
+			medium: '500',
 			bold: '700',
 		},
 		letterSpacing: {
@@ -83,11 +83,27 @@ module.exports = {
 			'lg': '1024px',
 			'xl': '1280px',
 			'xxl': '1360px'
-		  },
+		},
 		extend: {
-		zIndex: {
-			max: 9999,
-			}
+			zIndex: {
+				max: 9999,
+			},
+			typography: theme => ({
+				DEFAULT: {
+					css: {
+						'--tw-prose-body': theme('colors.dark90'),
+						'--tw-prose-headings': theme('colors.dark90'),
+						'--tw-prose-bold': theme('colors.dark90'),
+						maxWidth: '1000px',
+						'h1, h2, h3, h4': {
+							fontWeight: theme('fontWeight.medium'),
+						},
+						h1: {
+							fontSize: theme('fontSize.2xl')
+						}
+					}
+				}
+			})
 		}
 	},
 	plugins: [
@@ -101,7 +117,7 @@ module.exports = {
 		// 		}
 		// 	})
 		//   }),
-		  plugin(function({ addComponents, theme }) {
+		plugin(function ({ addComponents, theme }) {
 			addComponents({
 				'.btn': {
 					padding: '.5rem .625rem',
@@ -123,20 +139,21 @@ module.exports = {
 				'.btn-default': {
 					backgroundColor: theme('colors.dark90'),
 					color: theme('colors.white95'),
-			  	},
-			  	'.btn-alt': {
+				},
+				'.btn-alt': {
 					backgroundColor: theme('colors.dark10'),
-					color: theme('colors.dark65'),				
-			  	},
+					color: theme('colors.dark65'),
+				},
 				'.btn-big': {
-					fontSize: theme('fontSize.xl'),					
+					fontSize: theme('fontSize.xl'),
 					padding: '.5rem 1.125rem',
 					borderRadius: theme('borderRadius.lg')
 				}
 			})
-		  }),
+		}),
 		require('@tailwindcss/forms')({
 			strategy: 'base'
-		})
+		}),
+		require('@tailwindcss/typography'),
 	],
 }

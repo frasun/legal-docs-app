@@ -5,14 +5,13 @@ const { frontmatter } = Astro.props;
 ---
 
 <Layout title={`Prawniczek - ${frontmatter.title}`}>
-  <nav>menu</nav>
-  <main>
+  <article class="prose">
     <slot />
-  </main>
+  </article>
 </Layout>
 
 <style>
-  main {
-    @apply container bg-white p-40;
+  article {
+    @apply container bg-white p-30 lg:p-50 my-30 w-[90vw];
   }
 </style>
