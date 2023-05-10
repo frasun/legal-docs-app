@@ -8,19 +8,21 @@ const menuItems = [
 ];
 ---
 
-<nav id="menuNav">
-  <div>
-    {menuItems.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
-  </div>
-  <aside>
-    <a href="#">Załóż konto</a>
-    <a href="#">Zaloguj się</a>
-  </aside>
-</nav>
-<button id="menuToggle" aria-label="toggle menu">
-  <Icon name="menu" id="menuOpen" width={24} height={24} />
-  <Icon name="close" id="menuClose" width={24} height={24} />
-</button>
+<page-menu>
+  <nav id="menuNav">
+    <div>
+      {menuItems.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
+    </div>
+    <aside>
+      <a href="/umowa-najmu">Załóż konto</a>
+      <a href="#">Zaloguj się</a>
+    </aside>
+  </nav>
+  <button id="menuToggle" aria-label="toggle menu">
+    <Icon name="menu" id="menuOpen" width={24} height={24} />
+    <Icon name="close" id="menuClose" width={24} height={24} />
+  </button>
+</page-menu>
 
 <style>
   #menuNav {
@@ -80,50 +82,66 @@ const menuItems = [
 <script>
   import * as utils from "../utils/backdrop";
 
-  const MENU_BREAKDOWN = 1024;
-  const TRANSITION_TRANSFORM = "transition-transform";
-  const MENU_ZINDEX = "z-30";
-  const TRANSLATE_PROP = "--tw-translate-y";
+  class PageMenu extends HTMLElement {
+    MENU_BREAKDOWN: number;
+    TRANSITION_TRANSFORM: string;
+    MENU_ZINDEX: string;
+    TRANSLATE_PROP: string;
+    menuToggle: HTMLButtonElement;
+    menuNav: HTMLElement;
+    _menuOpen: boolean;
 
-  const menuToggle = document.getElementById("menuToggle");
-  const menuNav = document.getElementById("menuNav");
+    constructor() {
+      super();
 
-  let _isMobile = () => window.innerWidth < MENU_BREAKDOWN;
-  let _menuOpen = false;
+      this.MENU_BREAKDOWN = 1024;
+      this.TRANSITION_TRANSFORM = "transition-transform";
+      this.MENU_ZINDEX = "z-30";
+      this.TRANSLATE_PROP = "--tw-translate-y";
 
-  ///
-
-  function toggleMenu(isOpen, transition = true, callback?) {
-    transition
-      ? menuNav.classList.add(TRANSITION_TRANSFORM)
-      : menuNav.classList.remove(TRANSITION_TRANSFORM);
-
-    if (!isOpen && _isMobile()) {
-      menuNav.style.setProperty(TRANSLATE_PROP, "0");
-    } else {
-      menuNav.style.removeProperty(TRANSLATE_PROP);
+      this.menuToggle = this.querySelector("#menuToggle");
+      this.menuNav = this.querySelector("#menuNav");
+      this._menuOpen = false;
     }
-    menuToggle.setAttribute("data-open", Boolean(!isOpen).toString());
 
-    menuNav.addEventListener("transitionend", () => {
-      menuNav.classList.remove(TRANSITION_TRANSFORM);
-      callback && callback();
-    });
+    connectedCallback() {
+      this.menuToggle.addEventListener("click", () =>
+        this.toggleMenu(this._menuOpen)
+      );
 
-    isOpen
-      ? utils.removeBackdrop(transition)
-      : utils.addBackdrop(() => {
-          toggleMenu(true);
-        }, MENU_ZINDEX);
+      window.addEventListener("resize", () => {
+        if (this._menuOpen) {
+          this.toggleMenu(true, false);
+        }
+      });
+    }
 
-    _menuOpen = !isOpen;
+    toggleMenu(isOpen, transition = true, callback?) {
+      transition
+        ? this.menuNav.classList.add(this.TRANSITION_TRANSFORM)
+        : this.menuNav.classList.remove(this.TRANSITION_TRANSFORM);
+
+      if (!isOpen && window.innerWidth < this.MENU_BREAKDOWN) {
+        this.menuNav.style.setProperty(this.TRANSLATE_PROP, "0");
+      } else {
+        this.menuNav.style.removeProperty(this.TRANSLATE_PROP);
+      }
+      this.menuToggle.setAttribute("data-open", Boolean(!isOpen).toString());
+
+      this.menuNav.addEventListener("transitionend", () => {
+        this.menuNav.classList.remove(this.TRANSITION_TRANSFORM);
+        callback && callback();
+      });
+
+      isOpen
+        ? utils.removeBackdrop(transition)
+        : utils.addBackdrop(() => {
+            this.toggleMenu(true);
+          }, this.MENU_ZINDEX);
+
+      this._menuOpen = !isOpen;
+    }
   }
 
-  menuToggle.addEventListener("click", () => toggleMenu(_menuOpen));
-
-  window.addEventListener("resize", () => {
-    if (_menuOpen) {
-      toggleMenu(true, false);
-    }
-  });
+  customElements.define("page-menu", PageMenu);
 </script>

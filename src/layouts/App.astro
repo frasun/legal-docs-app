@@ -1,0 +1,18 @@
+---
+import Layout from "./Layout.astro";
+
+const { frontmatter } = Astro.props;
+---
+
+<Layout title={`Prawniczek - ${frontmatter.title}`}>
+  <nav>menu</nav>
+  <main>
+    <slot />
+  </main>
+</Layout>
+
+<style>
+  main {
+    @apply container bg-white p-40;
+  }
+</style>

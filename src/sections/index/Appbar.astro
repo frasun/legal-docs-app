@@ -20,15 +20,3 @@ import Logo from "../../images/logo.astro";
     @apply z-40;
   }
 </style>
-
-<script>
-  window.addEventListener("DOMContentLoaded", () => {
-    const logo = document.getElementById("logo");
-
-    logo.addEventListener("click", (event) => {
-      event.preventDefault();
-
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  });
-</script>
