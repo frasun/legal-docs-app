@@ -18,7 +18,7 @@ export async function getCategories() {
   try {
     return await fetchCategories();
   } catch (e: any) {
-    if (e.message === `relation ${KEY} does not exist`) {
+    if (e.message === `relation "${KEY}" does not exist`) {
       await seed();
 
       return await fetchCategories();
