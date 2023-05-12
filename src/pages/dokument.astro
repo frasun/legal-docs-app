@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/App.astro";
-import { getDocument, Document } from "../../db/document";
+import { getDocument } from "../../db/document";
 
 const url = new URL(Astro.request.url);
 const id = url.searchParams.get("id");
@@ -18,16 +18,17 @@ if (!id) {
 }
 
 const { answers, doc: docId } = data[0];
-const doc = await import(`../docs/${docId}.mdx`);
-const { Content } = doc;
+const { frontmatter, Content } = await import(
+  `../templates/documents/${docId}.mdx`
+);
 
-for (let [key, value] of Object.entries(answers)) {
-  doc.frontmatter[key] = value;
+for (let key of Object.keys(frontmatter)) {
+  if (key !== "title") frontmatter[key] = answers[key];
 }
 ---
 
-<Layout title={`Prawniczek - ${doc.frontmatter.title}`}>
-  <article id="doc" class="prose" data-title={doc.frontmatter.title}>
+<Layout title={`Dokument - ${frontmatter.title}`}>
+  <article id="doc" class="prose" data-title={frontmatter.title}>
     <Content />
   </article>
   <aside>

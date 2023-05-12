@@ -1,0 +1,45 @@
+---
+const { data, template, token } = Astro.props;
+
+if (!data) {
+  return;
+}
+
+let CompiledContent;
+let textContent;
+
+if (template) {
+  const answer = await import(`../templates/answers/${template}.mdx`);
+
+  if (!answer) return;
+
+  for (let key of Object.keys(answer.frontmatter)) {
+    answer.frontmatter[key] = data[key];
+
+    if (data[key]) {
+      answer.frontmatter[key] = data[key];
+    } else {
+      answer.frontmatter[key] = data[token];
+    }
+  }
+
+  CompiledContent = answer.Content;
+}
+
+if (!template && token) {
+  const value = data[token];
+
+  textContent = Array.isArray(value) ? value.join(", ") : value;
+}
+---
+
+<div>
+  {CompiledContent && <CompiledContent />}
+  {textContent && textContent}
+</div>
+
+<style>
+  div {
+    @apply text-dark90 text-lg;
+  }
+</style>

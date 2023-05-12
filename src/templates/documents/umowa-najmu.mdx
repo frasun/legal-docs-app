@@ -1,0 +1,57 @@
+---
+title: Umowa najmu lokalu
+address: $address
+area: $area
+rooms: [$room]
+systems: [$system]
+equipment: [$equipment]
+purpose: $purpose
+rent: $rent
+rentmethod: rentmethod
+rentdue: $rentdue
+billslandlord: [$billslandlord]
+billstenant: [$billstenant]
+deposit: $deposit
+depositmethod: $depositmethod
+repairs: $repairs
+termination: $termination
+return: $return
+---
+
+# Umowa najmu lokalu
+
+1. Przedmiot Umowy
+
+   1. Umowa dotyczy lokalu o powierzchni {frontmatter.area} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.address}**.
+   2. W skład lokalu wchodzą następujące pomieszczenia:
+      <ul>
+      {frontmatter.rooms.map((item) => <li>{item}</li>)}
+      </ul>
+   3. Lokal posiada instalacje:
+      <ul>
+      {frontmatter.systems.map((item) => <li>{item}</li>)}
+      </ul>
+   4. Na stanie lokalu znajduje się wyposażenie:
+      <ul>
+      {frontmatter.equipment.map((item) => <li>{item}</li>)}
+      </ul>
+
+2. Przebieg umowy
+
+   1. Lokal będzie użytkowany tylko do {frontmatter.purpose}.
+   2. Czynsz w wysokości {frontmatter.rent} zł, {frontmatter.rentmethod} do {frontmatter.rentdue}. dnia miesiąca.
+   3. Opłaty za media będą ponosić
+      - Wynajmujący
+        <ul>{frontmatter.billslandlord.map((item) => <li>{item}</li>)}</ul>
+      - Najemca
+        <ul>{frontmatter.billstenant.map((item) => <li>{item}</li>)}</ul>
+   4. Kaucja w wysokości {frontmatter.deposit} zł, {frontmatter.depositmethod}.
+   5. Najemca pokrywa koszty napraw do {frontmatter.repairs} zł.
+   6. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.termination} dni.
+   7. Zwrot lokalu powinien nastąpic do {frontmatter.return}. dnia od daty zakończenia Umowy.
+
+3. Prawa i obowiązki
+
+4. Czas trwania umowy
+
+5. Oświadczenia

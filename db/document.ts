@@ -14,6 +14,7 @@ const seedData = [
     doc: "umowa-najmu",
     answers: JSON.stringify({
       address: "91-123 Łódź, ul. Aleksandrowska 123a / 2",
+      area: "65,23",
       rooms: ["2x pokój", "kuchnia", "przedpokój", "łazienka", "balkon"],
       systems: ["elektryczna", "gazowa", "wodna", "centralne ogrzewanie"],
       equipment: [
@@ -22,24 +23,18 @@ const seedData = [
         "kanapa",
       ],
       purpose: "do celów mieszkalnych",
-      rent: {
-        value: 2300,
-        method: "płatny przelewem na konto Wynajmującego",
-        due: 14,
-      },
-      bills: {
-        landlord: [
-          "zużycie energii",
-          "zużycie gazu",
-          "zużycie wody",
-          "wywóz śmieci",
-        ],
-        tenant: ["opłata za internet", "opłata telewizyjna"],
-      },
-      deposit: {
-        value: 2300,
-        method: "płatna przelewem na konto Wynajmującego",
-      },
+      rent: 2300,
+      rentmethod: "płatny przelewem na konto Wynajmującego",
+      rentdue: 14,
+      billslandlord: [
+        "zużycie energii",
+        "zużycie gazu",
+        "zużycie wody",
+        "wywóz śmieci",
+      ],
+      billstenant: ["opłata za internet", "opłata telewizyjna"],
+      deposit: 2300,
+      depositmethod: "płatna przelewem na konto Wynajmującego",
       repairs: 2500,
       termination: 14,
       return: 14,

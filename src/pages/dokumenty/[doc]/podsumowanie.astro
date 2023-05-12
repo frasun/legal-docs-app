@@ -1,0 +1,60 @@
+---
+import Layout from "../../../layouts/App.astro";
+import Answer from "../../../components/Answer.astro";
+import { getDocument } from "../../../../db/document";
+
+const data = await getDocument(1);
+
+if (!data.length) {
+  return Astro.redirect("/404");
+}
+
+const { answers } = data[0];
+
+const {
+  frontmatter: { title, index },
+} = await import(`../../../templates/${Astro.params.doc}-index.mdx`);
+---
+
+<Layout title={`Podsumowanie - ${title}`}>
+  <section>
+    <h1>Podsumowanie</h1>
+    {
+      index.map(({ title, token, template }) =>
+        token ? (
+          <div>
+            <div>
+              <h6>{title}</h6>
+              <Answer data={answers} template={template} token={token} />
+            </div>
+            <a href="#">Zmień</a>
+          </div>
+        ) : (
+          <h4>{title}</h4>
+        )
+      )
+    }
+  </section>
+</Layout>
+<style>
+  section {
+    @apply container;
+  }
+
+  section h4 {
+    @apply mt-20 mb-10;
+  }
+
+  section > div {
+    @apply bg-white my-10 py-10 px-20 rounded;
+    @apply flex items-center gap-10;
+  }
+
+  section > div > div {
+    @apply flex-grow;
+  }
+
+  section a {
+    @apply btn btn-alt;
+  }
+</style>
