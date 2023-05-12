@@ -1,0 +1,92 @@
+---
+import Layout from "../../../layouts/App.astro";
+import { getDocument } from "../../../../db/document";
+
+const { documentId, questionId } = Astro.params;
+
+let index;
+let question;
+
+try {
+  index = await import(`../../../templates/${documentId}-index.mdx`);
+  question = await import(
+    `../../../templates/questions/${documentId}/${questionId}.mdx`
+  );
+} catch (e) {
+  if (!index || !question) {
+    return Astro.redirect("/404");
+  }
+}
+const {
+  frontmatter: { index: questionsIndex },
+} = index;
+
+const questions = questionsIndex.filter(({ id }) => id);
+const currentQuestionIndex = questions.findIndex(({ id }) => id === questionId);
+const currentQuestion = questions[currentQuestionIndex];
+const nextQuestionIndex =
+  currentQuestionIndex < questions.length - 1 ? currentQuestionIndex + 1 : -1;
+const nextQuestionId =
+  nextQuestionIndex > 0 ? questions[nextQuestionIndex].id : null;
+const prevQuestionId =
+  currentQuestionIndex > 0 ? questions[currentQuestionIndex - 1].id : null;
+
+const nextQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
+  nextQuestionId ? nextQuestionId : `podsumowanie`
+}`;
+const prevQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${prevQuestionId}`;
+
+const data = await getDocument(1);
+
+if (data.length) {
+  for (let key of Object.keys(question.frontmatter)) {
+    if (key !== "question") question.frontmatter[key] = data[0].answers[key];
+  }
+}
+
+const {
+  Content,
+  frontmatter: { question: questionContent },
+} = question;
+---
+
+<Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
+  <section>
+    <h3>{questionContent}</h3>
+    <Content />
+    <footer>
+      <div>
+        <span>§{currentQuestionIndex}</span>
+        <span>{currentQuestion.title}</span>
+      </div>
+      <nav>
+        {currentQuestionIndex > 0 && <a href={prevQuestionUrl}>Wstecz</a>}
+        <a href={nextQuestionUrl} class="btn-default">Dalej</a>
+      </nav>
+    </footer>
+  </section>
+</Layout>
+
+<style>
+  section {
+    @apply container;
+  }
+
+  footer {
+    @apply flex flex-wrap gap-10;
+    @apply justify-between;
+    @apply my-30;
+  }
+
+  footer nav {
+    @apply flex flex-wrap gap-15;
+  }
+
+  footer a {
+    @apply btn btn-alt;
+  }
+
+  footer .btn-default {
+    @apply self-end;
+  }
+</style>

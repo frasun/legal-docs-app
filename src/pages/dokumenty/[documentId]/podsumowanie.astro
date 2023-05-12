@@ -3,6 +3,7 @@ import Layout from "../../../layouts/App.astro";
 import Answer from "../../../components/Answer.astro";
 import { getDocument } from "../../../../db/document";
 
+const { documentId } = Astro.params;
 const data = await getDocument(1);
 
 if (!data.length) {
@@ -13,27 +14,32 @@ const { answers } = data[0];
 
 const {
   frontmatter: { title, index },
-} = await import(`../../../templates/${Astro.params.doc}-index.mdx`);
+} = await import(`../../../templates/${documentId}-index.mdx`);
 ---
 
 <Layout title={`Podsumowanie - ${title}`}>
   <section>
     <h1>Podsumowanie</h1>
     {
-      index.map(({ title, token, template }) =>
+      index.map(({ title, token, template, id }) =>
         token ? (
           <div>
             <div>
               <h6>{title}</h6>
               <Answer data={answers} template={template} token={token} />
             </div>
-            <a href="#">Zmień</a>
+            <a href={`${Astro.url.origin}/dokumenty/${documentId}/${id}`}>
+              Zmień
+            </a>
           </div>
         ) : (
           <h4>{title}</h4>
         )
       )
     }
+    <footer>
+      <a href={`${Astro.url.origin}/dokument?id=1`}>Generuj dokument</a>
+    </footer>
   </section>
 </Layout>
 <style>
@@ -56,5 +62,13 @@ const {
 
   section a {
     @apply btn btn-alt;
+  }
+
+  footer {
+    @apply p-50 flex justify-center;
+  }
+
+  footer a {
+    @apply btn btn-default btn-big;
   }
 </style>
