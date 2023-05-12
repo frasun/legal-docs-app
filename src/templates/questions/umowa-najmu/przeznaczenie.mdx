@@ -1,5 +1,14 @@
 ---
 question: Do jakich celów przeznaczony będzie lokal?
 purpose: $purpose
+purposelib: ["do celów mieszkalnych", "do prowadzenia działalności gospodarczej"]
 ---
-{frontmatter.purpose}
+Zaznacz wszystkie pasujące odpowiedzi
+
+{frontmatter.purposelib.map(purpose => (
+    <>
+    <input id={purpose} type="checkbox" checked={frontmatter.purpose.includes(purpose)} />
+    <label for={purpose}>{purpose}</label>
+    <br />
+    </>
+))}

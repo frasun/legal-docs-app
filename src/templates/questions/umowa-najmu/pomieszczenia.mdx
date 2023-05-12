@@ -1,5 +1,28 @@
 ---
 question: Jakie pomieszczenia znajdują się w lokalu?
-rooms: [$room]
+room: 2
+kitchen: 2
+hall: 0
+bathroom: 1
+toilet: 1
+balcony: 0
+wardrobe: 2
+garage: 0
 ---
-{frontmatter.rooms.join(', ')}
+<label>Wypełnij pola z ilością pomieszczeń</label>
+<br />
+<input type="number" value={frontmatter.room} name="room" /> x pokój
+<br />
+<input type="number" value={frontmatter.kitchen}  name="kitchen"/> x kuchnia
+<br />
+<input type="number" value={frontmatter.hall} name="hall" /> x przedpokój
+<br />
+<input type="number" value={frontmatter.bathroom} name="bathroom" /> x łazienka
+<br />
+<input type="number" value={frontmatter.toilet} name="toilet" /> x toaleta
+<br />
+<input type="number" value={frontmatter.balcony} name="balcony" /> x balkon
+<br />
+<input type="number" value={frontmatter.wardrobe} name="wardrobe" /> x garderoba
+<br />
+<input type="number" value={frontmatter.garage} name="garage" /> x garaż

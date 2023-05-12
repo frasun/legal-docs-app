@@ -13,9 +13,16 @@ const seedData = [
   {
     doc: "umowa-najmu",
     answers: JSON.stringify({
-      address: "91-123 Łódź, ul. Aleksandrowska 123a / 2",
+      address: "91-123 Łódź, ul. Aleksandrowska 123a",
+      apt: "23",
       area: "65,23",
-      rooms: ["2x pokój", "kuchnia", "przedpokój", "łazienka", "balkon"],
+      room: 2,
+      kitchen: 2,
+      hall: 0,
+      bathroom: 1,
+      toilet: 1,
+      wardrobe: 2,
+      garage: 0,
       systems: ["elektryczna", "gazowa", "wodna", "centralne ogrzewanie"],
       equipment: [
         "Toster Philips o nr seryjnym XBSDCS89734-2342234",
@@ -74,5 +81,17 @@ export async function getDocument(id) {
     } else {
       throw e;
     }
+  }
+}
+
+export async function updateAnswers(documentId, answers) {
+  try {
+    return await db
+      .updateTable(KEY)
+      .set({ answers })
+      .where("id", "=", documentId)
+      .execute();
+  } catch (e: any) {
+    throw e;
   }
 }

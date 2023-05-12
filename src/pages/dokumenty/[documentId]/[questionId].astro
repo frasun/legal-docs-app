@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/App.astro";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
-import { getDocument } from "../../../../db/document";
+import { getDocument, updateAnswers } from "../../../../db/document";
 
 const { documentId, questionId } = Astro.params;
 
@@ -41,18 +41,45 @@ const data = await getDocument(1);
 
 if (data.length) {
   for (let key of Object.keys(question.frontmatter)) {
-    if (key !== "question") question.frontmatter[key] = data[0].answers[key];
+    if (key !== "question" && data[0].answers[key])
+      question.frontmatter[key] = data[0].answers[key];
   }
 }
+
+const { answers } = data[0];
 
 const {
   Content,
   frontmatter: { question: questionContent },
 } = question;
+
+if (Astro.request.method === "POST") {
+  try {
+    const formData = await Astro.request.formData();
+
+    let newAnswers = {};
+    for (let [key, value] of formData) {
+      if (answers[key] !== value) {
+        newAnswers[key] = value;
+      }
+    }
+
+    if (Object.keys(newAnswers).length) {
+      await updateAnswers(1, { ...answers, ...newAnswers });
+    }
+
+    return Astro.redirect(nextQuestionUrl);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+    return Astro.redirect("/404");
+  }
+}
 ---
 
 <Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
-  <section>
+  <form method="POST">
     <h3>{questionContent}</h3>
     <Content />
     <footer>
@@ -61,11 +88,17 @@ const {
         <span>{currentQuestion.title}</span>
       </div>
       <nav>
-        {currentQuestionIndex > 0 && <a href={prevQuestionUrl}>Wstecz</a>}
-        <a href={nextQuestionUrl} class="btn-default">Dalej</a>
+        {currentQuestionIndex > 0 && <a href={prevQuestionUrl}>Poprzednie</a>}
+        <button type="submit"
+          >{
+            currentQuestionIndex >= questions.length - 1
+              ? "Podsumowanie"
+              : "Następne"
+          }</button
+        >
       </nav>
     </footer>
-  </section>
+  </form>
   <aside>
     <QuestionIndex
       index={questionsIndex}
@@ -76,7 +109,7 @@ const {
 </Layout>
 
 <style>
-  section {
+  form {
     @apply container;
   }
 
@@ -94,7 +127,8 @@ const {
     @apply btn btn-alt;
   }
 
-  footer .btn-default {
+  footer button[type="submit"] {
+    @apply btn btn-default;
     @apply self-end;
   }
 </style>

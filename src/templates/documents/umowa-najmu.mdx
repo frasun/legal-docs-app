@@ -1,8 +1,16 @@
 ---
 title: Umowa najmu lokalu
 address: $address
+apt: $apt
 area: $area
-rooms: [$room]
+room: 2
+kitchen: 2
+hall: 0
+bathroom: 1
+toilet: 1
+balcony: 1
+wardrobe: 2
+garage: 0
 systems: [$system]
 equipment: [$equipment]
 purpose: $purpose
@@ -22,10 +30,17 @@ return: $return
 
 1. Przedmiot Umowy
 
-   1. Umowa dotyczy lokalu o powierzchni {frontmatter.area} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.address}**.
+   1. Umowa dotyczy lokalu o powierzchni {frontmatter.area} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.address} / {frontmatter.apt}**.
    2. W skład lokalu wchodzą następujące pomieszczenia:
       <ul>
-      {frontmatter.rooms.map((item) => <li>{item}</li>)}
+      {frontmatter.room > 0 && (<li>{frontmatter.room} x pokój</li>)}
+      {frontmatter.kitchen > 0 && (<li>{frontmatter.kitchen} x kuchnia</li>)}
+      {frontmatter.hall > 0 && (<li>{frontmatter.hall} x pokprzedpokójój</li>)}
+      {frontmatter.bathroom > 0 && (<li>{frontmatter.bathroom} x łazienka</li>)}
+      {frontmatter.toilet > 0 && (<li>{frontmatter.toilet} x toaleta</li>)}
+      {frontmatter.balcony > 0 && (<li>{frontmatter.balcony} x balkon</li>)}
+      {frontmatter.wardrobe > 0 && (<li>{frontmatter.wardrobe} x garderoba</li>)}
+      {frontmatter.garage > 0 && (<li>{frontmatter.garage} x garaż</li>)}
       </ul>
    3. Lokal posiada instalacje:
       <ul>

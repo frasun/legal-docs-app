@@ -2,4 +2,6 @@
 question: Jaka jest powierzchnia lokalu?
 area: $area
 ---
-{frontmatter.area}
+<label>Podaj całkowitą powierzchnię</label>
+<br />
+<input type="text" name="area" value={frontmatter.area} /> m<sup>2</sup>

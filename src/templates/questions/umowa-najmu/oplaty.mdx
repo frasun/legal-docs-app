@@ -2,6 +2,14 @@
 billslandlord: [$billslandlord]
 billstenant: [billstenant]
 question: Kto będzie ponosił opłaty za media?
+billslib: ['zużycie energii', 'zużycie gazu', 'zużycie wody', 'wywóz śmieci', 'opłata za internet', 'opłata telewizyjna']
 ---
-{frontmatter.billslandlord.join(', ')}
-{frontmatter.billstenant.join(', ')}
+Opłata / Wynajmujący / Najemca
+{frontmatter.billslib.map(bill => (
+    <>
+    <label>{bill}</label>
+    <input name={bill} type="radio" checked={frontmatter.billslandlord.includes(bill)} />
+    <input name={bill} type="radio" checked={frontmatter.billstenant.includes(bill)} />    
+    <br />
+    </>
+))}

@@ -4,6 +4,8 @@ rentmethod: $rentmethod
 rentdue: $rentdue
 question: Ile będzie wynosił czynsz?
 ---
-{frontmatter.rent}
-{frontmatter.rentmethod}
-{frontmatter.rentdue}
+wysokość <input type="text" name="rent" value={frontmatter.rent} />
+
+płatność <input type="text" name="rentmethod" value={frontmatter.rentmethod} />
+
+termin płatności do <input type="number" name="rentdue" value={frontmatter.rentdue} /> dni po zakończeniu umowy

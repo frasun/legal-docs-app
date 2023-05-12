@@ -2,4 +2,6 @@
 question: Jakie wyposażenie jest na stanie lokalu?
 equipment: [$equipment]
 ---
-{frontmatter.equipment.join(', ')}
+Dodaj elementy wysposażenia
+
+{frontmatter.equipment.map(eq => <div>{eq}</div>)}

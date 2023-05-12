@@ -1,5 +1,14 @@
 ---
 systems: [$system]
 question: Jakie instalacje dostępne są w lokalu?
+systemslib: [elektryczna, gazowa, wodna, centralne ogrzewanie, kanalizacja, klimatyzacja]
 ---
-{frontmatter.systems.join(', ')}
+Zaznacz wszystkie pasujące odpowiedzi
+
+{frontmatter.systemslib.map(system => (
+    <>
+    <input id={system} type="checkbox" checked={frontmatter.systems.includes(system)} />
+    <label for={system}>{system}</label>
+    <br />
+    </>
+))}

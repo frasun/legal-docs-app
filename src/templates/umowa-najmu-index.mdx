@@ -2,9 +2,9 @@
 title: Umowa najmu lokalu
 index: [
     { title: Przedmiot Umowy },
-    { id: adres, title: Adres, token: address },
+    { id: adres, title: Adres, token: [address, apt], template: address },
     { id: powierzchnia, title: Powierzchnia, token: area, template: area },
-    { id: pomieszczenia, title: Pomieszczenia, token: rooms },
+    { id: pomieszczenia, title: Pomieszczenia, token: [room, kitchen, hall, bathroom, toilet, balcony, wardrobe, garage], template: rooms },
     { id: instalacje, title: Instalacje, token: systems },
     { id: wyposazenie, title: Wyposażenie, token: equipment },
     { title: Przebieg umowy },

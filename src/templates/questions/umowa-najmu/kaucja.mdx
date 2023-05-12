@@ -3,5 +3,6 @@ deposit: $deposit
 depositmethod: depositmethod
 question: Ile będzie wynosić kaucja i jakie są warunki jej zwrotu?
 ---
-{frontmatter.deposit}
-{frontmatter.depositmethod}
+wysokość <input type="text" name="deposit" value={frontmatter.deposit} />
+
+płatność <input type="text" name="depositmethod" value={frontmatter.depositmethod} />
