@@ -1,0 +1,34 @@
+---
+const { index, current, documentid } = Astro.props;
+
+const currentIndex = index.findIndex(({ id }) => id === current);
+---
+
+<div>
+  {
+    index.map(({ title, id }, index) =>
+      id ? (
+        <a href={`${Astro.url.origin}/dokumenty/${documentid}/${id}`}>
+          <h6 class:list={[{ "text-orangeDark": index === currentIndex }]}>
+            {title}
+          </h6>
+        </a>
+      ) : (
+        <h5>{title}</h5>
+      )
+    )
+  }
+</div>
+<style>
+  div {
+    @apply bg-white rounded p-30;
+  }
+
+  a + h5 {
+    @apply mt-10;
+  }
+
+  h5 {
+    @apply text-dark40;
+  }
+</style>
