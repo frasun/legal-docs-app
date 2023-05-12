@@ -1,0 +1,59 @@
+---
+import Layout from "../../../layouts/App.astro";
+
+const { documentId } = Astro.params;
+
+let index;
+let info;
+
+try {
+  index = await import(`../../../templates/${documentId}-index.mdx`);
+  info = await import(`../../../templates/info/${documentId}.mdx`);
+} catch (e) {
+  if (!index) {
+    return Astro.redirect("/404");
+  }
+}
+
+const {
+  frontmatter: { index: docIndex, title },
+} = index;
+const firstQuestionId = docIndex.find(({ id }) => id);
+const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${firstQuestionId.id}`;
+
+const { Content } = info;
+---
+
+<Layout title={title}>
+  <div>
+    <header>
+      <h1>{title}</h1>
+      <a href={firstQuestionUrl}>Stwórz dokument</a>
+    </header>
+    <hr />
+    <article class="prose">
+      <Content />
+    </article>
+    <footer>
+      <a href={firstQuestionUrl}>Stwórz dokument</a>
+    </footer>
+  </div>
+</Layout>
+
+<style>
+  a {
+    @apply btn btn-default;
+  }
+
+  hr {
+    @apply my-50;
+  }
+
+  footer {
+    @apply p-50 flex justify-center;
+  }
+
+  footer a {
+    @apply btn-big;
+  }
+</style>
