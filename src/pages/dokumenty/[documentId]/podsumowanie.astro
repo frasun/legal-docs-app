@@ -14,11 +14,12 @@ if (Number(documentId)) {
 
   if (data.length) {
     docId = data[0].doc;
+    answers = data[0].answers;
   } else {
     return Astro.redirect("/404");
   }
-
-  answers = data[0].answers;
+} else if (Astro.cookies.has(documentId)) {
+  answers = Astro.cookies.get(documentId).json();
 } else {
   const { frontmatter: defaultAnswers } = await import(
     `../../../templates/documents/${docId}.mdx`

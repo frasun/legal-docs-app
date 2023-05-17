@@ -14,18 +14,17 @@ if (Number(documentId)) {
 
   if (data.length) {
     docId = data[0].doc;
+    answers = data[0].answers;
   } else {
     return Astro.redirect("/404");
   }
+} else if (Astro.cookies.has(documentId)) {
+  answers = Astro.cookies.get(documentId).json();
 } else {
-  const { frontmatter: answers } = await import(
+  const { frontmatter } = await import(
     `../../../templates/documents/${docId}.mdx`
   );
-  data = [
-    {
-      answers,
-    },
-  ];
+  answers = frontmatter;
 }
 
 try {
@@ -39,14 +38,15 @@ try {
   }
 }
 
-if (data.length) {
-  for (let key of Object.keys(question.frontmatter)) {
-    if (key !== "question" && data[0].answers[key])
-      question.frontmatter[key] = data[0].answers[key];
-  }
-
-  answers = data[0].answers;
+for (let key of Object.keys(question.frontmatter)) {
+  if (key !== "question" && answers[key])
+    question.frontmatter[key] = answers[key];
 }
+
+const {
+  Content,
+  frontmatter: { question: questionContent },
+} = question;
 
 const {
   frontmatter: { index: questionsIndex },
@@ -67,63 +67,58 @@ const nextQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
 }`;
 const prevQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${prevQuestionId}`;
 
-const {
-  Content,
-  frontmatter: { question: questionContent },
-} = question;
-
 if (Astro.request.method === "POST") {
-  if (data.length) {
-    try {
-      const formData = await Astro.request.formData();
+  try {
+    const formData = await Astro.request.formData();
 
-      let newAnswers = {};
-      for (let [key, value] of formData) {
-        if (answers[key] !== value) {
-          newAnswers[key] = value;
-        }
+    let newAnswers = {};
+    for (let [key, value] of formData) {
+      if (answers[key] !== value) {
+        newAnswers[key] = value;
       }
-
-      if (Object.keys(newAnswers).length) {
-        await updateAnswers(1, { ...answers, ...newAnswers });
-      }
-
-      return Astro.redirect(nextQuestionUrl);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-      return Astro.redirect("/404");
     }
-  } else {
+
+    const allAnswers = { ...answers, ...newAnswers };
+
+    if (Number(documentId)) {
+      if (Object.keys(newAnswers).length) {
+        await updateAnswers(1, allAnswers);
+      }
+    } else {
+      Astro.cookies.set(documentId, allAnswers, { maxAge: 60 });
+    }
+
     return Astro.redirect(nextQuestionUrl);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+    return Astro.redirect("/404");
   }
 }
 ---
 
 <Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
-  <question-form>
-    <form method="POST" data-validation={currentQuestion.validation}>
-      <h3>{questionContent}</h3>
-      <Content />
-      <footer>
-        <div>
-          <span>§{currentQuestionIndex + 1}</span>
-          <span>{currentQuestion.title}</span>
-        </div>
-        <nav>
-          {currentQuestionIndex > 0 && <a href={prevQuestionUrl}>Poprzednie</a>}
-          <button type="submit"
-            >{
-              currentQuestionIndex >= questions.length - 1
-                ? "Podsumowanie"
-                : "Następne"
-            }</button
-          >
-        </nav>
-      </footer>
-    </form>
-  </question-form>
+  <form method="POST" data-validation={currentQuestion.validation}>
+    <h3>{questionContent}</h3>
+    <Content />
+    <footer>
+      <div>
+        <span>§{currentQuestionIndex + 1}</span>
+        <span>{currentQuestion.title}</span>
+      </div>
+      <nav>
+        {currentQuestionIndex > 0 && <a href={prevQuestionUrl}>Poprzednie</a>}
+        <button type="submit"
+          >{
+            currentQuestionIndex >= questions.length - 1
+              ? "Podsumowanie"
+              : "Następne"
+          }</button
+        >
+      </nav>
+    </footer>
+  </form>
   <aside>
     <QuestionIndex
       index={questionsIndex}
@@ -155,9 +150,5 @@ if (Astro.request.method === "POST") {
   footer button[type="submit"] {
     @apply btn btn-default;
     @apply self-end;
-  }
-
-  question-form {
-    @apply contents;
   }
 </style>
