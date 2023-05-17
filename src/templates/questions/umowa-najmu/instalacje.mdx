@@ -1,14 +1,10 @@
 ---
-systems: [$system]
+systems: "elektryczna, gazowa, centralne ogrzewanie, kanalizacja"
 question: Jakie instalacje dostępne są w lokalu?
-systemslib: [elektryczna, gazowa, wodna, centralne ogrzewanie, kanalizacja, klimatyzacja]
+systemslib: ["elektryczna", "gazowa", "centralne ogrzewanie", "kanalizacja", "klimatyzacja"]
 ---
+import Checkboxes from '../../../components/Checkboxes.astro'
+
 Zaznacz wszystkie pasujące odpowiedzi
 
-{frontmatter.systemslib.map(system => (
-    <>
-    <input id={system} type="checkbox" checked={frontmatter.systems.includes(system)} />
-    <label for={system}>{system}</label>
-    <br />
-    </>
-))}
+<Checkboxes values={frontmatter.systemslib} selected={frontmatter.systems} token="systems" />

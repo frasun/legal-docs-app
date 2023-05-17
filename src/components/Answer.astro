@@ -14,8 +14,6 @@ if (template) {
   if (!answer) return;
 
   for (let key of Object.keys(answer.frontmatter)) {
-    answer.frontmatter[key] = data[key];
-
     if (data[key]) {
       answer.frontmatter[key] = data[key];
     } else {

@@ -5,19 +5,40 @@ import { getDocument, updateAnswers } from "../../../../db/document";
 
 const { documentId, questionId } = Astro.params;
 
-let index;
-let question;
+let index, question, answers;
+let data = [];
+let docId = documentId;
+
+if (Number(documentId)) {
+  data = await getDocument(documentId);
+
+  if (data.length) {
+    docId = data[0].doc;
+  } else {
+    return Astro.redirect("/404");
+  }
+}
 
 try {
-  index = await import(`../../../templates/${documentId}-index.mdx`);
+  index = await import(`../../../templates/${docId}-index.mdx`);
   question = await import(
-    `../../../templates/questions/${documentId}/${questionId}.mdx`
+    `../../../templates/questions/${docId}/${questionId}.mdx`
   );
 } catch (e) {
   if (!index || !question) {
     return Astro.redirect("/404");
   }
 }
+
+if (data.length) {
+  for (let key of Object.keys(question.frontmatter)) {
+    if (key !== "question" && data[0].answers[key])
+      question.frontmatter[key] = data[0].answers[key];
+  }
+
+  answers = data[0].answers;
+}
+
 const {
   frontmatter: { index: questionsIndex },
 } = index;
@@ -37,68 +58,63 @@ const nextQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
 }`;
 const prevQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${prevQuestionId}`;
 
-const data = await getDocument(1);
-
-if (data.length) {
-  for (let key of Object.keys(question.frontmatter)) {
-    if (key !== "question" && data[0].answers[key])
-      question.frontmatter[key] = data[0].answers[key];
-  }
-}
-
-const { answers } = data[0];
-
 const {
   Content,
   frontmatter: { question: questionContent },
 } = question;
 
 if (Astro.request.method === "POST") {
-  try {
-    const formData = await Astro.request.formData();
+  if (data.length) {
+    try {
+      const formData = await Astro.request.formData();
 
-    let newAnswers = {};
-    for (let [key, value] of formData) {
-      if (answers[key] !== value) {
-        newAnswers[key] = value;
+      let newAnswers = {};
+      for (let [key, value] of formData) {
+        if (answers[key] !== value) {
+          newAnswers[key] = value;
+        }
       }
-    }
 
-    if (Object.keys(newAnswers).length) {
-      await updateAnswers(1, { ...answers, ...newAnswers });
-    }
+      if (Object.keys(newAnswers).length) {
+        await updateAnswers(1, { ...answers, ...newAnswers });
+      }
 
+      return Astro.redirect(nextQuestionUrl);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      return Astro.redirect("/404");
+    }
+  } else {
     return Astro.redirect(nextQuestionUrl);
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message);
-    }
-    return Astro.redirect("/404");
   }
 }
 ---
 
 <Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
-  <form method="POST">
-    <h3>{questionContent}</h3>
-    <Content />
-    <footer>
-      <div>
-        <span>§{currentQuestionIndex + 1}</span>
-        <span>{currentQuestion.title}</span>
-      </div>
-      <nav>
-        {currentQuestionIndex > 0 && <a href={prevQuestionUrl}>Poprzednie</a>}
-        <button type="submit"
-          >{
-            currentQuestionIndex >= questions.length - 1
-              ? "Podsumowanie"
-              : "Następne"
-          }</button
-        >
-      </nav>
-    </footer>
-  </form>
+  <question-form>
+    <form method="POST" data-validation={currentQuestion.validation}>
+      <h3>{questionContent}</h3>
+      <Content />
+      <footer>
+        <div>
+          <span>§{currentQuestionIndex + 1}</span>
+          <span>{currentQuestion.title}</span>
+        </div>
+        <nav>
+          {currentQuestionIndex > 0 && <a href={prevQuestionUrl}>Poprzednie</a>}
+          <button type="submit"
+            >{
+              currentQuestionIndex >= questions.length - 1
+                ? "Podsumowanie"
+                : "Następne"
+            }</button
+          >
+        </nav>
+      </footer>
+    </form>
+  </question-form>
   <aside>
     <QuestionIndex
       index={questionsIndex}
@@ -130,5 +146,9 @@ if (Astro.request.method === "POST") {
   footer button[type="submit"] {
     @apply btn btn-default;
     @apply self-end;
+  }
+
+  question-form {
+    @apply contents;
   }
 </style>

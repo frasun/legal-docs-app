@@ -23,7 +23,7 @@ const seedData = [
       toilet: 1,
       wardrobe: 2,
       garage: 0,
-      systems: ["elektryczna", "gazowa", "wodna", "centralne ogrzewanie"],
+      systems: "elektryczna, gazowa, centralne ogrzewanie",
       equipment: [
         "Toster Philips o nr seryjnym XBSDCS89734-2342234",
         "dwa fotele",
@@ -33,13 +33,9 @@ const seedData = [
       rent: 2300,
       rentmethod: "płatny przelewem na konto Wynajmującego",
       rentdue: 14,
-      billslandlord: [
-        "zużycie energii",
-        "zużycie gazu",
-        "zużycie wody",
-        "wywóz śmieci",
-      ],
-      billstenant: ["opłata za internet", "opłata telewizyjna"],
+      billslandlord:
+        "zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci",
+      billstenant: "opłata za internet, opłata telewizyjna",
       deposit: 2300,
       depositmethod: "płatna przelewem na konto Wynajmującego",
       repairs: 2500,

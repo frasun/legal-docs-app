@@ -28,10 +28,10 @@ return: $return
 
 # Umowa najmu lokalu
 
-1. Przedmiot Umowy
+### Przedmiot Umowy
 
    1. Umowa dotyczy lokalu o powierzchni {frontmatter.area} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.address} / {frontmatter.apt}**.
-   2. W skład lokalu wchodzą następujące pomieszczenia:
+   1. W skład lokalu wchodzą następujące pomieszczenia:
       <ul>
       {frontmatter.room > 0 && (<li>{frontmatter.room} x pokój</li>)}
       {frontmatter.kitchen > 0 && (<li>{frontmatter.kitchen} x kuchnia</li>)}
@@ -42,31 +42,32 @@ return: $return
       {frontmatter.wardrobe > 0 && (<li>{frontmatter.wardrobe} x garderoba</li>)}
       {frontmatter.garage > 0 && (<li>{frontmatter.garage} x garaż</li>)}
       </ul>
-   3. Lokal posiada instalacje:
-      <ul>
-      {frontmatter.systems.map((item) => <li>{item}</li>)}
-      </ul>
-   4. Na stanie lokalu znajduje się wyposażenie:
+      {frontmatter.systems !== 'brak' && (<li>W lokalu dostępne są instalacje: {frontmatter.systems}</li>)}
+   1. Na stanie lokalu znajduje się wyposażenie:
       <ul>
       {frontmatter.equipment.map((item) => <li>{item}</li>)}
       </ul>
 
-2. Przebieg umowy
-
-   1. Lokal będzie użytkowany tylko do {frontmatter.purpose}.
-   2. Czynsz w wysokości {frontmatter.rent} zł, {frontmatter.rentmethod} do {frontmatter.rentdue}. dnia miesiąca.
-   3. Opłaty za media będą ponosić
+### Przebieg umowy
+   
+   1. Lokal będzie użytkowany {frontmatter.purpose.includes(',') ? frontmatter.purpose.split(', ').join(' i ') : frontmatter.purpose}.
+   1. Czynsz w wysokości {frontmatter.rent} zł, {frontmatter.rentmethod} do {frontmatter.rentdue}. dnia miesiąca.      
+   1. Opłaty za media
       - Wynajmujący
-        <ul>{frontmatter.billslandlord.map((item) => <li>{item}</li>)}</ul>
+         <ul>
+        {frontmatter.billslandlord.split(',').map((item) => <li>{item}</li>)}
+        </ul>
       - Najemca
-        <ul>{frontmatter.billstenant.map((item) => <li>{item}</li>)}</ul>
-   4. Kaucja w wysokości {frontmatter.deposit} zł, {frontmatter.depositmethod}.
-   5. Najemca pokrywa koszty napraw do {frontmatter.repairs} zł.
-   6. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.termination} dni.
-   7. Zwrot lokalu powinien nastąpic do {frontmatter.return}. dnia od daty zakończenia Umowy.
+        <ul>
+        {frontmatter.billstenant.split(',').map((item) => <li>{item}</li>)}
+        </ul>
+   1. Kaucja w wysokości {frontmatter.deposit} zł, {frontmatter.depositmethod}.
+   1. Najemca pokrywa koszty napraw do {frontmatter.repairs} zł.      
+   1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.termination} dni.
+   1. Zwrot lokalu powinien nastąpic do {frontmatter.return}. dnia od daty zakończenia Umowy.
 
-3. Prawa i obowiązki
+### Prawa i obowiązki
 
-4. Czas trwania umowy
+### Czas trwania umowy
 
-5. Oświadczenia
+### Oświadczenia

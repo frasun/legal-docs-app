@@ -1,15 +1,12 @@
 ---
-billslandlord: [$billslandlord]
-billstenant: [billstenant]
+billslandlord: 'zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci'
+billstenant: 'opłata za internet, opłata telewizyjna'
 question: Kto będzie ponosił opłaty za media?
 billslib: ['zużycie energii', 'zużycie gazu', 'zużycie wody', 'wywóz śmieci', 'opłata za internet', 'opłata telewizyjna']
+optionslib: [Opłata, Wynajmujący, Najemca]
 ---
-Opłata / Wynajmujący / Najemca
-{frontmatter.billslib.map(bill => (
-    <>
-    <label>{bill}</label>
-    <input name={bill} type="radio" checked={frontmatter.billslandlord.includes(bill)} />
-    <input name={bill} type="radio" checked={frontmatter.billstenant.includes(bill)} />    
-    <br />
-    </>
-))}
+import Radiogrid from '../../../components/Radiogrid.astro'
+
+Zaznacz wszystkie pasujące odpowiedzi
+
+<Radiogrid selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={frontmatter.billslib} token={['billslandlord', 'billstenant']} />

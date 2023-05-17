@@ -1,8 +1,12 @@
 ---
-deposit: $deposit
-depositmethod: depositmethod
+deposit: 2500
+depositmethod: przelewem na konto bankowe
+depositmethodlib: [przelewem na konto bankowe, gotówką]
 question: Ile będzie wynosić kaucja i jakie są warunki jej zwrotu?
 ---
 wysokość <input type="text" name="deposit" value={frontmatter.deposit} />
 
-płatność <input type="text" name="depositmethod" value={frontmatter.depositmethod} />
+płatność 
+<select name="depositmethod">
+{frontmatter.depositmethodlib.map(m => <option value={m} selected={frontmatter.depositmethod.includes(m)}>{m}</option>)}
+</select>

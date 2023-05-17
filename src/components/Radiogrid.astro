@@ -1,0 +1,95 @@
+---
+const { options, labels, token, selected } = Astro.props;
+---
+
+<radio-grid>
+  <fieldset>
+    <header>
+      {options.map((opt) => <div>{opt}</div>)}
+    </header>
+    {
+      labels.map((label) => (
+        <div>
+          <label>{label}</label>
+          {options.map((opt, index) => {
+            return index > 0 ? (
+              <input
+                type="radio"
+                name={label}
+                value={opt}
+                aria-label={`${opt}`}
+                checked={selected[index - 1].includes(label)}
+              />
+            ) : null;
+          })}
+        </div>
+      ))
+    }
+    {
+      token.map((t, index) => (
+        <input type="hidden" name={t} id={options[index + 1]} />
+      ))
+    }
+  </fieldset>
+</radio-grid>
+
+<style>
+  fieldset header,
+  fieldset > div {
+    @apply flex;
+  }
+
+  fieldset header > div:first-child,
+  fieldset > div label {
+    @apply flex-grow;
+  }
+</style>
+
+<script>
+  class Radiogrid extends HTMLElement {
+    valueInputs: NodeListOf<HTMLInputElement>;
+    radios: NodeListOf<HTMLInputElement>;
+
+    constructor() {
+      super();
+
+      this.valueInputs = this.querySelectorAll('input[type="hidden"]');
+      this.radios = this.querySelectorAll('input[type="radio"]');
+    }
+
+    connectedCallback() {
+      for (let radio of Array.from(this.radios)) {
+        radio.addEventListener("change", this.setHiddenValue.bind(this));
+      }
+    }
+
+    setHiddenValue() {
+      const values = this.getHiddenValue();
+
+      console.log({ values });
+
+      Array.from(this.valueInputs).map((input) => {
+        console.log(values[input.id]);
+
+        input.value = values[input.id];
+      });
+    }
+
+    getHiddenValue() {
+      let values = {};
+
+      for (let { name, value, checked } of Array.from(this.radios)) {
+        if (checked) {
+          if (!Array.isArray(values[value])) {
+            values[value] = [];
+          }
+
+          values[value].push(name);
+        }
+      }
+
+      return values;
+    }
+  }
+  customElements.define("radio-grid", Radiogrid);
+</script>

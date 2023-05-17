@@ -4,17 +4,26 @@ import Answer from "../../../components/Answer.astro";
 import { getDocument } from "../../../../db/document";
 
 const { documentId } = Astro.params;
-const data = await getDocument(1);
 
-if (!data.length) {
-  return Astro.redirect("/404");
+let docId = documentId;
+let data = [];
+let answers;
+
+if (Number(documentId)) {
+  data = await getDocument(documentId);
+
+  if (data.length) {
+    docId = data[0].doc;
+  } else {
+    return Astro.redirect("/404");
+  }
+
+  answers = data[0].answers;
 }
-
-const { answers } = data[0];
 
 const {
   frontmatter: { title, index },
-} = await import(`../../../templates/${documentId}-index.mdx`);
+} = await import(`../../../templates/${docId}-index.mdx`);
 ---
 
 <Layout title={`Podsumowanie - ${title}`}>

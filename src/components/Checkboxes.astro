@@ -1,0 +1,48 @@
+---
+const { values, selected, token } = Astro.props;
+---
+
+<checkbox-list>
+  {
+    values.map((val) => (
+      <div>
+        <input type="checkbox" id={val} checked={selected.includes(val)} />
+        <label for={val}>{val}</label>
+      </div>
+    ))
+  }
+  <input type="hidden" name={token} />
+</checkbox-list>
+
+<script>
+  class CheckboxList extends HTMLElement {
+    valueInput: HTMLInputElement;
+    checkboxes: NodeListOf<HTMLInputElement>;
+
+    constructor() {
+      super();
+
+      this.valueInput = this.querySelector('input[type="hidden"]');
+      this.checkboxes = this.querySelectorAll('input[type="checkbox"]');
+    }
+
+    connectedCallback() {
+      for (let checkbox of Array.from(this.checkboxes)) {
+        checkbox.addEventListener("change", this.setHiddenValue.bind(this));
+      }
+    }
+
+    setHiddenValue() {
+      let value = [];
+
+      for (let { id, checked } of Array.from(this.checkboxes)) {
+        if (checked) {
+          value.push(id);
+        }
+      }
+
+      this.valueInput.value = value.length ? value.join(", ") : "brak";
+    }
+  }
+  customElements.define("checkbox-list", CheckboxList);
+</script>
