@@ -19,6 +19,16 @@ if (Number(documentId)) {
   }
 
   answers = data[0].answers;
+} else {
+  const { frontmatter: defaultAnswers } = await import(
+    `../../../templates/documents/${docId}.mdx`
+  );
+
+  if (defaultAnswers) {
+    answers = defaultAnswers;
+  } else {
+    return Astro.redirect("/404");
+  }
 }
 
 const {

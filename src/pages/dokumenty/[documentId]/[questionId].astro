@@ -17,6 +17,15 @@ if (Number(documentId)) {
   } else {
     return Astro.redirect("/404");
   }
+} else {
+  const { frontmatter: answers } = await import(
+    `../../../templates/documents/${docId}.mdx`
+  );
+  data = [
+    {
+      answers,
+    },
+  ];
 }
 
 try {
