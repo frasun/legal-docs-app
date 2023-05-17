@@ -20,8 +20,7 @@ export default defineConfig({
     config: {
       applyBaseStyles: false
     }
-    // }), image(), critters(), compress({
-  }), image(), compress({
+  }), image(), critters(), compress({
     img: false,
     svg: false
   }), mdx()],
