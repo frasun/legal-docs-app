@@ -3,6 +3,8 @@ import Layout from "../../../layouts/App.astro";
 
 const { documentId } = Astro.params;
 
+Astro.cookies.delete(documentId);
+
 let index;
 let info;
 

@@ -22,10 +22,9 @@ if (Number(documentId)) {
   answers = Astro.cookies.get(documentId).json();
 } else {
   try {
-    const { frontmatter: defaultAnswers } = await import(
-      `../../../templates/documents/${docId}.mdx`
-    );
-    answers = defaultAnswers;
+    const seed = await import(`../../../templates/seed/${docId}.ts`);
+
+    answers = seed.default;
   } catch (e) {
     return Astro.redirect("/404");
   }

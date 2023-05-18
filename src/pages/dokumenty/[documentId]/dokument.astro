@@ -4,6 +4,8 @@ import { getDocument, createDocument } from "../../../../db/document";
 
 const { documentId } = Astro.params;
 
+Astro.cookies.delete(documentId);
+
 let data = [];
 
 if (Astro.request.method === "POST") {

@@ -21,10 +21,9 @@ if (Number(documentId)) {
 } else if (Astro.cookies.has(documentId)) {
   answers = Astro.cookies.get(documentId).json();
 } else {
-  const { frontmatter } = await import(
-    `../../../templates/documents/${docId}.mdx`
-  );
-  answers = frontmatter;
+  const seed = await import(`../../../templates/seed/${docId}.ts`);
+
+  answers = seed.default;
 }
 
 try {
@@ -83,7 +82,7 @@ if (Astro.request.method === "POST") {
         await updateAnswers(documentId, allAnswers);
       }
     } else {
-      Astro.cookies.set(documentId, allAnswers, { maxAge: 60 });
+      Astro.cookies.set(documentId, allAnswers, { maxAge: 600 });
     }
 
     return Astro.redirect(nextQuestionUrl);

@@ -14,7 +14,7 @@ const seedData = [
     doc: "umowa-najmu",
     answers: JSON.stringify({
       address: "91-123 Łódź, ul. Aleksandrowska 123a",
-      apt: "23",
+      apt: 23,
       area: "65,23",
       room: 2,
       kitchen: 2,
