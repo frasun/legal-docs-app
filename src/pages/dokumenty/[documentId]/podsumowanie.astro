@@ -21,13 +21,12 @@ if (Number(documentId)) {
 } else if (Astro.cookies.has(documentId)) {
   answers = Astro.cookies.get(documentId).json();
 } else {
-  const { frontmatter: defaultAnswers } = await import(
-    `../../../templates/documents/${docId}.mdx`
-  );
-
-  if (defaultAnswers) {
+  try {
+    const { frontmatter: defaultAnswers } = await import(
+      `../../../templates/documents/${docId}.mdx`
+    );
     answers = defaultAnswers;
-  } else {
+  } catch (e) {
     return Astro.redirect("/404");
   }
 }
@@ -58,7 +57,23 @@ const {
       )
     }
     <footer>
-      <a href={`${Astro.url.origin}/dokument?id=1`}>Generuj dokument</a>
+      {
+        Number(documentId) ? (
+          <a href={`${Astro.url.origin}/dokumenty/${documentId}/dokument`}>
+            Wyświetl dokument
+          </a>
+        ) : (
+          <form
+            method="POST"
+            action={`${Astro.url.origin}/dokumenty/${documentId}/dokument`}
+          >
+            {Object.entries(answers).map(([key, value]) => (
+              <input type="hidden" name={key} value={value.toString()} />
+            ))}
+            <button type="submit">Generuj dokument</button>
+          </form>
+        )
+      }
     </footer>
   </section>
 </Layout>
@@ -88,7 +103,8 @@ const {
     @apply p-50 flex justify-center;
   }
 
-  footer a {
+  footer a,
+  button[type="submit"] {
     @apply btn btn-default btn-big;
   }
 </style>

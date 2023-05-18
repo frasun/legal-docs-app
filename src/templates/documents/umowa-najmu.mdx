@@ -11,11 +11,7 @@ toilet: 1
 wardrobe: 0
 garage: 0
 systems: "elektryczna, gazowa, centralne ogrzewanie"
-equipment: [
-   "Toster Philips o nr seryjnym XBSDCS89734-2342234",
-   "dwa fotele",
-   "kanapa",
-]
+equipment: "Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa"
 purpose: "do celów mieszkalnych"
 rent: 2300
 rentmethod: "płatny przelewem na konto Wynajmującego"
@@ -37,19 +33,19 @@ return: 14
    1. Umowa dotyczy lokalu o powierzchni {frontmatter.area} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.address} / {frontmatter.apt}**.
    1. W skład lokalu wchodzą następujące pomieszczenia:
       <ul>
-      {frontmatter.room > 0 && (<li>{frontmatter.room} x pokój</li>)}
-      {frontmatter.kitchen > 0 && (<li>{frontmatter.kitchen} x kuchnia</li>)}
-      {frontmatter.hall > 0 && (<li>{frontmatter.hall} x pokprzedpokójój</li>)}
-      {frontmatter.bathroom > 0 && (<li>{frontmatter.bathroom} x łazienka</li>)}
-      {frontmatter.toilet > 0 && (<li>{frontmatter.toilet} x toaleta</li>)}
-      {frontmatter.balcony > 0 && (<li>{frontmatter.balcony} x balkon</li>)}
-      {frontmatter.wardrobe > 0 && (<li>{frontmatter.wardrobe} x garderoba</li>)}
-      {frontmatter.garage > 0 && (<li>{frontmatter.garage} x garaż</li>)}
+      {Number(frontmatter.room) > 0 && (<li>{frontmatter.room} x pokój</li>)}
+      {Number(frontmatter.kitchen) > 0 && (<li>{frontmatter.kitchen} x kuchnia</li>)}
+      {Number(frontmatter.hall) > 0 && (<li>{frontmatter.hall} x pokprzedpokójój</li>)}
+      {Number(frontmatter.bathroom) > 0 && (<li>{frontmatter.bathroom} x łazienka</li>)}
+      {Number(frontmatter.toilet) > 0 && (<li>{frontmatter.toilet} x toaleta</li>)}
+      {Number(frontmatter.balcony) > 0 && (<li>{frontmatter.balcony} x balkon</li>)}
+      {Number(frontmatter.wardrobe) > 0 && (<li>{frontmatter.wardrobe} x garderoba</li>)}
+      {Number(frontmatter.garage) > 0 && (<li>{frontmatter.garage} x garaż</li>)}
       </ul>
       {frontmatter.systems !== 'brak' && (<li>W lokalu dostępne są instalacje: {frontmatter.systems}</li>)}
    1. Na stanie lokalu znajduje się wyposażenie:
       <ul>
-      {frontmatter.equipment.map((item) => <li>{item}</li>)}
+      {frontmatter.equipment.split(', ').map((item) => <li>{item}</li>)}
       </ul>
 
 ### Przebieg umowy

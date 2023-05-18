@@ -66,11 +66,7 @@ const { options, labels, token, selected } = Astro.props;
     setHiddenValue() {
       const values = this.getHiddenValue();
 
-      console.log({ values });
-
       Array.from(this.valueInputs).map((input) => {
-        console.log(values[input.id]);
-
         input.value = values[input.id];
       });
     }

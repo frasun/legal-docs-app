@@ -1,25 +1,39 @@
 ---
-import Layout from "../layouts/App.astro";
-import { getDocument } from "../../db/document";
+import Layout from "../../../layouts/App.astro";
+import { getDocument, createDocument } from "../../../../db/document";
 
-const url = new URL(Astro.request.url);
-const id = url.searchParams.get("id");
+const { documentId } = Astro.params;
 
 let data = [];
 
-if (!id) {
-  return Astro.redirect("/404");
-} else {
-  data = await getDocument(id);
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  let answers = {};
 
-  if (!data.length) {
+  formData.forEach((value, key) => (answers[key] = value));
+
+  const { id } = await createDocument(documentId, answers);
+
+  if (id) {
+    return Astro.redirect(`${Astro.url.origin}/dokumenty/${id}/dokument`);
+  } else {
     return Astro.redirect("/404");
   }
 }
 
+if (Number(documentId)) {
+  data = await getDocument(documentId);
+
+  if (!data.length) {
+    return Astro.redirect("/404");
+  }
+} else {
+  return Astro.redirect("/404");
+}
+
 const { answers, doc: docId } = data[0];
 const { frontmatter, Content } = await import(
-  `../templates/documents/${docId}.mdx`
+  `../../../templates/documents/${docId}.mdx`
 );
 
 for (let key of Object.keys(frontmatter)) {
@@ -60,7 +74,7 @@ for (let key of Object.keys(frontmatter)) {
   }
 </style>
 <script>
-  import exportDoc from "../utils/exportDoc";
+  import exportDoc from "../../../utils/exportDoc";
 
   class DownloadButton extends HTMLElement {
     contentId: string;

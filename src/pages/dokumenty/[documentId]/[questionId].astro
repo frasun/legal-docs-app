@@ -73,16 +73,14 @@ if (Astro.request.method === "POST") {
 
     let newAnswers = {};
     for (let [key, value] of formData) {
-      if (answers[key] !== value) {
-        newAnswers[key] = value;
-      }
+      newAnswers[key] = value;
     }
 
     const allAnswers = { ...answers, ...newAnswers };
 
     if (Number(documentId)) {
       if (Object.keys(newAnswers).length) {
-        await updateAnswers(1, allAnswers);
+        await updateAnswers(documentId, allAnswers);
       }
     } else {
       Astro.cookies.set(documentId, allAnswers, { maxAge: 60 });

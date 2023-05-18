@@ -2,7 +2,7 @@ import { Generated } from "kysely";
 import { db } from "./db";
 
 export interface Document {
-  id: Generated<number>;
+  id: Generated<Number>;
   doc: string;
   answers: JSON;
 }
@@ -24,11 +24,8 @@ const seedData = [
       wardrobe: 2,
       garage: 0,
       systems: "elektryczna, gazowa, centralne ogrzewanie",
-      equipment: [
-        "Toster Philips o nr seryjnym XBSDCS89734-2342234",
-        "dwa fotele",
-        "kanapa",
-      ],
+      equipment:
+        "Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa",
       purpose: "do celów mieszkalnych",
       rent: 2300,
       rentmethod: "płatny przelewem na konto Wynajmującego",
@@ -87,6 +84,18 @@ export async function updateAnswers(documentId, answers) {
       .set({ answers })
       .where("id", "=", documentId)
       .execute();
+  } catch (e: any) {
+    throw e;
+  }
+}
+
+export async function createDocument(doc, answers) {
+  try {
+    return await db
+      .insertInto(KEY)
+      .values([{ doc, answers: JSON.stringify(answers) }])
+      .returning("id")
+      .executeTakeFirst();
   } catch (e: any) {
     throw e;
   }
