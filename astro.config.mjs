@@ -7,7 +7,7 @@ import vercel from '@astrojs/vercel/serverless';
 import { loadEnv } from "vite";
 
 import mdx from "@astrojs/mdx";
-import auth from "auth-astro";
+import auth from "./src/auth-astro";
 
 // populate env vars to process.env *astro hack
 const localEnv = loadEnv(import.meta.env.MODE, process.cwd(), "");

@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getSession } from "auth-astro/server";
+import { getSession } from "../auth-astro/server";
 
 const session = await getSession(Astro.request);
 ---
@@ -27,7 +27,7 @@ const session = await getSession(Astro.request);
 </Layout>
 
 <script>
-  import { signIn, signOut } from "auth-astro/client";
+  import { signIn, signOut } from "../auth-astro/client";
 
   class LoginForm extends HTMLElement {
     form: HTMLFormElement;
