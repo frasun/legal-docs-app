@@ -1,5 +1,5 @@
 import { _getUserByEmail } from "./db/auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import CredentialsProvider from "@auth/core/providers/credentials";
 import bcrypt from "bcryptjs";
 
 export default {
