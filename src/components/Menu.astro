@@ -14,8 +14,8 @@ const menuItems = [
       {menuItems.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
     </div>
     <aside>
-      <a href="/umowa-najmu">Załóż konto</a>
-      <a href="#">Zaloguj się</a>
+      <a href=`${Astro.url.origin}/zaloz-konto`>Załóż konto</a>
+      <a href=`${Astro.url.origin}/zaloz-konto`>Zaloguj się</a>
     </aside>
   </nav>
   <button id="menuToggle" aria-label="toggle menu">

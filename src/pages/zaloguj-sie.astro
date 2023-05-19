@@ -1,0 +1,81 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getSession } from "auth-astro/server";
+
+const session = await getSession(Astro.request);
+---
+
+<Layout title="Zaloguj się - Prawniczek">
+  {
+    session ? (
+      <>
+        <p>Welcome {session.user?.email}</p>
+        <logout-button>
+          <button id="logout">Wygloguj</button>
+        </logout-button>
+      </>
+    ) : (
+      <login-form>
+        <form>
+          <input type="email" name="email" required />
+          <input type="password" name="password" required />
+          <button type="submit">Zaloguj się</button>
+        </form>
+      </login-form>
+    )
+  }
+</Layout>
+
+<script>
+  import { signIn, signOut } from "auth-astro/client";
+
+  class LoginForm extends HTMLElement {
+    form: HTMLFormElement;
+
+    constructor() {
+      super();
+
+      this.form = this.querySelector("form");
+    }
+
+    connectedCallback() {
+      this.form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(this.form);
+        const email = String(formData.get("email"));
+        const password = String(formData.get("password"));
+
+        try {
+          await signIn("credentials", {
+            redirect: false,
+            email,
+            password,
+          });
+
+          window.location.reload();
+        } catch (error) {
+          console.log({ error });
+        }
+      });
+    }
+  }
+  customElements.define("login-form", LoginForm);
+
+  class LogoutButton extends HTMLElement {
+    button: HTMLButtonElement;
+
+    constructor() {
+      super();
+
+      this.button = this.querySelector("button");
+    }
+
+    connectedCallback() {
+      this.button.addEventListener("click", () => {
+        signOut();
+      });
+    }
+  }
+  customElements.define("logout-button", LogoutButton);
+</script>

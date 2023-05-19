@@ -1,0 +1,29 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { _getUserByEmail, _createUser } from "../../db/auth";
+import bcrypt from "bcryptjs";
+
+let errors = [];
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+
+  const email = String(formData.get("email"));
+  const password = String(formData.get("password"));
+
+  if (await _getUserByEmail(email)) {
+    errors.push("User already exists");
+  } else {
+    await _createUser(email, bcrypt.hashSync(password, bcrypt.genSaltSync(10)));
+  }
+}
+---
+
+<Layout title="Załóż konto - Prawniczek">
+  {errors.length ? errors.map((error) => <p>{error}</p>) : null}
+  <form method="POST">
+    <input type="email" name="email" required />
+    <input type="password" name="password" required />
+    <button type="submit">Załóż konto</button>
+  </form>
+</Layout>

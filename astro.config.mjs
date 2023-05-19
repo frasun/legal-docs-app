@@ -6,13 +6,14 @@ import compress from "astro-compress";
 import vercel from '@astrojs/vercel/serverless';
 import { loadEnv } from "vite";
 
-// populate env vars to process.env *astro hack
 import mdx from "@astrojs/mdx";
+import auth from "auth-astro";
+
+// populate env vars to process.env *astro hack
 const localEnv = loadEnv(import.meta.env.MODE, process.cwd(), "");
 for (let [key, value] of Object.entries(localEnv)) {
   process.env[key] = value;
 }
-
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,7 +25,7 @@ export default defineConfig({
   }), image(), compress({
     img: false,
     svg: false
-  }), mdx()],
+  }), mdx(), auth()],
   output: 'server',
   adapter: vercel()
 });
