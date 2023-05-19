@@ -1,6 +1,6 @@
 import { _getUserByEmail } from "./db/auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
+import bcrypt from "bcryptjs";
 
 export default {
   secret: process.env.AUTH_SECRET as string,
@@ -21,7 +21,7 @@ export default {
 
         const user = await _getUserByEmail(email);
 
-        if (!user || !(await compare(password, user.password))) {
+        if (!user || !(await bcrypt.compare(password, user.password))) {
           throw new Error("Invalid username or password");
         }
 
