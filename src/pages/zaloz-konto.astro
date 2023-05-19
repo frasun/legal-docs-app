@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { _getUserByEmail, _createUser } from "../../db/auth";
+import { getUserByEmail, createUser } from "../../db/auth";
 import bcrypt from "bcryptjs";
 
 let errors = [];
@@ -11,10 +11,10 @@ if (Astro.request.method === "POST") {
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
 
-  if (await _getUserByEmail(email)) {
+  if (await getUserByEmail(email)) {
     errors.push("User already exists");
   } else {
-    await _createUser(email, bcrypt.hashSync(password, bcrypt.genSaltSync(10)));
+    await createUser(email, bcrypt.hashSync(password, bcrypt.genSaltSync(10)));
   }
 }
 ---

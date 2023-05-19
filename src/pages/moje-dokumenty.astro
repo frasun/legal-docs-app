@@ -1,0 +1,73 @@
+---
+import { SignOut } from "../auth-astro/components";
+import Layout from "../layouts/Layout.astro";
+import { getSession } from "../auth-astro/server";
+import { getDocuments } from "../../db/document";
+import { getUserByEmail } from "../../db/auth";
+
+const session = await getSession(Astro.request);
+
+if (!session) {
+  return Astro.redirect("/zaloguj-sie");
+}
+
+const { id: userId } = await getUserByEmail(session.user.email);
+const documents = await getDocuments(userId);
+
+function getCreated(datestring) {
+  const date = new Date(datestring);
+  return `Stworzony: ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+}
+---
+
+<Layout title="Moje dokumenty - Prawniczek">
+  <header>
+    <h2>Moje dokumenty</h2>
+    {session.user?.email}
+    <SignOut>Wyloguj się</SignOut>
+  </header>
+  <section>
+    {
+      documents.length ? (
+        documents.map(({ doc, id, title, doctitle, created }) => (
+          <div>
+            <a href={`${Astro.url.origin}/dokumenty/${id}/dokument`}>
+              <h4>{title}</h4>
+            </a>
+            <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
+              <small>Szablon: {doctitle}</small>
+            </a>
+            <br />
+            <small>{getCreated(created)}</small>
+            <br />
+
+            <a href={`${Astro.url.origin}/dokumenty/${id}/podsumowanie`}>
+              Zobacz podsumowanie
+            </a>
+          </div>
+        ))
+      ) : (
+        <>Brak wyników</>
+      )
+    }
+  </section>
+</Layout>
+
+<style>
+  header,
+  section {
+    @apply flex items-center gap-20 p-20;
+  }
+
+  header h2 {
+    @apply flex-grow;
+  }
+
+  section {
+    @apply flex-col pt-0;
+  }
+
+  section > div {
+    @apply px-20 py-10 bg-white rounded w-full;
+  }
+</style>

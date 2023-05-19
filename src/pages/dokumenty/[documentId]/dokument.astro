@@ -1,12 +1,21 @@
 ---
 import Layout from "../../../layouts/App.astro";
 import { getDocument, createDocument } from "../../../../db/document";
+import { getSession } from "../../../auth-astro/server";
+import { getUserByEmail } from "../../../../db/auth";
 
 const { documentId } = Astro.params;
+const session = await getSession(Astro.request);
+
+let data;
 
 Astro.cookies.delete(documentId);
 
-let data = [];
+if (!session) {
+  return Astro.redirect("/zaloguj-sie");
+}
+
+const { id: userId } = await getUserByEmail(session.user.email);
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -14,7 +23,7 @@ if (Astro.request.method === "POST") {
 
   formData.forEach((value, key) => (answers[key] = value));
 
-  const { id } = await createDocument(documentId, answers);
+  const { id } = await createDocument(documentId, answers, userId);
 
   if (id) {
     return Astro.redirect(`${Astro.url.origin}/dokumenty/${id}/dokument`);
@@ -26,14 +35,14 @@ if (Astro.request.method === "POST") {
 if (Number(documentId)) {
   data = await getDocument(documentId);
 
-  if (!data.length) {
+  if (!data) {
     return Astro.redirect("/404");
   }
 } else {
   return Astro.redirect("/404");
 }
 
-const { answers, doc: docId } = data[0];
+const { answers, doc: docId } = data;
 const { frontmatter, Content } = await import(
   `../../../templates/documents/${docId}.mdx`
 );

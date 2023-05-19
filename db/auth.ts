@@ -10,7 +10,7 @@ import {
 
 import { db } from "./db";
 
-export const _getUserByEmail = async (email: string) => {
+export const getUserByEmail = async (email: string) => {
   const user = await db
     .selectFrom("users")
     .selectAll()
@@ -20,7 +20,7 @@ export const _getUserByEmail = async (email: string) => {
   return user || null;
 };
 
-export const _createUser = async (email, password) => {
+export const createUser = async (email, password) => {
   return await db
     .insertInto("users")
     .values([{ email, password }])

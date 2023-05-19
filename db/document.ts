@@ -3,8 +3,12 @@ import { db } from "./db";
 
 export interface Document {
   id: Generated<Number>;
-  doc: string;
+  doc: String;
   answers: JSON;
+  userid: Number;
+  created: Generated<Date>;
+  title: String;
+  doctitle: String;
 }
 
 const KEY = "document";
@@ -12,10 +16,13 @@ const KEY = "document";
 const seedData = [
   {
     doc: "umowa-najmu",
+    title: "Umowa najmu lokalu",
+    userid: 5,
+    created: Date.now(),
     answers: JSON.stringify({
       address: "91-123 Łódź, ul. Aleksandrowska 123a",
       apt: 23,
-      area: "65,23",
+      area: 295,
       room: 2,
       kitchen: 2,
       hall: 0,
@@ -47,8 +54,12 @@ async function seed() {
     .createTable(KEY)
     .ifNotExists()
     .addColumn("id", "serial", (cb) => cb.primaryKey())
+    .addColumn("userid", "integer", (cb) => cb.notNull())
     .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
     .addColumn("answers", "jsonb", (cb) => cb.notNull())
+    .addColumn("created", "timestamp", (cb) => cb.notNull())
+    .addColumn("title", "varchar(255)", (cb) => cb.notNull())
+    .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
     .execute();
 
   const addDocuments = await db.insertInto(KEY).values(seedData).execute();
@@ -60,7 +71,11 @@ async function seed() {
 }
 
 async function fetchDocument(id) {
-  return await db.selectFrom(KEY).selectAll().where("id", "=", id).execute();
+  return await db
+    .selectFrom(KEY)
+    .selectAll()
+    .where("id", "=", id)
+    .executeTakeFirst();
 }
 
 export async function getDocument(id) {
@@ -77,6 +92,18 @@ export async function getDocument(id) {
   }
 }
 
+export async function getDocuments(userId) {
+  try {
+    return await db
+      .selectFrom(KEY)
+      .selectAll()
+      .where("userid", "=", userId)
+      .execute();
+  } catch (e: any) {
+    throw e;
+  }
+}
+
 export async function updateAnswers(documentId, answers) {
   try {
     return await db
@@ -89,11 +116,24 @@ export async function updateAnswers(documentId, answers) {
   }
 }
 
-export async function createDocument(doc, answers) {
+export async function createDocument(doc, answers, userid) {
   try {
+    const {
+      frontmatter: { title },
+    } = await import(`../src/templates/documents/${doc}.mdx`);
+
     return await db
       .insertInto(KEY)
-      .values([{ doc, answers: JSON.stringify(answers) }])
+      .values([
+        {
+          doc,
+          answers: JSON.stringify(answers),
+          userid,
+          created: new Date(),
+          doctitle: title,
+          title: `${title} #${Math.floor(Math.random() * 1000)}`,
+        },
+      ])
       .returning("id")
       .executeTakeFirst();
   } catch (e: any) {

@@ -6,15 +6,15 @@ import { getDocument, updateAnswers } from "../../../../db/document";
 const { documentId, questionId } = Astro.params;
 
 let index, question, answers;
-let data = [];
+let data;
 let docId = documentId;
 
 if (Number(documentId)) {
   data = await getDocument(documentId);
 
-  if (data.length) {
-    docId = data[0].doc;
-    answers = data[0].answers;
+  if (data) {
+    docId = data.doc;
+    answers = data.answers;
   } else {
     return Astro.redirect("/404");
   }

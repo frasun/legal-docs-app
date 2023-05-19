@@ -1,8 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getSession } from "../auth-astro/server";
+import { SignOut } from "../auth-astro/components";
 
 const session = await getSession(Astro.request);
+
+if (session) {
+  return Astro.redirect("/moje-dokumenty");
+}
 ---
 
 <Layout title="Zaloguj się - Prawniczek">
@@ -11,7 +16,7 @@ const session = await getSession(Astro.request);
       <>
         <p>Welcome {session.user?.email}</p>
         <logout-button>
-          <button id="logout">Wygloguj</button>
+          <SignOut>Wygloguj</SignOut>
         </logout-button>
       </>
     ) : (
@@ -27,7 +32,7 @@ const session = await getSession(Astro.request);
 </Layout>
 
 <script>
-  import { signIn, signOut } from "../auth-astro/client";
+  import { signIn } from "../auth-astro/client";
 
   class LoginForm extends HTMLElement {
     form: HTMLFormElement;
@@ -46,36 +51,14 @@ const session = await getSession(Astro.request);
         const email = String(formData.get("email"));
         const password = String(formData.get("password"));
 
-        try {
-          await signIn("credentials", {
-            redirect: false,
-            email,
-            password,
-          });
-
-          window.location.reload();
-        } catch (error) {
-          console.log({ error });
-        }
+        await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+          callbackUrl: `${document.location.origin}/moje-dokumenty`,
+        });
       });
     }
   }
   customElements.define("login-form", LoginForm);
-
-  class LogoutButton extends HTMLElement {
-    button: HTMLButtonElement;
-
-    constructor() {
-      super();
-
-      this.button = this.querySelector("button");
-    }
-
-    connectedCallback() {
-      this.button.addEventListener("click", () => {
-        signOut();
-      });
-    }
-  }
-  customElements.define("logout-button", LogoutButton);
 </script>
