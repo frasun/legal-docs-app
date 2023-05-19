@@ -1,0 +1,36 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const templates = await Astro.glob("../../templates/documents/*.mdx");
+
+const getSlug = (filepath) => filepath.split("/").pop().replace(".mdx", "");
+---
+
+<Layout title="Wszystkie dokumenty - Prawniczek">
+  <header>
+    <h2>Wszystkie dokumenty</h2>
+  </header>
+  <section>
+    {
+      templates.map((template) => (
+        <a href={`${Astro.url.origin}/dokumenty/${getSlug(template.file)}`}>
+          <h3>{template.frontmatter.title}</h3>
+        </a>
+      ))
+    }
+  </section>
+</Layout>
+
+<style>
+  header {
+    @apply my-20;
+  }
+
+  section {
+    @apply flex gap-20 flex-wrap;
+  }
+
+  a {
+    @apply flex p-20 bg-white rounded;
+  }
+</style>

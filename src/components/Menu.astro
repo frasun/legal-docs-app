@@ -2,16 +2,20 @@
 import { Icon } from "astro-icon";
 
 const menuItems = [
-  { id: "", label: "Dokumenty" },
-  { id: "jaktodziala", label: "Jak to działa?" },
-  { id: "dlakogo", label: "Dla kogo?" },
+  { href: "dokumenty", label: "Dokumenty" },
+  { href: "#jaktodziala", label: "Jak to działa?" },
+  { href: "#dlakogo", label: "Dla kogo?" },
 ];
 ---
 
 <page-menu>
   <nav id="menuNav">
     <div>
-      {menuItems.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
+      {
+        menuItems.map(({ href, label }) => (
+          <a href={`${Astro.url.origin}/${href}`}>{label}</a>
+        ))
+      }
     </div>
     <aside>
       <a href=`${Astro.url.origin}/zaloz-konto`>Załóż konto</a>
