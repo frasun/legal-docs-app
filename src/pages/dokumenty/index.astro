@@ -24,6 +24,12 @@ if (kategoria) {
     categories.includes(kategoria)
   );
 }
+
+function getCategoryName(slug) {
+  const currentCategory = categories.find(({ file }) => getSlug(file) === slug);
+
+  return currentCategory ? currentCategory.frontmatter.name : null;
+}
 ---
 
 <Layout title="Wszystkie dokumenty - Prawniczek">
@@ -48,10 +54,20 @@ if (kategoria) {
   <section>
     {
       documents.length ? (
-        documents.map(({ frontmatter: { title }, file }) => (
-          <a href={`${Astro.url.origin}/dokumenty/${getSlug(file)}`}>
-            <h3>{title}</h3>
-          </a>
+        documents.map(({ frontmatter: { title, categories }, file }) => (
+          <div>
+            <a href={`${Astro.url.origin}/dokumenty/${getSlug(file)}`}>
+              <h3>{title}</h3>
+            </a>
+            <h6>Kategorie</h6>
+            <div>
+              {categories.map((slug) => (
+                <a href={`${Astro.url.origin}/dokumenty?kategoria=${slug}`}>
+                  {getCategoryName(slug)}
+                </a>
+              ))}
+            </div>
+          </div>
         ))
       ) : (
         <div>Brak dokumentów do wyświetlenia</div>
@@ -74,8 +90,12 @@ if (kategoria) {
     @apply flex gap-20 flex-wrap mx-20;
   }
 
-  a {
-    @apply flex p-20 bg-white rounded;
+  section > div {
+    @apply flex p-20 bg-white rounded flex-col;
+  }
+
+  section > div > div {
+    @apply flex flex-wrap gap-10;
   }
 </style>
 
