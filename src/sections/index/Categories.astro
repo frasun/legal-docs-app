@@ -14,7 +14,7 @@ const categories = await Astro.glob("../../categories/*.mdx");
           Boolean(index) && (
             <CategoryBlock
               title={name}
-              href={`${Astro.url.origin}/dokumenty?katergoria=${getSlug(file)}`}
+              href={`${Astro.url.origin}/dokumenty?kategoria=${getSlug(file)}`}
               icon={icon}
             />
           )

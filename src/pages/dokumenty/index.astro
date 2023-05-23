@@ -3,33 +3,103 @@ import Layout from "../../layouts/Layout.astro";
 import getSlug from "../../utils/mdxSlug";
 
 const templates = await Astro.glob("../../templates/documents/*.mdx");
+const categories = await Astro.glob("../../categories/*.mdx");
+
+const url = new URL(Astro.request.url);
+const kategoria = url.searchParams.get("kategoria");
+
+let title = "Wszystkie dokumenty";
+let documents = templates;
+
+if (kategoria) {
+  const currentCategory = categories.find(
+    ({ file }) => getSlug(file) === kategoria
+  );
+
+  if (currentCategory) {
+    title = currentCategory.frontmatter.name;
+  }
+
+  documents = templates.filter(({ frontmatter: { categories } }) =>
+    categories.includes(kategoria)
+  );
+}
 ---
 
 <Layout title="Wszystkie dokumenty - Prawniczek">
   <header>
-    <h2>Wszystkie dokumenty</h2>
+    <h2>{title}</h2>
+    <category-selector>
+      <select>
+        <option value="">Wszystkie</option>
+        {
+          categories.map(({ frontmatter: { name }, file }) => (
+            <option
+              value={getSlug(file)}
+              selected={getSlug(file) === kategoria}
+            >
+              {name}
+            </option>
+          ))
+        }
+      </select>
+    </category-selector>
   </header>
   <section>
     {
-      templates.map((template) => (
-        <a href={`${Astro.url.origin}/dokumenty/${getSlug(template.file)}`}>
-          <h3>{template.frontmatter.title}</h3>
-        </a>
-      ))
+      documents.length ? (
+        documents.map(({ frontmatter: { title }, file }) => (
+          <a href={`${Astro.url.origin}/dokumenty/${getSlug(file)}`}>
+            <h3>{title}</h3>
+          </a>
+        ))
+      ) : (
+        <div>Brak dokumentów do wyświetlenia</div>
+      )
     }
   </section>
 </Layout>
 
 <style>
   header {
-    @apply my-20;
+    @apply m-20;
+    @apply flex gap-20 items-center;
+  }
+
+  header h2 {
+    @apply flex-grow;
   }
 
   section {
-    @apply flex gap-20 flex-wrap;
+    @apply flex gap-20 flex-wrap mx-20;
   }
 
   a {
     @apply flex p-20 bg-white rounded;
   }
 </style>
+
+<script>
+  class CategorySelector extends HTMLElement {
+    select: HTMLSelectElement;
+
+    constructor() {
+      super();
+
+      this.select = this.querySelector("select");
+    }
+
+    connectedCallback() {
+      this.select.addEventListener("change", (event) => {
+        const val = (event.target as HTMLInputElement).value;
+
+        let url = `${window.location.origin}/dokumenty${
+          val.length ? `?kategoria=${val}` : ``
+        }`;
+
+        document.location = url;
+      });
+    }
+  }
+  customElements.define("category-selector", CategorySelector);
+</script>
