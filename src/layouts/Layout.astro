@@ -23,30 +23,33 @@ const socialImageURL = new URL("/og.png", Astro.url);
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="/favicon/apple-touch-icon.png"
+      href=`${Astro.url.origin}/favicon/apple-touch-icon.png`
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href={`${Astro.url.origin}/favicon/favicon-32x32.png`}
+      href=`${Astro.url.origin}/favicon/favicon-32x32.png`
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href={`${Astro.url.origin}/favicon/favicon-16x16.png`}
+      href=`${Astro.url.origin}/favicon/favicon-16x16.png`
     />
-    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <link rel="manifest" href=`${Astro.url.origin}/favicon/site.webmanifest` />
     <link
       rel="mask-icon"
-      href="/favicon/safari-pinned-tab.svg"
+      href=`${Astro.url.origin}/favicon/safari-pinned-tab.svg`
       color="#5bbad5"
     />
-    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link rel="shortcut icon" href=`${Astro.url.origin}/favicon/favicon.ico` />
     <link rel="canonical" href={canonicalURL} />
     <meta name="msapplication-TileColor" content="#f5f3ee" />
-    <meta name="msapplication-config" content="/favicon/browserconfig.xml" />
+    <meta
+      name="msapplication-config"
+      content=`${Astro.url.origin}/favicon/browserconfig.xml`
+    />
     <meta name="theme-color" content="#f5f3ee" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={DESC} />
