@@ -16,7 +16,9 @@ const documents = await getDocuments(userId);
 
 function getCreated(datestring) {
   const date = new Date(datestring);
-  return `Stworzony: ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+  return `Stworzony: ${date.getDate()}-${
+    date.getMonth() + 1
+  }-${date.getFullYear()}`;
 }
 ---
 
