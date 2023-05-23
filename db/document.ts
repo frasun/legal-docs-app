@@ -98,6 +98,7 @@ export async function getDocuments(userId) {
       .selectFrom(KEY)
       .selectAll()
       .where("userid", "=", userId)
+      .orderBy("created", "desc")
       .execute();
   } catch (e: any) {
     throw e;
