@@ -5,11 +5,12 @@ import { Picture } from "@astrojs/image/components";
 
 <section>
   <h1>Stwórz precyzyjne dokumenty prawne z&nbsp;pomocą wirtualnego prawnika</h1>
-  <form id="search">
+  <form id="search" method="GET" action={`${Astro.url.origin}/dokumenty`}>
     <input
       type="search"
       placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
       spellcheck="false"
+      name="szukaj"
     />
     <button>Szukaj</button>
     <Icon name="search" id="menuOpen" width={24} height={24} />
