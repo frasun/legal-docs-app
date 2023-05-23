@@ -1,9 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import getSlug from "../../utils/mdxSlug";
 
 const templates = await Astro.glob("../../templates/documents/*.mdx");
-
-const getSlug = (filepath) => filepath.split("/").pop().replace(".mdx", "");
 ---
 
 <Layout title="Wszystkie dokumenty - Prawniczek">

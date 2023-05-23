@@ -1,30 +1,24 @@
 ---
 import CategoryBlock from "../../components/CategoryBlock.astro";
-import { getCategories } from "../../../db/categories/category";
+import getSlug from "../../utils/mdxSlug";
 
-const icons = {
-  motoryzacja: "cat-1",
-  nieruchomosci: "cat-2",
-  podroze: "cat-3",
-  praca: "cat-4",
-  rodzina: "cat-5",
-  sport: "cat-6",
-  zdrowie: "cat-7",
-  biznes: "cat-8",
-  zakupy: "cat-9",
-  zwierzeta: "cat-10",
-};
-
-const categories = await getCategories();
+const categories = await Astro.glob("../../categories/*.mdx");
 ---
 
 <section>
   <h4>lub przeglądaj w kategoriach</h4>
   <div id="categories">
     {
-      categories.map(({ name, slug }) => (
-        <CategoryBlock title={name} href="#" icon={icons[String(slug)]} />
-      ))
+      categories.map(
+        ({ frontmatter: { name, icon, index }, file }) =>
+          Boolean(index) && (
+            <CategoryBlock
+              title={name}
+              href={`${Astro.url.origin}/dokumenty?katergoria=${getSlug(file)}`}
+              icon={icon}
+            />
+          )
+      )
     }
   </div>
   <footer>
