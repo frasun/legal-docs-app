@@ -1,0 +1,71 @@
+---
+import Logo from "../images/logo-sign.astro";
+import { SignOut } from "../auth-astro/components";
+import { Icon } from "astro-icon";
+
+const { session } = Astro.props;
+---
+
+<nav>
+  <a href="/" aria-label="Prawniczek">
+    <Logo />
+  </a>
+  <div>
+    <a
+      href=`${Astro.url.origin}/dokumenty`
+      aria-label="Nowy dokument"
+      title="Nowy dokument"
+    >
+      <Icon name="add" width={24} height={24} />
+    </a>
+    {
+      session && (
+        <a
+          href={`${Astro.url.origin}/moje-dokumenty`}
+          aria-label="Moje dokumenty"
+          title="Moje dokumenty"
+        >
+          <Icon name="document" width={24} height={24} />
+        </a>
+      )
+    }
+  </div>
+  <footer>
+    {
+      session ? (
+        <SignOut title="Wyloguj się">
+          <Icon name="signout" width={24} height={24} />
+        </SignOut>
+      ) : (
+        <a href={`${Astro.url.origin}/zaloguj-sie`} title="Zaloguj się">
+          {" "}
+          <Icon name="signin" width={24} height={24} />
+        </a>
+      )
+    }
+  </footer>
+</nav>
+
+<style>
+  nav {
+    @apply bg-white;
+    @apply p-15;
+    @apply flex flex-col gap-15;
+  }
+
+  nav > div,
+  nav > footer {
+    @apply flex flex-col gap-10;
+  }
+
+  nav > div {
+    @apply flex-grow;
+  }
+
+  nav > div a,
+  nav > footer a,
+  nav > div button,
+  nav > footer button {
+    @apply btn btn-alt;
+  }
+</style>

@@ -1,19 +1,32 @@
 ---
 import Layout from "./Layout.astro";
+import AppMenu from "../components/AppMenu.astro";
+import { getSession } from "../auth-astro/server";
 
 const { title } = Astro.props;
+const session = await getSession(Astro.request);
 ---
 
 <Layout title={title}>
+  <AppMenu session={session} />
   <main>
     <slot />
   </main>
 </Layout>
 
+<style is:inline>
+  body {
+    display: flex;
+    height: 100vh;
+  }
+</style>
+
 <style>
   main {
+    @apply flex-grow;
     @apply flex justify-center items-start gap-40;
     @apply flex-col lg:flex-row;
     @apply p-30;
+    @apply overflow-auto;
   }
 </style>

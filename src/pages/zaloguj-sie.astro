@@ -15,9 +15,7 @@ if (session) {
     session ? (
       <>
         <p>Welcome {session.user?.email}</p>
-        <logout-button>
-          <SignOut>Wygloguj</SignOut>
-        </logout-button>
+        <SignOut>Wygloguj</SignOut>
       </>
     ) : (
       <login-form>
