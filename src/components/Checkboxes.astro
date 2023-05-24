@@ -1,8 +1,8 @@
 ---
-const { values, selected, token } = Astro.props;
+const { values, selected, token, required } = Astro.props;
 ---
 
-<checkbox-list>
+<checkbox-list required={required}>
   {
     values.map((val) => (
       <div>
@@ -18,12 +18,14 @@ const { values, selected, token } = Astro.props;
   class CheckboxList extends HTMLElement {
     valueInput: HTMLInputElement;
     checkboxes: NodeListOf<HTMLInputElement>;
+    required: boolean;
 
     constructor() {
       super();
 
       this.valueInput = this.querySelector('input[type="hidden"]');
       this.checkboxes = this.querySelectorAll('input[type="checkbox"]');
+      this.required = this.hasAttribute("required");
     }
 
     connectedCallback() {
@@ -42,6 +44,16 @@ const { values, selected, token } = Astro.props;
       }
 
       this.valueInput.value = value.length ? value.join(", ") : "brak";
+
+      if (this.required) {
+        if (!value.length) {
+          Array.from(this.checkboxes)[0].setAttribute("required", "required");
+        } else {
+          for (let checkbox of Array.from(this.checkboxes)) {
+            checkbox.removeAttribute("required");
+          }
+        }
+      }
     }
   }
   customElements.define("checkbox-list", CheckboxList);

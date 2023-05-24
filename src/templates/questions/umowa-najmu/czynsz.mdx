@@ -5,11 +5,11 @@ rentmethodlib: [przelewem na konto bankowe, gotówką]
 rentdue: 14
 question: Ile będzie wynosił czynsz?
 ---
-wysokość <input type="text" name="rent" value={frontmatter.rent} />
+wysokość <input type="number" name="rent" value={frontmatter.rent} required step=".01" min="1"/>
 
 płatność 
-<select name="rentmethod">
+<select name="rentmethod" required>
 {frontmatter.rentmethodlib.map(m => <option value={m} selected={frontmatter.rentmethod.includes(m)}>{m}</option>)}
 </select>
 
-termin płatności do <input type="number" name="rentdue" value={frontmatter.rentdue} /> dni po zakończeniu umowy
+termin płatności do <input type="number" name="rentdue" value={frontmatter.rentdue} min="1" /> dni po zakończeniu umowy

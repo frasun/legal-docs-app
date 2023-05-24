@@ -97,7 +97,7 @@ if (Astro.request.method === "POST") {
 
 <Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
   <span slot="topbar-title">{title}</span>
-  <form method="POST" data-validation={currentQuestion.validation}>
+  <form method="POST">
     <h3>{questionContent}</h3>
     <Content />
     <footer>
