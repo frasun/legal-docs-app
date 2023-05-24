@@ -33,24 +33,19 @@ function getCategoryName(slug) {
 ---
 
 <Layout title="Wszystkie dokumenty - Prawniczek">
-  <header>
-    <h2>{title}</h2>
-    <category-selector>
-      <select>
-        <option value="">Wszystkie</option>
-        {
-          categories.map(({ frontmatter: { name }, file }) => (
-            <option
-              value={getSlug(file)}
-              selected={getSlug(file) === kategoria}
-            >
-              {name}
-            </option>
-          ))
-        }
-      </select>
-    </category-selector>
-  </header>
+  <span slot="topbar-title">{title}</span>
+  <category-selector slot="topbar-aside">
+    <select>
+      <option value="">Wszystkie</option>
+      {
+        categories.map(({ frontmatter: { name }, file }) => (
+          <option value={getSlug(file)} selected={getSlug(file) === kategoria}>
+            {name}
+          </option>
+        ))
+      }
+    </select>
+  </category-selector>
   <section>
     {
       documents.length ? (

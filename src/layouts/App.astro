@@ -2,14 +2,28 @@
 import Layout from "./Layout.astro";
 import AppMenu from "../components/AppMenu.astro";
 import { getSession } from "../auth-astro/server";
+import { Icon } from "astro-icon";
 
-const { title } = Astro.props;
+const { title, backurl } = Astro.props;
 const session = await getSession(Astro.request);
 ---
 
 <Layout title={title}>
   <AppMenu session={session} />
   <main>
+    <header>
+      {
+        backurl && (
+          <a href={backurl} aria-label="Wstecz">
+            <Icon name="arrow-back" width={16} height={16} />
+          </a>
+        )
+      }
+      <h1>
+        <slot name="topbar-title"> title</slot>
+      </h1>
+      <slot name="topbar-aside" />
+    </header>
     <slot />
   </main>
 </Layout>
@@ -24,9 +38,25 @@ const session = await getSession(Astro.request);
 <style>
   main {
     @apply flex-grow;
-    @apply flex justify-center items-start gap-40;
-    @apply flex-col lg:flex-row;
-    @apply p-30;
     @apply overflow-auto;
+  }
+
+  main > header {
+    @apply flex items-center;
+    @apply px-20 py-15;
+    @apply sticky top-0;
+    @apply bg-gray;
+    @apply gap-15;
+    @apply z-10;
+  }
+
+  main > header > h1 {
+    @apply flex-grow;
+    @apply font-sans font-bold not-italic text-dark90 tracking-tight;
+    @apply text-xl;
+  }
+
+  main > header > a {
+    @apply btn btn-alt;
   }
 </style>

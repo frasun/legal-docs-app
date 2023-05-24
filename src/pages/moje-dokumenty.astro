@@ -23,11 +23,11 @@ function getCreated(datestring) {
 ---
 
 <Layout title="Moje dokumenty - Prawniczek">
-  <header>
-    <h2>Moje dokumenty</h2>
+  <span slot="topbar-title">Moje dokumenty</span>
+  <div slot="topbar-aside">
     {session.user?.email}
     <SignOut>Wyloguj się</SignOut>
-  </header>
+  </div>
   <section>
     {
       documents.length ? (

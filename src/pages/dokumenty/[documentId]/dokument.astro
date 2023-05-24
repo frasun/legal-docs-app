@@ -53,6 +53,7 @@ for (let key of Object.keys(frontmatter)) {
 ---
 
 <Layout title={`Dokument - ${frontmatter.title}`}>
+  <span slot="topbar-title">{frontmatter.title}</span>
   <article id="doc" class="prose" data-title={frontmatter.title}>
     <Content />
   </article>

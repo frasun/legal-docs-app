@@ -48,7 +48,7 @@ const {
 } = question;
 
 const {
-  frontmatter: { index: questionsIndex },
+  frontmatter: { index: questionsIndex, title },
 } = index;
 
 const questions = questionsIndex.filter(({ id }) => id);
@@ -96,6 +96,7 @@ if (Astro.request.method === "POST") {
 ---
 
 <Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
+  <span slot="topbar-title">{title}</span>
   <form method="POST" data-validation={currentQuestion.validation}>
     <h3>{questionContent}</h3>
     <Content />

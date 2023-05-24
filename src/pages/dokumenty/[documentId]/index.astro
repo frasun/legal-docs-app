@@ -26,7 +26,8 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${firstQue
 const { Content } = info;
 ---
 
-<Layout title={title}>
+<Layout title={title} backurl={`${Astro.url.origin}/dokumenty`}>
+  <span slot="topbar-title">Wszystkie dokumenty</span>
   <div>
     <header>
       <h1>{title}</h1>
