@@ -2,7 +2,7 @@
 import { SignOut } from "../auth-astro/components";
 import Layout from "../layouts/App.astro";
 import { getSession } from "../auth-astro/server";
-import { getDocuments } from "../../db/document";
+import { getDocuments, createDocument } from "../../db/document";
 import { getUserByEmail } from "../../db/auth";
 
 const session = await getSession(Astro.request);
@@ -12,6 +12,15 @@ if (!session) {
 }
 
 const { id: userId } = await getUserByEmail(session.user.email);
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const docId = formData.get("template");
+  const answers = JSON.parse(String(formData.get("answers")));
+
+  await createDocument(docId, JSON.parse(Object(answers)), userId, true);
+}
+
 const documents = await getDocuments(userId);
 
 function getCreated(datestring) {
@@ -31,11 +40,12 @@ function getCreated(datestring) {
   <section>
     {
       documents.length ? (
-        documents.map(({ doc, id, title, doctitle, created }) => (
+        documents.map(({ doc, id, title, doctitle, created, draft }) => (
           <div>
-            <a href={`${Astro.url.origin}/dokumenty/${id}/dokument`}>
-              <h4>{title}</h4>
-            </a>
+            <h4>
+              {title}
+              {draft && <span> - Szkic</span>}
+            </h4>
             <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
               <small>Szablon: {doctitle}</small>
             </a>
@@ -43,9 +53,15 @@ function getCreated(datestring) {
             <small>{getCreated(created)}</small>
             <br />
 
-            <a href={`${Astro.url.origin}/dokumenty/${id}/podsumowanie`}>
-              Zobacz podsumowanie
-            </a>
+            {draft ? (
+              <a href={`${Astro.url.origin}/dokumenty/${id}/podsumowanie`}>
+                Zobacz podsumowanie
+              </a>
+            ) : (
+              <a href={`${Astro.url.origin}/dokumenty/${id}/dokument`}>
+                Zobacz dokument
+              </a>
+            )}
           </div>
         ))
       ) : (

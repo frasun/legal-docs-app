@@ -122,10 +122,12 @@ module.exports = {
 				'.btn': {
 					padding: '.5rem .625rem',
 					display: 'inline-flex',
+					alignItems: 'center',
 					borderRadius: theme('borderRadius.DEFAULT'),
 					fontSize: theme('fontSize.sm'),
 					lineHeight: theme('lineHeight.tight'),
 					fontWeight: theme('fontWeight.bold'),
+					gap: theme('spacing.10'),
 					letterSpacing: theme('letterSpacing.tighter'),
 					color: theme('colors.white95'),
 					'&:hover': {

@@ -35,7 +35,7 @@ if (Astro.request.method === "POST") {
 if (Number(documentId)) {
   data = await getDocument(documentId);
 
-  if (!data) {
+  if (!data || data.draft) {
     return Astro.redirect("/404");
   }
 } else {

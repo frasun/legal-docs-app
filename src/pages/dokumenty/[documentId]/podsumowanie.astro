@@ -8,6 +8,7 @@ const { documentId } = Astro.params;
 let docId = documentId;
 let data;
 let answers;
+let draft = false;
 
 if (Number(documentId)) {
   data = await getDocument(documentId);
@@ -15,6 +16,7 @@ if (Number(documentId)) {
   if (data) {
     docId = data.doc;
     answers = data.answers;
+    draft = data.draft;
   } else {
     return Astro.redirect("/404");
   }
@@ -36,7 +38,7 @@ const {
 ---
 
 <Layout title={`Podsumowanie - ${title}`}>
-  <span slot="topbar-title">{title}</span>
+  <span slot="topbar-title">{title}{draft && <span> - Szkic</span>}</span>
   <section>
     <h1>Podsumowanie</h1>
     {
@@ -58,7 +60,7 @@ const {
     }
     <footer>
       {
-        Number(documentId) ? (
+        Number(documentId) && !draft ? (
           <a href={`${Astro.url.origin}/dokumenty/${documentId}/dokument`}>
             Wyświetl dokument
           </a>

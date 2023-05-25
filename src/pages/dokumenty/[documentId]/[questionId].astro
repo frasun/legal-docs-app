@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon";
 import Layout from "../../../layouts/App.astro";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
 import { getDocument, updateAnswers } from "../../../../db/document";
@@ -97,6 +98,20 @@ if (Astro.request.method === "POST") {
 
 <Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
   <span slot="topbar-title">{title}</span>
+  <aside slot="topbar-aside">
+    <form method="POST" action={`${Astro.url.origin}/moje-dokumenty`}>
+      <input type="hidden" name="template" value={docId} />
+      <input
+        type="hidden"
+        name="answers"
+        value={JSON.stringify(Astro.cookies.get(docId).value)}
+      />
+      <button>
+        <Icon name="save" width={16} height={16} />
+        Zapisz
+      </button>
+    </form>
+  </aside>
   <form method="POST">
     <h3>{questionContent}</h3>
     <Content />
@@ -124,29 +139,37 @@ if (Astro.request.method === "POST") {
       documentid={documentId}
     />
   </aside>
+
+  <style>
+    form {
+      @apply container;
+    }
+
+    footer {
+      @apply flex flex-wrap gap-10;
+      @apply justify-between;
+      @apply my-30;
+    }
+
+    footer nav {
+      @apply flex flex-wrap gap-15;
+    }
+
+    footer a {
+      @apply btn btn-alt;
+    }
+
+    footer button[type="submit"] {
+      @apply btn btn-default;
+      @apply self-end;
+    }
+
+    aside button {
+      @apply btn btn-alt;
+    }
+
+    aside form {
+      @apply p-0;
+    }
+  </style>
 </Layout>
-
-<style>
-  form {
-    @apply container;
-  }
-
-  footer {
-    @apply flex flex-wrap gap-10;
-    @apply justify-between;
-    @apply my-30;
-  }
-
-  footer nav {
-    @apply flex flex-wrap gap-15;
-  }
-
-  footer a {
-    @apply btn btn-alt;
-  }
-
-  footer button[type="submit"] {
-    @apply btn btn-default;
-    @apply self-end;
-  }
-</style>

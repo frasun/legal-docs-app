@@ -38,9 +38,12 @@ function getCategoryName(slug) {
     <select>
       <option value="">Wszystkie</option>
       {
-        categories.map(({ frontmatter: { name }, file }) => (
-          <option value={getSlug(file)} selected={getSlug(file) === kategoria}>
-            {name}
+        categories.map((cat) => (
+          <option
+            value={getSlug(cat.file)}
+            selected={getSlug(cat.file) === kategoria}
+          >
+            {cat.frontmatter.name}
           </option>
         ))
       }
@@ -49,14 +52,14 @@ function getCategoryName(slug) {
   <section>
     {
       documents.length ? (
-        documents.map(({ frontmatter: { title, categories }, file }) => (
+        documents.map((document) => (
           <div>
-            <a href={`${Astro.url.origin}/dokumenty/${getSlug(file)}`}>
-              <h3>{title}</h3>
+            <a href={`${Astro.url.origin}/dokumenty/${getSlug(document.file)}`}>
+              <h3>{document.frontmatter.title}</h3>
             </a>
             <h6>Kategorie</h6>
             <div>
-              {categories.map((slug) => (
+              {document.frontmatter.categories.map((slug) => (
                 <a href={`${Astro.url.origin}/dokumenty?kategoria=${slug}`}>
                   {getCategoryName(slug)}
                 </a>

@@ -9,6 +9,7 @@ export interface Document {
   created: Generated<Date>;
   title: String;
   doctitle: String;
+  draft: Boolean;
 }
 
 const KEY = "document";
@@ -19,6 +20,7 @@ const seedData = [
     title: "Umowa najmu lokalu",
     userid: 5,
     created: Date.now(),
+    draft: false,
     answers: JSON.stringify({
       address: "91-123 Łódź, ul. Aleksandrowska 123a",
       apt: 23,
@@ -60,6 +62,7 @@ async function seed() {
     .addColumn("created", "timestamp", (cb) => cb.notNull())
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
+    .addColumn("draft", "boolean", (cb) => cb.notNull())
     .execute();
 
   const addDocuments = await db.insertInto(KEY).values(seedData).execute();
@@ -117,7 +120,7 @@ export async function updateAnswers(documentId, answers) {
   }
 }
 
-export async function createDocument(doc, answers, userid) {
+export async function createDocument(doc, answers, userid, draft = false) {
   try {
     const {
       frontmatter: { title },
@@ -132,6 +135,7 @@ export async function createDocument(doc, answers, userid) {
           userid,
           created: new Date(),
           doctitle: title,
+          draft,
           title: `${title} #${Math.floor(Math.random() * 1000)}`,
         },
       ])
