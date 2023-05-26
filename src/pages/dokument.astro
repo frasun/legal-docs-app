@@ -1,7 +1,7 @@
 ---
 import { getSession } from "../auth-astro/server";
 import { getUserByEmail } from "../../db/auth";
-import { createDocument } from "../../db/document";
+import { createDocument, publishDraft } from "../../db/document";
 
 const session = await getSession(Astro.request);
 
@@ -10,6 +10,16 @@ if (Astro.request.method === "POST") {
   const id = formData.get("id");
   const draft = Boolean(formData.get("draft"));
   let answers = {};
+
+  if (Number(id)) {
+    try {
+      await publishDraft(id);
+
+      return Astro.redirect(`/dokumenty/${id}/dokument`);
+    } catch {
+      Astro.redirect("/404");
+    }
+  }
 
   formData.forEach((value, key) => {
     if (!["id", "draft"].includes(key)) {

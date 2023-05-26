@@ -146,3 +146,15 @@ export async function createDocument(doc, answers, userid, draft = false) {
     throw e;
   }
 }
+
+export async function publishDraft(id) {
+  try {
+    return await db
+      .updateTable(KEY)
+      .set({ draft: false })
+      .where("id", "=", id)
+      .execute();
+  } catch (e: any) {
+    throw e;
+  }
+}
