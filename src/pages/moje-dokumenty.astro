@@ -16,9 +16,12 @@ const { id: userId } = await getUserByEmail(session.user.email);
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const docId = formData.get("template");
-  const answers = JSON.parse(String(formData.get("answers")));
+  const localAnswers = formData.get("answers");
 
-  await createDocument(docId, JSON.parse(Object(answers)), userId, true);
+  if (localAnswers) {
+    const answers = JSON.parse(String(localAnswers));
+    await createDocument(docId, JSON.parse(Object(answers)), userId, true);
+  }
 }
 
 const documents = await getDocuments(userId);

@@ -9,11 +9,13 @@ const session = await getSession(Astro.request);
 
 let data;
 
-Astro.cookies.delete(documentId);
-
 if (!session) {
-  return Astro.redirect("/zaloguj-sie");
+  return Astro.redirect(
+    `/zaloguj-sie?redirect=dokumenty/${documentId}/dokument`
+  );
 }
+
+Astro.cookies.delete(documentId);
 
 const { id: userId } = await getUserByEmail(session.user.email);
 

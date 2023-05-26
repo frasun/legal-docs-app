@@ -17,7 +17,8 @@ const KEY = "document";
 const seedData = [
   {
     doc: "umowa-najmu",
-    title: "Umowa najmu lokalu",
+    title: "Umowa najmu lokalu #1",
+    doctitle: "Umowa najmu lokalu",
     userid: 5,
     created: Date.now(),
     draft: false,

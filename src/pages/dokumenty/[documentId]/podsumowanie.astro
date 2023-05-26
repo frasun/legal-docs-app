@@ -65,13 +65,11 @@ const {
             Wyświetl dokument
           </a>
         ) : (
-          <form
-            method="POST"
-            action={`${Astro.url.origin}/dokumenty/${documentId}/dokument`}
-          >
+          <form method="POST" action={`${Astro.url.origin}/dokument`}>
             {Object.entries(answers).map(([key, value]) => (
               <input type="hidden" name={key} value={value.toString()} />
             ))}
+            <input type="hidden" name="id" value={documentId} />
             <button type="submit">Generuj dokument</button>
           </form>
         )

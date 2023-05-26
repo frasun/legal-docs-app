@@ -98,20 +98,25 @@ if (Astro.request.method === "POST") {
 
 <Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
   <span slot="topbar-title">{title}</span>
-  <aside slot="topbar-aside">
-    <form method="POST" action={`${Astro.url.origin}/moje-dokumenty`}>
-      <input type="hidden" name="template" value={docId} />
-      <input
-        type="hidden"
-        name="answers"
-        value={JSON.stringify(Astro.cookies.get(docId).value)}
-      />
-      <button>
-        <Icon name="save" width={16} height={16} />
-        Zapisz
-      </button>
-    </form>
-  </aside>
+  {
+    Astro.cookies.has(documentId) && (
+      <aside slot="topbar-aside">
+        <form method="POST" action={`${Astro.url.origin}/dokument`}>
+          {Object.entries(Astro.cookies.get(docId).json()).map(
+            ([key, value]) => (
+              <input type="hidden" name={key} value={String(value)} />
+            )
+          )}
+          <input type="hidden" name="id" value={docId} />
+          <input type="hidden" name="draft" value="true" />
+          <button>
+            <Icon name="save" width={16} height={16} />
+            Zapisz
+          </button>
+        </form>
+      </aside>
+    )
+  }
   <form method="POST">
     <h3>{questionContent}</h3>
     <Content />

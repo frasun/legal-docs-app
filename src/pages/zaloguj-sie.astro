@@ -8,6 +8,9 @@ const session = await getSession(Astro.request);
 if (session) {
   return Astro.redirect("/moje-dokumenty");
 }
+
+const url = new URL(Astro.request.url);
+const redirectUrl = url.searchParams.get("redirect");
 ---
 
 <Layout title="Zaloguj się - Prawniczek">
@@ -18,7 +21,7 @@ if (session) {
         <SignOut>Wygloguj</SignOut>
       </>
     ) : (
-      <login-form>
+      <login-form redirect={redirectUrl}>
         <form>
           <input type="email" name="email" required />
           <input type="password" name="password" required />
@@ -34,11 +37,13 @@ if (session) {
 
   class LoginForm extends HTMLElement {
     form: HTMLFormElement;
+    redirect: string;
 
     constructor() {
       super();
 
       this.form = this.querySelector("form");
+      this.redirect = this.getAttribute("redirect");
     }
 
     connectedCallback() {
@@ -53,7 +58,9 @@ if (session) {
           redirect: false,
           email,
           password,
-          callbackUrl: `${document.location.origin}/moje-dokumenty`,
+          callbackUrl: `${document.location.origin}${
+            this.redirect ? `/${this.redirect}` : `/moje-dokumenty`
+          }`,
         });
       });
     }

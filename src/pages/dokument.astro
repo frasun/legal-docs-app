@@ -1,0 +1,61 @@
+---
+import { getSession } from "../auth-astro/server";
+import { getUserByEmail } from "../../db/auth";
+import { createDocument } from "../../db/document";
+
+const session = await getSession(Astro.request);
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const id = formData.get("id");
+  const draft = Boolean(formData.get("draft"));
+  let answers = {};
+
+  formData.forEach((value, key) => {
+    if (!["id", "draft"].includes(key)) {
+      answers[key] = value;
+    }
+  });
+
+  if (session) {
+    const docId = await createDoc(id, answers, draft);
+
+    if (docId) {
+      return Astro.redirect(
+        `${Astro.url.origin}/${
+          draft ? `moje-dokumenty` : `dokumenty/${docId}/dokument`
+        }`
+      );
+    } else {
+      return Astro.redirect("/404");
+    }
+  } else {
+    Astro.cookies.set("document", { id, answers, draft });
+    return Astro.redirect("/zaloguj-sie?redirect=dokument");
+  }
+} else if (Astro.cookies.has("document")) {
+  const { id, answers, draft } = Astro.cookies.get("document").json();
+  const docId = await createDoc(id, answers, draft);
+
+  Astro.cookies.delete("document");
+
+  if (docId) {
+    return Astro.redirect(
+      `${Astro.url.origin}/${
+        draft ? `moje-dokumenty` : `dokumenty/${docId}/dokument`
+      }`
+    );
+  } else {
+    return Astro.redirect("/404");
+  }
+} else {
+  return Astro.redirect("/404");
+}
+
+async function createDoc(id, answers, draft) {
+  const { id: userId } = await getUserByEmail(session.user.email);
+  const { id: docId } = await createDocument(id, answers, userId, draft);
+
+  return docId;
+}
+---

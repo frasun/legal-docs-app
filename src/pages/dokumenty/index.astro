@@ -6,14 +6,14 @@ const templates = await Astro.glob("../../templates/documents/*.mdx");
 const categories = await Astro.glob("../../categories/*.mdx");
 
 const url = new URL(Astro.request.url);
-const kategoria = url.searchParams.get("kategoria");
+const currentCat = url.searchParams.get("kategoria");
 
 let title = "Wszystkie dokumenty";
 let documents = templates;
 
-if (kategoria) {
+if (currentCat) {
   const currentCategory = categories.find(
-    ({ file }) => getSlug(file) === kategoria
+    ({ file }) => getSlug(file) === currentCat
   );
 
   if (currentCategory) {
@@ -21,7 +21,7 @@ if (kategoria) {
   }
 
   documents = templates.filter(({ frontmatter: { categories } }) =>
-    categories.includes(kategoria)
+    categories.includes(currentCat)
   );
 }
 
@@ -41,7 +41,7 @@ function getCategoryName(slug) {
         categories.map((cat) => (
           <option
             value={getSlug(cat.file)}
-            selected={getSlug(cat.file) === kategoria}
+            selected={getSlug(cat.file) === currentCat}
           >
             {cat.frontmatter.name}
           </option>
