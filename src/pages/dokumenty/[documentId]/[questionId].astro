@@ -98,9 +98,12 @@ if (Astro.request.method === "POST") {
 
 <Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
   <span slot="topbar-title">{title}</span>
-  {
-    Astro.cookies.has(documentId) && (
-      <aside slot="topbar-aside">
+  <aside slot="topbar-aside">
+    <span>
+      {currentQuestionIndex + 1} / {questions.length}
+    </span>
+    {
+      Astro.cookies.has(documentId) ? (
         <form method="POST" action={`${Astro.url.origin}/dokument`}>
           {Object.entries(Astro.cookies.get(docId).json()).map(
             ([key, value]) => (
@@ -114,9 +117,9 @@ if (Astro.request.method === "POST") {
             Zapisz
           </button>
         </form>
-      </aside>
-    )
-  }
+      ) : null
+    }
+  </aside>
   <form method="POST">
     <h3>{questionContent}</h3>
     <Content />
