@@ -4,4 +4,4 @@ area: 100
 ---
 <label>Podaj całkowitą powierzchnię</label>
 <br />
-<input type="text" name="area" value={frontmatter.area} required /> m<sup>2</sup>
+<input type="number" name="area" value={frontmatter.area} required min="0.01" step=".01" /> m<sup>2</sup>

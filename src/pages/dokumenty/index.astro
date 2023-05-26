@@ -2,7 +2,7 @@
 import Layout from "../../layouts/App.astro";
 import getSlug from "../../utils/mdxSlug";
 
-const templates = await Astro.glob("../../templates/documents/*.mdx");
+const templates = await Astro.glob("../../templates/index/*.mdx");
 const categories = await Astro.glob("../../categories/*.mdx");
 
 const url = new URL(Astro.request.url);
@@ -61,7 +61,7 @@ function getCategoryName(slug) {
             <div>
               {document.frontmatter.categories.map((slug) => (
                 <a href={`${Astro.url.origin}/dokumenty?kategoria=${slug}`}>
-                  {getCategoryName(slug)}
+                  {slug}
                 </a>
               ))}
             </div>

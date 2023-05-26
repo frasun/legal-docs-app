@@ -9,7 +9,7 @@ let index;
 let info;
 
 try {
-  index = await import(`../../../templates/${documentId}-index.mdx`);
+  index = await import(`../../../templates/index/${documentId}.mdx`);
   info = await import(`../../../templates/info/${documentId}.mdx`);
 } catch (e) {
   if (!index) {

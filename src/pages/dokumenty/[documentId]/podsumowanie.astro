@@ -34,7 +34,7 @@ if (Number(documentId)) {
 
 const {
   frontmatter: { title, index },
-} = await import(`../../../templates/${docId}-index.mdx`);
+} = await import(`../../../templates/index/${docId}.mdx`);
 ---
 
 <Layout title={`Podsumowanie - ${title}`}>

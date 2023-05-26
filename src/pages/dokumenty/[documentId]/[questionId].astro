@@ -28,7 +28,7 @@ if (Number(documentId)) {
 }
 
 try {
-  index = await import(`../../../templates/${docId}-index.mdx`);
+  index = await import(`../../../templates/index/${docId}.mdx`);
   question = await import(
     `../../../templates/questions/${docId}/${questionId}.mdx`
   );
