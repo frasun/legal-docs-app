@@ -1,9 +1,10 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "../../layouts/App.astro";
 import getSlug from "../../utils/mdxSlug";
 
 const templates = await Astro.glob("../../templates/index/*.mdx");
-const categories = await Astro.glob("../../categories/*.mdx");
+const categories = await getCollection("categories");
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get("kategoria");
@@ -12,12 +13,10 @@ let title = "Wszystkie dokumenty";
 let documents = templates;
 
 if (currentCat) {
-  const currentCategory = categories.find(
-    ({ file }) => getSlug(file) === currentCat
-  );
+  const currentCategory = categories.find(({ id }) => id === currentCat);
 
   if (currentCategory) {
-    title = currentCategory.frontmatter.name;
+    title = currentCategory.data.name;
   }
 
   documents = templates.filter(({ frontmatter: { categories } }) =>
@@ -26,9 +25,9 @@ if (currentCat) {
 }
 
 function getCategoryName(slug) {
-  const currentCategory = categories.find(({ file }) => getSlug(file) === slug);
+  const currentCategory = categories.find(({ id }) => id === slug);
 
-  return currentCategory ? currentCategory.frontmatter.name : null;
+  return currentCategory ? currentCategory.data.name : null;
 }
 ---
 
@@ -39,11 +38,8 @@ function getCategoryName(slug) {
       <option value="">Wszystkie</option>
       {
         categories.map((cat) => (
-          <option
-            value={getSlug(cat.file)}
-            selected={getSlug(cat.file) === currentCat}
-          >
-            {cat.frontmatter.name}
+          <option value={cat.id} selected={cat.id === currentCat}>
+            {cat.data.name}
           </option>
         ))
       }

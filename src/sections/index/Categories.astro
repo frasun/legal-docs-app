@@ -1,24 +1,21 @@
 ---
+import { getCollection } from "astro:content";
 import CategoryBlock from "../../components/CategoryBlock.astro";
-import getSlug from "../../utils/mdxSlug";
 
-const categories = await Astro.glob("../../categories/*.mdx");
+const categories = await getCollection("categories", ({ data }) => data.index);
 ---
 
 <section>
   <h4>lub przeglądaj w kategoriach</h4>
   <div id="categories">
     {
-      categories.map(
-        ({ frontmatter: { name, icon, index }, file }) =>
-          Boolean(index) && (
-            <CategoryBlock
-              title={name}
-              href={`${Astro.url.origin}/dokumenty?kategoria=${getSlug(file)}`}
-              icon={icon}
-            />
-          )
-      )
+      categories.map(({ data: { name, icon }, id }) => (
+        <CategoryBlock
+          title={name}
+          icon={icon}
+          href={`${Astro.url.origin}/dokumenty?kategoria=${id}`}
+        />
+      ))
     }
   </div>
   <footer>
