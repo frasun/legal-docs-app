@@ -3,14 +3,20 @@ import { Icon } from "astro-icon";
 import Layout from "../../../layouts/App.astro";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
 import { getDocument, updateAnswers } from "../../../../db/document";
+import { getSession } from "../../../auth-astro/server";
 
 const { documentId, questionId } = Astro.params;
+const session = await getSession(Astro.request);
 
 let index, question, answers;
 let data;
 let docId = documentId;
 
 if (Number(documentId)) {
+  if (!session) {
+    return Astro.redirect("/");
+  }
+
   data = await getDocument(documentId);
 
   if (data) {

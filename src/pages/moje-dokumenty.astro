@@ -38,7 +38,7 @@ function getCreated(datestring) {
   <span slot="topbar-title">Moje dokumenty</span>
   <div slot="topbar-aside">
     {session.user?.email}
-    <SignOut>Wyloguj się</SignOut>
+    <SignOut params={{ callbackUrl: Astro.url.origin }}>Wyloguj się</SignOut>
   </div>
   <section>
     {

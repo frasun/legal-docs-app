@@ -2,8 +2,11 @@
 import Layout from "../../../layouts/App.astro";
 import Answer from "../../../components/Answer.astro";
 import { getDocument } from "../../../../db/document";
+import { getSession } from "../../../auth-astro/server";
 
 const { documentId } = Astro.params;
+
+const session = await getSession(Astro.request);
 
 let docId = documentId;
 let data;
@@ -11,6 +14,10 @@ let answers;
 let draft = false;
 
 if (Number(documentId)) {
+  if (!session) {
+    return Astro.redirect("/");
+  }
+
   data = await getDocument(documentId);
 
   if (data) {

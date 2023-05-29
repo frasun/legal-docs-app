@@ -1,5 +1,8 @@
 ---
 import { Icon } from "astro-icon";
+import { getSession } from "../auth-astro/server";
+
+const session = await getSession(Astro.request);
 
 const menuItems = [
   { href: "dokumenty", label: "Dokumenty" },
@@ -18,8 +21,16 @@ const menuItems = [
       }
     </div>
     <aside>
-      <a href=`${Astro.url.origin}/zaloz-konto`>Załóż konto</a>
-      <a href=`${Astro.url.origin}/zaloguj-sie`>Zaloguj się</a>
+      {
+        session ? (
+          <a href={`${Astro.url.origin}/moje-dokumenty`}>Moje dokumenty</a>
+        ) : (
+          <>
+            <a href={`${Astro.url.origin}/zaloz-konto`}>Załóż konto</a>
+            <a href={`${Astro.url.origin}/zaloguj-sie`}>Zaloguj się</a>
+          </>
+        )
+      }
     </aside>
   </nav>
   <button id="menuToggle" aria-label="toggle menu">
