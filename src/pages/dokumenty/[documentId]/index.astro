@@ -1,32 +1,25 @@
 ---
+import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
 
 const { documentId } = Astro.params;
 
-Astro.cookies.delete(documentId, { path: `/dokumenty/${documentId}` });
+Astro.cookies.delete(String(documentId), { path: `/dokumenty/${documentId}` });
 
-let index;
-let info;
+const info = await getEntry("info", String(documentId));
+const document = await getEntry("documents", String(documentId));
 
-try {
-  index = await import(`../../../templates/index/${documentId}.mdx`);
-  info = await import(`../../../templates/info/${documentId}.mdx`);
-} catch (e) {
-  if (!index) {
-    return Astro.redirect("/404");
-  }
+if (!info || !document) {
+  return Astro.redirect("/404");
 }
 
-const {
-  frontmatter: { index: docIndex, title },
-} = index;
-const firstQuestionId = docIndex.find(({ id }) => id);
-const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${firstQuestionId.id}`;
+const { Content } = await info.render();
+const { title, index } = document.data;
 
-const { Content } = info;
+const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0].questions[0].slug}`;
 ---
 
-<Layout title={title} backurl={`${Astro.url.origin}/dokumenty`}>
+<Layout title={title}>
   <span slot="topbar-title">Wszystkie dokumenty</span>
   <div>
     <header>

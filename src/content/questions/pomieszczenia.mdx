@@ -1,0 +1,28 @@
+---
+question: Jakie pomieszczenia znajdują się w lokalu?
+room: 3
+kitchen: 1
+hall: 1
+bathroom: 1
+toilet: 1
+balcony: 1
+wardrobe: 1
+garage: 1
+---
+<label>Wypełnij pola z ilością pomieszczeń</label>
+<br />
+<input type="number" value={frontmatter.room} name="room" min="0" /> x pokój
+<br />
+<input type="number" value={frontmatter.kitchen}  name="kitchen" min="0" />  x kuchnia
+<br />
+<input type="number" value={frontmatter.hall} name="hall" min="0" /> x przedpokój
+<br />
+<input type="number" value={frontmatter.bathroom} name="bathroom" min="0" /> x łazienka
+<br />
+<input type="number" value={frontmatter.toilet} name="toilet" min="0" /> x toaleta
+<br />
+<input type="number" value={frontmatter.balcony} name="balcony" min="0" /> x balkon
+<br />
+<input type="number" value={frontmatter.wardrobe} name="wardrobe" min="0" /> x garderoba
+<br />
+<input type="number" value={frontmatter.garage} name="garage" min="0" /> x garaż

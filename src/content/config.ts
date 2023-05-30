@@ -1,4 +1,4 @@
-import { z, defineCollection } from "astro:content";
+import { z, defineCollection, reference } from "astro:content";
 
 const categories = defineCollection({
   type: "data",
@@ -9,6 +9,32 @@ const categories = defineCollection({
   }),
 });
 
+const info = defineCollection({
+  type: "content",
+});
+
+const documents = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    categories: z.array(reference("categories")),
+    seed: z.record(z.any()),
+    index: z.array(
+      z.object({
+        title: z.string(),
+        questions: z.array(reference("questions")),
+      })
+    ),
+  }),
+});
+
+const questions = defineCollection({
+  type: "content",
+});
+
 export const collections = {
-  categories: categories,
+  categories,
+  info,
+  documents,
+  questions,
 };
