@@ -1,34 +1,25 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/App.astro";
-import getSlug from "../../utils/mdxSlug";
 
-const templates = await Astro.glob("../../templates/index/*.mdx");
-const categories = await getCollection("categories");
+const PAGE_TITLE = "Wszystkie dokumenty";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get("kategoria");
 
-let title = "Wszystkie dokumenty";
-let documents = templates;
+const categories = await getCollection("categories");
+const documents = await getCollection("documents", ({ data: { categories } }) =>
+  currentCat ? categories.find(({ id }) => id === currentCat) : true
+);
 
-if (currentCat) {
-  const currentCategory = categories.find(({ id }) => id === currentCat);
+const currentCategory = categories.find(({ id }) => id === currentCat);
+const title = currentCategory ? currentCategory.data.name : PAGE_TITLE;
 
-  if (currentCategory) {
-    title = currentCategory.data.name;
-  }
+const getCategoryName = (slug) => {
+  const ct = categories.find(({ id }) => id === slug);
 
-  documents = templates.filter(({ frontmatter: { categories } }) =>
-    categories.includes(currentCat)
-  );
-}
-
-function getCategoryName(slug) {
-  const currentCategory = categories.find(({ id }) => id === slug);
-
-  return currentCategory ? currentCategory.data.name : null;
-}
+  return ct ? ct.data.name : null;
+};
 ---
 
 <Layout title="Wszystkie dokumenty - Prawniczek">
@@ -37,9 +28,9 @@ function getCategoryName(slug) {
     <select>
       <option value="">Wszystkie</option>
       {
-        categories.map((cat) => (
-          <option value={cat.id} selected={cat.id === currentCat}>
-            {cat.data.name}
+        categories.map(({ id, data: { name } }) => (
+          <option value={id} selected={id === currentCat}>
+            {name}
           </option>
         ))
       }
@@ -48,16 +39,16 @@ function getCategoryName(slug) {
   <section>
     {
       documents.length ? (
-        documents.map((document) => (
+        documents.map(({ slug, data: { title, categories: cats } }) => (
           <div>
-            <a href={`${Astro.url.origin}/dokumenty/${getSlug(document.file)}`}>
-              <h3>{document.frontmatter.title}</h3>
+            <a href={`${Astro.url.origin}/dokumenty/${slug}`}>
+              <h3>{title}</h3>
             </a>
             <h6>Kategorie</h6>
             <div>
-              {document.frontmatter.categories.map((slug) => (
-                <a href={`${Astro.url.origin}/dokumenty?kategoria=${slug}`}>
-                  {slug}
+              {cats.map(({ id }) => (
+                <a href={`${Astro.url.origin}/dokumenty?kategoria=${id}`}>
+                  {getCategoryName(id)}
                 </a>
               ))}
             </div>
@@ -100,7 +91,7 @@ function getCategoryName(slug) {
     constructor() {
       super();
 
-      this.select = this.querySelector("select");
+      this.select = this.querySelector("select") as HTMLSelectElement;
     }
 
     connectedCallback() {
