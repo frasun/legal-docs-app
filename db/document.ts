@@ -165,3 +165,15 @@ export async function publishDraft(id) {
     throw e;
   }
 }
+
+export async function changeDocumentName(id, title) {
+  try {
+    return await db
+      .updateTable(KEY)
+      .set({ title })
+      .where("id", "=", id)
+      .execute();
+  } catch (e: any) {
+    throw e;
+  }
+}

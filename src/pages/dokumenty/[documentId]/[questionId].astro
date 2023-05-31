@@ -161,6 +161,7 @@ if (Astro.request.method === "POST") {
       </nav>
     </footer>
   </form>
+
   <aside>
     <QuestionIndex
       index={qIndex}
@@ -168,37 +169,37 @@ if (Astro.request.method === "POST") {
       documentId={documentId}
     />
   </aside>
-
-  <style>
-    form {
-      @apply container;
-    }
-
-    footer {
-      @apply flex flex-wrap gap-10;
-      @apply justify-between;
-      @apply my-30;
-    }
-
-    footer nav {
-      @apply flex flex-wrap gap-15;
-    }
-
-    footer a {
-      @apply btn btn-alt;
-    }
-
-    footer button[type="submit"] {
-      @apply btn btn-default;
-      @apply self-end;
-    }
-
-    aside button {
-      @apply btn btn-alt;
-    }
-
-    aside form {
-      @apply p-0;
-    }
-  </style>
 </Layout>
+
+<style>
+  form {
+    @apply container;
+  }
+
+  footer {
+    @apply flex flex-wrap gap-10;
+    @apply justify-between;
+    @apply my-30;
+  }
+
+  footer nav {
+    @apply flex flex-wrap gap-15;
+  }
+
+  footer a {
+    @apply btn btn-alt;
+  }
+
+  footer button[type="submit"] {
+    @apply btn btn-default;
+    @apply self-end;
+  }
+
+  aside button {
+    @apply btn btn-alt;
+  }
+
+  aside form {
+    @apply p-0;
+  }
+</style>

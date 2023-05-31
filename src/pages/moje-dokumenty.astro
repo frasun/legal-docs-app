@@ -2,8 +2,13 @@
 import { SignOut } from "../auth-astro/components";
 import Layout from "../layouts/App.astro";
 import { getSession } from "../auth-astro/server";
-import { getDocuments, createDocument } from "../../db/document";
+import {
+  getDocuments,
+  createDocument,
+  changeDocumentName,
+} from "../../db/document";
 import { getUserByEmail } from "../../db/auth";
+import Modal from "../components/Modal.astro";
 
 const session = await getSession(Astro.request);
 
@@ -18,8 +23,11 @@ if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const docId = formData.get("template");
   const localAnswers = formData.get("answers");
+  const title = formData.get("title");
 
-  if (localAnswers) {
+  if (title) {
+    await changeDocumentName(docId, title);
+  } else if (localAnswers) {
     const answers = JSON.parse(String(localAnswers));
     await createDocument(docId, JSON.parse(Object(answers)), userId, true);
   }
@@ -46,10 +54,11 @@ function getCreated(datestring) {
       documents.length ? (
         documents.map(({ doc, id, title, doctitle, created, draft }) => (
           <div>
-            <h4>
-              {title}
-              {draft && <span> - Szkic</span>}
-            </h4>
+            <h4>{title}</h4>
+            {draft && <span>Szkic</span>}
+            <change-name data-doc-id={id} data-title={title}>
+              <button>Zmień nazwę</button>
+            </change-name>
             <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
               <small>Szablon: {doctitle}</small>
             </a>
@@ -73,6 +82,16 @@ function getCreated(datestring) {
       )
     }
   </section>
+  <Modal slot="footer">
+    <change-name-form>
+      <h3>Zmień nazwę</h3>
+      <form spellcheck="false" method="POST">
+        <input type="text" name="title" required />
+        <input type="hidden" name="template" />
+        <button>Zapisz</button>
+      </form>
+    </change-name-form>
+  </Modal>
 </Layout>
 
 <style>
@@ -92,4 +111,104 @@ function getCreated(datestring) {
   section > div {
     @apply px-20 py-10 bg-white rounded w-full;
   }
+
+  section > div > span {
+    @apply px-10 bg-orange text-white rounded;
+  }
+
+  change-name {
+    @apply block my-10;
+  }
+
+  change-name-form {
+    @apply flex flex-col gap-10;
+  }
+
+  change-name-form button {
+    @apply btn btn-default;
+  }
+
+  change-name-form input {
+    @apply w-full;
+  }
 </style>
+
+<script>
+  class ChangeName extends HTMLElement {
+    button: HTMLButtonElement;
+    doctitle: string;
+    docId: string;
+
+    constructor() {
+      super();
+
+      this.doctitle = this.getAttribute("data-title");
+      this.docId = this.getAttribute("data-doc-id");
+      this.button = this.querySelector("button") as HTMLButtonElement;
+    }
+
+    connectedCallback() {
+      this.button.addEventListener("click", () => {
+        document.body.dispatchEvent(new CustomEvent("showModal"));
+
+        const form = document.querySelector("change-name-form");
+
+        if (form) {
+          form.dispatchEvent(
+            new CustomEvent("change-name", {
+              detail: { title: this.doctitle, docId: this.docId },
+            })
+          );
+        }
+      });
+    }
+  }
+  customElements.define("change-name", ChangeName);
+
+  class ChangeNameForm extends HTMLElement {
+    input: HTMLInputElement;
+    hiddenInput: HTMLInputElement;
+    form: HTMLFormElement;
+    title: string;
+    docId: string;
+
+    constructor() {
+      super();
+
+      this.form = this.querySelector("form") as HTMLFormElement;
+      this.input = this.form.querySelector(
+        "input[type='text']"
+      ) as HTMLInputElement;
+      this.hiddenInput = this.form.querySelector(
+        "input[type='hidden']"
+      ) as HTMLInputElement;
+      this.title = "";
+      this.docId = "";
+    }
+
+    connectedCallback() {
+      this.addEventListener("change-name", (event: CustomEvent) => {
+        this.title = event.detail.title;
+        this.docId = event.detail.docId;
+
+        this.input.value = this.title;
+        this.hiddenInput.value = this.docId;
+      });
+
+      this.form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(this.form);
+        const newTitle = formData.get("title");
+        const docId = formData.get("template");
+
+        if (newTitle !== this.title) {
+          this.form.submit();
+        } else {
+          document.body.dispatchEvent(new CustomEvent("hideModal"));
+        }
+      });
+    }
+  }
+  customElements.define("change-name-form", ChangeNameForm);
+</script>
