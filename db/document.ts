@@ -1,4 +1,5 @@
 import { Generated } from "kysely";
+import { getEntry } from "astro:content";
 import { db } from "./db";
 
 export interface Document {
@@ -123,9 +124,15 @@ export async function updateAnswers(documentId, answers) {
 
 export async function createDocument(doc, answers, userid, draft = false) {
   try {
+    const template = await getEntry("documents", doc);
+
+    if (!template) {
+      throw "No template found";
+    }
+
     const {
-      frontmatter: { title },
-    } = await import(`../src/templates/documents/${doc}.mdx`);
+      data: { title },
+    } = template;
 
     return await db
       .insertInto(KEY)

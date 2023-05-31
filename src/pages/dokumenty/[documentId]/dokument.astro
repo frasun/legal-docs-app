@@ -1,10 +1,12 @@
 ---
+import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
 import { getDocument, createDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 import { getUserByEmail } from "../../../../db/auth";
 
-const { documentId } = Astro.params;
+const { documentId: dId } = Astro.params;
+const documentId = String(dId);
 const session = await getSession(Astro.request);
 
 let data;
@@ -17,7 +19,8 @@ if (!session) {
 
 Astro.cookies.delete(documentId);
 
-const { id: userId } = await getUserByEmail(session.user.email);
+const user = await getUserByEmail(String(session.user?.email));
+const userId = user ? user.id : null;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -25,10 +28,12 @@ if (Astro.request.method === "POST") {
 
   formData.forEach((value, key) => (answers[key] = value));
 
-  const { id } = await createDocument(documentId, answers, userId);
+  const document = await createDocument(documentId, answers, userId);
 
-  if (id) {
-    return Astro.redirect(`${Astro.url.origin}/dokumenty/${id}/dokument`);
+  if (document) {
+    return Astro.redirect(
+      `${Astro.url.origin}/dokumenty/${document.id}/dokument`
+    );
   } else {
     return Astro.redirect("/404");
   }
@@ -45,18 +50,27 @@ if (Number(documentId)) {
 }
 
 const { answers, doc: docId } = data;
-const { frontmatter, Content } = await import(
-  `../../../templates/documents/${docId}.mdx`
-);
 
-for (let key of Object.keys(frontmatter)) {
-  if (key !== "title") frontmatter[key] = answers[key];
+const document = await getEntry("documents", docId);
+
+if (!document) {
+  return Astro.redirect("/404");
+}
+
+const {
+  data: { title },
+} = document;
+
+const { remarkPluginFrontmatter: qData, Content } = await document.render();
+
+for (let key of Object.keys(qData.seed)) {
+  if (key !== "title") qData.seed[key] = answers[key];
 }
 ---
 
-<Layout title={`Dokument - ${frontmatter.title}`}>
-  <span slot="topbar-title">{frontmatter.title}</span>
-  <article id="doc" class="prose" data-title={frontmatter.title}>
+<Layout title={`Dokument - ${title}`}>
+  <span slot="topbar-title">{title}</span>
+  <article id="doc" class="prose" data-title={title}>
     <Content />
   </article>
   <aside>
@@ -97,15 +111,20 @@ for (let key of Object.keys(frontmatter)) {
     constructor() {
       super();
 
-      this.contentId = this.getAttribute("content-id");
-      this.button = this.querySelector("button");
+      this.contentId = String(this.getAttribute("content-id"));
+      this.button = this.querySelector("button") as HTMLButtonElement;
     }
 
     connectedCallback() {
       this.button.addEventListener("click", () => {
         const docContent = document.querySelector(this.contentId);
 
-        exportDoc(docContent.innerHTML, docContent.getAttribute("data-title"));
+        if (docContent) {
+          exportDoc(
+            docContent.innerHTML,
+            docContent.getAttribute("data-title")
+          );
+        }
       });
     }
   }
@@ -117,7 +136,7 @@ for (let key of Object.keys(frontmatter)) {
     constructor() {
       super();
 
-      this.button = this.querySelector("button");
+      this.button = this.querySelector("button") as HTMLButtonElement;
     }
 
     connectedCallback() {

@@ -11,7 +11,8 @@ if (!session) {
   return Astro.redirect("/zaloguj-sie");
 }
 
-const { id: userId } = await getUserByEmail(session.user.email);
+const user = await getUserByEmail(String(session.user?.email));
+const userId = user ? user.id : null;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
