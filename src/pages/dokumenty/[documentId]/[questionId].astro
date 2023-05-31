@@ -1,15 +1,16 @@
 ---
 import { Icon } from "astro-icon";
+import { getCollection, getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
 import { getDocument, updateAnswers } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 
-const { documentId, questionId } = Astro.params;
+const { documentId: dId, questionId } = Astro.params;
+const documentId = String(dId);
 const session = await getSession(Astro.request);
 
-let index, question, answers;
-let data;
+let answers, data;
 let docId = documentId;
 
 if (Number(documentId)) {
@@ -27,51 +28,65 @@ if (Number(documentId)) {
   }
 } else if (Astro.cookies.has(documentId)) {
   answers = Astro.cookies.get(documentId).json();
-} else {
-  const seed = await import(`../../../templates/seed/${docId}.ts`);
-
-  answers = seed.default;
 }
 
-try {
-  index = await import(`../../../templates/index/${docId}.mdx`);
-  question = await import(
-    `../../../templates/questions/${docId}/${questionId}.mdx`
-  );
-} catch (e) {
-  if (!index || !question) {
-    return Astro.redirect("/404");
+const document = await getEntry("documents", docId);
+
+if (document) {
+  if (!answers) {
+    answers = document.data.seed;
   }
-}
-
-for (let key of Object.keys(question.frontmatter)) {
-  if (key !== "question" && answers[key])
-    question.frontmatter[key] = answers[key];
+} else {
+  return Astro.redirect("/404");
 }
 
 const {
-  Content,
-  frontmatter: { question: questionContent },
-} = question;
+  data: { title: docTitle, index: qIndex },
+} = document;
+
+const qIndexCopy = JSON.parse(JSON.stringify(qIndex));
+const qs = JSON.parse(
+  JSON.stringify(
+    qIndexCopy.reduce(({ questions: qs }, { questions }) =>
+      qs.concat(questions)
+    )
+  )
+);
+
+const questions = await getCollection("questions", ({ slug }) =>
+  qs.find(({ id: { slug: qSlug } }) => slug === qSlug)
+);
+
+const q = questions.find(({ slug }) => slug === questionId);
+if (!q) {
+  return Astro.redirect("/404");
+}
 
 const {
-  frontmatter: { index: questionsIndex, title },
-} = index;
+  data: { question: questionContent },
+} = q;
 
-const questions = questionsIndex.filter(({ id }) => id);
-const currentQuestionIndex = questions.findIndex(({ id }) => id === questionId);
-const currentQuestion = questions[currentQuestionIndex];
-const nextQuestionIndex =
-  currentQuestionIndex < questions.length - 1 ? currentQuestionIndex + 1 : -1;
-const nextQuestionId =
-  nextQuestionIndex > 0 ? questions[nextQuestionIndex].id : null;
-const prevQuestionId =
-  currentQuestionIndex > 0 ? questions[currentQuestionIndex - 1].id : null;
+const { remarkPluginFrontmatter: qData, Content } = await q.render();
 
-const nextQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
-  nextQuestionId ? nextQuestionId : `podsumowanie`
+for (let key of Object.keys(qData)) {
+  if (key !== "question" && answers[key]) qData[key] = answers[key];
+}
+
+const currentQuestionIndex = qs.findIndex(
+  ({ id: { slug } }) => slug === questionId
+);
+const { title: qTitle } = qs[currentQuestionIndex];
+const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
+  currentQuestionIndex < qs.length - 1
+    ? `${qs[currentQuestionIndex + 1].id.slug}`
+    : `podsumowanie`
 }`;
-const prevQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${prevQuestionId}`;
+const prevUrl =
+  currentQuestionIndex > 0
+    ? `${Astro.url.origin}/dokumenty/${documentId}/${
+        qs[currentQuestionIndex - 1].id.slug
+      }`
+    : null;
 
 if (Astro.request.method === "POST") {
   try {
@@ -92,7 +107,7 @@ if (Astro.request.method === "POST") {
       Astro.cookies.set(documentId, allAnswers, { maxAge: 600 });
     }
 
-    return Astro.redirect(nextQuestionUrl);
+    return Astro.redirect(nextUrl);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -102,8 +117,8 @@ if (Astro.request.method === "POST") {
 }
 ---
 
-<Layout title={`${currentQuestion.title} - ${index.frontmatter.title}`}>
-  <span slot="topbar-title">{title}</span>
+<Layout title={`${qTitle} - ${docTitle}`}>
+  <span slot="topbar-title">{docTitle}</span>
   <aside slot="topbar-aside">
     <span>
       {currentQuestionIndex + 1} / {questions.length}
@@ -132,10 +147,10 @@ if (Astro.request.method === "POST") {
     <footer>
       <div>
         <span>§{currentQuestionIndex + 1}</span>
-        <span>{currentQuestion.title}</span>
+        <span>{qTitle}</span>
       </div>
       <nav>
-        {currentQuestionIndex > 0 && <a href={prevQuestionUrl}>Poprzednie</a>}
+        {prevUrl && <a href={prevUrl}>Poprzednie</a>}
         <button type="submit"
           >{
             currentQuestionIndex >= questions.length - 1
@@ -148,9 +163,9 @@ if (Astro.request.method === "POST") {
   </form>
   <aside>
     <QuestionIndex
-      index={questionsIndex}
-      current={currentQuestion.id}
-      documentid={documentId}
+      index={qIndex}
+      current={questionId}
+      documentId={documentId}
     />
   </aside>
 

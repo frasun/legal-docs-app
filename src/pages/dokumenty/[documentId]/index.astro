@@ -16,7 +16,7 @@ if (!info || !document) {
 const { Content } = await info.render();
 const { title, index } = document.data;
 
-const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0].questions[0].slug}`;
+const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0].questions[0].id.slug}`;
 ---
 
 <Layout title={title}>

@@ -28,7 +28,27 @@ seed:
     return: 14,
   }
 index: [
-  {title: Przedmiot umowy, questions: [adres, powierzchnia, pomieszczenia, instalacje, wyposazenie]},
-  {title: Przebieg umowy, questions: [przeznaczenie, czynsz, oplaty, kaucja, naprawy, wypowiedzenie, zwrot]},
+  {
+    title: Przedmiot umowy, 
+    questions: [
+      {id: adres, title: Adres}, 
+      { id: powierzchnia, title: Powierzchnia}, 
+      { id: pomieszczenia, title: Pomieszczenia}, 
+      { id: instalacje, title: Instalacje}, 
+      { id: wyposazenie, title: Wyposazenie}
+    ]
+  },
+  {
+    title: Przebieg umowy, 
+    questions: [
+      {id: przeznaczenie, title: Przeznaczenie lokalu},
+      {id: czynsz, title: Czynsz}, 
+      {id: oplaty, title: Oplaty}, 
+      {id: kaucja, title: Kaucja},
+      {id: naprawy, title: Naprawy}, 
+      {id: wypowiedzenie, title: Wypowiedzenie}, 
+      {id: zwrot, title: Zwrot},
+    ]
+  }  
 ]
 ---

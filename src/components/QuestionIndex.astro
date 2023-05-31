@@ -1,30 +1,33 @@
 ---
-const { index, current, documentid } = Astro.props;
-
-const currentIndex = index.findIndex(({ id }) => id === current);
+const { index, current, documentId } = Astro.props;
 ---
 
 <div>
   {
-    index.map(({ title, id }, index) =>
-      id ? (
-        <a href={`${Astro.url.origin}/dokumenty/${documentid}/${id}`}>
-          <h6 class:list={[{ "text-orangeDark": index === currentIndex }]}>
-            {title}
-          </h6>
-        </a>
-      ) : (
+    index.map(({ title, questions }) => (
+      <>
         <h5>{title}</h5>
-      )
-    )
+        {questions.map(({ id: { slug }, title }) => {
+          if (slug === current) {
+            return <span>{title}</span>;
+          } else {
+            return (
+              <a href={`${Astro.url.origin}/dokumenty/${documentId}/${slug}`}>
+                {title}
+              </a>
+            );
+          }
+        })}
+      </>
+    ))
   }
-  <a href={`${Astro.url.origin}/dokumenty/${documentid}/podsumowanie`}>
+  <a href={`${Astro.url.origin}/dokumenty/${documentId}/podsumowanie`}>
     Podsumowanie
   </a>
 </div>
 <style>
   div {
-    @apply bg-white rounded p-30;
+    @apply bg-white rounded p-30 flex flex-col;
   }
 
   a + h5 {
@@ -33,5 +36,9 @@ const currentIndex = index.findIndex(({ id }) => id === current);
 
   h5 {
     @apply text-dark40;
+  }
+
+  div span {
+    @apply text-orangeDark;
   }
 </style>

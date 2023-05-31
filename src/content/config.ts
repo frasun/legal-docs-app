@@ -22,7 +22,12 @@ const documents = defineCollection({
     index: z.array(
       z.object({
         title: z.string(),
-        questions: z.array(reference("questions")),
+        questions: z.array(
+          z.object({
+            id: reference("questions"),
+            title: z.string(),
+          })
+        ),
       })
     ),
   }),
