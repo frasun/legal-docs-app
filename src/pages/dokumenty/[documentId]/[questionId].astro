@@ -99,7 +99,9 @@ if (Astro.request.method === "POST") {
 
     let newAnswers = {};
     for (let [key, value] of formData) {
-      newAnswers[key] = value;
+      if (key in answers) {
+        newAnswers[key] = value;
+      }
     }
 
     const allAnswers = { ...answers, ...newAnswers };
