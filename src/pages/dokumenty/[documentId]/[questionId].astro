@@ -10,8 +10,9 @@ const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
 
-let answers, data;
+let answers, data, title;
 let docId = documentId;
+let draft = false;
 
 if (Number(documentId)) {
   if (!session) {
@@ -23,6 +24,8 @@ if (Number(documentId)) {
   if (data) {
     docId = data.doc;
     answers = data.answers;
+    title = data.title;
+    draft = data.draft;
   } else {
     return Astro.redirect("/404");
   }
@@ -41,8 +44,10 @@ if (document) {
 }
 
 const {
-  data: { title: docTitle, index: qIndex },
+  data: { index: qIndex },
 } = document;
+
+if (!title) title = document.data.title;
 
 const qIndexCopy = JSON.parse(JSON.stringify(qIndex));
 const qs = JSON.parse(
@@ -117,8 +122,8 @@ if (Astro.request.method === "POST") {
 }
 ---
 
-<Layout title={`${qTitle} - ${docTitle}`}>
-  <span slot="topbar-title">{docTitle}</span>
+<Layout title={`${qTitle} - ${title}`}>
+  <span slot="topbar-title">{title}{draft && <span> - Szkic</span>}</span>
   <aside slot="topbar-aside">
     <span>
       {currentQuestionIndex + 1} / {questions.length}

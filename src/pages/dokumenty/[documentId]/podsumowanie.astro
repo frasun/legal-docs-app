@@ -11,9 +11,8 @@ const documentId = String(dId);
 const session = await getSession(Astro.request);
 
 let docId = documentId;
-let data;
-let answers;
 let draft = false;
+let data, answers, title;
 
 if (Number(documentId)) {
   if (!session) {
@@ -26,6 +25,7 @@ if (Number(documentId)) {
     docId = data.doc;
     answers = data.answers;
     draft = data.draft;
+    title = data.title;
   } else {
     return Astro.redirect("/404");
   }
@@ -44,8 +44,10 @@ if (document) {
 }
 
 const {
-  data: { title, index },
+  data: { index },
 } = document;
+
+if (!title) title = document.data.title;
 ---
 
 <Layout title={`Podsumowanie - ${title}`}>

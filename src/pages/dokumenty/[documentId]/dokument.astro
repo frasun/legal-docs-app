@@ -9,7 +9,7 @@ const { documentId: dId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
 
-let data;
+let data, title;
 
 if (!session) {
   return Astro.redirect(
@@ -45,6 +45,8 @@ if (Number(documentId)) {
   if (!data || data.draft) {
     return Astro.redirect("/404");
   }
+
+  title = data.title;
 } else {
   return Astro.redirect("/404");
 }
@@ -57,9 +59,7 @@ if (!document) {
   return Astro.redirect("/404");
 }
 
-const {
-  data: { title },
-} = document;
+if (!title) title = document.data.title;
 
 const { remarkPluginFrontmatter: qData, Content } = await document.render();
 
