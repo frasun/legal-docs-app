@@ -82,11 +82,11 @@ index: [
    1. Opłaty za media
       - Wynajmujący
          <ul>
-        {frontmatter.seed.billslandlord.split(',').map((item) => <li>{item}</li>)}
+        {frontmatter.seed.billslandlord.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
         </ul>
       - Najemca
         <ul>
-        {frontmatter.seed.billstenant.split(',').map((item) => <li>{item}</li>)}
+        {frontmatter.seed.billstenant.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
         </ul>
    1. Kaucja w wysokości {frontmatter.seed.deposit} zł, {frontmatter.seed.depositmethod}.
    1. Najemca pokrywa koszty napraw do {frontmatter.seed.repairs} zł.      

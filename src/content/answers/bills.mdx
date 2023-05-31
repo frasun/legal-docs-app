@@ -2,6 +2,6 @@
 billslandlord: [$billslandlord]
 billstenant: [$billstenant]
 ---
-Najemca: {frontmatter.billslandlord.replace(',', ', ')}
+Najemca: {frontmatter.billslandlord !== 'undefined' ? frontmatter.billslandlord.replace(',', ', ') : 'brak'}
 
-Wynajmujący: {frontmatter.billstenant.replace(',', ', ')}
+Wynajmujący: {frontmatter.billstenant !== 'undefined' ? frontmatter.billstenant.replace(',', ', '): 'brak'}
