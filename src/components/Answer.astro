@@ -1,4 +1,5 @@
 ---
+import { getEntry } from 'astro:content';
 const { data, template, token } = Astro.props;
 
 if (!data) {
@@ -9,19 +10,17 @@ let CompiledContent;
 let textContent;
 
 if (template) {
-  const answer = await import(`../templates/answers/${template}.mdx`);
+  const answer = await getEntry('answers', template);  
 
   if (!answer) return;
 
-  for (let key of Object.keys(answer.frontmatter)) {
-    if (data[key]) {
-      answer.frontmatter[key] = data[key];
-    } else {
-      answer.frontmatter[key] = data[token];
-    }
+  const {remarkPluginFrontmatter: aData, Content} = await answer.render();
+
+  for (let key of Object.keys(aData)) {
+    aData[key] = data[key] ? data[key] : data[token];
   }
 
-  CompiledContent = answer.Content;
+  CompiledContent = Content;
 }
 
 if (!template && token) {

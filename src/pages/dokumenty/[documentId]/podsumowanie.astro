@@ -1,10 +1,12 @@
 ---
+import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
 import Answer from "../../../components/Answer.astro";
 import { getDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 
-const { documentId } = Astro.params;
+const { documentId: dId } = Astro.params;
+const documentId = String(dId);
 
 const session = await getSession(Astro.request);
 
@@ -29,19 +31,21 @@ if (Number(documentId)) {
   }
 } else if (Astro.cookies.has(documentId)) {
   answers = Astro.cookies.get(documentId).json();
-} else {
-  try {
-    const seed = await import(`../../../templates/seed/${docId}.ts`);
+}
 
-    answers = seed.default;
-  } catch (e) {
-    return Astro.redirect("/404");
+const document = await getEntry("documents", docId);
+
+if (document) {
+  if (!answers) {
+    answers = document.data.seed;
   }
+} else {
+  return Astro.redirect("/404");
 }
 
 const {
-  frontmatter: { title, index },
-} = await import(`../../../templates/index/${docId}.mdx`);
+  data: { title, index },
+} = document;
 ---
 
 <Layout title={`Podsumowanie - ${title}`}>
@@ -49,21 +53,22 @@ const {
   <section>
     <h1>Podsumowanie</h1>
     {
-      index.map(({ title, token, template, id }) =>
-        token ? (
-          <div>
-            <div>
-              <h6>{title}</h6>
-              <Answer data={answers} template={template} token={token} />
-            </div>
-            <a href={`${Astro.url.origin}/dokumenty/${documentId}/${id}`}>
-              Zmień
-            </a>
-          </div>
-        ) : (
+      index.map(({ title, questions }) => (
+        <>
           <h4>{title}</h4>
-        )
-      )
+          {questions.map(({ title, token, template, id: { slug } }) => (
+            <div>
+              <div>
+                <h6>{title}</h6>
+                <Answer data={answers} template={template} token={token} />
+              </div>
+              <a href={`${Astro.url.origin}/dokumenty/${documentId}/${slug}`}>
+                Zmień
+              </a>
+            </div>
+          ))}
+        </>
+      ))
     }
     <footer>
       {
@@ -74,7 +79,7 @@ const {
         ) : (
           <form method="POST" action={`${Astro.url.origin}/dokument`}>
             {Object.entries(answers).map(([key, value]) => (
-              <input type="hidden" name={key} value={value.toString()} />
+              <input type="hidden" name={key} value={String(value)} />
             ))}
             <input type="hidden" name="id" value={documentId} />
             <button type="submit">Generuj dokument</button>

@@ -26,6 +26,8 @@ const documents = defineCollection({
           z.object({
             id: reference("questions"),
             title: z.string(),
+            token: z.string().or(z.array(z.string())),
+            template: z.string().optional(),
           })
         ),
       })
@@ -37,9 +39,14 @@ const questions = defineCollection({
   type: "content",
 });
 
+const answers = defineCollection({
+  type: "content",
+});
+
 export const collections = {
   categories,
   info,
   documents,
   questions,
+  answers,
 };
