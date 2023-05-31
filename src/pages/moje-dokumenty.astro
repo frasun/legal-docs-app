@@ -35,11 +35,9 @@ if (Astro.request.method === "POST") {
 
 const documents = await getDocuments(userId);
 
-function getCreated(datestring) {
+function formatDate(datestring) {
   const date = new Date(datestring);
-  return `Stworzony: ${date.getDate()}-${
-    date.getMonth() + 1
-  }-${date.getFullYear()}`;
+  return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
 }
 ---
 
@@ -52,31 +50,36 @@ function getCreated(datestring) {
   <section>
     {
       documents.length ? (
-        documents.map(({ doc, id, title, doctitle, created, draft }) => (
-          <div>
-            <h4>{title}</h4>
-            {draft && <span>Szkic</span>}
-            <change-name data-doc-id={id} data-title={title}>
-              <button>Zmień nazwę</button>
-            </change-name>
-            <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
-              <small>Szablon: {doctitle}</small>
-            </a>
-            <br />
-            <small>{getCreated(created)}</small>
-            <br />
+        documents.map(
+          ({ doc, id, title, doctitle, created, draft, modified }) => (
+            <div>
+              <h4>{title}</h4>
+              {draft && <span>Szkic</span>}
+              <change-name data-doc-id={id} data-title={title}>
+                <button>Zmień nazwę</button>
+              </change-name>
+              <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
+                <small>Szablon: {doctitle}</small>
+              </a>
+              <br />
+              <small>Stworzony: {formatDate(created)}</small>
+              {modified && (
+                <small>Ostatnia zmiana: {formatDate(modified)}</small>
+              )}
+              <br />
 
-            {draft ? (
-              <a href={`${Astro.url.origin}/dokumenty/${id}/podsumowanie`}>
-                Zobacz podsumowanie
-              </a>
-            ) : (
-              <a href={`${Astro.url.origin}/dokumenty/${id}/dokument`}>
-                Zobacz dokument
-              </a>
-            )}
-          </div>
-        ))
+              {draft ? (
+                <a href={`${Astro.url.origin}/dokumenty/${id}/podsumowanie`}>
+                  Zobacz podsumowanie
+                </a>
+              ) : (
+                <a href={`${Astro.url.origin}/dokumenty/${id}/dokument`}>
+                  Zobacz dokument
+                </a>
+              )}
+            </div>
+          )
+        )
       ) : (
         <>Brak wyników</>
       )
@@ -114,6 +117,10 @@ function getCreated(datestring) {
 
   section > div > span {
     @apply px-10 bg-orange text-white rounded;
+  }
+
+  section small {
+    @apply block;
   }
 
   change-name {

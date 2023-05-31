@@ -8,6 +8,7 @@ export interface Document {
   answers: JSON;
   userid: Number;
   created: Generated<Date>;
+  modified: Generated<Date> | null;
   title: String;
   doctitle: String;
   draft: Boolean;
@@ -22,6 +23,7 @@ const seedData = [
     doctitle: "Umowa najmu lokalu",
     userid: 5,
     created: Date.now(),
+    modified: null,
     draft: false,
     answers: JSON.stringify({
       address: "91-123 Łódź, ul. Aleksandrowska 123a",
@@ -61,7 +63,8 @@ async function seed() {
     .addColumn("userid", "integer", (cb) => cb.notNull())
     .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
     .addColumn("answers", "jsonb", (cb) => cb.notNull())
-    .addColumn("created", "timestamp", (cb) => cb.notNull())
+    .addColumn("modified", "timestamp", (cb) => cb.notNull())
+    .addColumn("created", "timestamp", (cb) => cb)
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
     .addColumn("draft", "boolean", (cb) => cb.notNull())
@@ -114,7 +117,7 @@ export async function updateAnswers(documentId, answers) {
   try {
     return await db
       .updateTable(KEY)
-      .set({ answers })
+      .set({ answers, modified: new Date() })
       .where("id", "=", documentId)
       .execute();
   } catch (e: any) {

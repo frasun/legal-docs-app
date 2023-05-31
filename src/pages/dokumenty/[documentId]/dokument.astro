@@ -64,7 +64,7 @@ if (!title) title = document.data.title;
 const { remarkPluginFrontmatter: qData, Content } = await document.render();
 
 for (let key of Object.keys(qData.seed)) {
-  if (key !== "title") answers[key] = qData.seed[key];
+  if (key !== "title") qData.seed[key] = answers[key];
 }
 ---
 
