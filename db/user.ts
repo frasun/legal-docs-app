@@ -5,8 +5,9 @@ const KEY = "user";
 
 export interface User {
   id: Generated<String>;
-  email: string;
-  password: string;
+  email: String;
+  password: String;
+  active: Boolean;
 }
 
 export function createUserTable() {
@@ -18,5 +19,6 @@ export function createUserTable() {
     )
     .addColumn("email", "varchar(255)", (cb) => cb.notNull())
     .addColumn("password", "varchar(255)", (cb) => cb.notNull())
+    .addColumn("active", "boolean", (cb) => cb.notNull().defaultTo(false))
     .execute();
 }

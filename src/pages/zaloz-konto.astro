@@ -7,14 +7,21 @@ let errors = [];
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
 
   if (await getUserByEmail(email)) {
     errors.push("User already exists");
   } else {
-    await createUser(email, bcrypt.hashSync(password, bcrypt.genSaltSync(10)));
+    const newUser = await createUser(email, bcrypt.hashSync(password, bcrypt.genSaltSync(10)));
+    const code = Math.random().toString(16).substring(2, 6);
+    Astro.cookies.set(
+      "verification",
+      bcrypt.hashSync(code, bcrypt.genSaltSync(10)),
+      {maxAge: 6000, httpOnly: true}
+    );
+
+    return Astro.redirect("/weryfikacja");
   }
 }
 ---

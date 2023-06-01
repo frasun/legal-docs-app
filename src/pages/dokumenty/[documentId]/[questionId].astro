@@ -111,7 +111,10 @@ if (Astro.request.method === "POST") {
         await updateAnswers(documentId, allAnswers);
       }
     } else {
-      Astro.cookies.set(documentId, allAnswers, { maxAge: 600 });
+      Astro.cookies.set(documentId, allAnswers, {
+        maxAge: 600,
+        httpOnly: true,
+      });
     }
 
     return Astro.redirect(nextUrl);

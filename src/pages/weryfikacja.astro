@@ -1,0 +1,35 @@
+---
+import bcrypt from "bcryptjs";
+import Layout from "../layouts/Layout.astro";
+
+if (!Astro.cookies.has("verification")) {
+  return Astro.redirect("/404");
+}
+
+let errors = [];
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const postedCode = formData.get("code");
+  const verificationCode = Astro.cookies.get("verification").value;
+
+  if (postedCode && verificationCode) {
+    if (await bcrypt.compare(String(postedCode), verificationCode)) {
+      Astro.cookies.delete("verification");
+      // return Astro.redirect("/zaloguj-sie");
+      console.log("ok");
+    } else {
+      errors.push("Posted code does not match verification code");
+    }
+  }
+}
+---
+
+<Layout title="Załóż konto - weryfikacja adresu e-mail">
+  {errors.length ? errors.map((error) => <p>{error}</p>) : null}
+  <form method="POST">
+    <h4>Podaj kod weryfikacyjny</h4>
+    <input type="text" name="code" required />
+    <button type="submit">Wyślij</button>
+  </form>
+</Layout>

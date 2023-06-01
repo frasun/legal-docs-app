@@ -42,7 +42,11 @@ if (Astro.request.method === "POST") {
       return Astro.redirect("/404");
     }
   } else {
-    Astro.cookies.set("document", { id, answers, draft });
+    Astro.cookies.set(
+      "document",
+      { id, answers, draft },
+      { maxAge: 6000, httpOnly: true }
+    );
     return Astro.redirect("/zaloguj-sie?redirect=dokument");
   }
 } else if (Astro.cookies.has("document")) {
