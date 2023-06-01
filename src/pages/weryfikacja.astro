@@ -1,8 +1,11 @@
 ---
-import bcrypt from "bcryptjs";
 import Layout from "../layouts/Layout.astro";
+import { getUserByEmail, activateUser } from "../../db/auth";
 
-if (!Astro.cookies.has("verification")) {
+const url = new URL(Astro.request.url);
+const userEmail = url.searchParams.get("email");
+
+if (!userEmail) {
   return Astro.redirect("/404");
 }
 
@@ -11,21 +14,23 @@ let errors = [];
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const postedCode = formData.get("code");
-  const verificationCode = Astro.cookies.get("verification").value;
+  const { code, id } = await getUserByEmail(userEmail);
 
-  if (postedCode && verificationCode) {
-    if (await bcrypt.compare(String(postedCode), verificationCode)) {
-      Astro.cookies.delete("verification");
-      // return Astro.redirect("/zaloguj-sie");
-      console.log("ok");
+  if (code) {
+    if (code === postedCode) {
+      await activateUser(id);
+
+      return Astro.redirect("/moje-dokumenty");
     } else {
       errors.push("Posted code does not match verification code");
     }
+  } else {
+    return Astro.redirect("/404");
   }
 }
 ---
 
-<Layout title="Załóż konto - weryfikacja adresu e-mail">
+<Layout title="Wryfikacja adresu e-mail">
   {errors.length ? errors.map((error) => <p>{error}</p>) : null}
   <form method="POST">
     <h4>Podaj kod weryfikacyjny</h4>

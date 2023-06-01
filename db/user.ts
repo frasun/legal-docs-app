@@ -8,6 +8,7 @@ export interface User {
   email: String;
   password: String;
   active: Boolean;
+  code: String;
 }
 
 export function createUserTable() {
@@ -20,5 +21,6 @@ export function createUserTable() {
     .addColumn("email", "varchar(255)", (cb) => cb.notNull())
     .addColumn("password", "varchar(255)", (cb) => cb.notNull())
     .addColumn("active", "boolean", (cb) => cb.notNull().defaultTo(false))
+    .addColumn("code", "varchar(6)", (cb) => cb.notNull())
     .execute();
 }

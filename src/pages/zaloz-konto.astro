@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getUserByEmail, createUser } from "../../db/auth";
+import { getUserByEmail, createUser, resendCode } from "../../db/auth";
 import bcrypt from "bcryptjs";
 
 let errors = [];
@@ -9,19 +9,27 @@ if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
+  const { id, active } = await getUserByEmail(email);
 
-  if (await getUserByEmail(email)) {
-    errors.push("User already exists");
+  if (id) {
+    if (active) {
+      errors.push("User already exists");
+    } else {
+      await resendCode(id);
+      return Astro.redirect(`/weryfikacja?email=${email}`);
+    }
   } else {
-    const newUser = await createUser(email, bcrypt.hashSync(password, bcrypt.genSaltSync(10)));
-    const code = Math.random().toString(16).substring(2, 6);
-    Astro.cookies.set(
-      "verification",
-      bcrypt.hashSync(code, bcrypt.genSaltSync(10)),
-      {maxAge: 6000, httpOnly: true}
+    const newUser = await createUser(
+      email,
+      bcrypt.hashSync(password, bcrypt.genSaltSync(10))
     );
 
-    return Astro.redirect("/weryfikacja");
+    if (newUser) {
+      const { email } = newUser;
+      return Astro.redirect(`/weryfikacja?email=${email}`);
+    } else {
+      return Astro.redirect("/404");
+    }
   }
 }
 ---
@@ -30,7 +38,17 @@ if (Astro.request.method === "POST") {
   {errors.length ? errors.map((error) => <p>{error}</p>) : null}
   <form method="POST">
     <input type="email" name="email" required />
-    <input type="password" name="password" required />
+    <input
+      type="password"
+      name="password"
+      required
+      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+    />
     <button type="submit">Załóż konto</button>
+    <footer>
+      <small
+        >Hasło powinno mieć minimum 8 znaków, w tym przynajmniej jedną wielką
+        literę i jedną cyfrę</small>
+    </footer>
   </form>
 </Layout>
