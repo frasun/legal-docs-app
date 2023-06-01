@@ -16,7 +16,7 @@ export const createUser = async (email, password) =>
   await db
     .insertInto(KEY)
     .values([{ email, password, code: getVerificationCode() }])
-    .returning(["id", "email"])
+    .returning(["id", "email", "code"])
     .executeTakeFirst();
 
 export const activateUser = async (id) => {
@@ -31,13 +31,14 @@ export const activateUser = async (id) => {
   }
 };
 
-export const resendCode = async (id) => {
+export const sendCode = async (id) => {
   try {
     return await db
       .updateTable(KEY)
       .set({ code: getVerificationCode() })
       .where("id", "=", id)
-      .execute();
+      .returning(["code"])
+      .executeTakeFirst();
   } catch (e: any) {
     throw e;
   }

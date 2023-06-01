@@ -1,7 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getUserByEmail, createUser, resendCode } from "../../db/auth";
+import { getUserByEmail, createUser, sendCode } from "../../db/auth";
 import bcrypt from "bcryptjs";
+import sendEmail from "../utils/email";
 
 let errors = [];
 
@@ -9,13 +10,16 @@ if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
-  const { id, active } = await getUserByEmail(email);
+  const user = await getUserByEmail(email);
 
-  if (id) {
+  if (user) {
+    const { id, active } = user;
     if (active) {
       errors.push("User already exists");
     } else {
-      await resendCode(id);
+      const { code } = await sendCode(id);
+
+      await sendAndRedirect(email, code);
       return Astro.redirect(`/weryfikacja?email=${email}`);
     }
   } else {
@@ -25,12 +29,22 @@ if (Astro.request.method === "POST") {
     );
 
     if (newUser) {
-      const { email } = newUser;
+      const { email, code } = newUser;
+
+      await sendAndRedirect(email, code);
       return Astro.redirect(`/weryfikacja?email=${email}`);
     } else {
       return Astro.redirect("/404");
     }
   }
+}
+
+async function sendAndRedirect(email, code) {
+  await sendEmail(
+    email,
+    "Zweryfikuj adres e-mail",
+    `Kod weryfikacyjny: <strong>${code}</strong>`
+  );
 }
 ---
 
@@ -42,13 +56,14 @@ if (Astro.request.method === "POST") {
       type="password"
       name="password"
       required
-      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+      pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"
     />
     <button type="submit">Załóż konto</button>
     <footer>
       <small
         >Hasło powinno mieć minimum 8 znaków, w tym przynajmniej jedną wielką
-        literę i jedną cyfrę</small>
+        literę i jedną cyfrę</small
+      >
     </footer>
   </form>
 </Layout>
