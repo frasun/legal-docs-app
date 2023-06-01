@@ -1,16 +1,13 @@
 import { createKysely } from "@vercel/postgres-kysely";
-import { Document } from "./document";
+import { Document, createDocumentTable } from "./document";
+import { User, createUserTable } from "./user";
 
 export interface Database {
   document: Document;
-  users: {
-    id: number;
-    email: string;
-    password: string;
-    name: string;
-    emailverified: string;
-    image: string;
-  };
+  user: User;
 }
 export const db = createKysely<Database>();
 export { sql } from "kysely";
+
+createUserTable();
+createDocumentTable();

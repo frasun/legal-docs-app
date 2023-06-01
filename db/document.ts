@@ -1,12 +1,12 @@
 import { Generated } from "kysely";
 import { getEntry } from "astro:content";
-import { db } from "./db";
+import { db, sql } from "./db";
 
 export interface Document {
-  id: Generated<Number>;
+  id: Generated<String>;
   doc: String;
   answers: JSON;
-  userid: Number;
+  userid: String;
   created: Generated<Date>;
   modified: Generated<Date> | null;
   title: String;
@@ -16,66 +16,22 @@ export interface Document {
 
 const KEY = "document";
 
-const seedData = [
-  {
-    doc: "umowa-najmu",
-    title: "Umowa najmu lokalu #1",
-    doctitle: "Umowa najmu lokalu",
-    userid: 5,
-    created: Date.now(),
-    modified: null,
-    draft: false,
-    answers: JSON.stringify({
-      address: "91-123 Łódź, ul. Aleksandrowska 123a",
-      apt: 23,
-      area: 295,
-      room: 2,
-      kitchen: 2,
-      hall: 0,
-      bathroom: 1,
-      toilet: 1,
-      wardrobe: 2,
-      garage: 0,
-      systems: "elektryczna, gazowa, centralne ogrzewanie",
-      equipment:
-        "Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa",
-      purpose: "do celów mieszkalnych",
-      rent: 2300,
-      rentmethod: "płatny przelewem na konto Wynajmującego",
-      rentdue: 14,
-      billslandlord:
-        "zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci",
-      billstenant: "opłata za internet, opłata telewizyjna",
-      deposit: 2300,
-      depositmethod: "płatna przelewem na konto Wynajmującego",
-      repairs: 2500,
-      termination: 14,
-      return: 14,
-    }),
-  },
-];
-
-async function seed() {
-  const createTable = await db.schema
+export function createDocumentTable() {
+  db.schema
     .createTable(KEY)
     .ifNotExists()
     .addColumn("id", "serial", (cb) => cb.primaryKey())
-    .addColumn("userid", "integer", (cb) => cb.notNull())
+    .addColumn("userid", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
     .addColumn("answers", "jsonb", (cb) => cb.notNull())
-    .addColumn("modified", "timestamp", (cb) => cb.notNull())
-    .addColumn("created", "timestamp", (cb) => cb)
+    .addColumn("modified", "timestamp")
+    .addColumn("created", "timestamp", (cb) =>
+      cb.notNull().defaultTo(sql`now()`)
+    )
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
     .addColumn("draft", "boolean", (cb) => cb.notNull())
     .execute();
-
-  const addDocuments = await db.insertInto(KEY).values(seedData).execute();
-
-  return {
-    createTable,
-    addDocuments,
-  };
 }
 
 async function fetchDocument(id) {
@@ -90,13 +46,7 @@ export async function getDocument(id) {
   try {
     return await fetchDocument(id);
   } catch (e: any) {
-    if (e.message === `relation "${KEY}" does not exist`) {
-      await seed();
-
-      return await fetchDocument(id);
-    } else {
-      throw e;
-    }
+    throw e;
   }
 }
 
@@ -105,7 +55,7 @@ export async function getDocuments(userId) {
     return await db
       .selectFrom(KEY)
       .selectAll()
-      .where("userid", "=", userId)
+      .where(sql`userid::text`, "=", userId)
       .orderBy("created", "desc")
       .execute();
   } catch (e: any) {
@@ -117,7 +67,7 @@ export async function updateAnswers(documentId, answers) {
   try {
     return await db
       .updateTable(KEY)
-      .set({ answers, modified: new Date() })
+      .set({ answers, modified: sql`now()` })
       .where("id", "=", documentId)
       .execute();
   } catch (e: any) {
