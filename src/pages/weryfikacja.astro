@@ -3,7 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import { getUserByEmail, activateUser } from "../../db/auth";
 
 const url = new URL(Astro.request.url);
-const userEmail = url.searchParams.get("email");
+const userEmail = decodeURIComponent(url.searchParams.get("email"));
+const redirectUrl = url.searchParams.get("redirect");
 
 if (!userEmail) {
   return Astro.redirect("/404");
@@ -20,7 +21,9 @@ if (Astro.request.method === "POST") {
     if (code === postedCode) {
       await activateUser(id);
 
-      return Astro.redirect("/moje-dokumenty");
+      return Astro.redirect(
+        `/zaloguj-sie${redirectUrl ? `?redirect=${redirectUrl}` : ``}`
+      );
     } else {
       errors.push("Posted code does not match verification code");
     }

@@ -27,6 +27,16 @@ const redirectUrl = url.searchParams.get("redirect");
           <input type="password" name="password" required />
           <button type="submit">Zaloguj się</button>
         </form>
+        <footer>
+          Nie jesteś jeszcze konta?
+          <a
+            href={`${Astro.url.origin}/zaloz-konto${
+              redirectUrl ? `/?redirect=${redirectUrl}` : ""
+            }`}
+          >
+            Załóż
+          </a>
+        </footer>
       </login-form>
     )
   }
