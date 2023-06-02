@@ -15,6 +15,7 @@ export interface Document {
 }
 
 const KEY = "document";
+const LIMIT = 100;
 
 export function createDocumentTable() {
   db.schema
@@ -50,12 +51,16 @@ export async function getDocument(id) {
   }
 }
 
-export async function getDocuments(userId) {
+export async function getDocuments(userId, page = 1, limit = LIMIT) {
+  const offset = (page - 1) * limit;
+
   try {
     return await db
       .selectFrom(KEY)
       .selectAll()
       .where(sql`userid::text`, "=", userId)
+      .offset(offset)
+      .limit(limit)
       .orderBy("created", "desc")
       .execute();
   } catch (e: any) {
