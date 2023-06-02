@@ -18,7 +18,7 @@ const redirectUrl = url.searchParams.get("redirect");
     session ? (
       <>
         <p>Welcome {session.user?.email}</p>
-        <SignOut>Wygloguj</SignOut>
+        <SignOut>Wyloguj</SignOut>
       </>
     ) : (
       <login-form redirect={redirectUrl}>
@@ -54,7 +54,9 @@ const redirectUrl = url.searchParams.get("redirect");
         const email = String(formData.get("email"));
         const password = String(formData.get("password"));
 
-        await signIn("credentials", {
+        this.hideError();
+
+        const response = await signIn("credentials", {
           redirect: false,
           email,
           password,
@@ -62,7 +64,25 @@ const redirectUrl = url.searchParams.get("redirect");
             this.redirect ? `/${this.redirect}` : `/moje-dokumenty`
           }`,
         });
+
+        response && this.showError();
       });
+    }
+
+    showError() {
+      const error = document.createElement("p");
+      error.id = "error";
+      error.innerHTML = "Podany adres e-mail lub hasło są nieprawidłowe";
+
+      window.setTimeout(() => {
+        this.append(error);
+      }, 200);
+    }
+
+    hideError() {
+      const error = this.querySelector("#error");
+
+      if (error) error.remove();
     }
   }
   customElements.define("login-form", LoginForm);

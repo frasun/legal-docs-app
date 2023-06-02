@@ -56,13 +56,13 @@ async function sendAndRedirect(email, code) {
       type="password"
       name="password"
       required
-      pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"
+      pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
     />
     <button type="submit">Załóż konto</button>
     <footer>
       <small
-        >Hasło powinno mieć minimum 8 znaków, w tym przynajmniej jedną wielką
-        literę i jedną cyfrę</small
+        >Hasło powinno mieć przynajmniej 8 znaków, maksymalnie 20 znaków, w tym
+        przynajmniej jedną wielką literę i jedną cyfrę</small
       >
     </footer>
   </form>
