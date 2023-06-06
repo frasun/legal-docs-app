@@ -5,6 +5,7 @@ import Layout from "../../../layouts/App.astro";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
 import { getDocument, updateAnswers } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
+import tSeed from "../../../utils/transformSeed";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -37,7 +38,7 @@ const document = await getEntry("documents", docId);
 
 if (document) {
   if (!answers) {
-    answers = document.data.seed;
+    answers = tSeed(document.data.seed);
   }
 } else {
   return Astro.redirect("/404");
@@ -49,13 +50,9 @@ const {
 
 if (!title) title = document.data.title;
 
-const qIndexCopy = JSON.parse(JSON.stringify(qIndex));
-const qs = JSON.parse(
-  JSON.stringify(
-    qIndexCopy.reduce(({ questions: qs }, { questions }) =>
-      qs.concat(questions)
-    )
-  )
+const qs = JSON.parse(JSON.stringify(qIndex)).reduce(
+  (pQuestions, { questions }) => pQuestions.concat(questions),
+  []
 );
 
 const questions = await getCollection("questions", ({ slug }) =>

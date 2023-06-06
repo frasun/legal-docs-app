@@ -1,0 +1,11 @@
+---
+import { format, parseISO } from "date-fns";
+import { DATE_FORMAT } from "../utils/cosntants";
+
+const { date, name, label } = Astro.props;
+const dateValue = format(parseISO(date), DATE_FORMAT);
+---
+
+<label for={name}>{label}</label>
+<br />
+<input id="start" type="date" name={name} value={dateValue} required />

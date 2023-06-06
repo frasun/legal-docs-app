@@ -4,6 +4,7 @@ import Layout from "../../../layouts/App.astro";
 import Answer from "../../../components/Answer.astro";
 import { getDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
+import tSeed from "../../../utils/transformSeed";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -37,7 +38,7 @@ const document = await getEntry("documents", docId);
 
 if (document) {
   if (!answers) {
-    answers = document.data.seed;
+    answers = tSeed(document.data.seed);
   }
 } else {
   return Astro.redirect("/404");

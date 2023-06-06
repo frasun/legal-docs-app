@@ -26,6 +26,7 @@ seed:
     repairs: 2500,
     termination: 14,
     return: 14,
+    start: TODAY
   }
 index: [
   {
@@ -47,9 +48,15 @@ index: [
       {id: kaucja, title: Kaucja, token: [deposit, depositmethod], template: deposit },
       {id: naprawy, title: Naprawy, token: repairs, template: repairs}, 
       {id: wypowiedzenie, title: Wypowiedzenie, token: termination, template: days}, 
-      {id: zwrot, title: Zwrot, token: return, template: days-due},
+      {id: zwrot, title: Zwrot, token: return, template: days-due},      
     ]
-  }  
+  },  
+  {
+    title: Daty i okres trwania umowy,
+    questions: [
+      {id: daty, title: Daty, token: start},
+    ]
+  },
 ]
 ---
 
@@ -57,44 +64,45 @@ index: [
 
 ### Przedmiot Umowy
 
-   1. Umowa dotyczy lokalu o powierzchni {frontmatter.seed.area} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.seed.address} / {frontmatter.seed.apt}**.
-   1. W skład lokalu wchodzą następujące pomieszczenia:
-      <ul>
-      {Number(frontmatter.seed.room) > 0 && (<li>{frontmatter.seed.room} x pokój</li>)}
-      {Number(frontmatter.seed.kitchen) > 0 && (<li>{frontmatter.seed.kitchen} x kuchnia</li>)}
-      {Number(frontmatter.seed.hall) > 0 && (<li>{frontmatter.seed.hall} x przedpokój</li>)}
-      {Number(frontmatter.seed.bathroom) > 0 && (<li>{frontmatter.seed.bathroom} x łazienka</li>)}
-      {Number(frontmatter.seed.toilet) > 0 && (<li>{frontmatter.seed.toilet} x toaleta</li>)}
-      {Number(frontmatter.seed.balcony) > 0 && (<li>{frontmatter.seed.balcony} x balkon</li>)}
-      {Number(frontmatter.seed.wardrobe) > 0 && (<li>{frontmatter.seed.wardrobe} x garderoba</li>)}
-      {Number(frontmatter.seed.garage) > 0 && (<li>{frontmatter.seed.garage} x garaż</li>)}
-      </ul>
-      {frontmatter.seed.systems !== 'brak' && (<li>W lokalu dostępne są instalacje: {frontmatter.seed.systems}</li>)}
-   1. Na stanie lokalu znajduje się wyposażenie:
-      <ul>
-      {frontmatter.seed.equipment.split(', ').map((item) => <li>{item}</li>)}
-      </ul>
+  1. Umowa dotyczy lokalu o powierzchni {frontmatter.seed.area} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.seed.address} / {frontmatter.seed.apt}**.
+  1. W skład lokalu wchodzą następujące pomieszczenia:
+    <ul>
+    {Number(frontmatter.seed.room) > 0 && (<li>{frontmatter.seed.room} x pokój</li>)}
+    {Number(frontmatter.seed.kitchen) > 0 && (<li>{frontmatter.seed.kitchen} x kuchnia</li>)}
+    {Number(frontmatter.seed.hall) > 0 && (<li>{frontmatter.seed.hall} x przedpokój</li>)}
+    {Number(frontmatter.seed.bathroom) > 0 && (<li>{frontmatter.seed.bathroom} x łazienka</li>)}
+    {Number(frontmatter.seed.toilet) > 0 && (<li>{frontmatter.seed.toilet} x toaleta</li>)}
+    {Number(frontmatter.seed.balcony) > 0 && (<li>{frontmatter.seed.balcony} x balkon</li>)}
+    {Number(frontmatter.seed.wardrobe) > 0 && (<li>{frontmatter.seed.wardrobe} x garderoba</li>)}
+    {Number(frontmatter.seed.garage) > 0 && (<li>{frontmatter.seed.garage} x garaż</li>)}
+    </ul>
+    {frontmatter.seed.systems !== 'brak' && (<li>W lokalu dostępne są instalacje: {frontmatter.seed.systems}</li>)}
+  1. Na stanie lokalu znajduje się wyposażenie:
+    <ul>
+    {frontmatter.seed.equipment.split(', ').map((item) => <li>{item}</li>)}
+    </ul>
 
 ### Przebieg umowy
    
-   1. Lokal będzie użytkowany {frontmatter.seed.purpose.includes(',') ? frontmatter.seed.purpose.split(', ').join(' i ') : frontmatter.seed.purpose}.
-   1. Czynsz w wysokości {frontmatter.seed.rent} zł, {frontmatter.seed.rentmethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
-   1. Opłaty za media
-      - Wynajmujący
-         <ul>
-        {frontmatter.seed.billslandlord.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
-        </ul>
-      - Najemca
-        <ul>
-        {frontmatter.seed.billstenant.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
-        </ul>
-   1. Kaucja w wysokości {frontmatter.seed.deposit} zł, {frontmatter.seed.depositmethod}.
-   1. Najemca pokrywa koszty napraw do {frontmatter.seed.repairs} zł.      
-   1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.seed.termination} dni.
-   1. Zwrot lokalu powinien nastąpic do {frontmatter.seed.return}. dnia od daty zakończenia Umowy.
+  1. Lokal będzie użytkowany {frontmatter.seed.purpose.includes(',') ? frontmatter.seed.purpose.split(', ').join(' i ') : frontmatter.seed.purpose}.
+  1. Czynsz w wysokości {frontmatter.seed.rent} zł, {frontmatter.seed.rentmethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
+  1. Opłaty za media
+    - Wynajmujący
+      <ul>
+      {frontmatter.seed.billslandlord.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
+      </ul>
+    - Najemca
+      <ul>
+      {frontmatter.seed.billstenant.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
+      </ul>
+  1. Kaucja w wysokości {frontmatter.seed.deposit} zł, {frontmatter.seed.depositmethod}.
+  1. Najemca pokrywa koszty napraw do {frontmatter.seed.repairs} zł.      
+  1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.seed.termination} dni.
+  1. Zwrot lokalu powinien nastąpic do {frontmatter.seed.return}. dnia od daty zakończenia Umowy.
 
 ### Prawa i obowiązki
 
 ### Czas trwania umowy
+  1. Umowa wchodzi w życie z dniem {frontmatter.seed.start}.
 
 ### Oświadczenia
