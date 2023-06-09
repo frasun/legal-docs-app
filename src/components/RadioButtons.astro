@@ -1,0 +1,31 @@
+---
+const { values, name, selected = 0 } = Astro.props;
+---
+
+<div>
+  {
+    values.map(({ value, label, disabled }) => (
+      <div>
+        <input
+          type="radio"
+          name={name}
+          id={`${name}-${value}`}
+          value={value}
+          checked={selected.toString() === value.toString()}
+          disabled={disabled}
+        />
+        <label for={`${name}-${value}`}>{label}</label>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  input[disabled] {
+    @apply opacity-50;
+  }
+
+  input[disabled] + label {
+    @apply opacity-50 cursor-not-allowed;
+  }
+</style>

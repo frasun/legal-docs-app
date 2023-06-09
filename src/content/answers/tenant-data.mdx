@@ -1,0 +1,17 @@
+---
+t-data: 0
+t-type: osoba fizyczna
+t-name: ''
+t-address: ''
+t-pin: ''
+---
+
+import PersonalData from "../../components/PersonalData.astro";
+
+<PersonalData
+  data={frontmatter["t-data"]}
+  type={frontmatter["t-type"]}
+  name={frontmatter["t-name"]}
+  address={frontmatter["t-address"]}
+  pin={frontmatter["t-pin"]}
+/>

@@ -26,7 +26,17 @@ seed:
     repairs: 2500,
     termination: 14,
     return: 14,
-    start: TODAY
+    start: TODAY,
+    l-data: 0,
+    l-type: osoba fizyczna,
+    l-name: '',
+    l-address: '',
+    l-pin: '',
+    t-data: 0,
+    t-type: osoba fizyczna,
+    t-name: '',
+    t-address: '',
+    t-pin: ''
   }
 index: [
   {
@@ -57,10 +67,39 @@ index: [
       {id: daty, title: Daty, token: start},
     ]
   },
+  {
+    title: Dane stron,
+    questions: [
+      {id: dane-najemcy, title: Dane Najemcy, token: [ltype, lname, laddress, lpin], template: landlord-data},
+      {id: dane-wynajmujacego, title: Dane Wynajmującego,  token: '', template: tenant-data},      
+    ]
+  },
 ]
 ---
 
 # Umowa najmu lokalu
+
+### Strony Umowy
+
+1. Umowa zostaje zawarta między <strong>Stronami</strong>:
+    <br />  
+    {frontmatter.seed['l-name'].length ? frontmatter.seed['l-name'] : `[IMIĘ I NAZWISKO / NAZWA]`}
+    <br />
+    {frontmatter.seed['l-address'].length ? frontmatter.seed['l-address'] : `[ADRES]`}
+    <br />
+    {frontmatter.seed['l-pin'].length ? frontmatter.seed['l-pin'] : `[NUMER PESEL / NIP]`}
+    <br />
+    zwanym dalej <strong>Najemcą</strong>
+    <br />
+    oraz
+    <br />
+    {frontmatter.seed['t-name'].length ? frontmatter.seed['t-name'] : `[IMIĘ I NAZWISKO / NAZWA]`}
+    <br />
+    {frontmatter.seed['t-address'].length ? frontmatter.seed['t-address'] : `[ADRES]`}
+    <br />
+    {frontmatter.seed['t-pin'].length ? frontmatter.seed['t-pin'] : `[NUMER PESEL / NIP]`}
+    <br />
+    zwanym dalej <strong>Wynajmującym</strong>
 
 ### Przedmiot Umowy
 

@@ -6,8 +6,8 @@ question: Kto będzie ponosił opłaty za media?
 billslib: ['zużycie energii', 'zużycie gazu', 'zużycie wody', 'wywóz śmieci', 'opłata za internet', 'opłata telewizyjna']
 optionslib: [Opłata, Wynajmujący, Najemca]
 ---
-import Radiogrid from '../../../components/Radiogrid.astro'
+import RadioGrid from '../../../components/RadioGrid.astro'
 
 Zaznacz wszystkie pasujące odpowiedzi
 
-<Radiogrid selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={frontmatter.billslib} token={['billslandlord', 'billstenant']} />
+<RadioGrid selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={frontmatter.billslib} token={['billslandlord', 'billstenant']} />

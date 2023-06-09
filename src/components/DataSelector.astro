@@ -1,0 +1,106 @@
+---
+import RadioButtons from "./RadioButtons.astro";
+import lib from "../content/questions/_lib";
+
+const { name, selected, data } = Astro.props;
+
+const dataTypes = ["osoba fizyczna", "firma"];
+---
+
+<data-selector>
+  <RadioButtons values={lib} selected={selected} name={`${name}-data`} />
+  <fieldset style={parseInt(selected) === 0 ? `display: none;` : ``}>
+    <label>Rodzaj</label>
+    <select name={`${name}-type`} value={data[0]}>
+      {
+        dataTypes.map((type) => (
+          <option selected={data[0] === type}>{type}</option>
+        ))
+      }
+    </select>
+    <label>Imię i nazwisko / nazwa</label>
+    <input
+      type="text"
+      name={`${name}-name`}
+      required={parseInt(selected) === 0 ? false : true}
+      value={data[1]}
+    />
+    <label>Adres</label>
+    <input
+      type="text"
+      name={`${name}-address`}
+      required={parseInt(selected) === 0 ? false : true}
+      value={data[2]}
+    />
+    <label>PESEL / NIP</label>
+    <input
+      type="text"
+      name={`${name}-pin`}
+      required={parseInt(selected) === 0 ? false : true}
+      value={data[3]}
+    />
+  </fieldset>
+</data-selector>
+
+<script>
+  class DataSelector extends HTMLElement {
+    radios: NodeListOf<HTMLInputElement>;
+    fieldset: HTMLFieldSetElement;
+
+    constructor() {
+      super();
+
+      this.radios = this.querySelectorAll('input[type="radio"]');
+      this.fieldset = this.querySelector("fieldset");
+    }
+
+    connectedCallback() {
+      Array.from(this.radios).forEach((radio) => {
+        radio.addEventListener("change", () => {
+          if (radio.value === "0") {
+            this.resetForm();
+          } else {
+            this.setForm();
+          }
+        });
+      });
+    }
+
+    resetForm() {
+      const inputs = this.fieldset.querySelectorAll("input");
+      const selects = this.fieldset.querySelectorAll("select");
+
+      this.fieldset.style.display = "none";
+
+      Array.from(inputs).forEach((input) => {
+        input.value = "";
+        input.required = false;
+      });
+      Array.from(selects).forEach((select) => (select.selectedIndex = 0));
+    }
+
+    setForm() {
+      const inputs = this.fieldset.querySelectorAll("input");
+      const selects = this.fieldset.querySelectorAll("select");
+
+      this.fieldset.removeAttribute("style");
+
+      Array.from(inputs).forEach((input) => {
+        input.value = "";
+        input.required = true;
+      });
+
+      Array.from(selects).forEach((select) => {
+        select.selectedIndex = 0;
+      });
+    }
+  }
+
+  customElements.define("data-selector", DataSelector);
+</script>
+
+<style>
+  fieldset {
+    @apply flex flex-col gap-10;
+  }
+</style>

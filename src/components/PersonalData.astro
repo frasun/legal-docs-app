@@ -1,0 +1,18 @@
+---
+import lib from "../content/questions/_lib";
+const { data, type, name, address, pin } = Astro.props;
+---
+
+{
+  data && parseInt(data) !== 0 ? (
+    <>
+      <span>{name}</span>
+      <br />
+      <span>{address}</span>
+      <br />
+      <span>{pin}</span>
+    </>
+  ) : (
+    <span>{lib[0].label}</span>
+  )
+}
