@@ -32,6 +32,7 @@ const documents = defineCollection({
         ),
       })
     ),
+    encrypted: z.array(z.string()),
   }),
 });
 

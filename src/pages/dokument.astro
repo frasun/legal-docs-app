@@ -2,6 +2,8 @@
 import { getSession } from "../auth-astro/server";
 import { getUserByEmail } from "../../db/auth";
 import { createDocument, publishDraft } from "../../db/document";
+import cryptr from "../utils/crypt";
+import { getEntry } from "astro:content";
 
 const session = await getSession(Astro.request);
 const user = session ? await getUserByEmail(String(session.user?.email)) : null;
@@ -11,7 +13,8 @@ if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const id = formData.get("id");
   const draft = Boolean(formData.get("draft"));
-  let answers = {};
+  let answers = {},
+    encrypted = [];
 
   if (Number(id)) {
     try {
@@ -21,11 +24,23 @@ if (Astro.request.method === "POST") {
     } catch {
       Astro.redirect("/404");
     }
+  } else {
+    const template = await getEntry("documents", String(id));
+
+    if (!template) {
+      Astro.redirect("/404");
+    } else {
+      encrypted = template.data.encrypted;
+    }
   }
 
   formData.forEach((value, key) => {
     if (!["id", "draft"].includes(key)) {
-      answers[key] = value;
+      if (encrypted.includes(key)) {
+        answers[key] = cryptr.encrypt(String(value));
+      } else {
+        answers[key] = value;
+      }
     }
   });
 

@@ -5,6 +5,7 @@ import Answer from "../../../components/Answer.astro";
 import { getDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 import tSeed from "../../../utils/transformSeed";
+import crypt from "../../../utils/crypt";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -39,6 +40,12 @@ const document = await getEntry("documents", docId);
 if (document) {
   if (!answers) {
     answers = tSeed(document.data.seed);
+  } else {
+    document.data.encrypted.forEach((key) => {
+      try {
+        answers[key] = crypt.decrypt(answers[key]);
+      } catch {}
+    });
   }
 } else {
   return Astro.redirect("/404");

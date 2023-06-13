@@ -33,6 +33,7 @@
     "tailwindcss": "^3.3.2"
   },
   "devDependencies": {
+    "cryptr": "^6.2.0",
     "svgo": "^2.8.0"
   }
 }
