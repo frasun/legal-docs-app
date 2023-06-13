@@ -27,7 +27,7 @@ const documents = defineCollection({
             id: reference("questions"),
             title: z.string(),
             token: z.string().or(z.array(z.string())).optional(),
-            template: z.string().optional(),
+            template: reference("answers").optional(),
           })
         ),
       })
