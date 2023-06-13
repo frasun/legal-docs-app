@@ -72,7 +72,7 @@ if (!q) {
 }
 
 const {
-  data: { question: questionContent },
+  data: { question: questionContent, qinfo },
 } = q;
 
 const { remarkPluginFrontmatter: qData, Content } = await q.render();
@@ -162,6 +162,7 @@ if (Astro.request.method === "POST") {
   <form method="POST">
     <h3>{questionContent}</h3>
     <Content />
+    {qinfo && <p>{qinfo}</p>}
     <footer>
       <div>
         <span>§{currentQuestionIndex + 1}</span>
