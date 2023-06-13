@@ -20,7 +20,7 @@ if (template) {
   const {remarkPluginFrontmatter: aData, Content} = await answer.render();
 
   for (let key of Object.keys(aData)) {
-    aData[key] = data[key] ? data[key] : data[token];
+    aData[key] = data[key];
   }
 
   CompiledContent = Content;

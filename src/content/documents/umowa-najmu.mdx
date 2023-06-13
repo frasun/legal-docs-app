@@ -42,9 +42,9 @@ index: [
   {
     title: Przedmiot umowy, 
     questions: [
-      {id: adres, title: Adres, token: [address, apt], template: address}, 
-      { id: powierzchnia, title: Powierzchnia, token: area, template: area}, 
-      { id: pomieszczenia, title: Pomieszczenia, token: [room, kitchen, hall, bathroom, toilet, balcony, wardrobe, garage], template: rooms}, 
+      {id: adres, title: Adres, template: address}, 
+      { id: powierzchnia, title: Powierzchnia, template: area}, 
+      { id: pomieszczenia, title: Pomieszczenia, template: rooms}, 
       { id: instalacje, title: Instalacje, token: systems}, 
       { id: wyposazenie, title: Wyposazenie, token: equipment}
     ]
@@ -53,12 +53,12 @@ index: [
     title: Przebieg umowy, 
     questions: [
       {id: przeznaczenie, title: Przeznaczenie lokalu, token: purpose},
-      {id: czynsz, title: Czynsz, token: [rent, rentmethod, rentdue], template: rent }, 
-      {id: oplaty, title: Oplaty, token: [billslandlord, billstenant], template: bills}, 
-      {id: kaucja, title: Kaucja, token: [deposit, depositmethod], template: deposit },
-      {id: naprawy, title: Naprawy, token: repairs, template: repairs}, 
-      {id: wypowiedzenie, title: Wypowiedzenie, token: termination, template: days}, 
-      {id: zwrot, title: Zwrot, token: return, template: days-due},      
+      {id: czynsz, title: Czynsz, template: rent }, 
+      {id: oplaty, title: Oplaty, template: bills}, 
+      {id: kaucja, title: Kaucja, template: deposit },
+      {id: naprawy, title: Naprawy, template: repairs}, 
+      {id: wypowiedzenie, title: Wypowiedzenie, template: termination}, 
+      {id: zwrot, title: Zwrot, template: return},      
     ]
   },  
   {
@@ -70,8 +70,8 @@ index: [
   {
     title: Dane stron,
     questions: [
-      {id: dane-najemcy, title: Dane Najemcy, token: [ltype, lname, laddress, lpin], template: landlord-data},
-      {id: dane-wynajmujacego, title: Dane Wynajmującego,  token: '', template: tenant-data},      
+      {id: dane-najemcy, title: Dane Najemcy, template: landlord-data},
+      {id: dane-wynajmujacego, title: Dane Wynajmującego,  template: tenant-data},      
     ]
   },
 ]
