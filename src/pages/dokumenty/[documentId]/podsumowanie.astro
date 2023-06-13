@@ -6,6 +6,7 @@ import { getDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 import tSeed from "../../../utils/transformSeed";
 import crypt from "../../../utils/crypt";
+import { Icon } from "astro-icon";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -60,6 +61,25 @@ if (!title) title = document.data.title;
 
 <Layout title={`Podsumowanie - ${title}`}>
   <span slot="topbar-title">{title}{draft && <span> - Szkic</span>}</span>
+  {
+    Astro.cookies.has(documentId) ? (
+      <form
+        method="POST"
+        action={`${Astro.url.origin}/dokument`}
+        slot="topbar-aside"
+      >
+        {Object.entries(Astro.cookies.get(docId).json()).map(([key, value]) => (
+          <input type="hidden" name={key} value={String(value)} />
+        ))}
+        <input type="hidden" name="id" value={docId} />
+        <input type="hidden" name="draft" value="true" />
+        <button>
+          <Icon name="save" width={16} height={16} />
+          Zapisz
+        </button>
+      </form>
+    ) : null
+  }
   <section>
     <h1>Podsumowanie</h1>
     {
