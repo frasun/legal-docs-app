@@ -3,7 +3,7 @@ import { getEntry } from 'astro:content';
 import {format, isDate} from 'date-fns';
 import {DATE_FORMAT} from '../utils/cosntants'
 
-const { data, template, token } = Astro.props;
+const { data, template, token, type } = Astro.props;
 
 if (!data) {
   return;
@@ -29,10 +29,8 @@ if (template) {
 if (!template && token) {
   const value = data[token];
 
-  if(Array.isArray(value)) {
-    textContent = value.join(", ")
-  } else if(isDate(value)) {
-    textContent = format(new Date(value), DATE_FORMAT);
+  if(type === 'date') {
+    textContent = format(new Date(value), DATE_FORMAT);  
   } else {
     textContent = value
   }

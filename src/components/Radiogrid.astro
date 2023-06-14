@@ -46,6 +46,8 @@ const { options, labels, token, selected } = Astro.props;
 </style>
 
 <script>
+  import { EMPTY } from "../content/documents/_umowa-najmu";
+
   class Radiogrid extends HTMLElement {
     valueInputs: NodeListOf<HTMLInputElement>;
     radios: NodeListOf<HTMLInputElement>;
@@ -67,7 +69,9 @@ const { options, labels, token, selected } = Astro.props;
       const values = this.getHiddenValue();
 
       Array.from(this.valueInputs).map((input) => {
-        input.value = values[input.id];
+        const answer = values[input.id] ? values[input.id] : EMPTY;
+
+        input.value = Array.isArray(answer) ? answer.join(", ") : answer;
       });
     }
 

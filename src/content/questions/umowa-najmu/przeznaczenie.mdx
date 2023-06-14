@@ -2,10 +2,10 @@
 slug: przeznaczenie
 question: Do jakich celów przeznaczony będzie lokal?
 purpose: "do celów mieszkalnych"
-purposelib: ["do celów mieszkalnych", "do prowadzenia działalności gospodarczej"]
 ---
 import Checkboxes from '../../../components/Checkboxes.astro'
+import {purposeEnum} from '../../documents/_umowa-najmu'
 
 Zaznacz wszystkie pasujące odpowiedzi
 
-<Checkboxes values={frontmatter.purposelib} selected={frontmatter.purpose} token="purpose" required />
+<Checkboxes values={purposeEnum} selected={frontmatter.purpose} token="purpose" required />

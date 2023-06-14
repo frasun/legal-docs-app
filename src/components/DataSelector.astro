@@ -1,10 +1,9 @@
 ---
 import RadioButtons from "./RadioButtons.astro";
 import lib from "../content/questions/_lib";
+import { entityEnum } from "../content/documents/_umowa-najmu";
 
 const { name, selected, data } = Astro.props;
-
-const dataTypes = ["osoba fizyczna", "firma"];
 ---
 
 <data-selector>
@@ -13,7 +12,7 @@ const dataTypes = ["osoba fizyczna", "firma"];
     <label>Rodzaj</label>
     <select name={`${name}-type`} value={data[0]}>
       {
-        dataTypes.map((type) => (
+        entityEnum.map((type) => (
           <option selected={data[0] === type}>{type}</option>
         ))
       }

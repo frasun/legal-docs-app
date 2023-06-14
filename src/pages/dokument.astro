@@ -45,15 +45,19 @@ if (Astro.request.method === "POST") {
   });
 
   if (session) {
-    const docId = await createDoc(id, answers, draft, userId);
+    try {
+      const docId = await createDoc(id, answers, draft, userId);
 
-    if (docId) {
-      return Astro.redirect(
-        `${Astro.url.origin}/${
-          draft ? `moje-dokumenty` : `dokumenty/${docId}/dokument`
-        }`
-      );
-    } else {
+      if (docId) {
+        return Astro.redirect(
+          `${Astro.url.origin}/${
+            draft ? `moje-dokumenty` : `dokumenty/${docId}/dokument`
+          }`
+        );
+      } else {
+        return Astro.redirect("/404");
+      }
+    } catch {
       return Astro.redirect("/404");
     }
   } else {

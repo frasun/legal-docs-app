@@ -68,47 +68,72 @@ export async function getDocuments(userId, page = 1, limit = LIMIT) {
   }
 }
 
-export async function updateAnswers(documentId, answers) {
+export async function updateAnswers(documentId, answers, docId) {
+  const { default: schema } = await import(
+    `../src/content/documents/_${docId}.ts`
+  );
+
+  if (!schema) {
+    throw "No template found";
+  }
+
+  let validatedAnswers;
+
   try {
-    return await db
-      .updateTable(KEY)
-      .set({ answers, modified: sql`now()` })
-      .where("id", "=", documentId)
-      .execute();
-  } catch (e: any) {
-    throw e;
+    validatedAnswers = schema.parse(answers);
+    try {
+      return await db
+        .updateTable(KEY)
+        .set({ answers: validatedAnswers, modified: sql`now()` })
+        .where("id", "=", documentId)
+        .execute();
+    } catch (e: any) {
+      throw e;
+    }
+  } catch ({ errors }) {
+    throw errors;
   }
 }
 
 export async function createDocument(doc, answers, userid, draft = false) {
+  const template = await getEntry("documents", doc);
+  const { default: schema } = await import(
+    `../src/content/documents/_${doc}.ts`
+  );
+
+  if (!template || !schema) {
+    throw "No template found";
+  }
+
+  const {
+    data: { title },
+  } = template;
+
+  let validatedAnswers;
+
   try {
-    const template = await getEntry("documents", doc);
-
-    if (!template) {
-      throw "No template found";
+    validatedAnswers = schema.parse(answers);
+    try {
+      return await db
+        .insertInto(KEY)
+        .values([
+          {
+            doc,
+            answers: JSON.stringify(validatedAnswers),
+            userid,
+            created: new Date(),
+            doctitle: title,
+            draft,
+            title: `${title} #${Math.floor(Math.random() * 1000)}`,
+          },
+        ])
+        .returning("id")
+        .executeTakeFirst();
+    } catch (e: any) {
+      throw e;
     }
-
-    const {
-      data: { title },
-    } = template;
-
-    return await db
-      .insertInto(KEY)
-      .values([
-        {
-          doc,
-          answers: JSON.stringify(answers),
-          userid,
-          created: new Date(),
-          doctitle: title,
-          draft,
-          title: `${title} #${Math.floor(Math.random() * 1000)}`,
-        },
-      ])
-      .returning("id")
-      .executeTakeFirst();
-  } catch (e: any) {
-    throw e;
+  } catch ({ errors }) {
+    throw errors;
   }
 }
 

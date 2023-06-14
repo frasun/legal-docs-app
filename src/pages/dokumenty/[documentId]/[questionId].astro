@@ -116,16 +116,22 @@ if (Astro.request.method === "POST") {
           allAnswers[key] = crypt.encrypt(allAnswers[key]);
         });
 
-        await updateAnswers(documentId, allAnswers);
+        try {
+          await updateAnswers(documentId, allAnswers, docId);
+
+          return Astro.redirect(nextUrl);
+        } catch (error) {
+          console.log(error);
+        }
       }
     } else {
       Astro.cookies.set(documentId, allAnswers, {
         maxAge: 600,
         httpOnly: true,
       });
-    }
 
-    return Astro.redirect(nextUrl);
+      return Astro.redirect(nextUrl);
+    }
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);

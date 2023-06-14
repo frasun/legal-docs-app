@@ -86,11 +86,16 @@ if (!title) title = document.data.title;
       index.map(({ title, questions }) => (
         <>
           <h4>{title}</h4>
-          {questions.map(({ title, token, template, id: { slug } }) => (
+          {questions.map(({ title, token, template, type, id: { slug } }) => (
             <div>
               <div>
                 <h6>{title}</h6>
-                <Answer data={answers} template={template} token={token} />
+                <Answer
+                  data={answers}
+                  template={template}
+                  token={token}
+                  type={type}
+                />
               </div>
               <a href={`${Astro.url.origin}/dokumenty/${documentId}/${slug}`}>
                 Zmień

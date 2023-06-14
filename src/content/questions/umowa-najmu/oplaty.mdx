@@ -3,11 +3,11 @@ slug: oplaty
 billslandlord: 'zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci'
 billstenant: 'opłata za internet, opłata telewizyjna'
 question: Kto będzie ponosił opłaty za media?
-billslib: ['zużycie energii', 'zużycie gazu', 'zużycie wody', 'wywóz śmieci', 'opłata za internet', 'opłata telewizyjna']
 optionslib: [Opłata, Wynajmujący, Najemca]
 ---
 import RadioGrid from '../../../components/RadioGrid.astro'
+import {billsEnum} from '../../documents/_umowa-najmu'
 
 Zaznacz wszystkie pasujące odpowiedzi
 
-<RadioGrid selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={frontmatter.billslib} token={['billslandlord', 'billstenant']} />
+<RadioGrid selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={billsEnum} token={['billslandlord', 'billstenant']} />

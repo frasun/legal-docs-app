@@ -17,12 +17,12 @@ seed:
     equipment: "Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa",
     purpose: "do celów mieszkalnych",
     rent: 2300,
-    rentmethod: "płatny przelewem na konto Wynajmującego",
+    rentmethod: "przelewem na konto bankowe",
     rentdue: 14,
     billslandlord: "zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci",
     billstenant: "opłata za internet, opłata telewizyjna",
     deposit: 2300,
-    depositmethod: "płatna przelewem na konto Wynajmującego",
+    depositmethod: "przelewem na konto bankowe",
     repairs: 2500,
     termination: 14,
     return: 14,
@@ -64,7 +64,7 @@ index: [
   {
     title: Daty i okres trwania umowy,
     questions: [
-      { id: daty, title: Daty, token: start },
+      { id: daty, title: Data rozpoczęcia najmu, token: start, type: date },
     ]
   },
   {
@@ -132,7 +132,7 @@ encrypted: [
 ### Przebieg umowy
    
   1. Lokal będzie użytkowany {frontmatter.seed.purpose.includes(',') ? frontmatter.seed.purpose.split(', ').join(' i ') : frontmatter.seed.purpose}.
-  1. Czynsz w wysokości {frontmatter.seed.rent} zł, {frontmatter.seed.rentmethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
+  1. Czynsz w wysokości {frontmatter.seed.rent} zł, płatny {frontmatter.seed.rentmethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
   1. Opłaty za media
     - Wynajmujący
       <ul>
@@ -142,7 +142,7 @@ encrypted: [
       <ul>
       {frontmatter.seed.billstenant.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
       </ul>
-  1. Kaucja w wysokości {frontmatter.seed.deposit} zł, {frontmatter.seed.depositmethod}.
+  1. Kaucja w wysokości {frontmatter.seed.deposit} zł, płatna {frontmatter.seed.depositmethod}.
   1. Najemca pokrywa koszty napraw do {frontmatter.seed.repairs} zł.      
   1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.seed.termination} dni.
   1. Zwrot lokalu powinien nastąpic do {frontmatter.seed.return}. dnia od daty zakończenia Umowy.

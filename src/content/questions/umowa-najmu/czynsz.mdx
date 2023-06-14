@@ -2,16 +2,17 @@
 slug: czynsz
 rent: 2500
 rentmethod: przelewem na konto bankowe
-rentmethodlib: [przelewem na konto bankowe, gotówką]
 rentdue: 14
 question: Ile będzie wynosił czynsz?
 qinfo: In sodales ante eu justo accumsan efficitur. Phasellus tincidunt nec ipsum dignissim interdum. Morbi in lectus id magna cursus egestas eget sed odio. Etiam iaculis pretium nibh quis pharetra. Fusce sagittis neque vitae efficitur tempor. In felis mauris, volutpat et egestas vel, facilisis et risus. Cras interdum nec eros in malesuada. Phasellus aliquam fermentum quam.
 ---
+import {paymentMethodEnum} from '../../documents/_umowa-najmu'
+
 wysokość <input type="number" name="rent" value={frontmatter.rent} required step=".01" min="1"/>
 
 płatność 
 <select name="rentmethod" required>
-{frontmatter.rentmethodlib.map(m => <option value={m} selected={frontmatter.rentmethod.includes(m)}>{m}</option>)}
+{paymentMethodEnum.map(m => <option value={m} selected={frontmatter.rentmethod === m}>{m}</option>)}
 </select>
 
 termin płatności do <input type="number" name="rentdue" value={frontmatter.rentdue} min="1" /> dni po zakończeniu umowy
