@@ -4,6 +4,7 @@ import Layout from "../../../layouts/App.astro";
 import { getDocument, createDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 import { getUserByEmail } from "../../../../db/auth";
+import crypt from "../../../utils/crypt";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -62,9 +63,16 @@ if (!document) {
 if (!title) title = document.data.title;
 
 const { remarkPluginFrontmatter: qData, Content } = await document.render();
+const { encrypted } = document.data;
 
 for (let key of Object.keys(qData.seed)) {
-  if (key !== "title") qData.seed[key] = answers[key];
+  if (key !== "title") {
+    if (encrypted.includes(key)) {
+      qData.seed[key] = crypt.decrypt(answers[key]);
+    } else {
+      qData.seed[key] = answers[key];
+    }
+  }
 }
 ---
 

@@ -84,6 +84,8 @@ encrypted: [
   t-pin
 ]
 ---
+import { format, parseISO } from "date-fns";
+import { DATE_FORMAT } from "../../utils/constants";
 
 # Umowa najmu lokalu
 
@@ -150,6 +152,6 @@ encrypted: [
 ### Prawa i obowiązki
 
 ### Czas trwania umowy
-  1. Umowa wchodzi w życie z dniem {frontmatter.seed.start}.
+  1. Umowa wchodzi w życie z dniem {format(parseISO(frontmatter.seed.start), DATE_FORMAT)}.
 
 ### Oświadczenia

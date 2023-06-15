@@ -36,7 +36,7 @@ if (Astro.request.method === "POST") {
 
   formData.forEach((value, key) => {
     if (!["id", "draft"].includes(key)) {
-      if (encrypted.includes(key)) {
+      if (encrypted.includes(key) && answers[key] !== "") {
         answers[key] = cryptr.encrypt(String(value));
       } else {
         answers[key] = value;
