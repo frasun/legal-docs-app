@@ -84,8 +84,8 @@ encrypted: [
   t-pin
 ]
 ---
-import { format, parseISO } from "date-fns";
-import { DATE_FORMAT } from "../../utils/constants";
+import formatNumber from "../../utils/number";
+import formatDate from "../../utils/date";
 
 # Umowa najmu lokalu
 
@@ -113,7 +113,7 @@ import { DATE_FORMAT } from "../../utils/constants";
 
 ### Przedmiot Umowy
 
-  1. Umowa dotyczy lokalu o powierzchni {frontmatter.seed.area} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.seed.address} / {frontmatter.seed.apt}**.
+  1. Umowa dotyczy lokalu o powierzchni {formatNumber(frontmatter.seed.area)} m<sup>2</sup>, znajdującego się pod adresem: **{frontmatter.seed.address} / {frontmatter.seed.apt}**.
   1. W skład lokalu wchodzą następujące pomieszczenia:
       <ul>
       {Number(frontmatter.seed.room) > 0 && (<li>{frontmatter.seed.room} x pokój</li>)}
@@ -134,7 +134,7 @@ import { DATE_FORMAT } from "../../utils/constants";
 ### Przebieg umowy
    
   1. Lokal będzie użytkowany {frontmatter.seed.purpose.includes(',') ? frontmatter.seed.purpose.split(', ').join(' i ') : frontmatter.seed.purpose}.
-  1. Czynsz w wysokości {frontmatter.seed.rent} zł, płatny {frontmatter.seed.rentmethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
+  1. Czynsz w wysokości {formatNumber(frontmatter.seed.rent)} zł, płatny {frontmatter.seed.rentmethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
   1. Opłaty za media
       - Wynajmujący
         <ul>
@@ -144,14 +144,14 @@ import { DATE_FORMAT } from "../../utils/constants";
         <ul>
         {frontmatter.seed.billstenant.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
         </ul>
-  1. Kaucja w wysokości {frontmatter.seed.deposit} zł, płatna {frontmatter.seed.depositmethod}.
-  1. Najemca pokrywa koszty napraw do {frontmatter.seed.repairs} zł.      
+  1. Kaucja w wysokości {formatNumber(frontmatter.seed.deposit)} zł, płatna {frontmatter.seed.depositmethod}.
+  1. Najemca pokrywa koszty napraw do {formatNumber(frontmatter.seed.repairs)} zł.      
   1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.seed.termination} dni.
   1. Zwrot lokalu powinien nastąpic do {frontmatter.seed.return}. dnia od daty zakończenia Umowy.
 
 ### Prawa i obowiązki
 
 ### Czas trwania umowy
-  1. Umowa wchodzi w życie z dniem {format(parseISO(frontmatter.seed.start), DATE_FORMAT)}.
+  1. Umowa wchodzi w życie z dniem {formatDate(frontmatter.seed.start)}.
 
 ### Oświadczenia

@@ -4,4 +4,6 @@ rent: $rent
 rentmethod: $rentmethod
 rentdue: $rentdue
 ---
-{frontmatter.rent} zł, {frontmatter.rentmethod}, do {frontmatter.rentdue}. dnia miesiąca
+import formatNumber from '../../../utils/number'
+
+{formatNumber(frontmatter.rent)} zł, {frontmatter.rentmethod}, do {frontmatter.rentdue}. dnia miesiąca

@@ -6,7 +6,7 @@ question: Ile będzie wynosić kaucja i jakie są warunki jej zwrotu?
 ---
 import {paymentMethodEnum} from '../../documents/_umowa-najmu'
 
-wysokość <input type="text" name="deposit" value={frontmatter.deposit} required step=".01" min="1" />
+wysokość <input type="number" name="deposit" value={frontmatter.deposit} required step=".01" min="1" />
 
 płatność 
 <select name="depositmethod" required>

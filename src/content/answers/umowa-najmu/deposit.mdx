@@ -3,4 +3,6 @@ slug: deposit
 deposit: $deposit
 depositmethod: $depositmethod
 ---
-{frontmatter.deposit} zł, {frontmatter.depositmethod}
+import formatNumber from '../../../utils/number'
+
+{formatNumber(frontmatter.deposit)} zł, {frontmatter.depositmethod}
