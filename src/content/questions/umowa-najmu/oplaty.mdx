@@ -5,10 +5,9 @@ billstenant: 'opłata za internet, opłata telewizyjna'
 question: Kto będzie ponosił opłaty za media?
 optionslib: [Opłata, Wynajmujący, Najemca]
 ---
-// import RadioGrid from '../../../components/RadioGrid.astro'
-import Checkboxes from '../../../components/Checkboxes.astro'
+import RadioGrid from '../../../components/RadioGrid.astro'
 import {billsEnum} from '../../documents/_umowa-najmu'
 
 Zaznacz wszystkie pasujące odpowiedzi
 
-{/* <RadioGrid selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={billsEnum} token={['billslandlord', 'billstenant']} /> */}
+<RadioGrid selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={billsEnum} token={['billslandlord', 'billstenant']} />
