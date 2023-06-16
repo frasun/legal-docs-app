@@ -22,10 +22,11 @@ const getCategoryName = (slug) => {
 };
 ---
 
-<Layout title="Wszystkie dokumenty - Prawniczek">
+<Layout title={`${title} - Prawniczek`}>
   <span slot="topbar-title">{title}</span>
   <category-selector slot="topbar-aside">
-    <select>
+    <label for="category">Kategorie</label>
+    <select id="category">
       <option value="">Wszystkie</option>
       {
         categories.map(({ id, data: { name } }) => (
@@ -62,17 +63,8 @@ const getCategoryName = (slug) => {
 </Layout>
 
 <style>
-  header {
-    @apply m-20;
-    @apply flex gap-20 items-center;
-  }
-
-  header h2 {
-    @apply flex-grow;
-  }
-
   section {
-    @apply flex gap-20 flex-wrap mx-20;
+    @apply flex gap-20 flex-wrap w-full;
   }
 
   section > div {
@@ -81,6 +73,10 @@ const getCategoryName = (slug) => {
 
   section > div > div {
     @apply flex flex-wrap gap-10;
+  }
+
+  category-selector {
+    @apply flex gap-10 items-center;
   }
 </style>
 

@@ -20,11 +20,13 @@ const session = await getSession(Astro.request);
         )
       }
       <h1>
-        <slot name="topbar-title"> title</slot>
+        <slot name="topbar-title">title</slot>
       </h1>
       <slot name="topbar-aside" />
     </header>
-    <slot />
+    <section>
+      <slot />
+    </section>
   </main>
   <slot name="footer" />
 </Layout>
@@ -35,20 +37,28 @@ const session = await getSession(Astro.request);
     height: 100vh;
   }
 </style>
+<style is:global>
+  :root {
+    --navbar-height: 62px;
+  }
+</style>
 
 <style>
   main {
     @apply flex-grow;
     @apply overflow-auto;
+    @apply px-30;
+    @apply flex flex-col;
   }
 
   main > header {
     @apply flex items-center;
-    @apply px-20 py-15;
     @apply sticky top-0;
     @apply bg-gray;
     @apply gap-15;
     @apply z-10;
+    @apply w-full;
+    @apply min-h-[var(--navbar-height)];
   }
 
   main > header > h1 {
@@ -59,5 +69,14 @@ const session = await getSession(Astro.request);
 
   main > header > a {
     @apply btn btn-alt;
+  }
+
+  main > section {
+    @apply flex items-start justify-center flex-1 gap-30;
+    @apply pb-[var(--navbar-height)];
+  }
+
+  aside {
+    @apply sticky top-[var(--navbar-height)];
   }
 </style>

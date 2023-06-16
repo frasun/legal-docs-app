@@ -186,19 +186,14 @@ if (Astro.request.method === "POST") {
       </nav>
     </footer>
   </form>
-
-  <aside>
-    <QuestionIndex
-      index={qIndex}
-      current={questionId}
-      documentId={documentId}
-    />
-  </aside>
+  <QuestionIndex index={qIndex} current={questionId} documentId={documentId} />
 </Layout>
 
 <style>
   form {
     @apply container;
+    @apply flex flex-col justify-center min-h-full;
+    @apply pb-[var(--navbar-height)];
   }
 
   footer {
