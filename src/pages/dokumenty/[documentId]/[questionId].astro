@@ -1,11 +1,11 @@
 ---
+import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
 import { getCollection, getEntry } from "astro:content";
 import { getDocument, updateAnswers } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 import tSeed from "../../../utils/transformSeed";
 import crypt from "../../../utils/crypt";
-import Layout from "../../../layouts/App.astro";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
 import Progressbar from "../../../components/Progressbar.astro";
 

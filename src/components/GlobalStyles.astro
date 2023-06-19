@@ -187,7 +187,11 @@
     }
 
     label {
-      @apply cursor-pointer py-[2px];
+      @apply py-[2px];
+    }
+
+    label[for] {
+      @apply cursor-pointer;
     }
 
     input[type="checkbox"] {
@@ -204,6 +208,10 @@
 
     select {
       @apply min-w-[200px] py-[5px] px-15;
+    }
+
+    .input-group {
+      @apply flex gap-10 items-baseline;
     }
   }
 </style>

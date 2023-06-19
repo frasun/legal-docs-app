@@ -8,6 +8,7 @@ optionslib: [Opłata, Wynajmujący, Najemca]
 import Radios from '../../../components/Radios.astro'
 import {billsEnum} from '../../documents/_umowa-najmu'
 
-Zaznacz wszystkie pasujące odpowiedzi
-
-<Radios selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={billsEnum} token={['billslandlord', 'billstenant']} />
+<fieldset>
+    <legend>Zaznacz wszystkie pasujące odpowiedzi</legend>
+    <Radios selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={billsEnum} token={['billslandlord', 'billstenant']} />
+</fieldset>

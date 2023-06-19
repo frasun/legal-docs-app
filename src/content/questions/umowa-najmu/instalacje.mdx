@@ -6,6 +6,7 @@ question: Jakie instalacje dostępne są w lokalu?
 import Checkboxes from '../../../components/Checkboxes.astro'
 import {systemsEnum} from '../../documents/_umowa-najmu'
 
-Zaznacz wszystkie pasujące odpowiedzi
-
-<Checkboxes values={systemsEnum} selected={frontmatter.systems} token="systems" />
+<fieldset>
+    <legend>Zaznacz wszystkie pasujące odpowiedzi</legend>
+    <Checkboxes values={systemsEnum} selected={frontmatter.systems} token="systems" />
+</fieldset>

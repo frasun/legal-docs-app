@@ -9,30 +9,33 @@ const { name, selected, data } = Astro.props;
 <data-selector>
   <RadioButtons values={lib} selected={selected} name={`${name}-data`} />
   <fieldset style={parseInt(selected) === 0 ? `display: none;` : ``}>
-    <label>Rodzaj</label>
-    <select name={`${name}-type`} value={data[0]}>
+    <label for="type">Rodzaj</label>
+    <select id="type" name={`${name}-type`} value={data[0]}>
       {
         entityEnum.map((type) => (
           <option selected={data[0] === type}>{type}</option>
         ))
       }
     </select>
-    <label>Imię i nazwisko / nazwa</label>
+    <label for="name">Imię i nazwisko / nazwa</label>
     <input
+      id="name"
       type="text"
       name={`${name}-name`}
       required={parseInt(selected) === 0 ? false : true}
       value={data[1]}
     />
-    <label>Adres</label>
+    <label for="address">Adres</label>
     <input
+      id="address"
       type="text"
       name={`${name}-address`}
       required={parseInt(selected) === 0 ? false : true}
       value={data[2]}
     />
-    <label>PESEL / NIP</label>
+    <label for="pin">PESEL / NIP</label>
     <input
+      id="pin"
       type="text"
       name={`${name}-pin`}
       required={parseInt(selected) === 0 ? false : true}
@@ -100,6 +103,6 @@ const { name, selected, data } = Astro.props;
 
 <style>
   fieldset {
-    @apply flex flex-col gap-10;
+    @apply flex flex-col gap-[5px];
   }
 </style>

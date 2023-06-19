@@ -2,10 +2,10 @@
 const { values, name, selected = 0 } = Astro.props;
 ---
 
-<div>
+<>
   {
     values.map(({ value, label, disabled }) => (
-      <div>
+      <div class="input-group items-center">
         <input
           type="radio"
           name={name}
@@ -18,7 +18,7 @@ const { values, name, selected = 0 } = Astro.props;
       </div>
     ))
   }
-</div>
+</>
 
 <style>
   input[disabled] {

@@ -3,4 +3,8 @@ slug: wypowiedzenie
 question: Jakie będzie termin wypowiedzenia umowy?
 termination: 14
 ---
-termin wypowiedzenia <input type="number" name="termination" value={frontmatter.termination} required min="1" /> dni
+<div class="input-group">
+    <label for="termination">termin wypowiedzenia</label>
+    <input type="number" id="termination" name="termination" value={frontmatter.termination} required min="1" />
+    <span>dni</span>
+</div>

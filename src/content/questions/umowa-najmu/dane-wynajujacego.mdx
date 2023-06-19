@@ -10,15 +10,16 @@ question: Czy chcesz uzupełnić dane Wynajmującego?
 
 import DataSelector from "../../../components/DataSelector.astro";
 
-Wybierz pasującą odpowiedź
-
-<DataSelector
-  name="t"
-  selected={frontmatter["t-data"]}
-  data={[
-    frontmatter["t-type"],
-    frontmatter["t-name"],
-    frontmatter["t-address"],
-    frontmatter["t-pin"],
-  ]}
-/>
+<fieldset>
+  <legend>Wybierz pasującą odpowiedź</legend>
+  <DataSelector
+    name="t"
+    selected={frontmatter["t-data"]}
+    data={[
+      frontmatter["t-type"],
+      frontmatter["t-name"],
+      frontmatter["t-address"],
+      frontmatter["t-pin"],
+    ]}
+  />
+</fieldset>
