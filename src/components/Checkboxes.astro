@@ -1,20 +1,35 @@
 ---
-const { values, selected, token, required } = Astro.props;
+enum CheckboxSize {
+  default = "default",
+  lg = "lg",
+}
+
+interface Props {
+  values: string[];
+  selected: string;
+  token: string;
+  required: boolean;
+  size?: CheckboxSize;
+}
+
+const { values, selected, token, required, size = "default" } = Astro.props;
 ---
 
-<checkbox-list required={required}>
+<checkbox-list required={required} size={size}>
   {
     values.map((val) => (
-      <div>
+      <label for={val} data-checked={selected.includes(val)}>
         <input type="checkbox" id={val} checked={selected.includes(val)} />
-        <label for={val}>{val}</label>
-      </div>
+        {val}
+      </label>
     ))
   }
   <input type="hidden" name={token} />
 </checkbox-list>
 
 <script>
+  import { EMPTY } from "../utils/constants";
+
   class CheckboxList extends HTMLElement {
     valueInput: HTMLInputElement;
     checkboxes: NodeListOf<HTMLInputElement>;
@@ -37,13 +52,19 @@ const { values, selected, token, required } = Astro.props;
     setHiddenValue() {
       let value = [];
 
-      for (let { id, checked } of Array.from(this.checkboxes)) {
+      for (let checkbox of Array.from(this.checkboxes)) {
+        const { checked, id } = checkbox;
+
         if (checked) {
           value.push(id);
+
+          checkbox.parentElement.setAttribute("data-checked", "");
+        } else {
+          checkbox.parentElement.removeAttribute("data-checked");
         }
       }
 
-      this.valueInput.value = value.length ? value.join(", ") : "brak";
+      this.valueInput.value = value.length ? value.join(", ") : EMPTY;
 
       if (this.required) {
         if (!value.length) {
@@ -58,3 +79,44 @@ const { values, selected, token, required } = Astro.props;
   }
   customElements.define("checkbox-list", CheckboxList);
 </script>
+
+<style>
+  checkbox-list {
+    @apply flex flex-wrap gap-15;
+  }
+
+  label {
+    @apply bg-white rounded-xl;
+    @apply border-2 border-dark30;
+    @apply px-20 py-15;
+    @apply flex gap-15 items-start;
+    @apply font-serif;
+    @apply transition-colors;
+  }
+
+  label:not([data-checked]):hover {
+    @apply border-dark40;
+    @apply text-dark90;
+  }
+
+  label[data-checked] {
+    @apply text-dark90;
+    @apply border-dark40;
+  }
+
+  label[data-checked]:hover {
+    @apply border-dark75;
+  }
+
+  input {
+    @apply mt-[1px];
+  }
+
+  checkbox-list[size="lg"] {
+    @apply text-xl;
+  }
+
+  checkbox-list[size="lg"] label {
+    @apply p-30 gap-20;
+  }
+</style>
