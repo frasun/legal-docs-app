@@ -2,10 +2,10 @@
 const { values, name, selected = 0 } = Astro.props;
 ---
 
-<>
+<section>
   {
     values.map(({ value, label, disabled }) => (
-      <div class="input-group items-center">
+      <div class="input-group items-center flex-nowrap">
         <input
           type="radio"
           name={name}
@@ -18,7 +18,7 @@ const { values, name, selected = 0 } = Astro.props;
       </div>
     ))
   }
-</>
+</section>
 
 <style>
   input[disabled] {
@@ -27,5 +27,9 @@ const { values, name, selected = 0 } = Astro.props;
 
   input[disabled] + label {
     @apply opacity-50 cursor-not-allowed;
+  }
+
+  section {
+    @apply flex flex-col gap-15;
   }
 </style>

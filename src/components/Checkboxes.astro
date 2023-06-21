@@ -94,9 +94,12 @@ const { values, selected, token, required, size = "default" } = Astro.props;
     @apply transition-colors;
   }
 
-  label:not([data-checked]):hover {
-    @apply border-dark40;
+  label:hover {
     @apply text-dark90;
+  }
+
+  label:not([data-checked]):hover {
+    @apply border-dark55;
   }
 
   label[data-checked] {
@@ -105,7 +108,7 @@ const { values, selected, token, required, size = "default" } = Astro.props;
   }
 
   label[data-checked]:hover {
-    @apply border-dark75;
+    @apply border-dark90;
   }
 
   input {

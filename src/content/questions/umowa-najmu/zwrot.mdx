@@ -3,8 +3,8 @@ slug: zwrot
 question: W jakim terminie trzeba będzie dokonać zwrotu lokalu?
 return: 30
 ---
-<div class="input-group">
-    <label for="return">zwrot lokalu do</label>
-    <input type="number" id="return" name="return" value={frontmatter.return} required min="1" />
+<div class="input-group lg">
+    <span>Zwrot lokalu nastąpi do</span>
+    <input type="number" id="return" name="return" value={frontmatter.return} required min="1" aria-label="Termin zwrotu lokalu" />
     <span>dni od dnia zakończenia umowy</span>
 </div>

@@ -2,9 +2,11 @@
 import { format, parseISO } from "date-fns";
 import { DATE_FORMAT } from "../utils/constants";
 
-const { date, name, label } = Astro.props;
+const { date, name, label, size } = Astro.props;
 const dateValue = format(parseISO(date), DATE_FORMAT);
 ---
 
-<label for={name}>{label}</label>
-<input id="start" type="date" name={name} value={dateValue} required />
+<div class={`input-group${size ? ` ${size}` : ``}`}>
+    <label for={name}>{label}</label>
+    <input id="start" type="date" name={name} value={dateValue} required />
+</div>

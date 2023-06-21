@@ -165,7 +165,7 @@ if (Astro.request.method === "POST") {
     }
   </aside>
   <form method="POST">
-    <h3>{questionContent}</h3>
+    <h2>{questionContent}</h2>
     <Content />
     {qinfo && <p>{qinfo}</p>}
     <footer>
@@ -191,8 +191,12 @@ if (Astro.request.method === "POST") {
 <style>
   form {
     @apply container;
-    @apply flex flex-col justify-center min-h-full;
+    @apply flex flex-col justify-center min-h-full gap-20;
     @apply pb-[var(--navbar-height)];
+  }
+
+  form :global(fieldset) {
+    @apply flex flex-col gap-20;
   }
 
   footer {

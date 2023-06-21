@@ -86,11 +86,12 @@
     textarea,
     select {
       @apply rounded-xl;
-      @apply border-2 border-dark10 border-solid;
+      @apply border-2 border-dark30 border-solid;
       @apply py-10 px-20;
       @apply text-dark75;
       @apply text-ellipsis;
       @apply tracking-tighter;
+      @apply transition-colors;
     }
 
     [type="text"]::placeholder,
@@ -127,7 +128,7 @@
     textarea:hover,
     select:hover {
       @apply text-dark75;
-      @apply border-dark30;
+      @apply border-dark55;
     }
 
     [type="text"]:hover::placeholder,
@@ -164,7 +165,7 @@
     textarea:focus,
     select:focus {
       @apply text-dark90;
-      @apply border-orange;
+      @apply border-dark75;
       @apply shadow-none ring-transparent;
     }
 
@@ -186,10 +187,6 @@
       @apply text-dark30;
     }
 
-    label {
-      @apply py-[2px];
-    }
-
     label[for] {
       @apply cursor-pointer;
     }
@@ -208,11 +205,36 @@
     }
 
     select {
-      @apply min-w-[200px] py-[5px] px-15;
+      @apply min-w-[200px] py-10 px-20 pr-30;
     }
 
     .input-group {
-      @apply flex gap-10 items-baseline;
+      @apply flex gap-10 items-baseline flex-wrap;
+    }
+
+    .input-group label {
+      @apply w-full;
+    }
+
+    .input-group span {
+      @apply font-serif text-dark75;
+    }
+
+    .input-group.lg input {
+      @apply py-15;
+      @apply text-xxl;
+    }
+
+    .input-group.lg span {
+      @apply text-xxl;
+    }
+
+    legend {
+      @apply float-left;
+    }
+
+    [type="number"] {
+      @apply w-[140px];
     }
   }
 </style>

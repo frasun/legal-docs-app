@@ -9,41 +9,50 @@ const { name, selected, data } = Astro.props;
 <data-selector>
   <RadioButtons values={lib} selected={selected} name={`${name}-data`} />
   <fieldset style={parseInt(selected) === 0 ? `display: none;` : ``}>
-    <label for="type">Rodzaj</label>
-    <select id="type" name={`${name}-type`} value={data[0]}>
-      {
-        entityEnum.map((type) => (
-          <option selected={data[0] === type}>{type}</option>
-        ))
-      }
-    </select>
-    <label for="name">Imię i nazwisko / nazwa</label>
-    <input
-      id="name"
-      type="text"
-      name={`${name}-name`}
-      required={parseInt(selected) === 0 ? false : true}
-      value={data[1]}
-    />
-    <label for="address">Adres</label>
-    <input
-      id="address"
-      type="text"
-      name={`${name}-address`}
-      required={parseInt(selected) === 0 ? false : true}
-      value={data[2]}
-    />
-    <label for="pin">PESEL / NIP</label>
-    <input
-      id="pin"
-      type="text"
-      name={`${name}-pin`}
-      required={parseInt(selected) === 0 ? false : true}
-      value={data[3]}
-    />
+    <div class="input-group">
+      <label for="type">Rodzaj podmiotu</label>
+      <select id="type" name={`${name}-type`} value={data[0]}>
+        {
+          entityEnum.map((type) => (
+            <option selected={data[0] === type}>{type}</option>
+          ))
+        }
+      </select>
+    </div>
+    <div class="input-group">
+      <label for="name">Imię i nazwisko / nazwa</label>
+      <input
+        id="name"
+        type="text"
+        name={`${name}-name`}
+        required={parseInt(selected) === 0 ? false : true}
+        value={data[1]}
+        class="flex-grow"
+      />
+    </div>
+    <div class="input-group">
+      <label for="address">Adres</label>
+      <input
+        id="address"
+        type="text"
+        name={`${name}-address`}
+        required={parseInt(selected) === 0 ? false : true}
+        value={data[2]}
+        class="flex-grow"
+      />
+    </div>
+    <div class="input-group">
+      <label for="pin">PESEL / NIP</label>
+      <input
+        id="pin"
+        type="text"
+        name={`${name}-pin`}
+        required={parseInt(selected) === 0 ? false : true}
+        value={data[3]}
+      />
+    </div>
   </fieldset>
 </data-selector>
-
 <script>
   class DataSelector extends HTMLElement {
     radios: NodeListOf<HTMLInputElement>;
@@ -102,7 +111,7 @@ const { name, selected, data } = Astro.props;
 </script>
 
 <style>
-  fieldset {
-    @apply flex flex-col gap-[5px];
+  data-selector {
+    @apply flex flex-col gap-30;
   }
 </style>
