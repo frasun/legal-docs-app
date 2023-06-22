@@ -5,7 +5,7 @@ const { index, current, documentId } = Astro.props;
 <aside>
   {
     index.map(({ title, questions }) => (
-      <>
+      <section>
         <h5>{title}</h5>
         {questions.map(({ id: { slug }, title }) => {
           if (slug === current) {
@@ -18,7 +18,7 @@ const { index, current, documentId } = Astro.props;
             );
           }
         })}
-      </>
+      </section>
     ))
   }
   <a href={`${Astro.url.origin}/dokumenty/${documentId}/podsumowanie`}>
@@ -27,21 +27,31 @@ const { index, current, documentId } = Astro.props;
 </aside>
 <style>
   aside {
-    @apply bg-white rounded p-30 flex flex-col;
+    @apply bg-white rounded p-20 flex flex-col gap-20;
     @apply sticky top-[var(--navbar-height)];
-    @apply min-w-[270px];
-  }
-
-  a + h5,
-  span + h5 {
-    @apply mt-10;
+    @apply min-w-[290px];
+    @apply text-sm;
+    @apply mt-20;
   }
 
   h5 {
-    @apply text-dark40;
+    @apply text-dark40 mb-[5px];
   }
 
   span {
     @apply text-orangeDark;
+  }
+
+  section {
+    @apply flex flex-col;
+  }
+
+  section a,
+  section span {
+    @apply py-[2px] px-10;
+  }
+
+  aside > a:last-child {
+    @apply px-0;
   }
 </style>
