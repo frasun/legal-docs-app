@@ -9,6 +9,6 @@ import Radios from '../../../components/Radios.astro'
 import {billsEnum} from '../../documents/_umowa-najmu'
 
 <fieldset>
-    <legend>Zaznacz wszystkie pasujące odpowiedzi</legend>
+    <legend>Dopasuj odpowiedzi do stron umowy</legend>
     <Radios selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={frontmatter.optionslib} labels={billsEnum} token={['billslandlord', 'billstenant']} />
 </fieldset>

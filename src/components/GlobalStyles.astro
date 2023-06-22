@@ -191,17 +191,35 @@
       @apply cursor-pointer;
     }
 
-    input[type="checkbox"] {
+    input[type="checkbox"],
+    input[type="radio"] {
       @apply text-orange;
       @apply w-[20px] h-[20px];
-      @apply border-2 rounded-sm;
       @apply transition-colors;
     }
 
-    input[type="checkbox"]:focus {
+    input[type="checkbox"]:not([disabled]),
+    input[type="radio"]:not([disabled]) {
+      @apply cursor-pointer;
+    }
+
+    input[type="checkbox"] {
+      @apply border-2 rounded-sm;
+    }
+
+    input[type="checkbox"]:focus,
+    input[type="radio"]:focus {
       --tw-ring-color: transparent;
 
       @apply outline-none outline-offset-0;
+    }
+
+    input[type="radio"] {
+      @apply border-2 border-dark30;
+    }
+
+    input[type="radio"]:hover {
+      @apply border-dark55;
     }
 
     select {

@@ -3,45 +3,63 @@ const { options, labels, token, selected } = Astro.props;
 ---
 
 <radio-grid>
-  <fieldset>
-    <header>
-      {options.map((opt) => <div>{opt}</div>)}
-    </header>
+  <header class={`grid grid-cols-${options.length}`}>
+    {options.map((opt) => <div>{opt}</div>)}
+  </header>
+  <fieldset class={`grid gap-y-10 gap-x-0 grid-cols-${options.length}`}>
     {
       labels.map((label) => (
-        <div>
+        <>
           <label>{label}</label>
           {options.map((opt, index) => {
             return index > 0 ? (
-              <input
-                type="radio"
-                name={label}
-                value={opt}
-                aria-label={`${opt}`}
-                checked={selected[index - 1].includes(label)}
-              />
+              <div>
+                <input
+                  type="radio"
+                  name={label}
+                  value={opt}
+                  aria-label={`${opt}`}
+                  checked={selected[index - 1].includes(label)}
+                />
+              </div>
             ) : null;
           })}
-        </div>
-      ))
-    }
-    {
-      token.map((t, index) => (
-        <input type="hidden" name={t} id={options[index + 1]} />
+        </>
       ))
     }
   </fieldset>
+  {
+    token.map((t, index) => (
+      <input type="hidden" name={t} id={options[index + 1]} />
+    ))
+  }
 </radio-grid>
 
 <style>
-  fieldset header,
-  fieldset > div {
-    @apply flex;
+  radio-grid {
+    @apply flex flex-col gap-10;
   }
 
-  fieldset header > div:first-child,
-  fieldset > div label {
-    @apply flex-grow;
+  header {
+    @apply font-bold text-sm;
+  }
+
+  header div:first-child {
+    @apply px-20;
+  }
+
+  header div:not(:first-child),
+  fieldset div {
+    @apply text-center;
+  }
+
+  fieldset div,
+  fieldset label {
+    @apply bg-white px-20 py-15;
+  }
+
+  fieldset label {
+    @apply font-serif text-dark90 text-xl;
   }
 </style>
 
