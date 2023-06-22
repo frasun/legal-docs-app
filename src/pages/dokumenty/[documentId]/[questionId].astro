@@ -205,6 +205,14 @@ if (Astro.request.method === "POST") {
     @apply my-30;
   }
 
+  footer div {
+    @apply flex gap-10 items-center;
+  }
+
+  footer div > span:first-child {
+    @apply px-[8px] py-[4px] bg-dark10 rounded-sm text-xs font-bold;
+  }
+
   footer nav {
     @apply flex flex-wrap gap-15;
   }
