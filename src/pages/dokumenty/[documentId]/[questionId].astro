@@ -165,9 +165,18 @@ if (Astro.request.method === "POST") {
     }
   </aside>
   <form method="POST">
-    <h2>{questionContent}</h2>
+    <header>
+      <h2>{questionContent}</h2>
+      {
+        qinfo && (
+          <p>
+            <Icon name="bulb" width={24} height={24} />
+            {qinfo}
+          </p>
+        )
+      }
+    </header>
     <Content />
-    {qinfo && <p>{qinfo}</p>}
     <footer>
       <div>
         <span>§{currentQuestionIndex + 1}</span>
@@ -236,5 +245,18 @@ if (Astro.request.method === "POST") {
 
   aside form {
     @apply p-0;
+  }
+
+  header p {
+    @apply bg-white border-orange border-2 rounded-xl;
+    @apply p-20;
+    @apply flex gap-15;
+    @apply font-serif text-dark90;
+    @apply my-20;
+  }
+
+  header p svg {
+    @apply flex-shrink-0;
+    @apply text-orangeDark;
   }
 </style>
