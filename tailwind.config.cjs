@@ -17,6 +17,7 @@ module.exports = {
 	theme: {
 		spacing: {
 			0: '0',
+			5: '.3125rem',
 			10: '.625rem',
 			15: '.9375rem',
 			20: '1.25rem',
@@ -34,6 +35,7 @@ module.exports = {
 			orange: '#EE544A',
 			orangeDark: '#EA271B',
 			yellow: 'rgba(255, 199, 90, 0.2)',
+			yellowDark: 'rgba(126, 90, 7, 0.9)',
 			dark90: 'rgba(40, 39, 37, 0.9)',
 			dark75: 'rgba(40, 39, 37, 0.75)',
 			dark65: 'rgba(40, 39, 37, 0.65)',
@@ -73,7 +75,8 @@ module.exports = {
 		letterSpacing: {
 			tighter: '-.02em',
 			tight: '-.01em',
-			normal: '0'
+			normal: '0',
+			wide: '.02em'
 		},
 		borderRadius: {
 			sm: '3px',

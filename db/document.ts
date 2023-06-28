@@ -84,7 +84,7 @@ export async function updateAnswers(documentId, answers, docId) {
     try {
       return await db
         .updateTable(KEY)
-        .set({ answers: validatedAnswers, modified: sql`now()` })
+        .set({ answers: validatedAnswers, modified: new Date() })
         .where("id", "=", documentId)
         .execute();
     } catch (e: any) {
