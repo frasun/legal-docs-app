@@ -61,7 +61,7 @@ export async function getDocuments(userId, page = 1, limit = LIMIT) {
       .where(sql`userid::text`, "=", userId)
       .offset(offset)
       .limit(limit)
-      .orderBy("created", "desc")
+      .orderBy(sql`COALESCE(modified, created)`, "desc")
       .execute();
   } catch (e: any) {
     throw e;

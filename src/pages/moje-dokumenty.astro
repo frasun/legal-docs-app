@@ -43,6 +43,23 @@ const DATE_FORMAT = "dd MMMM, kk:mm";
 function formatDate(date) {
   return format(date, DATE_FORMAT, { locale: pl });
 }
+
+// Group items by month
+const groupedItems = {};
+
+documents.forEach((item) => {
+  const date = item.modified || item.created; // Use modified date if available, otherwise created date
+  const monthYear = new Date(date).toLocaleString("pl-PL", {
+    month: "long",
+    year: "numeric",
+  });
+
+  if (!groupedItems[monthYear]) {
+    groupedItems[monthYear] = [];
+  }
+
+  groupedItems[monthYear].push(item);
+});
 ---
 
 <Layout title="Moje dokumenty - Prawniczek">
@@ -54,46 +71,51 @@ function formatDate(date) {
   <section>
     {
       documents.length ? (
-        documents.map(
-          ({ doc, id, title, doctitle, created, draft, modified }, index) => (
-            <div>
-              <header>
-                <a
-                  href={`${Astro.url.origin}/dokumenty/${id}/${
-                    draft ? `podsumowanie` : `dokument`
-                  }`}
-                >
-                  {title}
-                  {draft && <Badge>Szkic</Badge>}
-                </a>
-                <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
-                  <Icon name="document" width={16} height={16} />
-                  {doctitle}
-                </a>
-              </header>
-              {draft ? (
-                <dl>
-                  <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
-                  <dd>
-                    {modified ? formatDate(modified) : formatDate(created)}
-                  </dd>
-                </dl>
-              ) : (
-                <span>
-                  {modified ? formatDate(modified) : formatDate(created)}
-                </span>
-              )}
-              <aside>
-                <change-name data-doc-id={id} data-title={title}>
-                  <button>
-                    <Icon name="edit" width={24} height={24} />
-                    Zmień nazwę
-                  </button>
-                </change-name>
-              </aside>
-            </div>
-          )
-        )
+        Object.keys(groupedItems).map((monthYear) => (
+          <>
+            <h6>{monthYear}</h6>
+            {groupedItems[monthYear].map(
+              ({ doc, id, title, doctitle, created, draft, modified }) => (
+                <div>
+                  <header>
+                    <a
+                      href={`${Astro.url.origin}/dokumenty/${id}/${
+                        draft ? `podsumowanie` : `dokument`
+                      }`}
+                    >
+                      {title}
+                      {draft && <Badge>Szkic</Badge>}
+                    </a>
+                    <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
+                      <Icon name="document" width={16} height={16} />
+                      {doctitle}
+                    </a>
+                  </header>
+                  {draft ? (
+                    <dl>
+                      <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
+                      <dd>
+                        {modified ? formatDate(modified) : formatDate(created)}
+                      </dd>
+                    </dl>
+                  ) : (
+                    <span>
+                      {modified ? formatDate(modified) : formatDate(created)}
+                    </span>
+                  )}
+                  <aside>
+                    <change-name data-doc-id={id} data-title={title}>
+                      <button>
+                        <Icon name="edit" width={24} height={24} />
+                        Zmień nazwę
+                      </button>
+                    </change-name>
+                  </aside>
+                </div>
+              )
+            )}
+          </>
+        ))
       ) : (
         <>Brak wyników</>
       )
@@ -178,6 +200,10 @@ function formatDate(date) {
 
   change-name-form input {
     @apply w-full;
+  }
+
+  h6 {
+    @apply font-bold text-xs;
   }
 </style>
 
