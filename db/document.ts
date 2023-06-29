@@ -25,8 +25,8 @@ export function createDocumentTable() {
     .addColumn("userid", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
     .addColumn("answers", "jsonb", (cb) => cb.notNull())
-    .addColumn("modified", "timestamp")
-    .addColumn("created", "timestamp", (cb) =>
+    .addColumn("modified", "timestamptz")
+    .addColumn("created", "timestamptz", (cb) =>
       cb.notNull().defaultTo(sql`now()`)
     )
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())

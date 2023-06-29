@@ -49,7 +49,7 @@ const groupedItems = {};
 
 documents.forEach((item) => {
   const date = item.modified || item.created; // Use modified date if available, otherwise created date
-  const monthYear = new Date(date).toLocaleString("pl-PL", {
+  const monthYear = new Date(String(date)).toLocaleString("pl-PL", {
     month: "long",
     year: "numeric",
   });
