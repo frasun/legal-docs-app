@@ -121,7 +121,6 @@ export async function createDocument(doc, answers, userid, draft = false) {
             doc,
             answers: JSON.stringify(validatedAnswers),
             userid,
-            created: new Date(),
             doctitle: title,
             draft,
             title: `${title} #${Math.floor(Math.random() * 1000)}`,
