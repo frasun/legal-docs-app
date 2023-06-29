@@ -41,7 +41,7 @@ const documents = await getDocuments(userId);
 const DATE_FORMAT = "dd MMMM, kk:mm";
 
 function formatDate(date) {
-  return format(date, DATE_FORMAT, { locale: pl });
+  return format(date, DATE_FORMAT);
 }
 
 // Group items by month
