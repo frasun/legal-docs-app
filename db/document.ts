@@ -17,6 +17,8 @@ export interface Document {
 const KEY = "document";
 const LIMIT = 100;
 
+const currentDate = () => new Date().toISOString();
+
 export function createDocumentTable() {
   db.schema
     .createTable(KEY)
@@ -26,9 +28,7 @@ export function createDocumentTable() {
     .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
     .addColumn("answers", "jsonb", (cb) => cb.notNull())
     .addColumn("modified", "varchar(255)")
-    .addColumn("created", "varchar(255)", (cb) =>
-      cb.notNull().defaultTo(new Date().toISOString())
-    )
+    .addColumn("created", "varchar(255)", (cb) => cb.notNull())
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
     .addColumn("draft", "boolean", (cb) => cb.notNull())
@@ -84,7 +84,7 @@ export async function updateAnswers(documentId, answers, docId) {
     try {
       return await db
         .updateTable(KEY)
-        .set({ answers: validatedAnswers, modified: new Date().toISOString() })
+        .set({ answers: validatedAnswers, modified: currentDate() })
         .where("id", "=", documentId)
         .execute();
     } catch (e: any) {
@@ -124,6 +124,7 @@ export async function createDocument(doc, answers, userid, draft = false) {
             doctitle: title,
             draft,
             title: `${title} #${Math.floor(Math.random() * 1000)}`,
+            created: currentDate(),
           },
         ])
         .returning("id")
@@ -140,7 +141,7 @@ export async function publishDraft(id) {
   try {
     return await db
       .updateTable(KEY)
-      .set({ draft: false, modified: new Date().toISOString() })
+      .set({ draft: false, modified: currentDate() })
       .where("id", "=", id)
       .execute();
   } catch (e: any) {
@@ -152,7 +153,7 @@ export async function changeDocumentName(id, title) {
   try {
     return await db
       .updateTable(KEY)
-      .set({ title, modified: new Date().toISOString() })
+      .set({ title, modified: currentDate() })
       .where("id", "=", id)
       .execute();
   } catch (e: any) {
