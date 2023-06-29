@@ -142,12 +142,10 @@ documents.forEach((item) => {
             {draft ? (
               <dl>
                 <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
-                <dd>{modified ? formatDate(modified) : formatDate(created)}</dd>
+                <dd>{modified ? modified : created}</dd>
               </dl>
             ) : (
-              <span>
-                {modified ? formatDate(modified) : formatDate(created)}
-              </span>
+              <span>{modified ? modified : created}</span>
             )}
             <aside>
               <change-name data-doc-id={id} data-title={title}>
