@@ -120,6 +120,46 @@ documents.forEach((item) => {
         <>Brak wyników</>
       )
     }
+    <hr />
+
+    {
+      documents.map(
+        ({ doc, id, title, doctitle, created, draft, modified }) => (
+          <div>
+            <header>
+              <a
+                href={`${Astro.url.origin}/dokumenty/${id}/${
+                  draft ? `podsumowanie` : `dokument`
+                }`}
+              >
+                {title}
+                {draft && <Badge>Szkic</Badge>}
+              </a>
+              <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
+                <Icon name="document" width={16} height={16} />
+                {doctitle}
+              </a>
+            </header>
+            {draft ? (
+              <dl>
+                <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
+                <dd>{modified ? modified : created}</dd>
+              </dl>
+            ) : (
+              <span>{modified ? modified : created}</span>
+            )}
+            <aside>
+              <change-name data-doc-id={id} data-title={title}>
+                <button>
+                  <Icon name="edit" width={24} height={24} />
+                  Zmień nazwę
+                </button>
+              </change-name>
+            </aside>
+          </div>
+        )
+      )
+    }
   </section>
   <Modal slot="footer">
     <change-name-form>
