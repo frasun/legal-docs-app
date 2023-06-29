@@ -25,9 +25,9 @@ export function createDocumentTable() {
     .addColumn("userid", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
     .addColumn("answers", "jsonb", (cb) => cb.notNull())
-    .addColumn("modified", "timestamptz")
-    .addColumn("created", "timestamptz", (cb) =>
-      cb.notNull().defaultTo(sql`now()`)
+    .addColumn("modified", sql`timestamp with time zone`)
+    .addColumn("created", sql`timestamp with time zone`, (cb) =>
+      cb.notNull().defaultTo(sql`current_timestamp`)
     )
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
@@ -84,7 +84,7 @@ export async function updateAnswers(documentId, answers, docId) {
     try {
       return await db
         .updateTable(KEY)
-        .set({ answers: validatedAnswers, modified: new Date() })
+        .set({ answers: validatedAnswers, modified: sql`current_timestamp` })
         .where("id", "=", documentId)
         .execute();
     } catch (e: any) {
