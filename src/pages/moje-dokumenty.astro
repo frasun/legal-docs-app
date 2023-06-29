@@ -14,6 +14,7 @@ import {
 import { getUserByEmail } from "../../db/auth";
 import Modal from "../components/Modal.astro";
 import Badge from "../components/Badge.astro";
+import EmptyScreen from "../components/EmptyScreen.astro";
 
 const session = await getSession(Astro.request);
 
@@ -71,10 +72,10 @@ documents.forEach((item) => {
     {session.user?.email}
     <SignOut params={{ callbackUrl: Astro.url.origin }}>Wyloguj się</SignOut>
   </div>
-  <section>
-    {
-      documents.length ? (
-        Object.keys(groupedItems).map((monthYear) => (
+  {
+    documents.length ? (
+      <section>
+        {Object.keys(groupedItems).map((monthYear) => (
           <>
             <h6>{monthYear}</h6>
             {groupedItems[monthYear].map(
@@ -118,12 +119,17 @@ documents.forEach((item) => {
               )
             )}
           </>
-        ))
-      ) : (
-        <>Brak wyników</>
-      )
-    }
-  </section>
+        ))}
+      </section>
+    ) : (
+      <EmptyScreen
+        icon="document"
+        text="Nie masz jeszcze dokumentów"
+        cta="Stwórz pierwszy dokument"
+        ctaUrl={`${Astro.url.origin}/dokumenty`}
+      />
+    )
+  }
   <Modal slot="footer">
     <change-name-form>
       <h3>Zmień nazwę</h3>

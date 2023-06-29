@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon";
+
+const { icon, text, cta, ctaUrl } = Astro.props;
+---
+
+<div>
+    <Icon name={icon} width={80} height={80} />
+    <p>{text}</p>
+    <a href={ctaUrl}>{cta}</a>
+</div>
+
+<style>
+    div {
+        @apply h-full flex flex-col gap-20 items-center justify-center;
+    }
+
+    p {
+        @apply text-xl;
+    }
+
+    a {
+        @apply btn btn-default;
+    }
+
+    div :global(svg path) {
+        @apply fill-dark40;
+    }
+</style>
