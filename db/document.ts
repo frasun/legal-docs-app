@@ -1,4 +1,4 @@
-import { Generated } from "kysely";
+import { ColumnType, Generated } from "kysely";
 import { getEntry } from "astro:content";
 import { db, sql } from "./db";
 
@@ -7,8 +7,8 @@ export interface Document {
   doc: String;
   answers: JSON;
   userid: String;
-  created: Generated<Date>;
-  modified: Generated<Date> | null;
+  created: String;
+  modified: String | null;
   title: String;
   doctitle: String;
   draft: Boolean;
@@ -25,9 +25,9 @@ export function createDocumentTable() {
     .addColumn("userid", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
     .addColumn("answers", "jsonb", (cb) => cb.notNull())
-    .addColumn("modified", sql`timestamp with time zone`)
-    .addColumn("created", sql`timestamp with time zone`, (cb) =>
-      cb.notNull().defaultTo(sql`current_timestamp`)
+    .addColumn("modified", "varchar(255)")
+    .addColumn("created", "varchar(255)", (cb) =>
+      cb.notNull().defaultTo(new Date().toISOString())
     )
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
@@ -84,7 +84,7 @@ export async function updateAnswers(documentId, answers, docId) {
     try {
       return await db
         .updateTable(KEY)
-        .set({ answers: validatedAnswers, modified: sql`current_timestamp` })
+        .set({ answers: validatedAnswers, modified: new Date().toISOString() })
         .where("id", "=", documentId)
         .execute();
     } catch (e: any) {
@@ -140,7 +140,7 @@ export async function publishDraft(id) {
   try {
     return await db
       .updateTable(KEY)
-      .set({ draft: false })
+      .set({ draft: false, modified: new Date().toISOString() })
       .where("id", "=", id)
       .execute();
   } catch (e: any) {
@@ -152,7 +152,7 @@ export async function changeDocumentName(id, title) {
   try {
     return await db
       .updateTable(KEY)
-      .set({ title })
+      .set({ title, modified: new Date().toISOString() })
       .where("id", "=", id)
       .execute();
   } catch (e: any) {
