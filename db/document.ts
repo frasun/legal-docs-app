@@ -1,4 +1,4 @@
-import { ColumnType, Generated } from "kysely";
+import { Generated } from "kysely";
 import { getEntry } from "astro:content";
 import { db, sql } from "./db";
 
@@ -7,17 +7,16 @@ export interface Document {
   doc: String;
   answers: JSON;
   userid: String;
-  created: String;
-  modified: String | null;
+  created: Date;
+  modified: Date | null;
   title: String;
   doctitle: String;
   draft: Boolean;
+  test: Date;
 }
 
 const KEY = "document";
 const LIMIT = 100;
-
-const currentDate = () => new Date().toISOString();
 
 export function createDocumentTable() {
   db.schema
@@ -27,8 +26,10 @@ export function createDocumentTable() {
     .addColumn("userid", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
     .addColumn("answers", "jsonb", (cb) => cb.notNull())
-    .addColumn("modified", "varchar(255)")
-    .addColumn("created", "varchar(255)", (cb) => cb.notNull())
+    .addColumn("modified", "timestamptz")
+    .addColumn("created", "timestamptz", (cb) =>
+      cb.notNull().defaultTo(sql`current_timestamp`)
+    )
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())
     .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
     .addColumn("draft", "boolean", (cb) => cb.notNull())
@@ -84,7 +85,7 @@ export async function updateAnswers(documentId, answers, docId) {
     try {
       return await db
         .updateTable(KEY)
-        .set({ answers: validatedAnswers, modified: currentDate() })
+        .set({ answers: validatedAnswers, modified: sql`current_timestamp` })
         .where("id", "=", documentId)
         .execute();
     } catch (e: any) {
@@ -124,7 +125,6 @@ export async function createDocument(doc, answers, userid, draft = false) {
             doctitle: title,
             draft,
             title: `${title} #${Math.floor(Math.random() * 1000)}`,
-            created: currentDate(),
           },
         ])
         .returning("id")
@@ -141,7 +141,7 @@ export async function publishDraft(id) {
   try {
     return await db
       .updateTable(KEY)
-      .set({ draft: false, modified: currentDate() })
+      .set({ draft: false, modified: sql`current_timestamp` })
       .where("id", "=", id)
       .execute();
   } catch (e: any) {
@@ -153,7 +153,7 @@ export async function changeDocumentName(id, title) {
   try {
     return await db
       .updateTable(KEY)
-      .set({ title, modified: currentDate() })
+      .set({ title, modified: sql`current_timestamp` })
       .where("id", "=", id)
       .execute();
   } catch (e: any) {

@@ -1,8 +1,6 @@
 ---
 import { Icon } from "astro-icon";
-import pl from "date-fns/locale/pl/index.js";
-import { formatInTimeZone } from "date-fns-tz";
-import { TIMEZONE } from "../utils/date";
+import { TIMEZONE as timeZone, LOCALE } from "../utils/date";
 import { SignOut } from "../auth-astro/components";
 import Layout from "../layouts/App.astro";
 import { getSession } from "../auth-astro/server";
@@ -40,12 +38,21 @@ if (Astro.request.method === "POST") {
 }
 
 const documents = await getDocuments(userId);
-const DATE_FORMAT = "dd MMMM, kk:mm";
 
-function formatDate(date) {
-  return formatInTimeZone(new Date(date), TIMEZONE, DATE_FORMAT, {
-    locale: pl,
+function formatDate(datetime) {
+  const date = datetime.toLocaleDateString(LOCALE, {
+    timeZone,
+    day: "numeric",
+    month: "long",
   });
+
+  const time = datetime.toLocaleTimeString(LOCALE, {
+    timeZone,
+    hour: "numeric",
+    minute: "numeric",
+  });
+
+  return `${date}, ${time}`;
 }
 
 // Group items by month
@@ -53,7 +60,7 @@ const groupedItems = {};
 
 documents.forEach((item) => {
   const date = item.modified || item.created; // Use modified date if available, otherwise created date
-  const monthYear = new Date(String(date)).toLocaleString("pl-PL", {
+  const monthYear = new Date(date).toLocaleString(LOCALE, {
     month: "long",
     year: "numeric",
   });

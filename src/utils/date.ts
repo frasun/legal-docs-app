@@ -6,3 +6,4 @@ export default function (dateString) {
 }
 
 export const TIMEZONE = "Europe/Warsaw";
+export const LOCALE = "pl-PL";
