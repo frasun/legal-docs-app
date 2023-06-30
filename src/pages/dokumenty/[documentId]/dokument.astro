@@ -68,7 +68,11 @@ const { encrypted } = document.data;
 for (let key of Object.keys(qData.seed)) {
   if (key !== "title") {
     if (encrypted.includes(key)) {
-      qData.seed[key] = crypt.decrypt(answers[key]);
+      try {
+        qData.seed[key] = crypt.decrypt(answers[key]);
+      } catch {
+        qData.seed[key] = answers[key];
+      }
     } else {
       qData.seed[key] = answers[key];
     }
