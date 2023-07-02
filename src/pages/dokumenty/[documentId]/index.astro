@@ -38,20 +38,29 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0]
 
 <style>
   div {
-    @apply bg-white rounded p-30;
+    @apply bg-white rounded-lg p-40 my-20 flex flex-col gap-30;
+  }
+
+  header {
+    @apply flex items-center gap-15;
+  }
+
+  header h1 {
+    @apply flex-grow;
+    @apply text-2xl;
   }
 
   footer a,
   header a {
-    @apply btn btn-default;
+    @apply btn btn-default btn-big;
   }
 
   hr {
-    @apply my-50;
+    @apply border-dark30;
   }
 
   footer {
-    @apply p-50 flex justify-center;
+    @apply p-20 flex justify-center;
   }
 
   footer a {

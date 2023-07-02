@@ -107,14 +107,21 @@ module.exports = {
 				DEFAULT: {
 					css: {
 						'--tw-prose-body': theme('colors.dark90'),
-						'--tw-prose-headings': theme('colors.dark90'),
+						'--tw-prose-headings': theme('colors.dark65'),
 						'--tw-prose-bold': theme('colors.dark90'),
+						'--tw-prose-bullets': theme('colors.orange'),
+						'--tw-prose-links': theme('colors.orangeDark'),
 						maxWidth: '1000px',
 						'h1, h2, h3, h4': {
 							fontWeight: theme('fontWeight.medium'),
 						},
 						h1: {
 							fontSize: theme('fontSize.2xl')
+						},
+						a: {
+							'&:hover': {
+								color: theme('colors.dark65')
+							}
 						}
 					}
 				}
