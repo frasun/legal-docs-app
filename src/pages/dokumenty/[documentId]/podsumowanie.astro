@@ -85,7 +85,7 @@ if (!title) title = document.data.title;
     {
       index.map(({ title, questions }) => (
         <>
-          <h4>{title}</h4>
+          <h5>{title}</h5>
           {questions.map(({ title, token, template, type, id: { slug } }) => (
             <div>
               <div>
@@ -126,15 +126,19 @@ if (!title) title = document.data.title;
 </Layout>
 <style>
   section {
-    @apply container;
+    @apply max-w-[1000px] mx-auto w-full mt-20;
   }
 
-  section h4 {
-    @apply mt-20 mb-10;
+  section h1 {
+    @apply text-2xl;
+  }
+
+  section h5 {
+    @apply mt-30 mb-10 font-sans font-bold text-sm tracking-normal text-dark55;
   }
 
   section > div {
-    @apply bg-white my-10 py-10 px-20 rounded;
+    @apply bg-white my-10 py-15 px-20 rounded-lg;
     @apply flex items-center gap-10;
   }
 
