@@ -27,7 +27,7 @@ if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const docId = formData.get("template");
   const localAnswers = formData.get("answers");
-  const title = formData.get("title");
+  const title = String(formData.get("title")).replace(/\s+/g, " ").trim();
 
   if (title) {
     await changeDocumentName(docId, title);
@@ -207,7 +207,11 @@ documents.forEach((item) => {
   }
 
   change-name-form {
-    @apply flex flex-col gap-10;
+    @apply flex flex-col gap-10 w-full;
+  }
+
+  change-name-form form {
+    @apply flex flex-col gap-10 items-end;
   }
 
   change-name-form button {
@@ -291,7 +295,7 @@ documents.forEach((item) => {
         const formData = new FormData(this.form);
         const newTitle = formData.get("title");
 
-        if (newTitle !== this.title) {
+        if (newTitle !== this.title && String(newTitle).trim() !== "") {
           this.form.submit();
         } else {
           document.body.dispatchEvent(new CustomEvent("hideModal"));
