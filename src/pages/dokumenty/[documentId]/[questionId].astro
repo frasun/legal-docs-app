@@ -115,34 +115,48 @@ const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
 if (formData && !docTitle) {
   try {
     let newAnswers = {};
+    let isEqual = true;
+
     for (let [key, value] of formData.entries()) {
       if (key in answers) {
         newAnswers[key] = value;
       }
     }
 
-    const allAnswers = { ...answers, ...newAnswers };
+    for (let key of Object.keys(newAnswers)) {
+      if (String(newAnswers[key]) !== String(answers[key])) {
+        isEqual = false;
+        break;
+      }
+    }
 
-    if (Number(documentId)) {
-      if (Object.keys(newAnswers).length) {
-        document.data.encrypted.forEach((key) => {
-          allAnswers[key] = crypt.encrypt(allAnswers[key]);
+    if (!isEqual) {
+      console.log("są róznice");
+      const allAnswers = { ...answers, ...newAnswers };
+
+      if (Number(documentId)) {
+        if (Object.keys(newAnswers).length) {
+          document.data.encrypted.forEach((key) => {
+            allAnswers[key] = crypt.encrypt(allAnswers[key]);
+          });
+
+          try {
+            await updateAnswers(documentId, allAnswers, docId);
+
+            return Astro.redirect(nextUrl);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      } else {
+        Astro.cookies.set(documentId, allAnswers, {
+          maxAge: 600,
+          httpOnly: true,
         });
 
-        try {
-          await updateAnswers(documentId, allAnswers, docId);
-
-          return Astro.redirect(nextUrl);
-        } catch (error) {
-          console.log(error);
-        }
+        return Astro.redirect(nextUrl);
       }
     } else {
-      Astro.cookies.set(documentId, allAnswers, {
-        maxAge: 600,
-        httpOnly: true,
-      });
-
       return Astro.redirect(nextUrl);
     }
   } catch (error) {
