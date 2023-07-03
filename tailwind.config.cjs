@@ -168,6 +168,13 @@ module.exports = {
 					backgroundColor: theme('colors.dark10'),
 					color: theme('colors.dark65'),
 				},
+				'.btn-alt svg': {
+					color: theme('colors.dark75'),
+					flexShrink: 0
+				},
+				'.btn-alt:hover svg': {
+					color: theme('colors.white95')
+				},
 				'.btn-big': {
 					fontSize: theme('fontSize.xl'),
 					padding: '.5rem 1.125rem',

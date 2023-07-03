@@ -22,10 +22,8 @@ const { href, title, icon } = Astro.props;
 <style>
   a {
     @apply flex flex-col items-center gap-10 px-10;
-    @apply text-sm;
     @apply w-[140px];
     @apply text-dark75 hover:text-orangeDark active:text-orangeDark;
-    @apply text-lg;
   }
 
   a figure {
@@ -36,6 +34,7 @@ const { href, title, icon } = Astro.props;
     @apply basis-[90px] w-[90px];
     @apply flex;
     @apply items-center justify-center;
+    @apply text-dark55;
   }
 
   a span {
@@ -45,6 +44,7 @@ const { href, title, icon } = Astro.props;
 
   a:hover figure {
     @apply bg-orange;
+    @apply text-white95;
   }
 
   a:active figure {
