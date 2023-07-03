@@ -11,6 +11,7 @@ import Progressbar from "../../../components/Progressbar.astro";
 import ChangeNameButton from "../../../components/ChangeNameButton.astro";
 import ChangeNameModal from "../../../components/ChangeNameModal.astro";
 import { handleNameChange } from "../../../utils/document";
+import Badge from "../../../components/Badge.astro";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -154,7 +155,7 @@ if (formData && !docTitle) {
 ---
 
 <Layout title={`${qTitle} - ${title}`}>
-  <span slot="topbar-title">{title}{draft && <span> - Szkic</span>}</span>
+  <span slot="topbar-title">{title}{draft && <Badge>Szkic</Badge>}</span>
   {
     draft && (
       <ChangeNameButton

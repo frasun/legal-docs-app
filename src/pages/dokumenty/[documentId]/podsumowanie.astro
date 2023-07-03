@@ -9,6 +9,7 @@ import crypt from "../../../utils/crypt";
 import { Icon } from "astro-icon";
 import ChangeNameButton from "../../../components/ChangeNameButton.astro";
 import ChangeNameModal from "../../../components/ChangeNameModal.astro";
+import Badge from "../../../components/Badge.astro";
 import { handleNameChange } from "../../../utils/document";
 
 if (Astro.request.method === "POST") {
@@ -68,7 +69,7 @@ if (!title) title = document.data.title;
 ---
 
 <Layout title={`Podsumowanie - ${title}`}>
-  <span slot="topbar-title">{title}{draft && <span> - Szkic</span>}</span>
+  <span slot="topbar-title">{title}{draft && <Badge>Szkic</Badge>}</span>
   {
     draft && (
       <ChangeNameButton

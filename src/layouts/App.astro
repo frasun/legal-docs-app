@@ -73,6 +73,10 @@ const session = await getSession(Astro.request);
     @apply text-xl;
   }
 
+  main > header h1 :global(> span) {
+    @apply flex items-center gap-5;
+  }
+
   main > header > a {
     @apply btn btn-alt;
   }
