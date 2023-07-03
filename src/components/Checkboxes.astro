@@ -24,7 +24,7 @@ const { values, selected, token, required, size = "default" } = Astro.props;
       </label>
     ))
   }
-  <input type="hidden" name={token} />
+  <input type="hidden" name={token} value={selected} />
 </checkbox-list>
 
 <script>

@@ -105,11 +105,16 @@ const prevUrl =
         qs[currentQuestionIndex - 1].id.slug
       }`
     : null;
+const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
+  currentQuestionIndex < qs.length - 1
+    ? `${qs[currentQuestionIndex + 1].id.slug}`
+    : `podsumowanie`
+}`;
 
 if (formData && !docTitle) {
   try {
     let newAnswers = {};
-    for (let [key, value] of formData) {
+    for (let [key, value] of formData.entries()) {
       if (key in answers) {
         newAnswers[key] = value;
       }
@@ -125,12 +130,6 @@ if (formData && !docTitle) {
 
         try {
           await updateAnswers(documentId, allAnswers, docId);
-
-          const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
-            currentQuestionIndex < qs.length - 1
-              ? `${qs[currentQuestionIndex + 1].id.slug}`
-              : `podsumowanie`
-          }`;
 
           return Astro.redirect(nextUrl);
         } catch (error) {

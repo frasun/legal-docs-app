@@ -6,3 +6,5 @@ equipment: [dodaj wyposażenie]
 Dodaj elementy wysposażenia
 
 {frontmatter.equipment.split(', ').map(eq => <div>{eq}</div>)}
+
+<input type="hidden" name="equipment" value={frontmatter.equipment} />

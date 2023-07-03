@@ -30,7 +30,12 @@ const { options, labels, token, selected } = Astro.props;
   </fieldset>
   {
     token.map((t, index) => (
-      <input type="hidden" name={t} id={options[index + 1]} />
+      <input
+        type="hidden"
+        name={t}
+        id={options[index + 1]}
+        value={selected[index].toString()}
+      />
     ))
   }
 </radio-grid>
