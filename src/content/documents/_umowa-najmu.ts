@@ -1,4 +1,5 @@
 import { z } from "astro:content";
+import trimWhitespace from "../../utils/whitespace";
 
 export const entityEnum = ["osoba fizyczna", "firma"] as const;
 export const paymentMethodEnum = [
@@ -27,8 +28,14 @@ export const billsEnum = [
 ] as const;
 
 export default z.object({
-  address: z.string().nonempty(),
-  apt: z.string().nonempty(),
+  address: z
+    .string()
+    .nonempty()
+    .transform((val) => trimWhitespace(val)),
+  apt: z
+    .string()
+    .nonempty()
+    .transform((val) => trimWhitespace(val)),
   area: z.z
     .string()
     .nonempty()
@@ -144,9 +151,18 @@ export default z.object({
     .transform((val) => parseInt(String(val)))
     .refine((val) => validateDataType(val)),
   "l-type": z.enum(entityEnum),
-  "l-name": z.string(),
-  "l-address": z.string(),
-  "l-pin": z.string(),
+  "l-name": z
+    .string()
+    .nonempty()
+    .transform((val) => trimWhitespace(val)),
+  "l-address": z
+    .string()
+    .nonempty()
+    .transform((val) => trimWhitespace(val)),
+  "l-pin": z
+    .string()
+    .nonempty()
+    .transform((val) => trimWhitespace(val)),
   "t-data": z
     .string()
     .nonempty()
@@ -154,9 +170,18 @@ export default z.object({
     .transform((val) => parseInt(String(val)))
     .refine((val) => validateDataType(val)),
   "t-type": z.enum(entityEnum),
-  "t-name": z.string(),
-  "t-address": z.string(),
-  "t-pin": z.string(),
+  "t-name": z
+    .string()
+    .nonempty()
+    .transform((val) => trimWhitespace(val)),
+  "t-address": z
+    .string()
+    .nonempty()
+    .transform((val) => trimWhitespace(val)),
+  "t-pin": z
+    .string()
+    .nonempty()
+    .transform((val) => trimWhitespace(val)),
 });
 
 function validateDataType(val) {
