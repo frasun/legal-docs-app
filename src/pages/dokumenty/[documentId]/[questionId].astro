@@ -8,6 +8,9 @@ import tSeed from "../../../utils/transformSeed";
 import crypt from "../../../utils/crypt";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
 import Progressbar from "../../../components/Progressbar.astro";
+import ChangeNameButton from "../../../components/ChangeNameButton.astro";
+import ChangeNameModal from "../../../components/ChangeNameModal.astro";
+import { handleNameChange } from "../../../utils/document";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -16,6 +19,16 @@ const session = await getSession(Astro.request);
 let answers, data, title;
 let docId = documentId;
 let draft = false;
+let formData, docTitle;
+
+if (Astro.request.method === "POST" && session) {
+  formData = await Astro.request.formData();
+  docTitle = formData.get("title");
+
+  if (docTitle) {
+    await handleNameChange(formData);
+  }
+}
 
 if (Number(documentId)) {
   if (!session) {
@@ -86,11 +99,6 @@ const currentQuestionIndex = qs.findIndex(
   ({ id: { slug } }) => slug === questionId
 );
 const { title: qTitle } = qs[currentQuestionIndex];
-const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
-  currentQuestionIndex < qs.length - 1
-    ? `${qs[currentQuestionIndex + 1].id.slug}`
-    : `podsumowanie`
-}`;
 const prevUrl =
   currentQuestionIndex > 0
     ? `${Astro.url.origin}/dokumenty/${documentId}/${
@@ -98,10 +106,8 @@ const prevUrl =
       }`
     : null;
 
-if (Astro.request.method === "POST") {
+if (formData && !docTitle) {
   try {
-    const formData = await Astro.request.formData();
-
     let newAnswers = {};
     for (let [key, value] of formData) {
       if (key in answers) {
@@ -119,6 +125,12 @@ if (Astro.request.method === "POST") {
 
         try {
           await updateAnswers(documentId, allAnswers, docId);
+
+          const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
+            currentQuestionIndex < qs.length - 1
+              ? `${qs[currentQuestionIndex + 1].id.slug}`
+              : `podsumowanie`
+          }`;
 
           return Astro.redirect(nextUrl);
         } catch (error) {
@@ -144,6 +156,15 @@ if (Astro.request.method === "POST") {
 
 <Layout title={`${qTitle} - ${title}`}>
   <span slot="topbar-title">{title}{draft && <span> - Szkic</span>}</span>
+  {
+    draft && (
+      <ChangeNameButton
+        id={documentId}
+        title={title}
+        slot="topbar-after-title"
+      />
+    )
+  }
   <aside slot="topbar-aside">
     <Progressbar current={currentQuestionIndex + 1} steps={questions.length} />
     {
@@ -195,6 +216,7 @@ if (Astro.request.method === "POST") {
     </footer>
   </form>
   <QuestionIndex index={qIndex} current={questionId} documentId={documentId} />
+  <ChangeNameModal />
 </Layout>
 
 <style>

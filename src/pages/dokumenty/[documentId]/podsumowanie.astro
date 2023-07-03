@@ -7,6 +7,14 @@ import { getSession } from "../../../auth-astro/server";
 import tSeed from "../../../utils/transformSeed";
 import crypt from "../../../utils/crypt";
 import { Icon } from "astro-icon";
+import ChangeNameButton from "../../../components/ChangeNameButton.astro";
+import ChangeNameModal from "../../../components/ChangeNameModal.astro";
+import { handleNameChange } from "../../../utils/document";
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  await handleNameChange(formData);
+}
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -61,6 +69,15 @@ if (!title) title = document.data.title;
 
 <Layout title={`Podsumowanie - ${title}`}>
   <span slot="topbar-title">{title}{draft && <span> - Szkic</span>}</span>
+  {
+    draft && (
+      <ChangeNameButton
+        id={documentId}
+        title={title}
+        slot="topbar-after-title"
+      />
+    )
+  }
   {
     Astro.cookies.has(documentId) ? (
       <form
@@ -123,6 +140,7 @@ if (!title) title = document.data.title;
       }
     </footer>
   </section>
+  <ChangeNameModal />
 </Layout>
 <style>
   section {

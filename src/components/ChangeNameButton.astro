@@ -1,0 +1,55 @@
+---
+import { Icon } from "astro-icon";
+
+const { id, title, label } = Astro.props;
+---
+
+<change-name data-doc-id={id} data-title={title}>
+  <button>
+    <Icon name="edit" width={16} height={16} />
+    {label && label}
+  </button>
+</change-name>
+
+<style>
+  change-name {
+    @apply block;
+  }
+
+  change-name button {
+    @apply btn btn-alt;
+  }
+</style>
+
+<script>
+  class ChangeName extends HTMLElement {
+    button: HTMLButtonElement;
+    doctitle: string;
+    docId: string;
+
+    constructor() {
+      super();
+
+      this.doctitle = this.getAttribute("data-title");
+      this.docId = this.getAttribute("data-doc-id");
+      this.button = this.querySelector("button") as HTMLButtonElement;
+    }
+
+    connectedCallback() {
+      this.button.addEventListener("click", () => {
+        document.body.dispatchEvent(new CustomEvent("showModal"));
+
+        const form = document.querySelector("change-name-form");
+
+        if (form) {
+          form.dispatchEvent(
+            new CustomEvent("change-name", {
+              detail: { title: this.doctitle, docId: this.docId },
+            })
+          );
+        }
+      });
+    }
+  }
+  customElements.define("change-name", ChangeName);
+</script>

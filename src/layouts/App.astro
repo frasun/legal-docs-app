@@ -19,9 +19,12 @@ const session = await getSession(Astro.request);
           </a>
         )
       }
-      <h1>
-        <slot name="topbar-title">title</slot>
-      </h1>
+      <div>
+        <h1>
+          <slot name="topbar-title">title</slot>
+        </h1>
+        <slot name="topbar-after-title" />
+      </div>
       <slot name="topbar-aside" />
     </header>
     <section>
@@ -61,8 +64,11 @@ const session = await getSession(Astro.request);
     @apply min-h-[var(--navbar-height)];
   }
 
-  main > header > h1 {
-    @apply flex-grow;
+  main > header > div {
+    @apply flex-grow flex gap-10 items-center;
+  }
+
+  main > header h1 {
     @apply font-sans font-bold not-italic text-dark65 tracking-tight;
     @apply text-xl;
   }

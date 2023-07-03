@@ -1,0 +1,80 @@
+---
+import Modal from "../components/Modal.astro";
+---
+
+<Modal slot="footer">
+  <change-name-form>
+    <h3>Zmień nazwę</h3>
+    <form spellcheck="false" method="POST">
+      <input type="text" name="title" required />
+      <input type="hidden" name="template" />
+      <button>Zapisz</button>
+    </form>
+  </change-name-form>
+</Modal>
+
+<style>
+  change-name-form {
+    @apply flex flex-col gap-10 w-full;
+  }
+
+  change-name-form form {
+    @apply flex flex-col gap-10 items-end;
+  }
+
+  change-name-form button {
+    @apply btn btn-default;
+  }
+
+  change-name-form input {
+    @apply w-full;
+  }
+</style>
+
+<script>
+  class ChangeNameForm extends HTMLElement {
+    input: HTMLInputElement;
+    hiddenInput: HTMLInputElement;
+    form: HTMLFormElement;
+    title: string;
+    docId: string;
+
+    constructor() {
+      super();
+
+      this.form = this.querySelector("form") as HTMLFormElement;
+      this.input = this.form.querySelector(
+        "input[type='text']"
+      ) as HTMLInputElement;
+      this.hiddenInput = this.form.querySelector(
+        "input[type='hidden']"
+      ) as HTMLInputElement;
+      this.title = "";
+      this.docId = "";
+    }
+
+    connectedCallback() {
+      this.addEventListener("change-name", (event: CustomEvent) => {
+        this.title = event.detail.title;
+        this.docId = event.detail.docId;
+
+        this.input.value = this.title;
+        this.hiddenInput.value = this.docId;
+      });
+
+      this.form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(this.form);
+        const newTitle = formData.get("title");
+
+        if (newTitle !== this.title && String(newTitle).trim() !== "") {
+          this.form.submit();
+        } else {
+          document.body.dispatchEvent(new CustomEvent("hideModal"));
+        }
+      });
+    }
+  }
+  customElements.define("change-name-form", ChangeNameForm);
+</script>
