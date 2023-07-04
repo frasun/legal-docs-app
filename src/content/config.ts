@@ -18,22 +18,24 @@ const documents = defineCollection({
   schema: z.object({
     title: z.string(),
     categories: z.array(reference("categories")),
-    seed: z.record(z.any()),
-    index: z.array(
-      z.object({
-        title: z.string(),
-        questions: z.array(
-          z.object({
-            id: reference("questions"),
-            title: z.string(),
-            token: z.string().or(z.array(z.string())).optional(),
-            template: reference("answers").optional(),
-            type: z.enum(["date"]).optional(),
-          })
-        ),
-      })
-    ),
-    encrypted: z.array(z.string()),
+    seed: z.record(z.any()).optional(),
+    index: z
+      .array(
+        z.object({
+          title: z.string(),
+          questions: z.array(
+            z.object({
+              id: reference("questions"),
+              title: z.string(),
+              token: z.string().or(z.array(z.string())).optional(),
+              template: reference("answers").optional(),
+              type: z.enum(["date"]).optional(),
+            })
+          ),
+        })
+      )
+      .optional(),
+    encrypted: z.array(z.string()).optional(),
   }),
 });
 

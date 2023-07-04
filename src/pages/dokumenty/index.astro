@@ -40,11 +40,15 @@ const getCategoryName = (slug) => {
   <section>
     {
       documents.length ? (
-        documents.map(({ slug, data: { title, categories: cats } }) => (
+        documents.map(({ slug, data: { title, categories: cats, seed } }) => (
           <div>
-            <a href={`${Astro.url.origin}/dokumenty/${slug}`}>
+            {seed ? (
+              <a href={`${Astro.url.origin}/dokumenty/${slug}`}>
+                <h3>{title}</h3>
+              </a>
+            ) : (
               <h3>{title}</h3>
-            </a>
+            )}
             <h6>Kategorie</h6>
             <div>
               {cats.map(({ id }) => (
