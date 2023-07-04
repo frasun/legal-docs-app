@@ -20,7 +20,7 @@ if (Astro.request.method === "POST") {
     try {
       await publishDraft(id);
 
-      return Astro.redirect(`/dokumenty/${id}/dokument`);
+      return Astro.redirect(`/dokumenty/${id}/dokument?success=true`);
     } catch {
       Astro.redirect("/404");
     }
@@ -51,7 +51,9 @@ if (Astro.request.method === "POST") {
       if (docId) {
         return Astro.redirect(
           `${Astro.url.origin}/${
-            draft ? `moje-dokumenty` : `dokumenty/${docId}/dokument`
+            draft
+              ? `moje-dokumenty`
+              : `dokumenty/${docId}/dokument?success=true`
           }`
         );
       } else {
@@ -77,7 +79,7 @@ if (Astro.request.method === "POST") {
   if (docId) {
     return Astro.redirect(
       `${Astro.url.origin}/${
-        draft ? `moje-dokumenty` : `dokumenty/${docId}/dokument`
+        draft ? `moje-dokumenty` : `dokumenty/${docId}/dokument?success=true`
       }`
     );
   } else {

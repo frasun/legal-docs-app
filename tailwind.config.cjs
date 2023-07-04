@@ -30,6 +30,7 @@ module.exports = {
 		colors: {
 			white: '#fff',
 			white95: 'rgba(255, 255, 255, .95)',
+			white75: 'rgba(255, 255, 255, .75)',
 			light: '#FDFDFC',
 			gray: '#F5F3EE',
 			orange: '#EE544A',
@@ -124,6 +125,25 @@ module.exports = {
 							}
 						}
 					}
+				},
+				document: {
+					css: {
+						'--tw-prose-headings': theme('colors.dark90'),
+						'--tw-prose-bullets': theme('colors.dark90'),
+						'--tw-prose-counters': theme('colors.dark90'),
+						'h1, h2, h3, h4, h5, h6': {
+							fontFamily: theme('fontFamily.sans'),
+							fontWeight: theme('fontWeight.medium'),
+							fontStyle: 'normal'
+						},
+						h1: {
+							fontSize: theme('fontSize.xxl[0]'),
+						},
+						'h2, h3, h4, h5, h6': {
+							fontWeight: theme('fontWeight.bold'),
+							fontSize: theme('fontSize.sm[0]')
+						}
+					}
 				}
 			})
 		}
@@ -160,9 +180,18 @@ module.exports = {
 						backgroundColor: theme('colors.orangeDark')
 					}
 				},
+				'.btn svg': {
+					flexShrink: 0
+				},
 				'.btn-default': {
 					backgroundColor: theme('colors.dark90'),
 					color: theme('colors.white95'),
+				},
+				'.btn-default svg': {
+					color: theme('colors.white75')
+				},
+				'.btn-default:hover svg': {
+					color: theme('colors.white95')
 				},
 				'.btn-alt': {
 					backgroundColor: theme('colors.dark10'),
@@ -170,7 +199,6 @@ module.exports = {
 				},
 				'.btn-alt svg': {
 					color: theme('colors.dark75'),
-					flexShrink: 0
 				},
 				'.btn-alt:hover svg': {
 					color: theme('colors.white95')

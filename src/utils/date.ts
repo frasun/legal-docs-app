@@ -13,3 +13,19 @@ export default function (dateString?) {
 
   return date;
 }
+
+export function formatDateTime(datetime) {
+  const date = datetime.toLocaleDateString(LOCALE, {
+    timeZone: TIMEZONE,
+    day: "numeric",
+    month: "long",
+  });
+
+  const time = datetime.toLocaleTimeString(LOCALE, {
+    timeZone: TIMEZONE,
+    hour: "numeric",
+    minute: "numeric",
+  });
+
+  return `${date}, ${time}`;
+}

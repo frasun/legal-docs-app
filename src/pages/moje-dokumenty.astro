@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon";
-import { TIMEZONE as timeZone, LOCALE } from "../utils/date";
+import { formatDateTime, LOCALE } from "../utils/date";
 import { SignOut } from "../auth-astro/components";
 import Layout from "../layouts/App.astro";
 import { getSession } from "../auth-astro/server";
@@ -35,22 +35,6 @@ if (Astro.request.method === "POST") {
 }
 
 const documents = await getDocuments(userId);
-
-function formatDate(datetime) {
-  const date = datetime.toLocaleDateString(LOCALE, {
-    timeZone,
-    day: "numeric",
-    month: "long",
-  });
-
-  const time = datetime.toLocaleTimeString(LOCALE, {
-    timeZone,
-    hour: "numeric",
-    minute: "numeric",
-  });
-
-  return `${date}, ${time}`;
-}
 
 // Group items by month
 const groupedItems = {};
@@ -103,12 +87,16 @@ documents.forEach((item) => {
                     <dl>
                       <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
                       <dd>
-                        {modified ? formatDate(modified) : formatDate(created)}
+                        {modified
+                          ? formatDateTime(modified)
+                          : formatDateTime(created)}
                       </dd>
                     </dl>
                   ) : (
                     <span>
-                      {modified ? formatDate(modified) : formatDate(created)}
+                      {modified
+                        ? formatDateTime(modified)
+                        : formatDateTime(created)}
                     </span>
                   )}
                   <aside>

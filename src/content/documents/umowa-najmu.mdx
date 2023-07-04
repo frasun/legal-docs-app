@@ -109,7 +109,7 @@ import formatDate from "../../utils/date";
     <br />
     {frontmatter.seed['t-pin'].length ? frontmatter.seed['t-pin'] : `[NUMER PESEL / NIP]`}
     <br />
-    zwanym dalej <strong>Wynajmującym</strong>
+    zwanym dalej <strong>Wynajmującym</strong>.
 
 ### Przedmiot Umowy
 
@@ -135,15 +135,8 @@ import formatDate from "../../utils/date";
    
   1. Lokal będzie użytkowany {frontmatter.seed.purpose.includes(',') ? frontmatter.seed.purpose.split(', ').join(' i ') : frontmatter.seed.purpose}.
   1. Czynsz w wysokości {formatNumber(frontmatter.seed.rent)} zł, płatny {frontmatter.seed.rentmethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
-  1. Opłaty za media
-      - Wynajmujący
-        <ul>
-        {frontmatter.seed.billslandlord.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
-        </ul>
-      - Najemca
-        <ul>
-        {frontmatter.seed.billstenant.split(',').map((item) => <li>{item !== 'undefined' ? item : 'brak'}</li>)}
-        </ul>
+  1. Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.seed.billslandlord}. 
+    Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.seed.billstenant}
   1. Kaucja w wysokości {formatNumber(frontmatter.seed.deposit)} zł, płatna {frontmatter.seed.depositmethod}.
   1. Najemca pokrywa koszty napraw do {formatNumber(frontmatter.seed.repairs)} zł.      
   1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.seed.termination} dni.

@@ -5,6 +5,8 @@ import { getDocument, createDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 import { getUserByEmail } from "../../../../db/auth";
 import crypt from "../../../utils/crypt";
+import { Icon } from "astro-icon";
+import { formatDateTime } from "../../../utils/date";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -33,7 +35,7 @@ if (Astro.request.method === "POST") {
 
   if (document) {
     return Astro.redirect(
-      `${Astro.url.origin}/dokumenty/${document.id}/dokument`
+      `${Astro.url.origin}/dokumenty/${document.id}/dokument?success=true`
     );
   } else {
     return Astro.redirect("/404");
@@ -52,7 +54,7 @@ if (Number(documentId)) {
   return Astro.redirect("/404");
 }
 
-const { answers, doc: docId } = data;
+const { answers, doc: docId, created, modified } = data;
 
 const document = await getEntry("documents", docId);
 
@@ -78,45 +80,112 @@ for (let key of Object.keys(qData.seed)) {
     }
   }
 }
+
+const url = new URL(Astro.request.url);
+const urlParams = new URLSearchParams(url.search);
+const firstTime = urlParams.get("success") === "true" ? true : false;
 ---
 
 <Layout title={`Dokument - ${title}`}>
   <span slot="topbar-title">{title}</span>
-  <article id="doc" class="prose" data-title={title}>
+  <article id="doc" class="prose prose-document" data-title={title}>
     <Content />
   </article>
   <aside>
-    <h3>Twój dokument jest gotowy!</h3>
-    <download-button content-id="#doc">
-      <button>Pobierz plik Word</button>
-    </download-button>
+    <header>
+      {
+        firstTime ? (
+          <>
+            <Icon name="big-tick" width={48} height={48} />
+            <h3>Twój dokument jest gotowy!</h3>
+          </>
+        ) : (
+          <>
+            <Icon name="document" width={48} height={48} />
+            <h3>{title}</h3>
+          </>
+        )
+      }
+    </header>
+    {
+      firstTime ? (
+        <h6>Wybierz co chcesz teraz zrobić</h6>
+      ) : (
+        <h6>
+          Utworzony{" "}
+          {modified ? formatDateTime(modified) : formatDateTime(created)}
+        </h6>
+      )
+    }
+    <download-doc content-id="#doc">
+      <button>
+        <Icon name="file-word" width={24} height={24} />
+        Pobierz plik Word
+      </button>
+    </download-doc>
     <print-button>
-      <button>Drukuj</button>
+      <button>
+        <Icon name="print" width={24} height={24} />
+        Drukuj
+      </button>
     </print-button>
+    <footer>
+      <a href=`${Astro.url.origin}/moje-dokumenty`>Zobacz w moich dokumentach</a
+      >
+    </footer>
   </aside>
 </Layout>
 
 <style>
   article {
-    @apply bg-white p-30 lg:p-50 w-[90vw];
+    @apply bg-white p-30 lg:p-50 w-[90vw] max-w-[900px];
     @apply order-2 lg:order-1;
+
+    counter-reset: section;
+  }
+
+  article :global(h3::before) {
+    counter-increment: section;
+    content: "\00A7"counter(section) ". ";
   }
 
   aside {
     @apply order-1 lg:order-2;
-    @apply flex lg:flex-col gap-10 items-start;
-    @apply sticky top-[var(--navbar-height)] py-30;
+    @apply flex lg:flex-col gap-15 items-start;
+    @apply sticky top-[var(--navbar-height)] p-30;
     @apply print:hidden;
+    @apply bg-light rounded-lg;
+    @apply w-full max-w-[300px];
+  }
+
+  aside header {
+    @apply flex gap-15;
+  }
+
+  aside header h3 {
+    @apply flex-shrink;
+  }
+
+  aside header svg {
+    @apply flex-shrink-0;
   }
 
   aside button {
     @apply btn btn-default btn-big;
   }
+
+  aside a {
+    @apply btn btn-alt;
+  }
+
+  aside footer {
+    @apply mt-20;
+  }
 </style>
 <script>
   import exportDoc from "../../../utils/exportDoc";
 
-  class DownloadButton extends HTMLElement {
+  class DownloadDoc extends HTMLElement {
     contentId: string;
     button: HTMLButtonElement;
 
@@ -140,7 +209,7 @@ for (let key of Object.keys(qData.seed)) {
       });
     }
   }
-  customElements.define("download-button", DownloadButton);
+  customElements.define("download-doc", DownloadDoc);
 
   class PrintButton extends HTMLElement {
     button: HTMLButtonElement;
