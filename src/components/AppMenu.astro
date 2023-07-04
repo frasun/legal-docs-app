@@ -33,7 +33,11 @@ const { session } = Astro.props;
   <footer>
     {
       session ? (
-        <SignOut title="Wyloguj się" aira-label="Wyloguj się">
+        <SignOut
+          title="Wyloguj się"
+          aira-label="Wyloguj się"
+          params={{ callbackUrl: Astro.url.origin }}
+        >
           <Icon name="signout" width={24} height={24} />
         </SignOut>
       ) : (
