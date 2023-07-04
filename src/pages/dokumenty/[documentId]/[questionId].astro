@@ -22,11 +22,11 @@ let docId = documentId;
 let draft = false;
 let formData, docTitle;
 
-if (Astro.request.method === "POST" && session) {
+if (Astro.request.method === "POST") {
   formData = await Astro.request.formData();
   docTitle = formData.get("title");
 
-  if (docTitle) {
+  if (docTitle && session) {
     await handleNameChange(formData);
   }
 }
