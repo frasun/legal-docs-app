@@ -27,6 +27,7 @@ const session = await getSession(Astro.request);
       </div>
       <slot name="topbar-aside" />
     </header>
+    <slot name="content-header" />
     <section>
       <slot />
     </section>

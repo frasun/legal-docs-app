@@ -1,0 +1,88 @@
+---
+import { Icon } from "astro-icon";
+
+const { slug, title, docCategories, categories } = Astro.props;
+
+const getCategoryName = (slug) => {
+    const ct = categories.find(({ id }) => id === slug);
+
+    return ct ? ct.data.name : null;
+};
+
+const getCategoryIcon = (slug) => {
+    const ct = categories.find(({ id }) => id === slug);
+
+    return ct ? ct.data.icon : null;
+};
+---
+
+<div>
+    <header>
+        <a href={`${Astro.url.origin}/dokumenty/${slug}`}>
+            {title}
+        </a>
+    </header>
+    <footer>
+        <h6>Kategorie</h6>
+        <nav>
+            {
+                docCategories
+                    .sort((a, b) => a.id.localeCompare(b.id))
+                    .map(({ id }) => (
+                        <a
+                            href={`${Astro.url.origin}/dokumenty?kategoria=${id}`}
+                            title={getCategoryName(id)}
+                            aria-label={getCategoryName(id)}
+                        >
+                            <Icon
+                                name={getCategoryIcon(id)}
+                                width={18}
+                                height={18}
+                            />
+                        </a>
+                    ))
+            }
+        </nav>
+    </footer>
+    <aside>
+        <a href={`${Astro.url.origin}/dokumenty/${slug}`} aria-label={title}>
+            <Icon name="arrow-right" width={24} height={24} />
+        </a>
+    </aside>
+</div>
+
+<style>
+    div {
+        @apply grid grid-cols-[1fr_auto] grid-rows-[1fr_auto] grid-flow-col gap-15;
+        @apply p-15 pl-20 bg-white rounded-lg;
+    }
+
+    header a {
+        @apply text-lg md:line-clamp-2;
+        @apply font-serif;
+    }
+
+    header a:not(:hover) {
+        @apply text-dark90;
+    }
+
+    footer h6 {
+        @apply text-xs mb-10;
+    }
+
+    footer nav {
+        @apply flex flex-wrap gap-10;
+    }
+
+    footer a {
+        @apply btn btn-alt;
+    }
+
+    aside {
+        @apply row-[1_/_span_2];
+    }
+
+    aside a {
+        @apply h-full flex items-center;
+    }
+</style>

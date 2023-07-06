@@ -98,7 +98,8 @@ module.exports = {
 			'md': '768px',
 			'lg': '1024px',
 			'xl': '1280px',
-			'xxl': '1360px'
+			'xxl': '1360px',
+			'3xl': '1440px',
 		},
 		extend: {
 			zIndex: {

@@ -18,6 +18,7 @@ const documents = defineCollection({
   schema: z.object({
     title: z.string(),
     categories: z.array(reference("categories")),
+    keywords: z.array(z.string()).optional(),
     seed: z.record(z.any()).optional(),
     index: z
       .array(

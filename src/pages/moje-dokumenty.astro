@@ -115,10 +115,11 @@ documents.forEach((item) => {
     ) : (
       <EmptyScreen
         icon="document"
-        text="Nie masz jeszcze dokumentów"
         cta="Stwórz pierwszy dokument"
         ctaUrl={`${Astro.url.origin}/dokumenty`}
-      />
+      >
+        Nie masz jeszcze dokumentów
+      </EmptyScreen>
     )
   }
   <ChangeNameModal />

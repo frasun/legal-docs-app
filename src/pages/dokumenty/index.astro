@@ -1,139 +1,141 @@
 ---
+import Fuse from "fuse.js";
 import { getCollection } from "astro:content";
-import { Icon } from "astro-icon";
 import Layout from "../../layouts/App.astro";
+import DocumentTile from "../../components/DocumentTile.astro";
+import EmptyScreen from "../../components/EmptyScreen.astro";
+import trimWhitespace from "../../utils/whitespace";
 
 const PAGE_TITLE = "Wszystkie dokumenty";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get("kategoria");
+const search = url.searchParams.get("szukaj");
 
 const categories = await getCollection("categories");
 const documents = await getCollection("documents", ({ data: { categories } }) =>
   currentCat ? categories.find(({ id }) => id === currentCat) : true
 );
 
+const fuse = new Fuse(documents, {
+  keys: ["data.title", "data.keywords"],
+  threshold: 0.5,
+});
+const filteredDocs = fuse.search(search ? trimWhitespace(search) : "");
+
 const currentCategory = categories.find(({ id }) => id === currentCat);
 const title = currentCategory ? currentCategory.data.name : PAGE_TITLE;
-
-const getCategoryName = (slug) => {
-  const ct = categories.find(({ id }) => id === slug);
-
-  return ct ? ct.data.name : null;
-};
-
-const getCategoryIcon = (slug) => {
-  const ct = categories.find(({ id }) => id === slug);
-
-  return ct ? ct.data.icon : null;
-};
 ---
 
 <Layout title={`${title} - Prawniczek`}>
   <span slot="topbar-title">{title}</span>
-  <category-selector slot="topbar-aside">
-    <label for="category">Kategorie</label>
-    <select id="category">
-      <option value="">Wszystkie</option>
-      {
-        categories.map(({ id, data: { name } }) => (
-          <option value={id} selected={id === currentCat}>
-            {name}
-          </option>
-        ))
-      }
-    </select>
-  </category-selector>
-  <section>
-    {
-      documents.length ? (
-        documents.map(({ slug, data: { title, categories: cats, seed } }) => (
-          <div>
-            <div>
-              {seed ? (
-                <a href={`${Astro.url.origin}/dokumenty/${slug}`}>
-                  <h3>{title}</h3>
-                </a>
-              ) : (
-                <h3>{title}</h3>
-              )}
-              <footer>
-                <h6>Kategorie</h6>
-                <div>
-                  {cats
-                    .sort((a, b) => a.id.localeCompare(b.id))
-                    .map(({ id }) => (
-                      <a
-                        href={`${Astro.url.origin}/dokumenty?kategoria=${id}`}
-                        title={getCategoryName(id)}
-                        aria-label={getCategoryName(id)}
-                      >
-                        <Icon
-                          name={getCategoryIcon(id)}
-                          width={18}
-                          height={18}
-                        />
-                      </a>
-                    ))}
-                </div>
-              </footer>
-            </div>
-            <a
-              href={`${Astro.url.origin}/dokumenty/${slug}`}
-              aria-label={title}
-            >
-              <Icon name="arrow-right" width={24} height={24} />
-            </a>
-          </div>
-        ))
+  <header slot="content-header">
+    <search-documents>
+      <form method="GET" action={Astro.request.url}>
+        <input
+          type="search"
+          placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
+          spellcheck="false"
+          name="szukaj"
+          value={search ? trimWhitespace(search) : ""}
+        />
+        {
+          currentCat && (
+            <input type="hidden" name="kategoria" value={currentCat} />
+          )
+        }
+      </form>
+      {search && <button>Wyczyść</button>}
+    </search-documents>
+    <category-selector>
+      <label for="category">Kategorie</label>
+      <select id="category">
+        <option value="">Wszystkie</option>
+        {
+          categories.map(({ id, data: { name } }) => (
+            <option value={id} selected={id === currentCat}>
+              {name}
+            </option>
+          ))
+        }
+      </select>
+    </category-selector>
+  </header>
+  {
+    documents.length ? (
+      search ? (
+        filteredDocs.length ? (
+          <section>
+            {filteredDocs.map(
+              ({
+                item: {
+                  slug,
+                  data: { title, categories: cats },
+                },
+              }) => (
+                <DocumentTile
+                  slug={slug}
+                  title={title}
+                  docCategories={cats}
+                  categories={categories}
+                />
+              )
+            )}
+          </section>
+        ) : (
+          <EmptyScreen>Brak dokumentów do wyświetlenia</EmptyScreen>
+        )
       ) : (
-        <p>Brak dokumentów do wyświetlenia</p>
+        <section>
+          {documents.map(({ slug, data: { title, categories: cats } }) => (
+            <DocumentTile
+              slug={slug}
+              title={title}
+              docCategories={cats}
+              categories={categories}
+            />
+          ))}
+        </section>
       )
-    }
-  </section>
+    ) : (
+      <EmptyScreen>Brak dokumentów do wyświetlenia</EmptyScreen>
+    )
+  }
 </Layout>
 
 <style>
+  header {
+    @apply sticky top-[var(--navbar-height)] bg-gray pb-10 flex gap-30;
+  }
+
   section {
-    @apply grid md:auto-rows-fr md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xxl:grid-cols-5 gap-20 w-full;
+    @apply grid md:auto-rows-fr md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-20 w-full;
     @apply pt-10;
-  }
-
-  section > div {
-    @apply flex p-15 bg-white rounded-lg gap-10;
-  }
-
-  section > div > a {
-    @apply flex-shrink-0 h-full flex items-center;
-  }
-
-  section > div > div {
-    @apply flex gap-10 flex-col flex-grow;
-  }
-
-  section > div h3 {
-    @apply text-lg md:line-clamp-2;
-  }
-
-  section > div > div h3,
-  section > div > div > a {
-    @apply flex-grow;
-  }
-
-  section > div > div h6 {
-    @apply text-xs mb-10;
-  }
-
-  section > div footer > div {
-    @apply flex flex-wrap gap-10;
-  }
-
-  section > div footer a {
-    @apply btn btn-alt;
   }
 
   category-selector {
     @apply flex gap-10 items-center;
+  }
+
+  search-documents {
+    @apply flex-grow;
+    @apply flex gap-10 items-center;
+  }
+
+  search-documents form {
+    @apply flex-grow;
+  }
+
+  search-documents input {
+    @apply w-full;
+  }
+
+  search-documents button {
+    @apply btn btn-alt;
+  }
+
+  p {
+    @apply my-20;
   }
 </style>
 
@@ -150,14 +152,43 @@ const getCategoryIcon = (slug) => {
     connectedCallback() {
       this.select.addEventListener("change", (event) => {
         const val = (event.target as HTMLInputElement).value;
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
 
-        let url = `${window.location.origin}/dokumenty${
-          val.length ? `?kategoria=${val}` : ``
-        }`;
+        if (val.length) {
+          params.set("kategoria", val);
+        } else {
+          params.delete("kategoria");
+        }
 
-        document.location = url;
+        url.search = params.toString();
+        document.location = url.toString();
       });
     }
   }
   customElements.define("category-selector", CategorySelector);
+
+  class SearchDocuments extends HTMLElement {
+    button: HTMLButtonElement;
+
+    constructor() {
+      super();
+
+      this.button = this.querySelector("button");
+    }
+
+    connectedCallback() {
+      this.button.addEventListener("click", (event) => {
+        event.preventDefault();
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+
+        params.delete("szukaj");
+
+        url.search = params.toString();
+        document.location = url.toString();
+      });
+    }
+  }
+  customElements.define("search-documents", SearchDocuments);
 </script>
