@@ -113,7 +113,9 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
       ) : (
         <h6>
           Utworzony{" "}
-          {modified ? formatDateTime(modified) : formatDateTime(created)}
+          <time>
+            {modified ? formatDateTime(modified) : formatDateTime(created)}
+          </time>
         </h6>
       )
     }

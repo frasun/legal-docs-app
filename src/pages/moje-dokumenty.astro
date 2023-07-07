@@ -87,17 +87,19 @@ documents.forEach((item) => {
                     <dl>
                       <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
                       <dd>
+                        <time>
                         {modified
                           ? formatDateTime(modified)
                           : formatDateTime(created)}
+                          </time>
                       </dd>
                     </dl>
                   ) : (
-                    <span>
+                    <time>
                       {modified
                         ? formatDateTime(modified)
                         : formatDateTime(created)}
-                    </span>
+                    </time>
                   )}
                   <aside>
                     <ChangeNameButton
