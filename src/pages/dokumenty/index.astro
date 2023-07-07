@@ -1,5 +1,6 @@
 ---
 import Fuse from "fuse.js";
+import { Icon } from "astro-icon";
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/App.astro";
 import DocumentTile from "../../components/DocumentTile.astro";
@@ -44,6 +45,7 @@ const title = currentCategory ? currentCategory.data.name : PAGE_TITLE;
             <input type="hidden" name="kategoria" value={currentCat} />
           )
         }
+        <Icon name="search" width={24} height={24} />
       </form>
       {search && <button>Wyczyść</button>}
     </search-documents>
@@ -126,16 +128,17 @@ const title = currentCategory ? currentCategory.data.name : PAGE_TITLE;
     @apply flex-grow;
   }
 
-  search-documents input {
+  search-documents form :global(> svg) {
+    @apply absolute left-20 top-0 translate-y-1/2;
+  }
+
+  search-documents input[type="search"] {
     @apply w-full;
+    @apply pl-60;
   }
 
   search-documents button {
     @apply btn btn-alt;
-  }
-
-  p {
-    @apply my-20;
   }
 </style>
 
