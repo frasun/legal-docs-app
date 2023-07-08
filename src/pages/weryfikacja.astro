@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getUserByEmail, activateUser } from "../../db/auth";
+import Logo from "../images/logo.astro";
 
 const url = new URL(Astro.request.url);
 const userEmail = decodeURIComponent(url.searchParams.get("email"));
@@ -15,9 +16,10 @@ let errors = [];
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const postedCode = formData.get("code");
-  const { code, id } = await getUserByEmail(userEmail);
+  const user = await getUserByEmail(userEmail);
 
-  if (code) {
+  if (user) {
+    const { code, id } = user;
     if (code === postedCode) {
       await activateUser(id);
 
@@ -25,7 +27,7 @@ if (Astro.request.method === "POST") {
         `/zaloguj-sie${redirectUrl ? `?redirect=${redirectUrl}` : ``}`
       );
     } else {
-      errors.push("Posted code does not match verification code");
+      errors.push("Podany kod jest nieprawidłowy");
     }
   } else {
     return Astro.redirect("/404");
@@ -34,10 +36,13 @@ if (Astro.request.method === "POST") {
 ---
 
 <Layout title="Wryfikacja adresu e-mail">
-  {errors.length ? errors.map((error) => <p>{error}</p>) : null}
-  <form method="POST">
-    <h4>Podaj kod weryfikacyjny</h4>
-    <input type="text" name="code" required />
-    <button type="submit">Wyślij</button>
-  </form>
+  <div class="auth-form">
+    <Logo />
+    <p>Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong></p>
+    <form method="POST">
+      <input type="text" name="code" required />
+      <button type="submit">Wyślij</button>
+      {errors.length ? errors.map((error) => <p>{error}</p>) : null}
+    </form>
+  </div>
 </Layout>
