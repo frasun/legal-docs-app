@@ -43,6 +43,7 @@ const redirectUrl = url.searchParams.get("redirect");
 
 <script>
   import { signIn } from "../auth-astro/client";
+  import errors from "../utils/errors";
 
   class LoginForm extends HTMLElement {
     form: HTMLFormElement;
@@ -81,7 +82,7 @@ const redirectUrl = url.searchParams.get("redirect");
     showError() {
       const error = document.createElement("p");
       error.id = "error";
-      error.innerHTML = "Podany adres e-mail lub hasło są nieprawidłowe";
+      error.innerHTML = errors.WRONG_CREDENTIALS;
 
       window.setTimeout(() => {
         this.form.append(error);

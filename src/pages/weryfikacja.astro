@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import { getUserByEmail, activateUser } from "../../db/auth";
 import Logo from "../images/logo.astro";
+import error from "../utils/errors";
 
 const url = new URL(Astro.request.url);
 const userEmail = decodeURIComponent(url.searchParams.get("email"));
@@ -27,7 +28,7 @@ if (Astro.request.method === "POST") {
         `/zaloguj-sie${redirectUrl ? `?redirect=${redirectUrl}` : ``}`
       );
     } else {
-      errors.push("Podany kod jest nieprawidłowy");
+      errors.push(error.WRONG_VERIFICATION_CODE);
     }
   } else {
     return Astro.redirect("/404");

@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { getUserByEmail, createUser, sendCode } from "../../db/auth";
 import sendEmail from "../utils/email";
 import Logo from "../images/logo.astro";
+import error from "../utils/errors";
 
 let errors = [];
 
@@ -18,7 +19,7 @@ if (Astro.request.method === "POST") {
   if (user) {
     const { id, active } = user;
     if (active) {
-      errors.push("Konto o podanym adresie e-mail już istnieje");
+      errors.push(error.EMAIL_TAKEN);
     } else {
       const { code } = await sendCode(id);
 

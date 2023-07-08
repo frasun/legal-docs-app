@@ -1,5 +1,6 @@
 import { db } from "./db";
 import bcrypt from "bcryptjs";
+import errors from "../src/utils/errors";
 
 const KEY = "user";
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -17,11 +18,11 @@ export const getUserByEmail = async (email: string) => {
 
 export const createUser = async (email, password) => {
   if (!testString(email, emailRegExp)) {
-    throw new Error("Adres e-mail jest nieprawidłowy");
+    throw new Error(errors.WRONG_EMAIL);
   }
 
   if (!testString(password, passwordRegExp)) {
-    throw new Error("Hasło nie spełnia warunków bezpieczeństwa");
+    throw new Error(errors.UNSAFE_PASSWORD);
   }
 
   try {
