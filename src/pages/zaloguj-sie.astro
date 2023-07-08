@@ -15,7 +15,9 @@ const redirectUrl = url.searchParams.get("redirect");
 
 <Layout title="Zaloguj się - Prawniczek">
   <login-form redirect={redirectUrl} class="auth-form">
-    <Logo />
+    <a href={Astro.url.origin}>
+      <Logo />
+    </a>
     <h1>Zaloguj się</h1>
     <form spellcheck="false">
       <div class="input-group">
@@ -39,6 +41,9 @@ const redirectUrl = url.searchParams.get("redirect");
       </a>
     </footer>
   </login-form>
+  <aside>
+    <a href={Astro.url.origin}><small>Wróć do strony głównej</small></a>
+  </aside>
 </Layout>
 
 <script>
@@ -97,3 +102,9 @@ const redirectUrl = url.searchParams.get("redirect");
   }
   customElements.define("login-form", LoginForm);
 </script>
+
+<style>
+  aside {
+    @apply w-full max-w-[500px] mx-auto text-center my-20;
+  }
+</style>
