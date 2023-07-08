@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getSession } from "../auth-astro/server";
-import { SignOut } from "../auth-astro/components";
+import Logo from "../images/logo.astro";
 
 const session = await getSession(Astro.request);
 
@@ -14,32 +14,31 @@ const redirectUrl = url.searchParams.get("redirect");
 ---
 
 <Layout title="Zaloguj się - Prawniczek">
-  {
-    session ? (
-      <>
-        <p>Welcome {session.user?.email}</p>
-        <SignOut>Wyloguj</SignOut>
-      </>
-    ) : (
-      <login-form redirect={redirectUrl}>
-        <form>
-          <input type="email" name="email" required />
-          <input type="password" name="password" required />
-          <button type="submit">Zaloguj się</button>
-        </form>
-        <footer>
-          Nie jesteś jeszcze konta?
-          <a
-            href={`${Astro.url.origin}/zaloz-konto${
-              redirectUrl ? `/?redirect=${redirectUrl}` : ""
-            }`}
-          >
-            Załóż
-          </a>
-        </footer>
-      </login-form>
-    )
-  }
+  <login-form redirect={redirectUrl} class="auth-form">
+    <Logo />
+    <h1>Zaloguj się</h1>
+    <form spellcheck="false">
+      <div class="input-group">
+        <label for="email">Adres e-mail</label>
+        <input id="email" type="email" name="email" required />
+      </div>
+      <div class="input-group">
+        <label for="password">Hasło</label>
+        <input id="password" type="password" name="password" required />
+      </div>
+      <button type="submit">Zaloguj się</button>
+    </form>
+    <footer>
+      Nie masz jeszcze konta?
+      <a
+        href={`${Astro.url.origin}/zaloz-konto${
+          redirectUrl ? `/?redirect=${redirectUrl}` : ""
+        }`}
+      >
+        Załóż konto
+      </a>
+    </footer>
+  </login-form>
 </Layout>
 
 <script>
@@ -85,7 +84,7 @@ const redirectUrl = url.searchParams.get("redirect");
       error.innerHTML = "Podany adres e-mail lub hasło są nieprawidłowe";
 
       window.setTimeout(() => {
-        this.append(error);
+        this.form.append(error);
       }, 200);
     }
 

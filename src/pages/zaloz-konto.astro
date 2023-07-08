@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { getUserByEmail, createUser, sendCode } from "../../db/auth";
 import bcrypt from "bcryptjs";
 import sendEmail from "../utils/email";
+import Logo from "../images/logo.astro";
 
 let errors = [];
 
@@ -18,7 +19,7 @@ if (Astro.request.method === "POST") {
   if (user) {
     const { id, active } = user;
     if (active) {
-      errors.push("User already exists");
+      errors.push("Konto o podanym adresie e-mail już istnieje");
     } else {
       const { code } = await sendCode(id);
 
@@ -60,23 +61,32 @@ async function sendAndRedirect(email, code) {
 ---
 
 <Layout title="Załóż konto - Prawniczek">
-  {errors.length ? errors.map((error) => <p>{error}</p>) : null}
-  <form method="POST">
-    <input type="email" name="email" required />
-    <input
-      type="password"
-      name="password"
-      required
-      pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
-    />
-    <button type="submit">Załóż konto</button>
+  <div class="auth-form">
+    <Logo />
+    <h1>Załóż konto</h1>
+    <form method="POST">
+      <div class="input-group">
+        <label for="email">Adres e-mail</label>
+        <input id="email" type="email" name="email" required />
+      </div>
+      <div class="input-group">
+        <label for="password">Hasło</label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          required
+          pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
+        />
+        <small
+          >Hasło powinno mieć przynajmniej 8 znaków, maksymalnie 20 znaków, w
+          tym przynajmniej jedną wielką literę i jedną cyfrę</small
+        >
+      </div>
+      <button type="submit">Załóż konto</button>
+      {errors.length ? errors.map((error) => <p>{error}</p>) : null}
+    </form>
     <footer>
-      <small
-        >Hasło powinno mieć przynajmniej 8 znaków, maksymalnie 20 znaków, w tym
-        przynajmniej jedną wielką literę i jedną cyfrę</small
-      >
-      <br />
-      <br />
       Masz już konto?
       <a
         href={`${Astro.url.origin}/zaloguj-sie${
@@ -84,5 +94,5 @@ async function sendAndRedirect(email, code) {
         }`}>Zaloguj się</a
       >
     </footer>
-  </form>
+  </div>
 </Layout>

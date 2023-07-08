@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon";
 import { getSession } from "../auth-astro/server";
+import { SignOut } from "../auth-astro/components";
 
 const session = await getSession(Astro.request);
 
@@ -23,7 +24,16 @@ const menuItems = [
     <aside>
       {
         session ? (
-          <a href={`${Astro.url.origin}/moje-dokumenty`}>Moje dokumenty</a>
+          <>
+            <a href={`${Astro.url.origin}/moje-dokumenty`}>Moje dokumenty</a>
+            <SignOut
+              title="Wyloguj się"
+              aira-label="Wyloguj się"
+              params={{ callbackUrl: Astro.url.origin }}
+            >
+              Wyloguj się
+            </SignOut>
+          </>
         ) : (
           <>
             <a href={`${Astro.url.origin}/zaloz-konto`}>Załóż konto</a>
@@ -73,6 +83,10 @@ const menuItems = [
 
   #menuNav > aside > a {
     @apply btn btn-default;
+  }
+
+  aside button {
+    @apply btn btn-alt;
   }
 
   #menuToggle {
