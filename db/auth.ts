@@ -1,6 +1,9 @@
 import { db } from "./db";
+import bcrypt from "bcryptjs";
 
 const KEY = "user";
+const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRegExp = /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$/;
 
 export const getUserByEmail = async (email: string) => {
   const user = await db
@@ -12,12 +15,31 @@ export const getUserByEmail = async (email: string) => {
   return user || null;
 };
 
-export const createUser = async (email, password) =>
-  await db
-    .insertInto(KEY)
-    .values([{ email, password, code: getVerificationCode() }])
-    .returning(["id", "email", "code"])
-    .executeTakeFirst();
+export const createUser = async (email, password) => {
+  if (!testString(email, emailRegExp)) {
+    throw new Error("Adres e-mail jest nieprawidłowy");
+  }
+
+  if (!testString(password, passwordRegExp)) {
+    throw new Error("Hasło nie spełnia warunków bezpieczeństwa");
+  }
+
+  try {
+    return await db
+      .insertInto(KEY)
+      .values([
+        {
+          email,
+          password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
+          code: getVerificationCode(),
+        },
+      ])
+      .returning(["id", "email", "code"])
+      .executeTakeFirst();
+  } catch (e) {
+    throw e;
+  }
+};
 
 export const activateUser = async (id) => {
   try {
@@ -45,3 +67,5 @@ export const sendCode = async (id) => {
 };
 
 const getVerificationCode = () => Math.random().toString(16).substring(2, 8);
+
+const testString = (string, regexp) => regexp.test(string);

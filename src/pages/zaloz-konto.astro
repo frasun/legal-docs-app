@@ -1,7 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getUserByEmail, createUser, sendCode } from "../../db/auth";
-import bcrypt from "bcryptjs";
 import sendEmail from "../utils/email";
 import Logo from "../images/logo.astro";
 
@@ -31,22 +30,23 @@ if (Astro.request.method === "POST") {
       );
     }
   } else {
-    const newUser = await createUser(
-      email,
-      bcrypt.hashSync(password, bcrypt.genSaltSync(10))
-    );
+    try {
+      const newUser = await createUser(email, password);
 
-    if (newUser) {
-      const { email, code } = newUser;
+      if (newUser) {
+        const { email, code } = newUser;
 
-      await sendAndRedirect(email, code);
-      return Astro.redirect(
-        `/weryfikacja?email=${encodeURIComponent(String(email))}${
-          redirectUrl ? `&redirect=${redirectUrl}` : ""
-        }`
-      );
-    } else {
-      return Astro.redirect("/404");
+        await sendAndRedirect(email, code);
+        return Astro.redirect(
+          `/weryfikacja?email=${encodeURIComponent(String(email))}${
+            redirectUrl ? `&redirect=${redirectUrl}` : ""
+          }`
+        );
+      } else {
+        return Astro.redirect("/404");
+      }
+    } catch (e) {
+      errors.push(e.message);
     }
   }
 }
