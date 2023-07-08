@@ -5,7 +5,9 @@ import sendEmail from "../utils/email";
 import Logo from "../images/logo.astro";
 import error from "../utils/errors";
 
-let errors = [];
+let errors = [],
+  userEmail,
+  userPassword;
 
 const url = new URL(Astro.request.url);
 const redirectUrl = url.searchParams.get("redirect");
@@ -14,40 +16,48 @@ if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
-  const user = await getUserByEmail(email);
+  const tos = String(formData.get("tos"));
 
-  if (user) {
-    const { id, active } = user;
-    if (active) {
-      errors.push(error.EMAIL_TAKEN);
-    } else {
-      const { code } = await sendCode(id);
-
-      await sendAndRedirect(email, code);
-      return Astro.redirect(
-        `/weryfikacja?email=${encodeURIComponent(email)}${
-          redirectUrl ? `&redirect=${redirectUrl}` : ""
-        }`
-      );
-    }
+  if (tos !== "on") {
+    errors.push(error.ACCEPT_TERMS);
+    userEmail = email;
+    userPassword = password;
   } else {
-    try {
-      const newUser = await createUser(email, password);
+    const user = await getUserByEmail(email);
 
-      if (newUser) {
-        const { email, code } = newUser;
+    if (user) {
+      const { id, active } = user;
+      if (active) {
+        errors.push(error.EMAIL_TAKEN);
+      } else {
+        const { code } = await sendCode(id);
 
         await sendAndRedirect(email, code);
         return Astro.redirect(
-          `/weryfikacja?email=${encodeURIComponent(String(email))}${
+          `/weryfikacja?email=${encodeURIComponent(email)}${
             redirectUrl ? `&redirect=${redirectUrl}` : ""
           }`
         );
-      } else {
-        return Astro.redirect("/404");
       }
-    } catch (e) {
-      errors.push(e.message);
+    } else {
+      try {
+        const newUser = await createUser(email, password);
+
+        if (newUser) {
+          const { email, code } = newUser;
+
+          await sendAndRedirect(email, code);
+          return Astro.redirect(
+            `/weryfikacja?email=${encodeURIComponent(String(email))}${
+              redirectUrl ? `&redirect=${redirectUrl}` : ""
+            }`
+          );
+        } else {
+          return Astro.redirect("/404");
+        }
+      } catch (e) {
+        errors.push(e.message);
+      }
     }
   }
 }
@@ -68,7 +78,13 @@ async function sendAndRedirect(email, code) {
     <form method="POST">
       <div class="input-group">
         <label for="email">Adres e-mail</label>
-        <input id="email" type="email" name="email" required />
+        <input
+          id="email"
+          type="email"
+          name="email"
+          required
+          value={userEmail}
+        />
       </div>
       <div class="input-group">
         <label for="password">Hasło</label>
@@ -76,6 +92,7 @@ async function sendAndRedirect(email, code) {
           id="password"
           type="password"
           name="password"
+          value={userPassword}
           required
           pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
         />
@@ -83,6 +100,15 @@ async function sendAndRedirect(email, code) {
           >Hasło powinno mieć przynajmniej 8 znaków, maksymalnie 20 znaków, w
           tym przynajmniej jedną wielką literę i jedną cyfrę</small
         >
+      </div>
+      <div class="input-group tos">
+        <input type="checkbox" name="tos" id="tos" required />
+        <label for="tos">
+          Akceptuję warunki <a
+            href={`${Astro.url.origin}/regulamin`}
+            target="_blank">regulaminu</a
+          >
+        </label>
       </div>
       <button type="submit">Załóż konto</button>
       {errors.length ? errors.map((error) => <p>{error}</p>) : null}
@@ -97,3 +123,22 @@ async function sendAndRedirect(email, code) {
     </footer>
   </div>
 </Layout>
+
+<style>
+  .tos {
+    @apply flex-row items-start flex-nowrap;
+    @apply mt-20;
+  }
+
+  .tos label {
+    @apply w-auto flex-shrink;
+  }
+
+  .tos label a {
+    @apply text-orangeDark;
+  }
+
+  .tos label a:hover {
+    @apply text-dark90;
+  }
+</style>

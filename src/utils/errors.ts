@@ -4,4 +4,5 @@ export default {
   WRONG_VERIFICATION_CODE: "Podany kod jest nieprawidłowy",
   WRONG_EMAIL: "Adres e-mail jest nieprawidłowy",
   UNSAFE_PASSWORD: "Hasło nie spełnia warunków bezpieczeństwa",
+  ACCEPT_TERMS: "Aby kontynuować musisz zaakceptować regulamin",
 };
