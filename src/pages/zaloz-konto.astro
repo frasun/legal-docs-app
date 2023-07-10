@@ -4,6 +4,7 @@ import { getUserByEmail, createUser, sendCode } from "../../db/auth";
 import sendEmail from "../utils/email";
 import Logo from "../images/logo.astro";
 import error from "../utils/errors";
+import pageTitle from "../utils/pageTitle";
 
 let errors = [],
   userEmail,
@@ -71,7 +72,7 @@ async function sendAndRedirect(email, code) {
 }
 ---
 
-<Layout title="Załóż konto - Prawniczek">
+<Layout title={pageTitle("Załóż konto")}>
   <div class="auth-form">
     <a href={Astro.url.origin}>
       <Logo />

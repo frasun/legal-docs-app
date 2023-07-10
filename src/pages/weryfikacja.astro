@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { getUserByEmail, activateUser } from "../../db/auth";
 import Logo from "../images/logo.astro";
 import error from "../utils/errors";
+import pageTitle from "../utils/pageTitle";
 
 const url = new URL(Astro.request.url);
 const userEmail = decodeURIComponent(url.searchParams.get("email"));
@@ -36,7 +37,7 @@ if (Astro.request.method === "POST") {
 }
 ---
 
-<Layout title="Wryfikacja adresu e-mail">
+<Layout title={pageTitle("Weryfikacja adresu e-mail")}>
   <div class="auth-form">
     <Logo />
     <p>Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong></p>

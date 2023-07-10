@@ -8,9 +8,10 @@ import Customers from "../sections/index/Customers.astro";
 import Alternatives from "../sections/index/Alternatives.astro";
 import CTA from "../sections/index/CTA.astro";
 import Footer from "../sections/index/Footer.astro";
+import getTitle from "../utils/pageTitle";
 ---
 
-<Layout title="Prawniczek">
+<Layout title={getTitle()}>
   <Appbar />
   <main>
     <section id="browse">

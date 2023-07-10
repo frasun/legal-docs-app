@@ -11,6 +11,7 @@ import ChangeNameButton from "../../../components/ChangeNameButton.astro";
 import ChangeNameModal from "../../../components/ChangeNameModal.astro";
 import Badge from "../../../components/Badge.astro";
 import { handleNameChange } from "../../../utils/document";
+import pageTitle from "../../../utils/pageTitle";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -68,7 +69,7 @@ const {
 if (!title) title = document.data.title;
 ---
 
-<Layout title={`Podsumowanie - ${title}`}>
+<Layout title={pageTitle(`Podsumowanie - ${title}`)}>
   <span slot="topbar-title">{title}{draft && <Badge>Szkic</Badge>}</span>
   {
     draft && (

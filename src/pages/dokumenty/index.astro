@@ -6,8 +6,7 @@ import Layout from "../../layouts/App.astro";
 import DocumentTile from "../../components/DocumentTile.astro";
 import EmptyScreen from "../../components/EmptyScreen.astro";
 import trimWhitespace from "../../utils/whitespace";
-
-const PAGE_TITLE = "Wszystkie dokumenty";
+import pageTitle from "../../utils/pageTitle";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get("kategoria");
@@ -25,10 +24,14 @@ const fuse = new Fuse(documents, {
 const filteredDocs = fuse.search(search ? trimWhitespace(search) : "");
 
 const currentCategory = categories.find(({ id }) => id === currentCat);
-const title = currentCategory ? currentCategory.data.name : PAGE_TITLE;
+
+const PAGE_TITLE = "Wszystkie dokumenty";
+const title = currentCategory
+  ? `Dokumenty w kategorii ${currentCategory.data.name.toLowerCase()}`
+  : PAGE_TITLE;
 ---
 
-<Layout title={`${title} - Prawniczek`}>
+<Layout title={pageTitle(title)}>
   <span slot="topbar-title">{title}</span>
   <header slot="content-header">
     <search-documents>

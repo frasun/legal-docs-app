@@ -1,6 +1,7 @@
 ---
 import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
+import pageTitle from "../../../utils/pageTitle";
 
 const { documentId } = Astro.params;
 
@@ -19,7 +20,7 @@ const { title, index } = document.data;
 const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0].questions[0].id.slug}`;
 ---
 
-<Layout title={title}>
+<Layout title={pageTitle(title)}>
   <span slot="topbar-title">Wszystkie dokumenty</span>
   <div>
     <header>

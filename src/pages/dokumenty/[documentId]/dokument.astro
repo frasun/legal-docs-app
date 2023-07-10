@@ -7,6 +7,7 @@ import { getUserByEmail } from "../../../../db/auth";
 import crypt from "../../../utils/crypt";
 import { Icon } from "astro-icon";
 import { formatDateTime } from "../../../utils/date";
+import pageTitle from "../../../utils/pageTitle";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -86,7 +87,7 @@ const urlParams = new URLSearchParams(url.search);
 const firstTime = urlParams.get("success") === "true" ? true : false;
 ---
 
-<Layout title={`Dokument - ${title}`}>
+<Layout title={pageTitle(title)}>
   <span slot="topbar-title">{title}</span>
   <article id="doc" class="prose prose-document" data-title={title}>
     <Content />

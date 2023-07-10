@@ -12,6 +12,7 @@ import ChangeNameButton from "../../../components/ChangeNameButton.astro";
 import ChangeNameModal from "../../../components/ChangeNameModal.astro";
 import { handleNameChange } from "../../../utils/document";
 import Badge from "../../../components/Badge.astro";
+import pageTitle from "../../../utils/pageTitle";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -167,7 +168,7 @@ if (formData && !docTitle) {
 }
 ---
 
-<Layout title={`${qTitle} - ${title}`}>
+<Layout title={pageTitle(`${qTitle} - ${title}`)}>
   <span slot="topbar-title">{title}{draft && <Badge>Szkic</Badge>}</span>
   {
     draft && (

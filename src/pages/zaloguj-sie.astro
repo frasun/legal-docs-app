@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import { getSession } from "../auth-astro/server";
 import Logo from "../images/logo.astro";
+import pageTitle from "../utils/pageTitle";
 
 const session = await getSession(Astro.request);
 
@@ -13,7 +14,7 @@ const url = new URL(Astro.request.url);
 const redirectUrl = url.searchParams.get("redirect");
 ---
 
-<Layout title="Zaloguj się - Prawniczek">
+<Layout title={pageTitle("Zaloguj się")}>
   <login-form redirect={redirectUrl} class="auth-form">
     <a href={Astro.url.origin}>
       <Logo />

@@ -11,6 +11,7 @@ import EmptyScreen from "../components/EmptyScreen.astro";
 import ChangeNameButton from "../components/ChangeNameButton.astro";
 import ChangeNameModal from "../components/ChangeNameModal.astro";
 import { handleNameChange } from "../utils/document";
+import pageTitle from "../utils/pageTitle";
 
 const session = await getSession(Astro.request);
 
@@ -54,7 +55,7 @@ documents.forEach((item) => {
 });
 ---
 
-<Layout title="Moje dokumenty - Prawniczek">
+<Layout title={pageTitle('Moje dokumenty')}>
   <span slot="topbar-title">Moje dokumenty</span>
   <div slot="topbar-aside">
     {session.user?.email}
