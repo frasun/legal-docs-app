@@ -4,6 +4,7 @@ import { getUserByEmail } from "../../db/auth";
 import { createDocument, publishDraft } from "../../db/document";
 import cryptr from "../utils/crypt";
 import { getEntry } from "astro:content";
+import { DRAFT_SAVED_PARAM } from "../utils/toasts";
 
 const session = await getSession(Astro.request);
 const user = session ? await getUserByEmail(String(session.user?.email)) : null;
@@ -52,7 +53,7 @@ if (Astro.request.method === "POST") {
         return Astro.redirect(
           `${Astro.url.origin}/${
             draft
-              ? `moje-dokumenty`
+              ? `moje-dokumenty?${DRAFT_SAVED_PARAM}`
               : `dokumenty/${docId}/dokument?success=true`
           }`
         );

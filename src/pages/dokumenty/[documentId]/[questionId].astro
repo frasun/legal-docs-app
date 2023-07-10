@@ -13,6 +13,8 @@ import { handleNameChange } from "../../../utils/document";
 import Badge from "../../../components/Badge.astro";
 import pageTitle from "../../../utils/pageTitle";
 import QuestionAction from "../../../components/QuestionAction.astro";
+import Toast from "../../../components/Toast.astro";
+import { UPDATED_ANSWER_PARAM } from "../../../utils/toasts";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -143,7 +145,7 @@ if (formData && !docTitle) {
           try {
             await updateAnswers(documentId, allAnswers, docId);
 
-            return Astro.redirect(Astro.url);
+            return Astro.redirect(`${Astro.url}?${UPDATED_ANSWER_PARAM}`);
           } catch (error) {
             console.log(error);
           }
@@ -236,7 +238,8 @@ if (formData && !docTitle) {
     </form>
   </question-form>
   <QuestionIndex index={qIndex} current={questionId} documentId={documentId} />
-  <ChangeNameModal />
+  {draft && <ChangeNameModal />}
+  <Toast />
 </Layout>
 
 <style>

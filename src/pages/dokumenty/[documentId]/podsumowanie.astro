@@ -12,6 +12,7 @@ import ChangeNameModal from "../../../components/ChangeNameModal.astro";
 import Badge from "../../../components/Badge.astro";
 import { handleNameChange } from "../../../utils/document";
 import pageTitle from "../../../utils/pageTitle";
+import Toast from "../../../components/Toast.astro";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -143,6 +144,7 @@ if (!title) title = document.data.title;
     </footer>
   </section>
   <ChangeNameModal />
+  <Toast />
 </Layout>
 <style>
   section {
