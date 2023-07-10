@@ -15,6 +15,9 @@ const { session } = Astro.props;
       href=`${Astro.url.origin}/dokumenty`
       aria-label="Nowy dokument"
       title="Nowy dokument"
+      class:list={{
+        active: `${Astro.url.pathname}` === `/dokumenty`,
+      }}
     >
       <Icon name="add" width={24} height={24} />
     </a>
@@ -24,6 +27,9 @@ const { session } = Astro.props;
           href={`${Astro.url.origin}/moje-dokumenty`}
           aria-label="Moje dokumenty"
           title="Moje dokumenty"
+          class:list={{
+            active: `${Astro.url.pathname}` === `/moje-dokumenty`,
+          }}
         >
           <Icon name="document" width={24} height={24} />
         </a>
@@ -42,7 +48,6 @@ const { session } = Astro.props;
         </SignOut>
       ) : (
         <a href={`${Astro.url.origin}/zaloguj-sie`} title="Zaloguj się">
-          {" "}
           <Icon name="signin" width={24} height={24} />
         </a>
       )
@@ -71,5 +76,13 @@ const { session } = Astro.props;
   nav > div button,
   nav > footer button {
     @apply btn btn-alt;
+  }
+
+  a.active {
+    @apply bg-transparent pointer-events-none;
+  }
+
+  a.active svg {
+    @apply text-orange;
   }
 </style>
