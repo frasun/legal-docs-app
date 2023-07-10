@@ -1,0 +1,39 @@
+---
+import Progressbar from "./Progressbar.astro";
+import { Icon } from "astro-icon";
+
+const { current, steps, answers, docId } = Astro.props;
+---
+
+<div>
+    <Progressbar current={current} steps={steps} />
+    {
+        answers ? (
+            <form method="POST" action={`${Astro.url.origin}/dokument`}>
+                {answers.map(([key, value]) => (
+                    <input type="hidden" name={key} value={String(value)} />
+                ))}
+                <input type="hidden" name="id" value={docId} />
+                <input type="hidden" name="draft" value="true" />
+                <button>
+                    <Icon name="save" width={16} height={16} />
+                    Zapisz
+                </button>
+            </form>
+        ) : null
+    }
+</div>
+
+<style>
+    div {
+        @apply flex items-center gap-15;
+    }
+
+    div button {
+        @apply btn btn-alt;
+    }
+
+    div form {
+        @apply p-0;
+    }
+</style>

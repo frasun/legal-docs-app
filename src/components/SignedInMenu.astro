@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon";
+import { SignOut } from "../auth-astro/components";
+
+const { email } = Astro.props;
+---
+
+<>
+    <span>
+        <Icon name="user" width={16} height={16} />
+        <span>{email}</span>
+    </span>
+    <slot />
+    <SignOut params={{ callbackUrl: Astro.url.origin }}>Wyloguj się</SignOut>
+</>
+
+<style>
+    span {
+        @apply flex gap-10 items-center;
+    }
+
+    span > span {
+        @apply truncate max-w-[180px] block;
+    }
+
+    button {
+        @apply btn btn-alt;
+    }
+</style>

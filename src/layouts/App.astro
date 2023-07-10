@@ -3,9 +3,12 @@ import Layout from "./Layout.astro";
 import AppMenu from "../components/AppMenu.astro";
 import { getSession } from "../auth-astro/server";
 import { Icon } from "astro-icon";
+import SignedInMenu from "../components/SignedInMenu.astro";
 
 const { title, backurl } = Astro.props;
 const session = await getSession(Astro.request);
+
+const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
 ---
 
 <Layout title={title}>
@@ -25,7 +28,29 @@ const session = await getSession(Astro.request);
         </h1>
         <slot name="topbar-after-title" />
       </div>
-      <slot name="topbar-aside" />
+      <aside>
+        <slot name="topbar-aside" />
+        <nav>
+          {
+            session ? (
+              <SignedInMenu email={session.user?.email} />
+            ) : (
+              <>
+                <a
+                  href={`${Astro.url.origin}/zaloz-konto?redirect=${redirectUrl}`}
+                >
+                  Załóż konto
+                </a>
+                <a
+                  href={`${Astro.url.origin}/zaloguj-sie?redirect=${redirectUrl}`}
+                >
+                  Zaloguj się
+                </a>
+              </>
+            )
+          }
+        </nav>
+      </aside>
     </header>
     <slot name="content-header" />
     <section>
@@ -82,12 +107,24 @@ const session = await getSession(Astro.request);
     @apply btn btn-alt;
   }
 
+  main > header > aside {
+    @apply flex gap-30 items-center;
+  }
+
+  main > header > aside nav {
+    @apply flex gap-15 items-center;
+  }
+
+  main > header > aside nav a {
+    @apply btn btn-default;
+  }
+
+  main > header > aside nav button {
+    @apply btn btn-alt;
+  }
+
   main > section {
     @apply flex items-start justify-center flex-1 gap-30;
     @apply pb-[var(--navbar-height)];
-  }
-
-  aside {
-    @apply sticky top-[var(--navbar-height)];
   }
 </style>

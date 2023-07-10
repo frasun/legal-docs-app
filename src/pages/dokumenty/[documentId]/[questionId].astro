@@ -7,12 +7,12 @@ import { getSession } from "../../../auth-astro/server";
 import tSeed from "../../../utils/transformSeed";
 import crypt from "../../../utils/crypt";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
-import Progressbar from "../../../components/Progressbar.astro";
 import ChangeNameButton from "../../../components/ChangeNameButton.astro";
 import ChangeNameModal from "../../../components/ChangeNameModal.astro";
 import { handleNameChange } from "../../../utils/document";
 import Badge from "../../../components/Badge.astro";
 import pageTitle from "../../../utils/pageTitle";
+import QuestionAction from "../../../components/QuestionAction.astro";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -179,26 +179,15 @@ if (formData && !docTitle) {
       />
     )
   }
-  <aside slot="topbar-aside">
-    <Progressbar current={currentQuestionIndex + 1} steps={questions.length} />
-    {
-      Astro.cookies.has(documentId) ? (
-        <form method="POST" action={`${Astro.url.origin}/dokument`}>
-          {Object.entries(Astro.cookies.get(docId).json()).map(
-            ([key, value]) => (
-              <input type="hidden" name={key} value={String(value)} />
-            )
-          )}
-          <input type="hidden" name="id" value={docId} />
-          <input type="hidden" name="draft" value="true" />
-          <button>
-            <Icon name="save" width={16} height={16} />
-            Zapisz
-          </button>
-        </form>
-      ) : null
-    }
-  </aside>
+  <QuestionAction
+    slot="topbar-aside"
+    current={currentQuestionIndex + 1}
+    steps={questions.length}
+    answers={Astro.cookies.has(documentId)
+      ? Object.entries(Astro.cookies.get(docId).json())
+      : null}
+    docId={docId}
+  />
   <form method="POST">
     <header>
       <h2>{questionContent}</h2>
@@ -269,19 +258,7 @@ if (formData && !docTitle) {
   footer button[type="submit"] {
     @apply btn btn-default btn-big;
     @apply self-end;
-  }
-
-  aside {
-    @apply flex items-center gap-15;
-  }
-
-  aside button {
-    @apply btn btn-alt;
-  }
-
-  aside form {
-    @apply p-0;
-  }
+  }  
 
   header p {
     @apply bg-white border-orange border-2 rounded-xl;

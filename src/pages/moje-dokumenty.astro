@@ -1,7 +1,6 @@
 ---
 import { Icon } from "astro-icon";
 import { formatDateTime, LOCALE } from "../utils/date";
-import { SignOut } from "../auth-astro/components";
 import Layout from "../layouts/App.astro";
 import { getSession } from "../auth-astro/server";
 import { getDocuments, createDocument } from "../../db/document";
@@ -53,14 +52,12 @@ documents.forEach((item) => {
 
   groupedItems[monthYear].push(item);
 });
+
+const PAGE_TITLE = "Moje dokumenty";
 ---
 
-<Layout title={pageTitle('Moje dokumenty')}>
-  <span slot="topbar-title">Moje dokumenty</span>
-  <div slot="topbar-aside">
-    {session.user?.email}
-    <SignOut params={{ callbackUrl: Astro.url.origin }}>Wyloguj się</SignOut>
-  </div>
+<Layout title={pageTitle(PAGE_TITLE)}>
+  <span slot="topbar-title">{PAGE_TITLE}</span>
   {
     documents.length ? (
       <section>
@@ -89,10 +86,10 @@ documents.forEach((item) => {
                       <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
                       <dd>
                         <time>
-                        {modified
-                          ? formatDateTime(modified)
-                          : formatDateTime(created)}
-                          </time>
+                          {modified
+                            ? formatDateTime(modified)
+                            : formatDateTime(created)}
+                        </time>
                       </dd>
                     </dl>
                   ) : (
