@@ -173,16 +173,26 @@ module.exports = {
 					gap: theme('spacing.10'),
 					letterSpacing: theme('letterSpacing.tighter'),
 					color: theme('colors.white95'),
+					transitionProperty: theme('transitionProperty.DEFAULT'),
+					transitionDuration: theme('transitionDuration.DEFAULT'),
+					transitionTimingFunction: theme('transitionTimingFunction.DEFAULT'),
 					'&:hover': {
 						backgroundColor: theme('colors.orange'),
 						color: theme('colors.white'),
 					},
 					'&:active': {
 						backgroundColor: theme('colors.orangeDark')
+					},
+					'&:disabled': {
+						opacity: .3,
+						pointerEvents: 'none'
 					}
 				},
 				'.btn svg': {
-					flexShrink: 0
+					flexShrink: 0,
+					transitionProperty: theme('transitionProperty.colors'),
+					transitionDuration: theme('transitionDuration.DEFAULT'),
+					transitionTimingFunction: theme('transitionTimingFunction.DEFAULT'),
 				},
 				'.btn-default': {
 					backgroundColor: theme('colors.dark90'),

@@ -143,7 +143,7 @@ if (formData && !docTitle) {
           try {
             await updateAnswers(documentId, allAnswers, docId);
 
-            return Astro.redirect(nextUrl);
+            return Astro.redirect(Astro.url);
           } catch (error) {
             console.log(error);
           }
@@ -188,45 +188,66 @@ if (formData && !docTitle) {
       : null}
     docId={docId}
   />
-  <form method="POST">
-    <header>
-      <h2>{questionContent}</h2>
-      {
-        qinfo && (
-          <p>
-            <Icon name="bulb" width={24} height={24} />
-            {qinfo}
-          </p>
-        )
-      }
-    </header>
-    <Content />
-    <footer>
-      <div>
-        <span>§{currentQuestionIndex + 1}</span>
-        <span>{qTitle}</span>
-      </div>
-      <nav>
-        {prevUrl && <a href={prevUrl}>Poprzednie</a>}
-        <button type="submit"
-          >{
-            currentQuestionIndex >= questions.length - 1
-              ? "Podsumowanie"
-              : "Następne"
-          }</button
-        >
-      </nav>
-    </footer>
-  </form>
+  <question-form>
+    <form method="POST">
+      <header>
+        <h2>{questionContent}</h2>
+        {
+          qinfo && (
+            <p>
+              <Icon name="bulb" width={24} height={24} />
+              {qinfo}
+            </p>
+          )
+        }
+      </header>
+      <Content />
+      <footer>
+        <div>
+          <span>§{currentQuestionIndex + 1}</span>
+          <span>{qTitle}</span>
+        </div>
+        <nav>
+          {
+            draft ? (
+              <>
+                <a
+                  href={`${Astro.url.origin}/dokumenty/${documentId}/podsumowanie`}
+                >
+                  Wróć do podsumowania
+                </a>
+                <button type="submit" disabled>
+                  Zapisz zmiany
+                </button>
+              </>
+            ) : (
+              <>
+                {prevUrl && <a href={prevUrl}>Poprzednie</a>}
+                <button type="submit">
+                  {currentQuestionIndex >= questions.length - 1
+                    ? "Podsumowanie"
+                    : "Następne"}
+                </button>
+              </>
+            )
+          }
+        </nav>
+      </footer>
+    </form>
+  </question-form>
   <QuestionIndex index={qIndex} current={questionId} documentId={documentId} />
   <ChangeNameModal />
 </Layout>
 
 <style>
-  form {
+  question-form {
     @apply w-full max-w-[780px] mx-auto;
-    @apply flex flex-col justify-center min-h-full gap-20;
+    @apply flex flex-col justify-center min-h-full;
     @apply py-[var(--navbar-height)];
+  }
+
+  form {
+    @apply flex flex-col gap-20;
   }
 
   form :global(fieldset) {
@@ -258,7 +279,7 @@ if (formData && !docTitle) {
   footer button[type="submit"] {
     @apply btn btn-default btn-big;
     @apply self-end;
-  }  
+  }
 
   header p {
     @apply bg-white border-orange border-2 rounded-xl;
@@ -273,3 +294,24 @@ if (formData && !docTitle) {
     @apply text-orangeDark;
   }
 </style>
+
+<script>
+  class QuestionForm extends HTMLElement {
+    form: HTMLFormElement;
+    submit: HTMLButtonElement;
+
+    constructor() {
+      super();
+
+      this.form = this.querySelector("form");
+      this.submit = this.form.querySelector("button[type='submit']");
+    }
+
+    connectedCallback() {
+      this.form.addEventListener("input", () => {
+        this.submit.removeAttribute("disabled");
+      });
+    }
+  }
+  customElements.define("question-form", QuestionForm);
+</script>
