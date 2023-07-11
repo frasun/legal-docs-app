@@ -1,5 +1,6 @@
 ---
 import { LOCALE } from "../utils/date";
+import InputGroup, { InputSize } from "./InputGroup.astro";
 
 const { date, name, label, size } = Astro.props;
 
@@ -13,7 +14,7 @@ function formatDate(date) {
 }
 ---
 
-<div class={`input-group${size ? ` ${size}` : ``}`}>
+<InputGroup size={InputSize.lg}>
     <label for={name}>{label}</label>
     <input
         id="start"
@@ -22,4 +23,4 @@ function formatDate(date) {
         value={formatDate(date)}
         required
     />
-</div>
+</InputGroup>

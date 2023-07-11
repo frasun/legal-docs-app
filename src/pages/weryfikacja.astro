@@ -1,9 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getUserByEmail, activateUser } from "../../db/auth";
-import Logo from "../images/logo.astro";
 import error from "../utils/errors";
 import pageTitle from "../utils/pageTitle";
+import AuthForm from "../components/AuthForm.astro";
 
 const url = new URL(Astro.request.url);
 const userEmail = decodeURIComponent(url.searchParams.get("email"));
@@ -38,13 +38,16 @@ if (Astro.request.method === "POST") {
 ---
 
 <Layout title={pageTitle("Weryfikacja adresu e-mail")}>
-  <div class="auth-form">
-    <Logo />
-    <p>Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong></p>
-    <form method="POST">
-      <input type="text" name="code" required />
-      <button type="submit">Wyślij</button>
-      {errors.length ? errors.map((error) => <p>{error}</p>) : null}
-    </form>
-  </div>
+  <AuthForm hasBackLink={false}>
+    <p slot="form-header">
+      Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong>
+    </p>
+    <input type="text" name="code" required />
+    <button type="submit">Wyślij</button>
+    {
+      errors.length
+        ? errors.map((error) => <p slot="after-submit">{error}</p>)
+        : null
+    }
+  </AuthForm>
 </Layout>

@@ -4,18 +4,19 @@ deposit: 2500
 depositmethod: przelewem na konto bankowe
 question: Ile będzie wynosić kaucja i jakie są warunki jej zwrotu?
 ---
-import {paymentMethodEnum} from '../../documents/schema/_umowa-najmu-lokalu'
+import {paymentMethodEnum} from '../../documents/schema/_umowa-najmu-lokalu';
+import InputGroup, { InputSize } from '../../../components/InputGroup.astro';
 
 <fieldset>
-<div class="input-group lg">
+<InputGroup size={InputSize.lg}>
     <label for="deposit">Wysokość</label>
     <input type="number" id="deposit" name="deposit" value={frontmatter.deposit} required step=".01" min="1" />
     <span>zł</span>
-</div>
-<div class="input-group">
+</InputGroup>
+<InputGroup>
     <label for="depositmethod">Sposób płatności</label>
     <select id="depositmethod" name="depositmethod" required>
     {paymentMethodEnum.map(m => <option value={m} selected={frontmatter.depositmethod === m}>{m}</option>)}
     </select>
-</div>
+</InputGroup>
 </fieldset>

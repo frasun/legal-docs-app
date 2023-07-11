@@ -10,38 +10,40 @@ balcony: 1
 wardrobe: 1
 garage: 1
 ---
+import InputGroup from '../../../components/InputGroup.astro';
+
 <fieldset class="gap-10">
     <legend>Wypełnij pola z ilością pomieszczeń</legend>
-    <div class="input-group">
+    <InputGroup>
         <input type="number" value={frontmatter.room} name="room" min="0" aria-label="Ilość pokoi" />
         <span>x pokój</span>
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
         <input type="number" value={frontmatter.kitchen}  name="kitchen" min="0"  aria-label="Ilość kuchni" /> 
         <span>x kuchnia</span>
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
         <input type="number" value={frontmatter.hall} name="hall" min="0"  aria-label="Ilość przedpokoi" />
         <span>x przedpokój</span>
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
         <input type="number" value={frontmatter.bathroom} name="bathroom" min="0"  aria-label="Ilość łazienek" />
         <span>x łazienka</span>
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
         <input type="number" value={frontmatter.toilet} name="toilet" min="0"  aria-label="Ilość toalet" />
         <span>x toaleta</span>
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
         <input type="number" value={frontmatter.balcony} name="balcony" min="0"  aria-label="Ilość balkonów" />
         <span>x balkon</span>
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
         <input type="number" value={frontmatter.wardrobe} name="wardrobe" min="0"  aria-label="Ilość garderób" />
         <span>x garderoba</span>
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
         <input type="number" value={frontmatter.garage} name="garage" min="0"  aria-label="Ilość garaży" />
         <span>x garaż</span>
-    </div>
+    </InputGroup>
 </fieldset>

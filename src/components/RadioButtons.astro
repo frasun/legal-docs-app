@@ -1,11 +1,13 @@
 ---
+import InputGroup from "./InputGroup.astro";
+
 const { values, name, selected = 0 } = Astro.props;
 ---
 
 <section>
   {
     values.map(({ value, label, disabled }) => (
-      <div class="input-group items-center flex-nowrap">
+      <InputGroup className="items-center flex-nowrap">
         <input
           type="radio"
           name={name}
@@ -15,7 +17,7 @@ const { values, name, selected = 0 } = Astro.props;
           disabled={disabled}
         />
         <label for={`${name}-${value}`}>{label}</label>
-      </div>
+      </InputGroup>
     ))
   }
 </section>

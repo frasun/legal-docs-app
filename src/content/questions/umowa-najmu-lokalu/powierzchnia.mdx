@@ -3,8 +3,10 @@ slug: powierzchnia
 question: Jaka jest powierzchnia lokalu?
 area: 500
 ---
-<div class="input-group lg">
+import InputGroup, { InputSize } from '../../../components/InputGroup.astro';
+
+<InputGroup size={InputSize.lg}>
     <label for="area">Podaj całkowitą powierzchnię</label>
     <input id="area" type="number" name="area" value={frontmatter.area} required min="0.01" step=".01" />
     <span>m<sup>2</sup></span>
-</div>
+</InputGroup>

@@ -2,6 +2,7 @@
 import RadioButtons from "./RadioButtons.astro";
 import lib from "../content/questions/_lib";
 import { entityEnum } from "../content/documents/schema/_umowa-najmu-lokalu";
+import InputGroup from "./InputGroup.astro";
 
 const { name, selected, data } = Astro.props;
 ---
@@ -9,7 +10,7 @@ const { name, selected, data } = Astro.props;
 <data-selector>
   <RadioButtons values={lib} selected={selected} name={`${name}-data`} />
   <fieldset style={parseInt(selected) === 0 ? `display: none;` : ``}>
-    <div class="input-group">
+    <InputGroup>
       <label for="type">Rodzaj podmiotu</label>
       <select id="type" name={`${name}-type`} value={data[0]}>
         {
@@ -18,8 +19,8 @@ const { name, selected, data } = Astro.props;
           ))
         }
       </select>
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
       <label for="name">Imię i nazwisko / nazwa</label>
       <input
         id="name"
@@ -29,8 +30,8 @@ const { name, selected, data } = Astro.props;
         value={data[1]}
         class="flex-grow"
       />
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
       <label for="address">Adres</label>
       <input
         id="address"
@@ -40,8 +41,8 @@ const { name, selected, data } = Astro.props;
         value={data[2]}
         class="flex-grow"
       />
-    </div>
-    <div class="input-group">
+    </InputGroup>
+    <InputGroup>
       <label for="pin">PESEL / NIP</label>
       <input
         id="pin"
@@ -50,7 +51,7 @@ const { name, selected, data } = Astro.props;
         required={parseInt(selected) === 0 ? false : true}
         value={data[3]}
       />
-    </div>
+    </InputGroup>
   </fieldset>
 </data-selector>
 <script>

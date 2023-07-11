@@ -3,8 +3,10 @@ slug: naprawy
 repairs: 2000
 question: Kto będzie ponosił koszty napraw?
 ---
-<div class="input-group lg">
+import InputGroup, { InputSize } from '../../../components/InputGroup.astro';
+
+<InputGroup size={InputSize.lg}>
     <span>Najemca pokrywa koszty napraw do kwoty</span>
     <input type="number" id="repairs" name="repairs" value={frontmatter.repairs} required step=".01" min="1" aria-label="Kwota napraw, który pokryje Najemca" />
     <span>zł</span>
-</div>
+</InputGroup>
