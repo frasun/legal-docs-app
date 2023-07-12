@@ -10,13 +10,13 @@ const { email } = Astro.props;
         <Icon name="user" width={16} height={16} />
         <span>{email}</span>
     </span>
-    <slot />
+    <a href={`${Astro.url.origin}/moje-dokumenty`}>Moje dokumenty</a>
     <SignOut params={{ callbackUrl: Astro.url.origin }}>Wyloguj się</SignOut>
 </>
 
 <style>
     span {
-        @apply flex gap-10 items-center;
+        @apply flex gap-10 items-center order-2 lg:order-1;
     }
 
     span > span {
@@ -25,6 +25,12 @@ const { email } = Astro.props;
     }
 
     button {
-        @apply btn btn-alt;
+        @apply btn btn-alt order-3;
+    }
+
+    a {
+        @apply order-1 lg:order-2;
+        @apply btn btn-default;
+        @apply mb-15 lg:mb-0;
     }
 </style>

@@ -1,7 +1,6 @@
 ---
 import { Icon } from "astro-icon";
 import { getSession } from "../auth-astro/server";
-import { SignOut } from "../auth-astro/components";
 import SignedInMenu from "./SignedInMenu.astro";
 
 const session = await getSession(Astro.request);
@@ -26,9 +25,7 @@ const menuItems = [
       {
         session ? (
           <>
-            <SignedInMenu email={session.user?.email}>
-              <a href={`${Astro.url.origin}/moje-dokumenty`}>Moje dokumenty</a>
-            </SignedInMenu>
+            <SignedInMenu email={session.user?.email} />
           </>
         ) : (
           <>
@@ -74,7 +71,7 @@ const menuItems = [
   }
 
   #menuNav > aside {
-    @apply flex gap-15;
+    @apply flex gap-15 flex-col lg:flex-row items-start lg:items-center;
   }
 
   #menuNav > aside > a {

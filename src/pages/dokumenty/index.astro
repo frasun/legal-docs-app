@@ -184,16 +184,17 @@ const title = currentCategory
     }
 
     connectedCallback() {
-      this.button.addEventListener("click", (event) => {
-        event.preventDefault();
-        const url = new URL(window.location.href);
-        const params = new URLSearchParams(url.search);
+      this.button &&
+        this.button.addEventListener("click", (event) => {
+          event.preventDefault();
+          const url = new URL(window.location.href);
+          const params = new URLSearchParams(url.search);
 
-        params.delete("szukaj");
+          params.delete("szukaj");
 
-        url.search = params.toString();
-        document.location = url.toString();
-      });
+          url.search = params.toString();
+          document.location = url.toString();
+        });
     }
   }
   customElements.define("search-documents", SearchDocuments);
