@@ -21,7 +21,7 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0]
 ---
 
 <Layout title={pageTitle(title)}>
-  <span slot="topbar-title">Wszystkie dokumenty</span>
+  <span slot="topbar-title">{title}</span>
   <div>
     <header>
       <h1>{title}</h1>
