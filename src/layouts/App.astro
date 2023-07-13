@@ -58,17 +58,29 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
   <slot name="footer" />
 </Layout>
 
-<style is:inline>
-  body {
-    display: flex;
-    height: 100vh;
-  }
-</style>
 <style is:global>
   :root {
     --navbar-height: 62px;
+    --app-height: 100vh;
   }
 </style>
+<style is:inline>
+  body {
+    display: flex;
+    height: var(--app-height);
+  }
+</style>
+<script>
+  function setAppHeight() {
+    document.documentElement.style.setProperty(
+      "--app-height",
+      `${window.innerHeight}px`
+    );
+  }
+
+  setAppHeight();
+  window.addEventListener("resize", setAppHeight);
+</script>
 
 <style>
   main {
