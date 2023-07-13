@@ -16,7 +16,7 @@ const { email } = Astro.props;
 
 <style>
     span {
-        @apply flex gap-10 items-center order-2 lg:order-1;
+        @apply hidden xl:flex gap-10 items-center order-2 lg:order-1;
     }
 
     span > span {
@@ -31,6 +31,6 @@ const { email } = Astro.props;
     a {
         @apply order-1 lg:order-2;
         @apply btn btn-default;
-        @apply mb-15 lg:mb-0;
+        @apply mb-15 md:mb-0;
     }
 </style>

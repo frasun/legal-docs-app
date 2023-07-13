@@ -70,10 +70,10 @@ if (document) {
 }
 
 const {
-  data: { index: qIndex },
+  data: { index: qIndex, title: docuemntTitle },
 } = document;
 
-if (!title) title = document.data.title;
+if (!title) title = docuemntTitle;
 
 const qs = JSON.parse(JSON.stringify(qIndex)).reduce(
   (pQuestions, { questions }) => pQuestions.concat(questions),
@@ -171,7 +171,9 @@ if (formData && !docTitle) {
 ---
 
 <Layout title={pageTitle(`${qTitle} - ${title}`)}>
-  <span slot="topbar-title">{title}{draft && <Badge>Szkic</Badge>}</span>
+  <span slot="topbar-title"
+    ><span>{title}</span>{draft && <Badge>Szkic</Badge>}</span
+  >
   {
     draft && (
       <ChangeNameButton
@@ -237,7 +239,12 @@ if (formData && !docTitle) {
       </footer>
     </form>
   </question-form>
-  <QuestionIndex index={qIndex} current={questionId} documentId={documentId} />
+  <QuestionIndex
+    index={qIndex}
+    current={questionId}
+    documentId={documentId}
+    documentTitle={docuemntTitle}
+  />
   {draft && <ChangeNameModal />}
   <Toast />
 </Layout>

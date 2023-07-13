@@ -1,37 +1,81 @@
 ---
-const { index, current, documentId } = Astro.props;
+import { Icon } from "astro-icon";
+
+const { index, current, documentId, documentTitle } = Astro.props;
 ---
 
-<aside>
-  {
-    index.map(({ title, questions }) => (
-      <section>
-        <h5>{title}</h5>
-        {questions.map(({ id: { slug }, title }) => {
-          if (slug === current) {
-            return <span>{title}</span>;
-          } else {
-            return (
-              <a href={`${Astro.url.origin}/dokumenty/${documentId}/${slug}`}>
-                {title}
-              </a>
-            );
-          }
-        })}
-      </section>
-    ))
-  }
-  <a href={`${Astro.url.origin}/dokumenty/${documentId}/podsumowanie`}>
-    Podsumowanie
-  </a>
-</aside>
+<question-list>
+  <header>
+    <h4>{documentTitle} - lista pytań</h4>
+    <button aria-label="Zakmnij listę pytań">
+      <Icon name="close" id="menuClose" width={24} height={24} />
+    </button>
+  </header>
+  <div>
+    {
+      index.map(({ title, questions }) => (
+        <section>
+          <h5>{title}</h5>
+          {questions.map(({ id: { slug }, title }) => {
+            if (slug === current) {
+              return <span>{title}</span>;
+            } else {
+              return (
+                <a href={`${Astro.url.origin}/dokumenty/${documentId}/${slug}`}>
+                  {title}
+                </a>
+              );
+            }
+          })}
+        </section>
+      ))
+    }
+    <a href={`${Astro.url.origin}/dokumenty/${documentId}/podsumowanie`}>
+      Podsumowanie
+    </a>
+  </div>
+</question-list>
 <style>
-  aside {
-    @apply bg-white rounded p-20 flex flex-col gap-20;
-    @apply sticky top-[var(--navbar-height)];
-    @apply min-w-[290px];
-    @apply text-sm;
-    @apply my-20;
+  question-list {
+    @apply fixed top-full left-0 right-0;
+    @apply bg-white flex flex-col gap-15;
+    @apply transition-transform;
+    @apply translate-y-0;
+    @apply max-h-full;
+    @apply z-max;
+    @apply pt-15;
+  }
+
+  @screen lg {
+    question-list {
+      @apply sticky top-[var(--navbar-height)];
+      @apply min-w-[290px];
+      @apply my-20;
+      @apply rounded;
+      @apply p-20;
+      @apply transition-none;
+      @apply text-sm;
+    }
+  }
+
+  question-list header {
+    @apply px-20;
+    @apply flex gap-20 items-center;
+    @apply lg:hidden;
+  }
+
+  question-list header h4 {
+    @apply flex-grow;
+  }
+
+  question-list header button {
+    @apply btn btn-alt;
+  }
+
+  question-list > div {
+    @apply flex flex-col gap-20;
+    @apply flex-grow  overflow-y-auto;
+    @apply px-20 pb-20 lg:p-0;
   }
 
   h5 {
@@ -51,7 +95,53 @@ const { index, current, documentId } = Astro.props;
     @apply py-[2px] px-10;
   }
 
-  aside > a:last-child {
+  div > a:last-child {
     @apply px-0;
   }
 </style>
+
+<script>
+  import * as backdrop from "../utils/backdrop";
+  import screens from '../utils/screens'
+
+  class QuestionList extends HTMLElement {
+    close: HTMLButtonElement;
+
+    constructor() {
+      super();
+
+      this.close = this.querySelector("button");
+    }
+
+    connectedCallback() {
+      document.body.addEventListener("showQuestionList", () => {
+        if (window.innerWidth < screens.lg) {
+          this.showQuestionList();
+        }
+      });
+
+      this.close.addEventListener("click", () => {
+        this.hideQuestionList();
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= screens.lg) {
+          this.hideQuestionList();
+        }
+      });
+    }
+
+    showQuestionList() {
+      backdrop.addBackdrop(() => {
+        this.hideQuestionList();
+      });
+      this.style.transform = "translateY(-100%)";
+    }
+
+    hideQuestionList() {
+      this.removeAttribute("style");
+      backdrop.removeBackdrop();
+    }
+  }
+  customElements.define("question-list", QuestionList);
+</script>

@@ -2,10 +2,11 @@
 import Layout from "./Layout.astro";
 import AppMenu from "../components/AppMenu.astro";
 import { getSession } from "../auth-astro/server";
-import { Icon } from "astro-icon";
 import SignedInMenu from "../components/SignedInMenu.astro";
+import ShowMobileMenu from "../components/ShowMobileMenu.astro";
+import { Icon } from "astro-icon";
 
-const { title, backurl } = Astro.props;
+const { title } = Astro.props;
 const session = await getSession(Astro.request);
 
 const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
@@ -15,13 +16,9 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
   <AppMenu session={session} />
   <main>
     <header>
-      {
-        backurl && (
-          <a href={backurl} aria-label="Wstecz">
-            <Icon name="arrow-back" width={16} height={16} />
-          </a>
-        )
-      }
+      <a href={Astro.url.origin} aria-label="Strona główna">
+        <Icon name="logo" width={40} height={40} alt="Prawniczek" />
+      </a>
       <div>
         <h1>
           <slot name="topbar-title">title</slot>
@@ -51,6 +48,7 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
           }
         </nav>
       </aside>
+      <ShowMobileMenu />
     </header>
     <slot name="content-header" />
     <section>
@@ -76,43 +74,47 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
   main {
     @apply flex-grow;
     @apply overflow-auto;
-    @apply px-30;
+    @apply px-20 md:px-30;
     @apply flex flex-col;
   }
 
   main > header {
-    @apply flex items-center;
+    @apply flex items-start md:items-center;
+    @apply py-10 md:py-0;
     @apply sticky top-0;
     @apply bg-gray;
     @apply gap-15;
     @apply z-10;
     @apply w-full;
     @apply min-h-[var(--navbar-height)];
+    @apply flex-shrink-0;
   }
 
   main > header > div {
-    @apply flex-grow flex gap-10 items-center;
+    @apply flex-grow flex gap-10 items-center min-h-full;
   }
 
   main > header h1 {
     @apply font-sans font-bold not-italic text-dark65 tracking-tight;
-    @apply text-xl;
+    @apply text-xxl;
   }
 
   main > header h1 :global(> span) {
     @apply flex items-center gap-5;
+    @apply flex-wrap md:flex-nowrap;
   }
 
-  main > header > a {
-    @apply btn btn-alt;
+  main > header h1 :global(> span > span:first-child) {
+    @apply line-clamp-2 md:line-clamp-1;
   }
 
   main > header > aside {
-    @apply flex gap-30 items-center;
+    @apply flex gap-30 items-center flex-shrink-0;
   }
 
   main > header > aside nav {
-    @apply flex gap-15 items-center;
+    @apply hidden lg:flex;
+    @apply gap-15 items-center;
   }
 
   main > header > aside nav a {
@@ -125,6 +127,14 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
 
   main > section {
     @apply flex items-start justify-center flex-1 gap-30;
-    @apply pb-[var(--navbar-height)];
+    @apply pb-80 md:pb-[var(--navbar-height)];
+  }
+
+  main > header :global(show-mobile-menu) {
+    @apply block md:hidden;
+  }
+
+  main > header > a {
+    @apply md:hidden;
   }
 </style>

@@ -99,6 +99,7 @@ const menuItems = [
 
 <script>
   import * as utils from "../utils/backdrop";
+  import screens from "../utils/screens";
 
   class PageMenu extends HTMLElement {
     MENU_BREAKDOWN: number;
@@ -112,7 +113,7 @@ const menuItems = [
     constructor() {
       super();
 
-      this.MENU_BREAKDOWN = 1024;
+      this.MENU_BREAKDOWN = screens.lg;
       this.TRANSITION_TRANSFORM = "transition-transform";
       this.MENU_ZINDEX = "z-30";
       this.TRANSLATE_PROP = "--tw-translate-y";

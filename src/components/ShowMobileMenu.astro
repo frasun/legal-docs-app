@@ -1,0 +1,34 @@
+---
+import { Icon } from "astro-icon";
+---
+
+<show-mobile-menu>
+  <button aria-label="Otwórz menu">
+    <Icon name="menu" id="menuOpen" width={24} height={24} />
+  </button>
+</show-mobile-menu>
+
+<style>
+  button {
+    @apply btn btn-alt;
+  }
+</style>
+
+<script>
+  class ShowMobileMenu extends HTMLElement {
+    button: HTMLButtonElement;
+
+    constructor() {
+      super();
+
+      this.button = this.querySelector("button");
+    }
+
+    connectedCallback() {
+      this.button.addEventListener("click", () => {
+        document.body.dispatchEvent(new CustomEvent("showMobileMenu"));
+      });
+    }
+  }
+  customElements.define("show-mobile-menu", ShowMobileMenu);
+</script>

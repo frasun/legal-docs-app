@@ -71,7 +71,9 @@ if (!title) title = document.data.title;
 ---
 
 <Layout title={pageTitle(`Podsumowanie - ${title}`)}>
-  <span slot="topbar-title">{title}{draft && <Badge>Szkic</Badge>}</span>
+  <span slot="topbar-title"
+    ><span>{title}</span>{draft && <Badge>Szkic</Badge>}</span
+  >
   {
     draft && (
       <ChangeNameButton

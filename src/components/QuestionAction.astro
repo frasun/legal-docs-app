@@ -22,11 +22,25 @@ const { current, steps, answers, docId } = Astro.props;
             </form>
         ) : null
     }
+    <show-question-list>
+        <button aria-label="Pokaż listę pytań">
+            <Icon name="index" width={24} height={24} />
+        </button>
+    </show-question-list>
 </div>
 
 <style>
     div {
         @apply flex items-center gap-15;
+        @apply fixed bottom-0 left-0 right-0 px-20 py-10 border-t-[1px] border-dark40 bg-gray;
+        @apply justify-around md:justify-normal md:px-0;
+        @apply md:static md:bottom-auto md:left-auto md:right-auto md:border-0 md:bg-transparent;
+    }
+
+    div > *,
+    div :global(> div) {
+        @apply flex-grow basis-1/3 text-center;
+        @apply md:flex-grow-0 md:basis-auto md:text-left;
     }
 
     div button {
@@ -36,4 +50,29 @@ const { current, steps, answers, docId } = Astro.props;
     div form {
         @apply p-0;
     }
+
+    div show-question-list {
+        @apply lg:hidden;
+    }
 </style>
+
+<script>
+    class ShowQuestionList extends HTMLElement {
+        button: HTMLButtonElement;
+
+        constructor() {
+            super();
+
+            this.button = this.querySelector("button");
+        }
+
+        connectedCallback() {
+            this.button.addEventListener("click", () => {
+                document.body.dispatchEvent(
+                    new CustomEvent("showQuestionList")
+                );
+            });
+        }
+    }
+    customElements.define("show-question-list", ShowQuestionList);
+</script>

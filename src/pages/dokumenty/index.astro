@@ -110,11 +110,20 @@ const title = currentCategory
 
 <style>
   header {
-    @apply sticky top-[var(--navbar-height)] bg-gray pb-10 flex gap-30;
+    @apply fixed top-auto bottom-0 left-0 right-0;
+    @apply border-t-[1px] border-dark40;
+    @apply bg-gray flex gap-30 px-20 py-10;
+  }
+
+  @screen md {
+    header {
+      @apply sticky top-[var(--navbar-height)];
+      @apply border-0 p-0 pb-10;
+    }
   }
 
   section {
-    @apply grid md:auto-rows-fr md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-20 w-full;
+    @apply grid md:auto-rows-fr sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-20 w-full;
     @apply pt-10;
   }
 
@@ -128,7 +137,7 @@ const title = currentCategory
   }
 
   search-documents form {
-    @apply flex-grow;
+    @apply flex-grow relative;
   }
 
   search-documents form :global(> svg) {
