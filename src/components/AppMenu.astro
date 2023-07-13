@@ -7,19 +7,24 @@ const { session } = Astro.props;
 ---
 
 <app-menu>
-  <a href="/" aria-label="Prawniczek">
-    <picture>
-      <source
-        media={`(max-width:${screens.md - 1}px)`}
-        srcset={`${Astro.url.origin}/logo.svg`}
-      />
-      <source
-        media={`(min-width:${screens.md}px)`}
-        srcset={`${Astro.url.origin}/logo-sign.svg`}
-      />
-      <img src={`${Astro.url.origin}/logo.svg`} alt="Prawniczek" />
-    </picture>
-  </a>
+  <header>
+    <a href="/" aria-label="Prawniczek">
+      <picture>
+        <source
+          media={`(max-width:${screens.md - 1}px)`}
+          srcset={`${Astro.url.origin}/logo.svg`}
+        />
+        <source
+          media={`(min-width:${screens.md}px)`}
+          srcset={`${Astro.url.origin}/logo-sign.svg`}
+        />
+        <img src={`${Astro.url.origin}/logo.svg`} alt="Prawniczek" />
+      </picture>
+    </a>
+    <button aria-label="Zamknij menu">
+      <Icon name="close" id="menuClose" width={24} height={24} />
+    </button>
+  </header>
   <div>
     <a
       href=`${Astro.url.origin}/dokumenty`
@@ -102,6 +107,19 @@ const { session } = Astro.props;
     @apply flex flex-col gap-15;
   }
 
+  app-menu header {
+    @apply flex;
+  }
+
+  app-menu header a {
+    @apply flex-grow flex-shrink-0;
+  }
+
+  app-menu header button {
+    @apply btn btn-alt;
+    @apply md:hidden;
+  }
+
   app-menu > div,
   app-menu > footer {
     @apply flex flex-col gap-10;
@@ -156,12 +174,12 @@ const { session } = Astro.props;
   import screens from "../utils/screens";
 
   class AppMenu extends HTMLElement {
-    // close: HTMLButtonElement;
+    close: HTMLButtonElement;
 
     constructor() {
       super();
 
-      // this.close = this.querySelector("button");
+      this.close = this.querySelector("header > button");
     }
 
     connectedCallback() {
@@ -171,14 +189,14 @@ const { session } = Astro.props;
         }
       });
 
-      // this.close.addEventListener("click", () => {
-      //   this.hideQuestionList();
-      // });
-
       window.addEventListener("resize", () => {
         if (window.innerWidth >= screens.md) {
           this.hideMenu();
         }
+      });
+
+      this.close.addEventListener("click", () => {
+        this.hideMenu();
       });
     }
 
