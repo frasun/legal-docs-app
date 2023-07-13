@@ -126,7 +126,7 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
   }
 
   main > section {
-    @apply flex items-start justify-center flex-1 gap-30;
+    @apply flex items-start justify-center flex-1 gap-30 flex-wrap lg:flex-nowrap;
     @apply pb-80 md:pb-[var(--navbar-height)];
   }
 

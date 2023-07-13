@@ -120,18 +120,20 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
         </h6>
       )
     }
-    <download-doc content-id="#doc">
-      <button>
-        <Icon name="file-word" width={24} height={24} />
-        Pobierz plik Word
-      </button>
-    </download-doc>
-    <print-button>
-      <button>
-        <Icon name="print" width={24} height={24} />
-        Drukuj
-      </button>
-    </print-button>
+    <div>
+      <download-doc content-id="#doc">
+        <button>
+          <Icon name="file-word" width={24} height={24} />
+          Pobierz plik Word
+        </button>
+      </download-doc>
+      <print-button>
+        <button>
+          <Icon name="print" width={24} height={24} />
+          Drukuj
+        </button>
+      </print-button>
+    </div>
     <footer>
       <a href=`${Astro.url.origin}/moje-dokumenty`>Zobacz w moich dokumentach</a
       >
@@ -141,8 +143,8 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
 
 <style>
   article {
-    @apply bg-white p-30 lg:p-50 w-[90vw] max-w-[900px];
-    @apply order-2 lg:order-1;
+    @apply bg-white p-20 sm:p-30 lg:p-50 w-full max-w-[900px] flex-shrink;
+    @apply order-2 xl:order-1;
 
     counter-reset: section;
   }
@@ -153,16 +155,16 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
   }
 
   aside {
-    @apply order-1 lg:order-2;
-    @apply flex lg:flex-col gap-15 items-start;
-    @apply sticky top-[var(--navbar-height)] p-30;
+    @apply order-1 xl:order-2;
+    @apply flex flex-col gap-15 items-start;
+    @apply lg:sticky lg:top-[var(--navbar-height)] p-30;
     @apply print:hidden;
     @apply bg-light rounded-lg;
-    @apply w-full max-w-[300px];
+    @apply w-full lg:max-w-[300px];
   }
 
   aside header {
-    @apply flex gap-15;
+    @apply flex gap-15 items-center lg:items-start;
   }
 
   aside header h3 {
@@ -171,6 +173,7 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
 
   aside header svg {
     @apply flex-shrink-0;
+    @apply w-[24px] h-[24px];
   }
 
   aside button {
@@ -181,8 +184,12 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
     @apply btn btn-alt;
   }
 
+  aside > div {
+    @apply flex flex-wrap gap-15;
+  }
+
   aside footer {
-    @apply mt-20;
+    @apply lg:mt-20;
   }
 </style>
 <script>
