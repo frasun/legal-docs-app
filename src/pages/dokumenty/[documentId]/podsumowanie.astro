@@ -83,25 +83,6 @@ if (!title) title = document.data.title;
       />
     )
   }
-  {
-    Astro.cookies.has(documentId) ? (
-      <form
-        method="POST"
-        action={`${Astro.url.origin}/dokument`}
-        slot="topbar-aside"
-      >
-        {Object.entries(Astro.cookies.get(docId).json()).map(([key, value]) => (
-          <input type="hidden" name={key} value={String(value)} />
-        ))}
-        <input type="hidden" name="id" value={docId} />
-        <input type="hidden" name="draft" value="true" />
-        <button>
-          <Icon name="save" width={16} height={16} />
-          Zapisz
-        </button>
-      </form>
-    ) : null
-  }
   <section>
     <h1>Podsumowanie</h1>
     {
@@ -134,13 +115,30 @@ if (!title) title = document.data.title;
             Wyświetl dokument
           </a>
         ) : (
-          <form method="POST" action={`${Astro.url.origin}/dokument`}>
-            {Object.entries(answers).map(([key, value]) => (
-              <input type="hidden" name={key} value={String(value)} />
-            ))}
-            <input type="hidden" name="id" value={documentId} />
-            <button type="submit">Generuj dokument</button>
-          </form>
+          <>
+            <form method="POST" action={`${Astro.url.origin}/dokument`}>
+              {Object.entries(answers).map(([key, value]) => (
+                <input type="hidden" name={key} value={String(value)} />
+              ))}
+              <input type="hidden" name="id" value={documentId} />
+              <button type="submit">Generuj dokument</button>
+            </form>
+            {Astro.cookies.has(documentId) ? (
+              <form method="POST" action={`${Astro.url.origin}/dokument`}>
+                {Object.entries(Astro.cookies.get(docId).json()).map(
+                  ([key, value]) => (
+                    <input type="hidden" name={key} value={String(value)} />
+                  )
+                )}
+                <input type="hidden" name="id" value={docId} />
+                <input type="hidden" name="draft" value="true" />
+                <button>
+                  <Icon name="save" width={18} height={18} />
+                  Zapisz szkic
+                </button>
+              </form>
+            ) : null}
+          </>
         )
       }
     </footer>
@@ -176,7 +174,7 @@ if (!title) title = document.data.title;
   }
 
   footer {
-    @apply p-50 flex justify-center;
+    @apply p-50 flex flex-col justify-center gap-20 items-center;
   }
 
   button {

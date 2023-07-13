@@ -59,7 +59,7 @@ const { session } = Astro.props;
         <>
           <small>Zalogowany jako:</small>
           <span>
-            <Icon name="user" width={16} height={16} />
+            <Icon name="user" width={18} height={18} />
             <span>{session.user?.email}</span>
           </span>
           <SignOut
@@ -99,7 +99,7 @@ const { session } = Astro.props;
 
 <style>
   app-menu {
-    @apply fixed md:static bottom-full left-0 right-0 z-max;
+    @apply fixed md:static bottom-full left-0 right-0 z-max md:z-40;
     @apply transition-transform md:transition-none;
     @apply -translate-y-full md:translate-y-0;
     @apply bg-white;
