@@ -37,8 +37,8 @@ const { hasBackLink = true } = Astro.props;
     div {
         @apply bg-white rounded-lg p-30;
         @apply flex flex-col gap-20;
-        @apply w-full max-w-[500px] mx-auto;
-        @apply mt-30;
+        @apply w-[90%] sm:w-full max-w-[500px] mx-auto;
+        @apply mt-20 sm:mt-30;
     }
 
     header {
@@ -73,7 +73,7 @@ const { hasBackLink = true } = Astro.props;
     }
 
     div :global(footer) {
-        @apply mt-20 flex gap-15 items-center;
+        @apply mt-20 flex gap-10 sm:gap-15 items-center flex-wrap;
     }
 
     div :global(footer a) {
