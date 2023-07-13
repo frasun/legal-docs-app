@@ -3,10 +3,10 @@ const { options, labels, token, selected } = Astro.props;
 ---
 
 <radio-grid>
-  <header class={`grid grid-cols-${options.length}`}>
+  <header class={`hidden md:grid grid-cols-${options.length}`}>
     {options.map((opt) => <div>{opt}</div>)}
   </header>
-  <fieldset class={`grid gap-y-10 gap-x-0 grid-cols-${options.length}`}>
+  <fieldset class={`md:grid md:gap-y-10 gap-x-0 grid-cols-${options.length}`}>
     {
       labels.map((label) => (
         <>
@@ -16,11 +16,13 @@ const { options, labels, token, selected } = Astro.props;
               <div>
                 <input
                   type="radio"
+                  id={`${opt}-${label}`}
                   name={label}
                   value={opt}
                   aria-label={`${opt}`}
                   checked={selected[index - 1].includes(label)}
                 />
+                <label for={`${opt}-${label}`}>{opt}</label>
               </div>
             ) : null;
           })}
@@ -55,16 +57,24 @@ const { options, labels, token, selected } = Astro.props;
 
   header div:not(:first-child),
   fieldset div {
-    @apply text-center;
+    @apply md:text-center;
   }
 
   fieldset div,
   fieldset label {
-    @apply bg-white px-20 py-15;
+    @apply md:bg-white md:px-20 md:py-15;
   }
 
-  fieldset label {
+  fieldset > label {
     @apply font-serif italic text-dark90 text-xl;
+  }
+
+  fieldset > label:not(:first-child) {
+    @apply mt-15 md:mt-0;
+  }
+
+  fieldset div > label {
+    @apply md:hidden ml-10;
   }
 </style>
 
