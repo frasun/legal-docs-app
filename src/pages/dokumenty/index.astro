@@ -50,9 +50,19 @@ const title = currentCategory
         }
         <Icon name="search" width={24} height={24} />
       </form>
-      {search && <button>Wyczyść</button>}
+      {
+        search && (
+          <button aria-label="Wyczyść">
+            <Icon name="clear" width={18} height={18} />
+            <span>Wyczyść</span>
+          </button>
+        )
+      }
     </search-documents>
     <category-selector>
+      <button>
+        <Icon name="options" width={24} height={24} />
+      </button>
       <label for="category">Kategorie</label>
       <select id="category">
         <option value="">Wszystkie</option>
@@ -112,13 +122,13 @@ const title = currentCategory
   header {
     @apply fixed top-auto bottom-0 left-0 right-0;
     @apply border-t-[1px] border-dark40;
-    @apply bg-gray flex gap-30 px-20 py-10;
+    @apply bg-gray flex gap-15 px-20 py-10;
   }
 
   @screen md {
     header {
       @apply sticky top-[var(--navbar-height)];
-      @apply border-0 p-0 pb-10;
+      @apply border-0 p-0 pb-10 gap-30;
     }
   }
 
@@ -129,6 +139,24 @@ const title = currentCategory
 
   category-selector {
     @apply flex gap-10 items-center;
+    @apply relative;
+  }
+
+  category-selector label {
+    @apply hidden sm:inline-block;
+  }
+
+  category-selector button {
+    @apply sm:hidden;
+    @apply absolute left-1/2 -translate-x-1/2 pointer-events-none bg-dark10;
+    @apply py-[.5rem] px-10 rounded;
+  }
+
+  @media (max-width: 639px) {
+    category-selector select {
+      @apply max-w-[24px] min-w-[24px] border-0 bg-dark10 text-transparent;
+      @apply appearance-none opacity-0;
+    }
   }
 
   search-documents {
@@ -142,15 +170,24 @@ const title = currentCategory
 
   search-documents form :global(> svg) {
     @apply absolute left-20 top-0 translate-y-1/2;
+    @apply hidden sm:block;
   }
 
   search-documents input[type="search"] {
     @apply w-full;
-    @apply pl-60;
+    @apply sm:pl-60;
   }
 
   search-documents button {
     @apply btn btn-alt;
+  }
+
+  search-documents button span {
+    @apply hidden sm:inline-block;
+  }
+
+  search-documents button svg {
+    @apply inline-block sm:hidden;
   }
 </style>
 
