@@ -74,7 +74,7 @@ const PAGE_TITLE = "Moje dokumenty";
                         draft ? `podsumowanie` : `dokument`
                       }`}
                     >
-                      {title}
+                      <span>{title}</span>
                       {draft && <Badge>Szkic</Badge>}
                     </a>
                     <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
@@ -134,7 +134,7 @@ const PAGE_TITLE = "Moje dokumenty";
 
   section > div {
     @apply px-20 py-15 bg-white rounded-lg w-full;
-    @apply grid grid-cols-4 gap-15 items-start;
+    @apply grid grid-cols-2 sm:grid-cols-4 gap-15 items-center sm:items-start;
   }
 
   section > div > header {
@@ -148,12 +148,12 @@ const PAGE_TITLE = "Moje dokumenty";
     @apply text-dark55;
   }
 
-  section > div > header a:first-child:not(:hover) {
+  section > div > header a:not(:hover) span {
     @apply text-dark90;
   }
 
-  section > div > header a:first-child {
-    @apply text-xl;
+  section > div > header a span {
+    @apply text-xl line-clamp-3;
   }
 
   section > div > dl dt {
@@ -178,5 +178,9 @@ const PAGE_TITLE = "Moje dokumenty";
 
   h6 {
     @apply font-bold text-xs;
+  }
+
+  section > div :global(change-name span) {
+    @apply hidden md:inline-block;
   }
 </style>

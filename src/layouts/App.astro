@@ -137,4 +137,8 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
   main > header > a {
     @apply md:hidden;
   }
+
+  main > header :global(change-name) {
+    @apply hidden md:block;
+  }
 </style>
