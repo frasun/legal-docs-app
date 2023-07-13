@@ -79,6 +79,16 @@ const { session } = Astro.props;
         </>
       )
     }
+    <aside>
+      <a
+        href={`${Astro.url.origin}/regulamin`}
+        target="_blank"
+        title="Regulamin"
+      >
+        <Icon name="checklist" width={18} height={18} />
+        <span>Regulamin</span>
+      </a>
+    </aside>
   </footer>
 </app-menu>
 
@@ -102,7 +112,7 @@ const { session } = Astro.props;
   }
 
   app-menu > div a,
-  app-menu > footer a,
+  app-menu > footer > a,
   app-menu > div button,
   app-menu > footer button {
     @apply btn btn-alt;
@@ -129,6 +139,15 @@ const { session } = Astro.props;
 
   a.active svg {
     @apply text-orange;
+  }
+
+  app-menu > footer aside {
+    @apply mt-15 md:mt-0;
+  }
+
+  app-menu > footer aside svg {
+    @apply mx-auto;
+    @apply hidden md:block;
   }
 </style>
 
