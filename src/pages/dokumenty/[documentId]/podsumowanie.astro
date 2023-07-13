@@ -163,7 +163,8 @@ if (!title) title = document.data.title;
 
   section > div {
     @apply bg-white my-10 py-15 px-20 rounded-lg;
-    @apply flex items-center gap-10;
+    @apply flex items-start sm:items-center gap-10;
+    @apply flex-col sm:flex-row;
   }
 
   section > div > div {
