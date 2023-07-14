@@ -134,14 +134,13 @@ module.exports = {
 						'--tw-prose-counters': theme('colors.dark90'),
 						'h1, h2, h3, h4, h5, h6': {
 							fontFamily: theme('fontFamily.sans'),
-							fontWeight: theme('fontWeight.medium'),
+							fontWeight: theme('fontWeight.bold'),
 							fontStyle: 'normal'
 						},
-						h1: {
+						h3: {
 							fontSize: theme('fontSize.xxl[0]'),
 						},
-						'h2, h3, h4, h5, h6': {
-							fontWeight: theme('fontWeight.bold'),
+						h4: {
 							fontSize: theme('fontSize.sm[0]')
 						}
 					}

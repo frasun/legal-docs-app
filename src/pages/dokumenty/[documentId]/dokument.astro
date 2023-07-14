@@ -121,18 +121,18 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
       )
     }
     <div>
+      <download-pdf document-title={title} content-id="#doc">
+        <button>
+          <Icon name="file-pdf" width={24} height={24} />
+          Pobierz plik PDF
+        </button>
+      </download-pdf>
       <download-doc content-id="#doc">
         <button>
           <Icon name="file-word" width={24} height={24} />
           Pobierz plik Word
         </button>
       </download-doc>
-      <print-button>
-        <button>
-          <Icon name="print" width={24} height={24} />
-          Drukuj
-        </button>
-      </print-button>
     </div>
     <footer>
       <a href=`${Astro.url.origin}/moje-dokumenty`>Zobacz w moich dokumentach</a
@@ -149,7 +149,7 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
     counter-reset: section;
   }
 
-  article :global(h3::before) {
+  article :global(h4::before) {
     counter-increment: section;
     content: "\00A7"counter(section) ". ";
   }
@@ -221,20 +221,77 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
   }
   customElements.define("download-doc", DownloadDoc);
 
-  class PrintButton extends HTMLElement {
+  import exportPdf, { CONTENT_TYPES } from "../../../utils/exportPdf";
+
+  class DownloadPdf extends HTMLElement {
     button: HTMLButtonElement;
+    contentId: string;
 
     constructor() {
       super();
 
       this.button = this.querySelector("button") as HTMLButtonElement;
+      this.contentId = String(this.getAttribute("content-id"));
     }
 
     connectedCallback() {
       this.button.addEventListener("click", () => {
-        window.print();
+        const docContent = document.querySelector(this.contentId);
+
+        exportPdf(
+          this.getContentArray(docContent),
+          this.getAttribute("document-title")
+        );
       });
     }
+
+    getContentArray(element) {
+      let array = [];
+
+      for (let i = 0; i < element.children.length; i++) {
+        const el = element.children[i];
+
+        switch (el.tagName) {
+          case "H3":
+            array.push([CONTENT_TYPES.TITLE, el.textContent]);
+            break;
+          case "H4":
+            array.push([CONTENT_TYPES.PARAGRAPH, el.textContent]);
+            break;
+          case "OL":
+            array.push(...this.getLisItems(el));
+            break;
+        }
+      }
+
+      return array;
+    }
+
+    getLisItems(list) {
+      let array = [];
+      const lineBreakRegex = /<\s*br\s*\/?>/gi;
+
+      for (let i = 0; i < list.children.length; i++) {
+        const lines = list.children[i].innerHTML.split(lineBreakRegex);
+
+        for (const line of lines) {
+          if (line.startsWith("\n")) {
+            array.push([CONTENT_TYPES.LINE, this.cleanContent(line)]);
+          } else {
+            array.push([CONTENT_TYPES.POINT, this.cleanContent(line)]);
+          }
+        }
+      }
+
+      return array;
+    }
+
+    cleanContent(line) {
+      return line
+        .replace("\n", "")
+        .trim()
+        .replace(/<[^>]+>/g, "");
+    }
   }
-  customElements.define("print-button", PrintButton);
+  customElements.define("download-pdf", DownloadPdf);
 </script>
