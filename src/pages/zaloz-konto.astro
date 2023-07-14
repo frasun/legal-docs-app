@@ -35,7 +35,7 @@ if (Astro.request.method === "POST") {
       } else {
         const { code } = await sendCode(id);
 
-        await sendAndRedirect(email, code);
+        await sendEmail(email, code);
         return Astro.redirect(
           `/weryfikacja?email=${encodeURIComponent(email)}${
             redirectUrl ? `&redirect=${redirectUrl}` : ""
@@ -49,7 +49,7 @@ if (Astro.request.method === "POST") {
         if (newUser) {
           const { email, code } = newUser;
 
-          await sendAndRedirect(email, code);
+          await sendEmail(email, code);
           return Astro.redirect(
             `/weryfikacja?email=${encodeURIComponent(String(email))}${
               redirectUrl ? `&redirect=${redirectUrl}` : ""
@@ -63,14 +63,6 @@ if (Astro.request.method === "POST") {
       }
     }
   }
-}
-
-async function sendAndRedirect(email, code) {
-  await sendEmail(
-    email,
-    "Zweryfikuj adres e-mail",
-    `Kod weryfikacyjny: <strong>${code}</strong>`
-  );
 }
 ---
 

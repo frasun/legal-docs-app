@@ -1,15 +1,16 @@
 import postmark from "postmark";
 
-const SENDER = "info@prawniczek.pl";
 const client = new postmark.ServerClient(import.meta.env.POSTMARK_SECRET);
 
-export default async function (to, subject, message) {
+export default async function (To, code) {
   try {
-    await client.sendEmail({
-      From: SENDER,
-      To: to,
-      Subject: subject,
-      HtmlBody: message,
+    await client.sendEmailWithTemplate({
+      From: import.meta.env.POSTMARK_SENDER,
+      To,
+      TemplateId: import.meta.env.POSTMARK_VERIFICATION_TEMPLATE,
+      TemplateModel: {
+        code,
+      },
     });
   } catch (e) {
     console.error(e);
