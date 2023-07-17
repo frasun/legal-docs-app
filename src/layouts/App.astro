@@ -14,7 +14,7 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
 
 <Layout title={title}>
   <AppMenu session={session} />
-  <main>
+  <main id="swup" class="transition-fade">
     <header>
       <a href={Astro.url.origin} aria-label="Strona główna">
         <Icon name="logo" width={40} height={40} alt="Prawniczek" />
@@ -69,6 +69,15 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
     display: flex;
     height: var(--app-height);
   }
+
+  .transition-fade {
+    transition: 0.35s opacity cubic-bezier(0.075, 0.82, 0.165, 1);
+    opacity: 1;
+  }
+
+  .is-animating .transition-fade {
+    opacity: 0;
+  }
 </style>
 <script>
   function setAppHeight() {
@@ -80,6 +89,17 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
 
   setAppHeight();
   window.addEventListener("resize", setAppHeight);
+
+  import Swup from "swup";
+  import SwupFormsPlugin from "@swup/forms-plugin";
+
+  const swup = new Swup({
+    // plugins: [
+    //   new SwupFormsPlugin({
+    //     formSelector: "form",
+    //   }),
+    // ],
+  });
 </script>
 
 <style>
