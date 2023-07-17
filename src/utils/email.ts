@@ -7,10 +7,11 @@ export default async function (To, code) {
     await client.sendEmailWithTemplate({
       From: import.meta.env.POSTMARK_SENDER,
       To,
-      TemplateId: import.meta.env.POSTMARK_VERIFICATION_TEMPLATE,
+      TemplateAlias: "verification-code",
       TemplateModel: {
         code,
       },
+      InlineCss: false,
     });
   } catch (e) {
     console.error(e);
