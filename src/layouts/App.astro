@@ -91,14 +91,18 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
   window.addEventListener("resize", setAppHeight);
 
   import Swup from "swup";
-  import SwupFormsPlugin from "@swup/forms-plugin";
+  // import SwupFormsPlugin from "@swup/forms-plugin";
+  import SwupHeadPlugin from "@swup/head-plugin";
 
   const swup = new Swup({
-    // plugins: [
-    //   new SwupFormsPlugin({
-    //     formSelector: "form",
-    //   }),
-    // ],
+    plugins: [
+      // new SwupFormsPlugin({
+      //   formSelector: "form",
+      // }),
+      new SwupHeadPlugin({
+        awaitAssets: true,
+      }),
+    ],
   });
 </script>
 
