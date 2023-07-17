@@ -13,7 +13,8 @@ const userId = user ? user.id : null;
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const id = formData.get("id");
-  const draft = Boolean(formData.get("draft"));
+  const draft = String(formData.get("draft")) === "true";
+
   let answers = {},
     encrypted = [];
 

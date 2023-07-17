@@ -116,28 +116,22 @@ if (!title) title = document.data.title;
           </a>
         ) : (
           <>
-            <form method="POST" action={`${Astro.url.origin}/dokument`}>
-              {Object.entries(answers).map(([key, value]) => (
-                <input type="hidden" name={key} value={String(value)} />
-              ))}
-              <input type="hidden" name="id" value={documentId} />
-              <button type="submit">Generuj dokument</button>
-            </form>
-            {Astro.cookies.has(documentId) ? (
+            <save-form>
               <form method="POST" action={`${Astro.url.origin}/dokument`}>
-                {Object.entries(Astro.cookies.get(docId).json()).map(
-                  ([key, value]) => (
-                    <input type="hidden" name={key} value={String(value)} />
-                  )
+                {Object.entries(answers).map(([key, value]) => (
+                  <input type="hidden" name={key} value={String(value)} />
+                ))}
+                <input type="hidden" name="id" value={documentId} />
+                <input type="hidden" name="draft" value="false" />
+                <button type="submit">Generuj dokument</button>
+                {Astro.cookies.has(documentId) && (
+                  <button>
+                    <Icon name="save" width={18} height={18} />
+                    Zapisz szkic
+                  </button>
                 )}
-                <input type="hidden" name="id" value={docId} />
-                <input type="hidden" name="draft" value="true" />
-                <button>
-                  <Icon name="save" width={18} height={18} />
-                  Zapisz szkic
-                </button>
               </form>
-            ) : null}
+            </save-form>
           </>
         )
       }
@@ -174,7 +168,7 @@ if (!title) title = document.data.title;
   }
 
   footer {
-    @apply p-50 flex flex-col justify-center gap-20 items-center;
+    @apply p-50;
   }
 
   button {
@@ -185,4 +179,29 @@ if (!title) title = document.data.title;
   button[type="submit"] {
     @apply btn btn-default btn-big;
   }
+
+  save-form form {
+    @apply flex flex-col justify-center gap-20 items-center;
+  }
 </style>
+
+<script>
+  class SaveForm extends HTMLElement {
+    draftInput: HTMLInputElement;
+    button: HTMLButtonElement;
+
+    constructor() {
+      super();
+
+      this.draftInput = this.querySelector('input[name="draft"]');
+      this.button = this.querySelector('button:not([type="submit"])');
+    }
+
+    connectedCallback() {
+      this.button.addEventListener("click", () => {
+        this.draftInput.value = String(true);
+      });
+    }
+  }
+  customElements.define("save-form", SaveForm);
+</script>
