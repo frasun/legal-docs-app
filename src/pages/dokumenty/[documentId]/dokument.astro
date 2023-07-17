@@ -121,7 +121,7 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
       )
     }
     <div>
-      <download-pdf document-title={title} content-id="#doc">
+      <download-pdf content-id="#doc">
         <button>
           <Icon name="file-pdf" width={24} height={24} />
           Pobierz plik PDF
@@ -211,12 +211,29 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
         const docContent = document.querySelector(this.contentId);
 
         if (docContent) {
+          const parsedContent = this.printSectionNumbers(docContent);
+
           exportDoc(
-            docContent.innerHTML,
+            parsedContent.innerHTML,
             docContent.getAttribute("data-title")
           );
         }
       });
+    }
+
+    printSectionNumbers(element) {
+      let sectionIndex = 1;
+      for (let i = 0; i < element.children.length; i++) {
+        const child = element.children[i];
+
+        if (child.tagName === "H4") {
+          const content = child.textContent;
+          child.textContent = `\u00A7${sectionIndex}. ${content}`;
+          sectionIndex++;
+        }
+      }
+
+      return element;
     }
   }
   customElements.define("download-doc", DownloadDoc);
@@ -240,7 +257,7 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
 
         exportPdf(
           this.getContentArray(docContent),
-          this.getAttribute("document-title")
+          docContent.getAttribute("data-title")
         );
       });
     }
