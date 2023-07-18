@@ -14,6 +14,7 @@ if (!userEmail) {
 }
 
 let errors = [];
+let userPassword;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -21,13 +22,11 @@ if (Astro.request.method === "POST") {
   const user = await getUserByEmail(userEmail);
 
   if (user) {
-    const { code, id } = user;
+    const { code, id, password } = user;
     if (code === postedCode) {
       await activateUser(id);
 
-      return Astro.redirect(
-        `/zaloguj-sie${redirectUrl ? `?redirect=${redirectUrl}` : ``}`
-      );
+      userPassword = password;
     } else {
       errors.push(error.WRONG_VERIFICATION_CODE);
     }
@@ -38,16 +37,58 @@ if (Astro.request.method === "POST") {
 ---
 
 <Layout title={pageTitle("Weryfikacja adresu e-mail")}>
-  <AuthForm hasBackLink={false}>
-    <p slot="form-header">
-      Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong>
-    </p>
-    <input type="text" name="code" required />
-    <button type="submit">Wyślij</button>
-    {
-      errors.length
-        ? errors.map((error) => <p slot="after-submit">{error}</p>)
-        : null
-    }
-  </AuthForm>
+  {
+    userPassword ? (
+      <auto-login
+        email={userEmail}
+        password={userPassword}
+        redirect={redirectUrl}
+      />
+    ) : (
+      <AuthForm hasBackLink={false}>
+        <p slot="form-header">
+          Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong>
+        </p>
+        <input type="text" name="code" required />
+        <button type="submit">Wyślij</button>
+        {errors.length
+          ? errors.map((error) => <p slot="after-submit">{error}</p>)
+          : null}
+      </AuthForm>
+    )
+  }
 </Layout>
+
+<script>
+  import { signIn } from "../auth-astro/client";
+
+  class AutoLogin extends HTMLElement {
+    redirect: string;
+    email: string;
+    password: string;
+
+    constructor() {
+      super();
+
+      this.redirect = this.getAttribute("redirect");
+      this.email = this.getAttribute("email");
+      this.password = this.getAttribute("password");
+    }
+
+    async connectedCallback() {
+      const response = await signIn("credentials", {
+        redirect: false,
+        email: this.email,
+        password: this.password,
+        callbackUrl: `${document.location.origin}${
+          this.redirect ? `/${this.redirect}` : `/moje-dokumenty`
+        }`,
+      });
+
+      if (response) {
+        document.location.href = "/zaloguj-sie";
+      }
+    }
+  }
+  customElements.define("auto-login", AutoLogin);
+</script>

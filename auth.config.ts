@@ -21,7 +21,13 @@ export default {
 
         const user = await getUserByEmail(email);
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
+        if (
+          !user ||
+          !(
+            (await bcrypt.compare(password, user.password)) ||
+            password === user.password
+          )
+        ) {
           // throw new Error("Invalid username or password");
           return null;
         }
