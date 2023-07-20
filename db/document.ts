@@ -10,7 +10,6 @@ export interface Document {
   created: Date;
   modified: Date | null;
   title: String;
-  doctitle: String;
   draft: Boolean;
   test: Date;
 }
@@ -31,7 +30,6 @@ export function createDocumentTable() {
       cb.notNull().defaultTo(sql`current_timestamp`)
     )
     .addColumn("title", "varchar(255)", (cb) => cb.notNull())
-    .addColumn("doctitle", "varchar(255)", (cb) => cb.notNull())
     .addColumn("draft", "boolean", (cb) => cb.notNull())
     .execute();
 }
@@ -54,15 +52,7 @@ export async function getUserDocument(docId, userId) {
       .selectFrom(KEY)
       .where(sql`userid::text`, "=", userId)
       .where("id", "=", docId)
-      .select([
-        "answers",
-        "created",
-        "doc",
-        "doctitle",
-        "title",
-        "modified",
-        "draft",
-      ])
+      .select(["answers", "created", "doc", "title", "modified", "draft"])
       .executeTakeFirst();
   } catch (e: any) {
     throw e;
@@ -89,15 +79,7 @@ export async function getDocuments(userId, page = 1, limit = LIMIT) {
     return await db
       .selectFrom(KEY)
       .where(sql`userid::text`, "=", userId)
-      .select([
-        "created",
-        "doc",
-        "doctitle",
-        "draft",
-        "title",
-        "modified",
-        "id",
-      ])
+      .select(["created", "doc", "draft", "title", "modified", "id"])
       .offset(offset)
       .limit(limit)
       .orderBy(sql`COALESCE(modified, created)`, "desc")
@@ -160,7 +142,6 @@ export async function createDocument(doc, answers, userid, draft = false) {
             doc,
             answers: JSON.stringify(validatedAnswers),
             userid,
-            doctitle: title,
             draft,
             title: `${title} #${Math.floor(Math.random() * 1000)}`,
           },
