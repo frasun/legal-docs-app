@@ -2,7 +2,8 @@
 import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
 import Answer from "../../../components/Answer.astro";
-import { getDocument } from "../../../../db/document";
+import { getDocumentSummary } from "../../../../db/document";
+import { getUserByEmail } from "../../../../db/auth";
 import { getSession } from "../../../auth-astro/server";
 import tSeed from "../../../utils/transformSeed";
 import crypt from "../../../utils/crypt";
@@ -23,6 +24,8 @@ const { documentId: dId } = Astro.params;
 const documentId = String(dId);
 
 const session = await getSession(Astro.request);
+const user = await getUserByEmail(String(session.user?.email));
+const userId = user ? user.id : null;
 
 let docId = documentId;
 let draft = false;
@@ -33,7 +36,7 @@ if (Number(documentId)) {
     return Astro.redirect("/");
   }
 
-  data = await getDocument(documentId);
+  data = await getDocumentSummary(documentId, userId);
 
   if (data) {
     docId = data.doc;

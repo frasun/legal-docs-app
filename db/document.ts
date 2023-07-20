@@ -48,12 +48,12 @@ export async function getDocument(id) {
   }
 }
 
-export async function getUserDocument(id, userId) {
+export async function getUserDocument(docId, userId) {
   try {
     return await db
       .selectFrom(KEY)
-      .where("id", "=", id)
       .where(sql`userid::text`, "=", userId)
+      .where("id", "=", docId)
       .select([
         "answers",
         "created",
@@ -63,6 +63,19 @@ export async function getUserDocument(id, userId) {
         "modified",
         "draft",
       ])
+      .executeTakeFirst();
+  } catch (e: any) {
+    throw e;
+  }
+}
+
+export async function getDocumentSummary(docId, userId) {
+  try {
+    return await db
+      .selectFrom(KEY)
+      .where(sql`userid::text`, "=", userId)
+      .where("id", "=", docId)
+      .select(["answers", "doc", "title", "draft", "id"])
       .executeTakeFirst();
   } catch (e: any) {
     throw e;
