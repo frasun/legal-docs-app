@@ -36,17 +36,13 @@ export function createDocumentTable() {
     .execute();
 }
 
-async function fetchDocument(id) {
-  return await db
-    .selectFrom(KEY)
-    .selectAll()
-    .where("id", "=", id)
-    .executeTakeFirst();
-}
-
 export async function getDocument(id) {
   try {
-    return await fetchDocument(id);
+    return await db
+      .selectFrom(KEY)
+      .selectAll()
+      .where("id", "=", id)
+      .executeTakeFirst();
   } catch (e: any) {
     throw e;
   }
@@ -58,7 +54,15 @@ export async function getDocuments(userId, page = 1, limit = LIMIT) {
   try {
     return await db
       .selectFrom(KEY)
-      .selectAll()
+      .select([
+        "created",
+        "doc",
+        "doctitle",
+        "draft",
+        "title",
+        "modified",
+        "id",
+      ])
       .where(sql`userid::text`, "=", userId)
       .offset(offset)
       .limit(limit)
