@@ -26,12 +26,13 @@ const documentId = String(dId);
 const session = await getSession(Astro.request);
 const user = await getUserByEmail(String(session.user?.email));
 const userId = user ? user.id : null;
+const isUserDocument = Number(documentId);
 
 let docId = documentId;
 let draft = false;
 let data, answers, title;
 
-if (Number(documentId)) {
+if (isUserDocument) {
   if (!session) {
     return Astro.redirect("/");
   }
@@ -45,6 +46,10 @@ if (Number(documentId)) {
     title = data.title;
   } else {
     return Astro.redirect("/404");
+  }
+
+  if (!draft) {
+    return Astro.redirect(`/dokumenty/${documentId}/dokument`);
   }
 } else if (Astro.cookies.has(documentId)) {
   answers = Astro.cookies.get(documentId).json();
@@ -112,32 +117,31 @@ if (!title) title = document.data.title;
       ))
     }
     <footer>
-      {
-        Number(documentId) && !draft ? (
-          <a href={`${Astro.url.origin}/dokumenty/${documentId}/dokument`}>
-            Wyświetl dokument
-          </a>
-        ) : (
-          <>
-            <save-form>
-              <form method="POST" action={`${Astro.url.origin}/dokument`}>
-                {Object.entries(answers).map(([key, value]) => (
-                  <input type="hidden" name={key} value={String(value)} />
-                ))}
-                <input type="hidden" name="id" value={documentId} />
-                <input type="hidden" name="draft" value="false" />
-                <button type="submit">Generuj dokument</button>
-                {Astro.cookies.has(documentId) && (
-                  <button>
-                    <Icon name="save" width={18} height={18} />
-                    Zapisz szkic
-                  </button>
-                )}
-              </form>
-            </save-form>
-          </>
-        )
-      }
+      <save-form>
+        <form method="POST" action={`${Astro.url.origin}/dokument`}>
+          {
+            !isUserDocument &&
+              Object.entries(answers).map(([key, value]) => (
+                <input type="hidden" name={key} value={String(value)} />
+              ))
+          }
+          <input type="hidden" name="id" value={documentId} />
+          {
+            !isUserDocument && (
+              <input type="hidden" name="draft" value="false" />
+            )
+          }
+          <button type="submit">Generuj dokument</button>
+          {
+            Astro.cookies.has(documentId) && (
+              <button>
+                <Icon name="save" width={18} height={18} />
+                Zapisz szkic
+              </button>
+            )
+          }
+        </form>
+      </save-form>
     </footer>
   </section>
   <ChangeNameModal />
@@ -201,9 +205,10 @@ if (!title) title = document.data.title;
     }
 
     connectedCallback() {
-      this.button.addEventListener("click", () => {
-        this.draftInput.value = String(true);
-      });
+      this.button &&
+        this.button.addEventListener("click", () => {
+          this.draftInput.value = String(true);
+        });
     }
   }
   customElements.define("save-form", SaveForm);
