@@ -48,12 +48,34 @@ export async function getDocument(id) {
   }
 }
 
+export async function getUserDocument(id, userId) {
+  try {
+    return await db
+      .selectFrom(KEY)
+      .where("id", "=", id)
+      .where(sql`userid::text`, "=", userId)
+      .select([
+        "answers",
+        "created",
+        "doc",
+        "doctitle",
+        "title",
+        "modified",
+        "draft",
+      ])
+      .executeTakeFirst();
+  } catch (e: any) {
+    throw e;
+  }
+}
+
 export async function getDocuments(userId, page = 1, limit = LIMIT) {
   const offset = (page - 1) * limit;
 
   try {
     return await db
       .selectFrom(KEY)
+      .where(sql`userid::text`, "=", userId)
       .select([
         "created",
         "doc",
@@ -63,7 +85,6 @@ export async function getDocuments(userId, page = 1, limit = LIMIT) {
         "modified",
         "id",
       ])
-      .where(sql`userid::text`, "=", userId)
       .offset(offset)
       .limit(limit)
       .orderBy(sql`COALESCE(modified, created)`, "desc")

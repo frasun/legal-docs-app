@@ -1,7 +1,7 @@
 ---
 import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
-import { getDocument, createDocument } from "../../../../db/document";
+import { getUserDocument, createDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
 import { getUserByEmail } from "../../../../db/auth";
 import crypt from "../../../utils/crypt";
@@ -44,7 +44,7 @@ if (Astro.request.method === "POST") {
 }
 
 if (Number(documentId)) {
-  data = await getDocument(documentId);
+  data = await getUserDocument(documentId, userId);
 
   if (!data || data.draft) {
     return Astro.redirect("/404");
