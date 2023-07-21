@@ -4,7 +4,6 @@ import { Icon } from "astro-icon";
 import { getCollection, getEntry } from "astro:content";
 import { getDocument, updateAnswers } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
-import tSeed from "../../../utils/transformSeed";
 import crypt from "../../../utils/crypt";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
 import ChangeNameButton from "../../../components/ChangeNameButton.astro";
@@ -60,7 +59,7 @@ const document = await getEntry("documents", docId);
 
 if (document) {
   if (!answers) {
-    answers = tSeed(document.data.seed);
+    answers = document.data.seed;
   } else {
     document.data.encrypted.forEach((key) => {
       try {

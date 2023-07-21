@@ -5,7 +5,6 @@ import Answer from "../../../components/Answer.astro";
 import { getDocumentSummary } from "../../../../db/document";
 import { getUserByEmail } from "../../../../db/auth";
 import { getSession } from "../../../auth-astro/server";
-import tSeed from "../../../utils/transformSeed";
 import crypt from "../../../utils/crypt";
 import { Icon } from "astro-icon";
 import ChangeNameButton from "../../../components/ChangeNameButton.astro";
@@ -59,7 +58,7 @@ const document = await getEntry("documents", docId);
 
 if (document) {
   if (!answers) {
-    answers = tSeed(document.data.seed);
+    answers = document.data.seed;
   } else {
     document.data.encrypted.forEach((key) => {
       try {

@@ -4,23 +4,19 @@ import InputGroup, { InputSize } from "./InputGroup.astro";
 
 const { date, name, label, size } = Astro.props;
 
-function formatDate(date) {
-    const dateObj = new Date(date);
-    const year = dateObj.toLocaleDateString(LOCALE, { year: "numeric" });
-    const month = dateObj.toLocaleDateString(LOCALE, { month: "2-digit" });
-    const day = dateObj.toLocaleDateString(LOCALE, { day: "2-digit" });
+const dateValue = isNaN(Date.parse(date)) ? formatDate() : formatDate(date);
 
-    return `${year}-${month}-${day}`;
+function formatDate(date?) {
+  const dateObj = date ? new Date(`${date}`) : new Date();
+  const year = dateObj.toLocaleDateString(LOCALE, { year: "numeric" });
+  const month = dateObj.toLocaleDateString(LOCALE, { month: "2-digit" });
+  const day = dateObj.toLocaleDateString(LOCALE, { day: "2-digit" });
+
+  return `${year}-${month}-${day}`;
 }
 ---
 
 <InputGroup size={InputSize.lg}>
-    <label for={name}>{label}</label>
-    <input
-        id="start"
-        type="date"
-        name={name}
-        value={formatDate(date)}
-        required
-    />
+  <label for={name}>{label}</label>
+  <input id="start" type="date" name={name} value={dateValue} required />
 </InputGroup>
