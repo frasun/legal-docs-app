@@ -16,6 +16,8 @@ import QuestionAction from "../../../components/QuestionAction.astro";
 import Toast from "../../../components/Toast.astro";
 import { UPDATED_ANSWER_PARAM } from "../../../utils/toasts";
 
+import { z } from "astro:content";
+
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
@@ -91,7 +93,7 @@ if (!q) {
 }
 
 const {
-  data: { _question: questionContent, _info: qinfo },
+  data: { question: questionContent, info: qinfo },
 } = q;
 
 const { remarkPluginFrontmatter: qData, Content } = await q.render();
