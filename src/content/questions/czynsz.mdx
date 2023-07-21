@@ -1,0 +1,28 @@
+---
+rent: 2500
+rentmethod: przelewem na konto bankowe
+rentdue: 14
+question: Ile będzie wynosił czynsz?
+qinfo: In sodales ante eu justo accumsan efficitur. Phasellus tincidunt nec ipsum dignissim interdum. Morbi in lectus id magna cursus egestas eget sed odio. Etiam iaculis pretium nibh quis pharetra. Fusce sagittis neque vitae efficitur tempor. In felis mauris, volutpat et egestas vel, facilisis et risus. Cras interdum nec eros in malesuada. Phasellus aliquam fermentum quam.
+---
+import {paymentMethodEnum} from '../documents/umowa-najmu-lokalu/_schema';
+import InputGroup, { InputSize } from '../../components/InputGroup.astro';
+
+<fieldset>
+    <InputGroup size={InputSize.lg}>
+        <label for="rent">Wysokość</label>
+        <input type="number" id="rent" name="rent" value={frontmatter.rent} required step=".01" min="1"/>
+        <span>zł</span>
+    </InputGroup>
+    <InputGroup>
+        <label for="rentmethod">Sposób płatności</label> 
+        <select id="rentmethod" name="rentmethod" required>
+        {paymentMethodEnum.map(m => <option value={m} selected={frontmatter.rentmethod === m}>{m}</option>)}
+        </select>
+    </InputGroup>
+    <InputGroup>
+        <label for="rentdue">Termin płatności do</label>
+        <input id="rentdue" type="number" name="rentdue" value={frontmatter.rentdue} min="1" />
+        <span>dni po zakończeniu umowy</span>
+    </InputGroup>
+</fieldset>

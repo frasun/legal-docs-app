@@ -5,10 +5,10 @@ import pageTitle from "../../../utils/pageTitle";
 
 const { documentId } = Astro.params;
 
-Astro.cookies.delete(String(documentId), { path: `/dokumenty/${documentId}` });
+Astro.cookies.delete(documentId, { path: `/dokumenty/${documentId}` });
 
-const info = await getEntry("info", String(documentId));
-const document = await getEntry("documents", String(documentId));
+const info = await getEntry("info", documentId);
+const document = await getEntry("documents", documentId);
 
 if (!info || !document) {
   return Astro.redirect("/404");

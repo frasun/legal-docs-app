@@ -1,0 +1,11 @@
+---
+systems: "elektryczna, gazowa, centralne ogrzewanie, kanalizacja"
+question: Jakie instalacje dostępne są w lokalu?
+---
+import Checkboxes from '../../components/Checkboxes.astro'
+import {systemsEnum} from '../documents/umowa-najmu-lokalu/_schema'
+
+<fieldset>
+    <legend>Zaznacz wszystkie pasujące odpowiedzi</legend>
+    <Checkboxes values={systemsEnum} selected={frontmatter.systems} token="systems" />
+</fieldset>

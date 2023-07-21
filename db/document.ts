@@ -91,7 +91,7 @@ export async function getDocuments(userId, page = 1, limit = LIMIT) {
 
 export async function updateAnswers(documentId, answers, docId) {
   const { default: schema } = await import(
-    `../src/content/documents/schema/_${docId}.ts`
+    `../src/content/documents/${docId}/_schema.ts`
   );
 
   if (!schema) {

@@ -97,13 +97,13 @@ if (!title) title = document.data.title;
       index.map(({ title, questions }) => (
         <>
           <h5>{title}</h5>
-          {questions.map(({ title, token, template, type, id: { slug } }) => (
+          {questions.map(({ title, token, answer, type, id: { slug } }) => (
             <div>
               <div>
                 <h6>{title}</h6>
                 <Answer
                   data={answers}
-                  template={template}
+                  template={answer}
                   token={token}
                   type={type}
                 />

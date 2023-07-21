@@ -19,6 +19,7 @@ import { UPDATED_ANSWER_PARAM } from "../../../utils/toasts";
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
+const isUserDocument = Number(documentId) && session;
 
 let answers, data, title;
 let docId = documentId;
@@ -29,26 +30,26 @@ if (Astro.request.method === "POST") {
   formData = await Astro.request.formData();
   docTitle = formData.get("title");
 
-  if (docTitle && session) {
-    await handleNameChange(formData);
+  if (docTitle && isUserDocument) {
+    try {
+      await handleNameChange(formData);
+    } catch {}
   }
 }
 
-if (Number(documentId)) {
-  if (!session) {
-    return Astro.redirect("/");
-  }
+if (isUserDocument) {
+  try {
+    data = await getDocument(documentId);
 
-  data = await getDocument(documentId);
-
-  if (data) {
     docId = data.doc;
     answers = data.answers;
     title = data.title;
     draft = data.draft;
-  } else {
-    return Astro.redirect("/404");
-  }
+
+    if (!draft) {
+      return Astro.redirect(`/dokumenty/${documentId}/dokument`);
+    }
+  } catch {}
 } else if (Astro.cookies.has(documentId)) {
   answers = Astro.cookies.get(documentId).json();
 }
@@ -136,7 +137,7 @@ if (formData && !docTitle) {
     if (!isEqual) {
       const allAnswers = { ...answers, ...newAnswers };
 
-      if (Number(documentId)) {
+      if (isUserDocument) {
         if (Object.keys(newAnswers).length) {
           document.data.encrypted.forEach((key) => {
             allAnswers[key] = crypt.encrypt(allAnswers[key]);

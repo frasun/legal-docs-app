@@ -29,7 +29,7 @@ const documents = defineCollection({
               id: reference("questions"),
               title: z.string(),
               token: z.string().or(z.array(z.string())).optional(),
-              template: reference("answers").optional(),
+              answer: reference("answers").optional(),
               type: z.enum(["date"]).optional(),
             })
           ),
