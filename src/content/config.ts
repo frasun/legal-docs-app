@@ -42,6 +42,10 @@ const documents = defineCollection({
 
 const questions = defineCollection({
   type: "content",
+  schema: z.object({
+    _question: z.string(),
+    _info: z.string().optional(),
+  }),
 });
 
 const answers = defineCollection({

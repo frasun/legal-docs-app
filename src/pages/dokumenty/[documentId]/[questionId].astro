@@ -91,7 +91,7 @@ if (!q) {
 }
 
 const {
-  data: { question: questionContent, qinfo },
+  data: { _question: questionContent, _info: qinfo },
 } = q;
 
 const { remarkPluginFrontmatter: qData, Content } = await q.render();

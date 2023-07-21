@@ -119,7 +119,7 @@ export async function updateAnswers(documentId, answers, docId) {
 export async function createDocument(doc, answers, userid, draft = false) {
   const template = await getEntry("documents", doc);
   const { default: schema } = await import(
-    `../src/content/documents/schema/_${doc}.ts`
+    `../src/content/documents/${doc}/_schema.ts`
   );
 
   if (!template || !schema) {
