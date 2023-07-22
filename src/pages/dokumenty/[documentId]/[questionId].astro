@@ -3,6 +3,7 @@ import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
 import { getCollection, getEntry } from "astro:content";
 import { getDocument, updateAnswers } from "../../../../db/document";
+import { getUserByEmail } from "../../../../db/auth";
 import { getSession } from "../../../auth-astro/server";
 import crypt from "../../../utils/crypt";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
@@ -15,11 +16,11 @@ import QuestionAction from "../../../components/QuestionAction.astro";
 import Toast from "../../../components/Toast.astro";
 import { UPDATED_ANSWER_PARAM } from "../../../utils/toasts";
 
-import { z } from "astro:content";
-
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
+const user = await getUserByEmail(String(session.user?.email));
+const userId = user ? user.id : null;
 const isUserDocument = Number(documentId) && session;
 
 let answers, data, title;
@@ -40,7 +41,7 @@ if (Astro.request.method === "POST") {
 
 if (isUserDocument) {
   try {
-    data = await getDocument(documentId);
+    data = await getDocument(documentId, userId);
 
     docId = data.doc;
     answers = data.answers;

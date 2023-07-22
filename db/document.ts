@@ -34,11 +34,12 @@ export function createDocumentTable() {
     .execute();
 }
 
-export async function getDocument(id) {
+export async function getDocument(id, userId) {
   try {
     return await db
       .selectFrom(KEY)
       .selectAll()
+      .where(sql`userid::text`, "=", userId)
       .where("id", "=", id)
       .executeTakeFirst();
   } catch (e: any) {
