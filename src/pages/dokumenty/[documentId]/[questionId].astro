@@ -23,7 +23,7 @@ const user = await getUserByEmail(String(session.user?.email));
 const userId = user ? user.id : null;
 const isUserDocument = Number(documentId) && session;
 
-let answers, data, title;
+let answers, title;
 let docId = documentId;
 let draft = false;
 let formData, docTitle;
@@ -41,12 +41,17 @@ if (Astro.request.method === "POST") {
 
 if (isUserDocument) {
   try {
-    data = await getDocument(documentId, userId);
+    const {
+      doc,
+      answers: docAnswers,
+      title: docTitle,
+      draft: isDraft,
+    } = await getDocument(documentId, userId);
 
-    docId = data.doc;
-    answers = data.answers;
-    title = data.title;
-    draft = data.draft;
+    docId = String(doc);
+    answers = docAnswers;
+    title = docTitle;
+    draft = Boolean(isDraft);
 
     if (!draft) {
       return Astro.redirect(`/dokumenty/${documentId}/dokument`);
@@ -61,6 +66,11 @@ const document = await getEntry("documents", docId);
 if (document) {
   if (!answers) {
     answers = document.data.seed;
+
+    // temp hack
+    if (answers["start"] === "") {
+      answers["start"] = new Date();
+    }
   } else {
     document.data.encrypted.forEach((key) => {
       try {

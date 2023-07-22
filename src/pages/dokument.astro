@@ -61,7 +61,8 @@ if (Astro.request.method === "POST") {
       } else {
         return Astro.redirect("/404");
       }
-    } catch {
+    } catch (e) {
+      console.log(e);
       return Astro.redirect("/404");
     }
   } else {

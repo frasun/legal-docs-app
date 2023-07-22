@@ -41,6 +41,7 @@ export async function getDocument(id, userId) {
       .selectAll()
       .where(sql`userid::text`, "=", userId)
       .where("id", "=", id)
+      .select(["answers", "doc", "title", "draft"])
       .executeTakeFirst();
   } catch (e: any) {
     throw e;

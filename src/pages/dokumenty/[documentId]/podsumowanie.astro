@@ -59,6 +59,11 @@ const document = await getEntry("documents", docId);
 if (document) {
   if (!answers) {
     answers = document.data.seed;
+
+    // temp hack
+    if (answers["start"] === "") {
+      answers["start"] = new Date();
+    }
   } else {
     document.data.encrypted.forEach((key) => {
       try {
