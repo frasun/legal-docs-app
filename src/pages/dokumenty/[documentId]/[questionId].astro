@@ -19,8 +19,6 @@ import { UPDATED_ANSWER_PARAM } from "../../../utils/toasts";
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
-const user = await getUserByEmail(String(session.user?.email));
-const userId = user ? user.id : null;
 const isUserDocument = Number(documentId) && session;
 
 let answers, title;
@@ -40,6 +38,9 @@ if (Astro.request.method === "POST") {
 }
 
 if (isUserDocument) {
+  const user = await getUserByEmail(String(session.user?.email));
+  const userId = user ? user.id : null;
+
   try {
     const {
       doc,
