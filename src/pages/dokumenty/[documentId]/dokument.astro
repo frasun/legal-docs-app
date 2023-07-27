@@ -127,12 +127,6 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
           Pobierz plik PDF
         </button>
       </download-pdf>
-      <download-doc content-id="#doc">
-        <button>
-          <Icon name="file-word" width={24} height={24} />
-          Pobierz plik Word
-        </button>
-      </download-doc>
     </div>
     <footer>
       <a href=`${Astro.url.origin}/moje-dokumenty`>Zobacz w moich dokumentach</a
@@ -193,51 +187,6 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
   }
 </style>
 <script>
-  import exportDoc from "../../../utils/exportDoc";
-
-  class DownloadDoc extends HTMLElement {
-    contentId: string;
-    button: HTMLButtonElement;
-
-    constructor() {
-      super();
-
-      this.contentId = String(this.getAttribute("content-id"));
-      this.button = this.querySelector("button") as HTMLButtonElement;
-    }
-
-    connectedCallback() {
-      this.button.addEventListener("click", () => {
-        const docContent = document.querySelector(this.contentId);
-
-        if (docContent) {
-          const parsedContent = this.printSectionNumbers(docContent);
-
-          exportDoc(
-            parsedContent.innerHTML,
-            docContent.getAttribute("data-title")
-          );
-        }
-      });
-    }
-
-    printSectionNumbers(element) {
-      let sectionIndex = 1;
-      for (let i = 0; i < element.children.length; i++) {
-        const child = element.children[i];
-
-        if (child.tagName === "H4") {
-          const content = child.textContent;
-          child.textContent = `\u00A7${sectionIndex}. ${content}`;
-          sectionIndex++;
-        }
-      }
-
-      return element;
-    }
-  }
-  customElements.define("download-doc", DownloadDoc);
-
   import exportPdf, { CONTENT_TYPES } from "../../../utils/exportPdf";
 
   class DownloadPdf extends HTMLElement {
