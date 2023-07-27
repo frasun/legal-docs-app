@@ -26,6 +26,15 @@ let docId = documentId;
 let draft = false;
 let formData, docTitle;
 
+const questionEntry = await getEntry("questions", questionId);
+if (!questionEntry) {
+  return Astro.redirect("/404");
+}
+
+const {
+  data: { question: questionContent, info: qinfo, ...fields },
+} = questionEntry;
+
 if (Astro.request.method === "POST") {
   formData = await Astro.request.formData();
   docTitle = formData.get("title");
@@ -74,9 +83,11 @@ if (document) {
     }
   } else {
     document.data.encrypted.forEach((key) => {
-      try {
-        answers[key] = crypt.decrypt(answers[key]);
-      } catch {}
+      if (Object.keys(fields).includes(key)) {
+        try {
+          answers[key] = crypt.decrypt(answers[key]);
+        } catch {}
+      }
     });
   }
 } else {
@@ -102,10 +113,6 @@ const q = questions.find(({ slug }) => slug === questionId);
 if (!q) {
   return Astro.redirect("/404");
 }
-
-const {
-  data: { question: questionContent, info: qinfo },
-} = q;
 
 const { remarkPluginFrontmatter: qData, Content } = await q.render();
 
