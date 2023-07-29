@@ -1,14 +1,12 @@
 ---
 import { getSession } from "../auth-astro/server";
-import { getUserByEmail } from "../../db/auth";
 import { createDocument, publishDraft } from "../../db/document";
 import cryptr from "../utils/crypt";
 import { getEntry } from "astro:content";
 import { DRAFT_SAVED_PARAM } from "../utils/toasts";
 
 const session = await getSession(Astro.request);
-const user = session ? await getUserByEmail(String(session.user?.email)) : null;
-const userId = user ? user.id : null;
+const userId = session ? session.user?.id : null;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();

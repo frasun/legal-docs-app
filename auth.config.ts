@@ -37,4 +37,15 @@ export default {
     }),
   ],
   session: { strategy: "jwt" },
+  callbacks: {
+    async session({ session, token }) {
+      return { ...session, user: { id: token.sub, email: token.email } };
+    },
+  },
 };
+
+declare module "@auth/core/types" {
+  interface Session {
+    user?: User;
+  }
+}

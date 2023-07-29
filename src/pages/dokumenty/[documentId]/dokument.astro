@@ -3,7 +3,6 @@ import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
 import { getUserDocument, createDocument } from "../../../../db/document";
 import { getSession } from "../../../auth-astro/server";
-import { getUserByEmail } from "../../../../db/auth";
 import crypt from "../../../utils/crypt";
 import { Icon } from "astro-icon";
 import { formatDateTime } from "../../../utils/date";
@@ -23,8 +22,7 @@ if (!session) {
 
 Astro.cookies.delete(documentId);
 
-const user = await getUserByEmail(String(session.user?.email));
-const userId = user ? user.id : null;
+const userId = session.user?.id;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();

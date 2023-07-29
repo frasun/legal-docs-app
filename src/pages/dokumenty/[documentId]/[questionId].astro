@@ -3,7 +3,6 @@ import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
 import { getCollection, getEntry } from "astro:content";
 import { getDocument, updateAnswers } from "../../../../db/document";
-import { getUserByEmail } from "../../../../db/auth";
 import { getSession } from "../../../auth-astro/server";
 import crypt from "../../../utils/crypt";
 import QuestionIndex from "../../../components/QuestionIndex.astro";
@@ -47,8 +46,7 @@ if (Astro.request.method === "POST") {
 }
 
 if (isUserDocument) {
-  const user = await getUserByEmail(String(session.user?.email));
-  const userId = user ? user.id : null;
+  const userId = session.user?.id;
 
   try {
     const {

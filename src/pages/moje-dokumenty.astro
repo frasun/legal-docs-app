@@ -5,7 +5,6 @@ import { getEntry } from "astro:content";
 import Layout from "../layouts/App.astro";
 import { getSession } from "../auth-astro/server";
 import { getDocuments, createDocument } from "../../db/document";
-import { getUserByEmail } from "../../db/auth";
 import Badge from "../components/Badge.astro";
 import EmptyScreen from "../components/EmptyScreen.astro";
 import ChangeNameButton from "../components/ChangeNameButton.astro";
@@ -20,8 +19,7 @@ if (!session) {
   return Astro.redirect("/zaloguj-sie");
 }
 
-const user = await getUserByEmail(String(session.user?.email));
-const userId = user ? user.id : null;
+const userId = session.user?.id;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
