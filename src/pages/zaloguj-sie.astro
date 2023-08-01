@@ -1,9 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getSession } from "auth-astro/server";
-import pageTitle from "../utils/pageTitle";
-import AuthForm from "../components/AuthForm.astro";
-import InputGroup from "../components/InputGroup.astro";
+import pageTitle from "@utils/pageTitle";
+import AuthForm from "@components/AuthForm.astro";
+import InputGroup from "@components/InputGroup.astro";
 
 const session = await getSession(Astro.request);
 
@@ -44,7 +44,7 @@ const redirectUrl = url.searchParams.get("redirect");
 
 <script>
   import { signIn } from "auth-astro/client";
-  import errors from "../utils/errors";
+  import errors from "@utils/errors";
 
   class LoginForm extends HTMLElement {
     form?: HTMLFormElement;

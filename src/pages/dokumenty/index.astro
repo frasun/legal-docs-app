@@ -1,12 +1,12 @@
 ---
+import Layout from "../../layouts/App.astro";
 import Fuse from "fuse.js";
 import { Icon } from "astro-icon";
 import { getCollection } from "astro:content";
-import Layout from "../../layouts/App.astro";
-import DocumentTile from "../../components/DocumentTile.astro";
-import EmptyScreen from "../../components/EmptyScreen.astro";
-import trimWhitespace from "../../utils/whitespace";
-import pageTitle from "../../utils/pageTitle";
+import DocumentTile from "@components/DocumentTile.astro";
+import EmptyScreen from "@components/EmptyScreen.astro";
+import trimWhitespace from "@utils/whitespace";
+import pageTitle from "@utils/pageTitle";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get("kategoria");

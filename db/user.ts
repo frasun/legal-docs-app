@@ -1,5 +1,5 @@
 import type { Generated } from "kysely";
-import { db, sql } from "./db";
+import { db, sql } from "@db/db";
 
 const KEY = "user";
 

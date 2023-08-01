@@ -1,6 +1,6 @@
 ---
-import { getEntry } from 'astro:content';
-import formatDate from '../utils/date';
+import { getEntry } from "astro:content";
+import formatDate from "@utils/date";
 
 const { data, template, token, type } = Astro.props;
 
@@ -12,11 +12,11 @@ let CompiledContent;
 let textContent;
 
 if (template) {
-  const answer = await getEntry('answers', template.slug);  
+  const answer = await getEntry("answers", template.slug);
 
   if (!answer) return;
 
-  const {remarkPluginFrontmatter: aData, Content} = await answer.render();
+  const { remarkPluginFrontmatter: aData, Content } = await answer.render();
 
   for (let key of Object.keys(aData)) {
     aData[key] = data[key];
@@ -28,10 +28,10 @@ if (template) {
 if (!template && token) {
   const value = data[token];
 
-  if(type === 'date') {
-    textContent = formatDate(value);  
+  if (type === "date") {
+    textContent = formatDate(value);
   } else {
-    textContent = value
+    textContent = value;
   }
 }
 ---

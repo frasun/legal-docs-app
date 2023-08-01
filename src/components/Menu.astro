@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon";
 import { getSession } from "auth-astro/server";
-import SignedInMenu from "./SignedInMenu.astro";
+import SignedInMenu from "@components/SignedInMenu.astro";
 
 const session = await getSession(Astro.request);
 
@@ -98,8 +98,8 @@ const menuItems = [
 </style>
 
 <script>
-  import * as utils from "../utils/backdrop";
-  import screens from "../utils/screens";
+  import * as utils from "@utils/backdrop";
+  import screens from "@utils/screens";
 
   class PageMenu extends HTMLElement {
     MENU_BREAKDOWN: number;

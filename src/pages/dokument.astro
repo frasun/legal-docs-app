@@ -1,10 +1,10 @@
 ---
 import { getSession } from "auth-astro/server";
-import { createDocument, publishDraft } from "../../db/document";
-import cryptr from "../utils/crypt";
+import { createDocument, publishDraft } from "@db/document";
+import cryptr from "@utils/crypt";
 import { getEntry } from "astro:content";
-import { DRAFT_SAVED_PARAM } from "../utils/toasts";
-import type { Answers } from "../types";
+import { DRAFT_SAVED_PARAM } from "@utils/toasts";
+import type { Answers } from "@type";
 
 const session = await getSession(Astro.request);
 const userId = session ? session.user?.id : null;

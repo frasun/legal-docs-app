@@ -1,17 +1,17 @@
 ---
-import { Icon } from "astro-icon";
-import { formatDateTime, LOCALE } from "../utils/date";
-import { getEntry } from "astro:content";
 import Layout from "../layouts/App.astro";
+import { Icon } from "astro-icon";
+import { formatDateTime, LOCALE } from "@utils/date";
+import { getEntry } from "astro:content";
 import { getSession } from "auth-astro/server";
-import { getDocuments, createDocument } from "../../db/document";
-import Badge from "../components/Badge.astro";
-import EmptyScreen from "../components/EmptyScreen.astro";
-import ChangeNameButton from "../components/ChangeNameButton.astro";
-import ChangeNameModal from "../components/ChangeNameModal.astro";
-import { handleNameChange } from "../utils/document";
-import pageTitle from "../utils/pageTitle";
-import Toast from "../components/Toast.astro";
+import { getDocuments, createDocument } from "@db/document";
+import Badge from "@components/Badge.astro";
+import EmptyScreen from "@components/EmptyScreen.astro";
+import ChangeNameButton from "@components/ChangeNameButton.astro";
+import ChangeNameModal from "@components/ChangeNameModal.astro";
+import { handleNameChange } from "@utils/document";
+import pageTitle from "@utils/pageTitle";
+import Toast from "@components/Toast.astro";
 
 const session = await getSession(Astro.request);
 

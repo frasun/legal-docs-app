@@ -1,4 +1,4 @@
-import * as backdrop from "./backdrop";
+import * as backdrop from "@utils/backdrop";
 
 export default class Modal {
   modal: HTMLElement;

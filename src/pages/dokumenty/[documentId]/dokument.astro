@@ -1,13 +1,13 @@
 ---
-import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
-import { getUserDocument, createDocument } from "../../../../db/document";
+import { getEntry } from "astro:content";
+import { getUserDocument, createDocument } from "@db/document";
 import { getSession } from "auth-astro/server";
-import crypt from "../../../utils/crypt";
+import crypt from "@utils/crypt";
 import { Icon } from "astro-icon";
-import { formatDateTime } from "../../../utils/date";
-import pageTitle from "../../../utils/pageTitle";
-import type { Answers } from "../../../types";
+import { formatDateTime } from "@utils/date";
+import pageTitle from "@utils/pageTitle";
+import type { Answers } from "@type";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -192,7 +192,7 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
   }
 </style>
 <script>
-  import exportPdf, { CONTENT_TYPES } from "../../../utils/exportPdf";
+  import exportPdf, { CONTENT_TYPES } from "@utils/exportPdf";
 
   class DownloadPdf extends HTMLElement {
     button: HTMLButtonElement;

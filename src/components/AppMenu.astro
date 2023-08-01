@@ -1,7 +1,7 @@
 ---
 import { SignOut } from "auth-astro/components";
 import { Icon } from "astro-icon";
-import screens from "../utils/screens";
+import screens from "@utils/screens";
 
 const { session } = Astro.props;
 ---
@@ -170,8 +170,8 @@ const { session } = Astro.props;
 </style>
 
 <script>
-  import * as backdrop from "../utils/backdrop";
-  import screens from "../utils/screens";
+  import * as backdrop from "@utils/backdrop";
+  import screens from "@utils/screens";
 
   class AppMenu extends HTMLElement {
     close: HTMLButtonElement | null;

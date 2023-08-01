@@ -1,11 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getUserByEmail, createUser, sendCode } from "../../db/auth";
-import sendEmail from "../utils/email";
-import error from "../utils/errors";
-import pageTitle from "../utils/pageTitle";
-import AuthForm from "../components/AuthForm.astro";
-import InputGroup, { InputType } from "../components/InputGroup.astro";
+import { getUserByEmail, createUser, sendCode } from "@db/auth";
+import sendEmail from "@utils/email";
+import error from "@utils/errors";
+import pageTitle from "@utils/pageTitle";
+import AuthForm from "@components/AuthForm.astro";
+import InputGroup, { InputType } from "@components/InputGroup.astro";
 
 let errors = [],
   userEmail,

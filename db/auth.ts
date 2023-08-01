@@ -1,6 +1,6 @@
-import { db } from "./db";
+import { db } from "@db/db";
 import bcrypt from "bcryptjs";
-import errors from "../src/utils/errors";
+import errors from "@utils/errors";
 
 const KEY = "user";
 const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

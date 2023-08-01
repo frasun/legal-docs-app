@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import CategoryBlock from "../../components/CategoryBlock.astro";
+import CategoryBlock from "@components/CategoryBlock.astro";
 
 const categories = await getCollection("categories", ({ data }) => data.index);
 ---

@@ -1,5 +1,5 @@
 import { z } from "astro:content";
-import trimWhitespace from "../../../utils/whitespace";
+import trimWhitespace from "@utils/whitespace";
 
 export const entityEnum = ["osoba fizyczna", "firma"] as const;
 export const paymentMethodEnum = [

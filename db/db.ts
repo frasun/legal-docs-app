@@ -1,6 +1,6 @@
 import { createKysely } from "@vercel/postgres-kysely";
-import { Document, createDocumentTable } from "./document";
-import { User, createUserTable } from "./user";
+import { Document, createDocumentTable } from "@db/document";
+import { User, createUserTable } from "@db/user";
 
 export interface Database {
   document: Document;

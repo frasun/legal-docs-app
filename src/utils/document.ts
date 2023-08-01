@@ -1,5 +1,5 @@
-import { changeDocumentName } from "../../db/document";
-import trimWhitespace from "./whitespace";
+import { changeDocumentName } from "@db/document";
+import trimWhitespace from "@utils/whitespace";
 
 export async function handleNameChange(formData: FormData) {
   const docId = formData.get("template");

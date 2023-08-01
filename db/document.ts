@@ -1,7 +1,7 @@
 import type { Generated } from "kysely";
 import { getEntry } from "astro:content";
-import { db, sql } from "./db";
-import type { Answers } from "../src/types";
+import { db, sql } from "@db/db";
+import type { Answers } from "@type";
 
 export interface Document {
   id?: Generated<string>;

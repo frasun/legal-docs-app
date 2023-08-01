@@ -1,7 +1,7 @@
 ---
-import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
-import pageTitle from "../../../utils/pageTitle";
+import { getEntry } from "astro:content";
+import pageTitle from "@utils/pageTitle";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
