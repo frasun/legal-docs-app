@@ -184,11 +184,11 @@ export default z.object({
     .transform((val) => trimWhitespace(val)),
 });
 
-function validateDataType(val) {
+function validateDataType(val: number) {
   return [0, 1, 2].includes(val);
 }
 
-function validateEnum(val, array) {
+function validateEnum(val: string, array: Readonly<string[]>) {
   const arr = val.split(", ");
   return arr.every((el) => array.includes(el));
 }

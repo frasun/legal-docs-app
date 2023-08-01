@@ -21,6 +21,10 @@ if (!session) {
 
 const userId = session.user?.id;
 
+if (!userId) {
+  return Astro.redirect("/zaloguj-sie");
+}
+
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const docId = formData.get("template");
@@ -28,36 +32,51 @@ if (Astro.request.method === "POST") {
 
   await handleNameChange(formData);
 
-  if (localAnswers) {
+  if (localAnswers && docId) {
     const answers = JSON.parse(String(localAnswers));
-    await createDocument(docId, JSON.parse(Object(answers)), userId, true);
+    await createDocument(
+      String(docId),
+      JSON.parse(Object(answers)),
+      userId,
+      true
+    );
   }
 }
 
 const documents = await getDocuments(userId);
-const groupedItems = {};
+const groupedItems: Record<string, typeof documents> = {};
 
 documents.forEach((item) => {
   const date = item.modified || item.created;
-  const monthYear = date.toLocaleString(LOCALE, {
-    month: "long",
-    year: "numeric",
-  });
 
-  if (!groupedItems[monthYear]) {
-    groupedItems[monthYear] = [];
+  if (date) {
+    const monthYear = date.toLocaleString(LOCALE, {
+      month: "long",
+      year: "numeric",
+    });
+
+    if (!groupedItems[monthYear]) {
+      groupedItems[monthYear] = [];
+    }
+
+    groupedItems[monthYear].push(item);
   }
-
-  groupedItems[monthYear].push(item);
 });
 
 const PAGE_TITLE = "Moje dokumenty";
 
-const getDocTitle = async (docId) => {
-  const {
-    data: { title },
-  } = await getEntry("documents", docId);
-  return title;
+const getDocTitle = async (docId: string) => {
+  const docEntry = await getEntry("documents", docId);
+  let docTitle = "";
+
+  if (docEntry) {
+    const {
+      data: { title },
+    } = docEntry;
+    docTitle = title;
+  }
+
+  return docTitle;
 };
 ---
 
@@ -83,7 +102,7 @@ const getDocTitle = async (docId) => {
                     </a>
                     <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
                       <Icon name="document" width={16} height={16} />
-                      {getDocTitle(doc)}
+                      {getDocTitle(String(doc))}
                     </a>
                   </header>
                   {draft ? (
@@ -93,7 +112,7 @@ const getDocTitle = async (docId) => {
                         <time>
                           {modified
                             ? formatDateTime(modified)
-                            : formatDateTime(created)}
+                            : formatDateTime(created as Date)}
                         </time>
                       </dd>
                     </dl>
@@ -101,7 +120,7 @@ const getDocTitle = async (docId) => {
                     <time>
                       {modified
                         ? formatDateTime(modified)
-                        : formatDateTime(created)}
+                        : formatDateTime(created as Date)}
                     </time>
                   )}
                   <aside>

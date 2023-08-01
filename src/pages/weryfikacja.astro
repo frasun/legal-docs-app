@@ -6,7 +6,8 @@ import pageTitle from "../utils/pageTitle";
 import AuthForm from "../components/AuthForm.astro";
 
 const url = new URL(Astro.request.url);
-const userEmail = decodeURIComponent(url.searchParams.get("email"));
+const emailParam = url.searchParams.get("email");
+const userEmail = emailParam ? decodeURIComponent(emailParam) : null;
 const redirectUrl = url.searchParams.get("redirect");
 
 if (!userEmail) {
@@ -63,16 +64,16 @@ if (Astro.request.method === "POST") {
   import { signIn } from "../auth-astro/client";
 
   class AutoLogin extends HTMLElement {
-    redirect: string;
-    email: string;
-    password: string;
+    redirect?: string;
+    email?: string;
+    password?: string;
 
     constructor() {
       super();
 
-      this.redirect = this.getAttribute("redirect");
-      this.email = this.getAttribute("email");
-      this.password = this.getAttribute("password");
+      this.redirect = this.getAttribute("redirect") || undefined;
+      this.email = this.getAttribute("email") || undefined;
+      this.password = this.getAttribute("password") || undefined;
     }
 
     async connectedCallback() {

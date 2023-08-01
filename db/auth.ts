@@ -16,7 +16,7 @@ export const getUserByEmail = async (email: string) => {
   return user || null;
 };
 
-export const createUser = async (email, password) => {
+export const createUser = async (email: string, password: string) => {
   if (!testString(email, emailRegExp)) {
     throw new Error(errors.WRONG_EMAIL);
   }
@@ -42,7 +42,7 @@ export const createUser = async (email, password) => {
   }
 };
 
-export const activateUser = async (id) => {
+export const activateUser = async (id: string) => {
   try {
     return await db
       .updateTable(KEY)
@@ -54,7 +54,7 @@ export const activateUser = async (id) => {
   }
 };
 
-export const sendCode = async (id) => {
+export const sendCode = async (id: string) => {
   try {
     return await db
       .updateTable(KEY)
@@ -69,4 +69,4 @@ export const sendCode = async (id) => {
 
 const getVerificationCode = () => Math.random().toString(16).substring(2, 8);
 
-const testString = (string, regexp) => regexp.test(string);
+const testString = (string: string, regexp: RegExp) => regexp.test(string);

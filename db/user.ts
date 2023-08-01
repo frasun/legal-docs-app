@@ -1,14 +1,14 @@
-import { Generated } from "kysely";
+import type { Generated } from "kysely";
 import { db, sql } from "./db";
 
 const KEY = "user";
 
 export interface User {
-  id: Generated<String>;
-  email: String;
-  password: String;
-  active: Boolean;
-  code: String;
+  id: Generated<string>;
+  email: string;
+  password: string;
+  active?: boolean;
+  code?: string;
 }
 
 export function createUserTable() {

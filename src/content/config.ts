@@ -40,6 +40,8 @@ const documents = defineCollection({
   }),
 });
 
+export type Document = Pick<typeof documents, "schema">;
+
 const questions = defineCollection({
   type: "content",
   schema: z

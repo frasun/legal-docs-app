@@ -57,7 +57,7 @@ const { name, selected, data } = Astro.props;
 <script>
   class DataSelector extends HTMLElement {
     radios: NodeListOf<HTMLInputElement>;
-    fieldset: HTMLFieldSetElement;
+    fieldset: HTMLFieldSetElement | null;
 
     constructor() {
       super();
@@ -79,32 +79,36 @@ const { name, selected, data } = Astro.props;
     }
 
     resetForm() {
-      const inputs = this.fieldset.querySelectorAll("input");
-      const selects = this.fieldset.querySelectorAll("select");
+      if (this.fieldset) {
+        const inputs = this.fieldset.querySelectorAll("input");
+        const selects = this.fieldset.querySelectorAll("select");
 
-      this.fieldset.style.display = "none";
+        this.fieldset.style.display = "none";
 
-      Array.from(inputs).forEach((input) => {
-        input.value = "";
-        input.required = false;
-      });
-      Array.from(selects).forEach((select) => (select.selectedIndex = 0));
+        Array.from(inputs).forEach((input) => {
+          input.value = "";
+          input.required = false;
+        });
+        Array.from(selects).forEach((select) => (select.selectedIndex = 0));
+      }
     }
 
     setForm() {
-      const inputs = this.fieldset.querySelectorAll("input");
-      const selects = this.fieldset.querySelectorAll("select");
+      if (this.fieldset) {
+        const inputs = this.fieldset.querySelectorAll("input");
+        const selects = this.fieldset.querySelectorAll("select");
 
-      this.fieldset.removeAttribute("style");
+        this.fieldset.removeAttribute("style");
 
-      Array.from(inputs).forEach((input) => {
-        input.value = "";
-        input.required = true;
-      });
+        Array.from(inputs).forEach((input) => {
+          input.value = "";
+          input.required = true;
+        });
 
-      Array.from(selects).forEach((select) => {
-        select.selectedIndex = 0;
-      });
+        Array.from(selects).forEach((select) => {
+          select.selectedIndex = 0;
+        });
+      }
     }
   }
 

@@ -1,6 +1,21 @@
 ---
 import { Icon } from "astro-icon";
 
+interface Props {
+  index: {
+    title: string;
+    questions: {
+      id: {
+        slug: string;
+      };
+      title: string;
+    }[];
+  }[];
+  current: string;
+  documentId: string | number;
+  documentTitle: string;
+}
+
 const { index, current, documentId, documentTitle } = Astro.props;
 ---
 
@@ -102,10 +117,10 @@ const { index, current, documentId, documentTitle } = Astro.props;
 
 <script>
   import * as backdrop from "../utils/backdrop";
-  import screens from '../utils/screens'
+  import screens from "../utils/screens";
 
   class QuestionList extends HTMLElement {
-    close: HTMLButtonElement;
+    close: HTMLButtonElement | null;
 
     constructor() {
       super();
@@ -120,9 +135,11 @@ const { index, current, documentId, documentTitle } = Astro.props;
         }
       });
 
-      this.close.addEventListener("click", () => {
-        this.hideQuestionList();
-      });
+      if (this.close) {
+        this.close.addEventListener("click", () => {
+          this.hideQuestionList();
+        });
+      }
 
       window.addEventListener("resize", () => {
         if (window.innerWidth >= screens.lg) {

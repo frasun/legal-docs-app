@@ -106,8 +106,8 @@ const menuItems = [
     TRANSITION_TRANSFORM: string;
     MENU_ZINDEX: string;
     TRANSLATE_PROP: string;
-    menuToggle: HTMLButtonElement;
-    menuNav: HTMLElement;
+    menuToggle: HTMLButtonElement | null;
+    menuNav: HTMLElement | null;
     _menuOpen: boolean;
 
     constructor() {
@@ -124,9 +124,11 @@ const menuItems = [
     }
 
     connectedCallback() {
-      this.menuToggle.addEventListener("click", () =>
-        this.toggleMenu(this._menuOpen)
-      );
+      if (this.menuToggle) {
+        this.menuToggle.addEventListener("click", () =>
+          this.toggleMenu(this._menuOpen)
+        );
+      }
 
       window.addEventListener("resize", () => {
         if (this._menuOpen) {
@@ -135,22 +137,30 @@ const menuItems = [
       });
     }
 
-    toggleMenu(isOpen, transition = true, callback?) {
-      transition
-        ? this.menuNav.classList.add(this.TRANSITION_TRANSFORM)
-        : this.menuNav.classList.remove(this.TRANSITION_TRANSFORM);
+    toggleMenu(isOpen: boolean, transition = true, callback?: Function) {
+      if (this.menuNav) {
+        transition
+          ? this.menuNav.classList.add(this.TRANSITION_TRANSFORM)
+          : this.menuNav.classList.remove(this.TRANSITION_TRANSFORM);
 
-      if (!isOpen && window.innerWidth < this.MENU_BREAKDOWN) {
-        this.menuNav.style.setProperty(this.TRANSLATE_PROP, "0");
-      } else {
-        this.menuNav.style.removeProperty(this.TRANSLATE_PROP);
+        if (!isOpen && window.innerWidth < this.MENU_BREAKDOWN) {
+          this.menuNav.style.setProperty(this.TRANSLATE_PROP, "0");
+        } else {
+          this.menuNav.style.removeProperty(this.TRANSLATE_PROP);
+        }
+
+        this.menuNav.addEventListener("transitionend", () => {
+          this.classList.remove(this.TRANSITION_TRANSFORM);
+          callback && callback();
+        });
+
+        if (this.menuToggle) {
+          this.menuToggle.setAttribute(
+            "data-open",
+            Boolean(!isOpen).toString()
+          );
+        }
       }
-      this.menuToggle.setAttribute("data-open", Boolean(!isOpen).toString());
-
-      this.menuNav.addEventListener("transitionend", () => {
-        this.menuNav.classList.remove(this.TRANSITION_TRANSFORM);
-        callback && callback();
-      });
 
       isOpen
         ? utils.removeBackdrop(transition)

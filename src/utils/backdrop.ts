@@ -5,7 +5,10 @@ const TRANSITION_OPACITY = "transition-opacity";
 const OPACITY_100 = "opacity-100";
 const Z_INDEX = "z-50";
 
-export function addBackdrop(onClickCallback?, backdropClass?) {
+export function addBackdrop(
+  onClickCallback?: Function,
+  backdropClass?: string
+) {
   let backdrop = document.createElement("div");
 
   backdrop.id = BACKDROP_ID;

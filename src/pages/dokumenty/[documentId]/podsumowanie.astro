@@ -12,6 +12,7 @@ import Badge from "../../../components/Badge.astro";
 import { handleNameChange } from "../../../utils/document";
 import pageTitle from "../../../utils/pageTitle";
 import Toast from "../../../components/Toast.astro";
+import type { Answers } from "../../../types";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -22,18 +23,20 @@ const { documentId: dId } = Astro.params;
 const documentId = String(dId);
 
 const session = await getSession(Astro.request);
-const isUserDocument = Number(documentId);
+const isUserDocument = session && Number(documentId);
 
 let docId = documentId;
 let draft = false;
-let data, answers, title;
+let data,
+  answers: Answers = {},
+  title;
 
 if (isUserDocument) {
-  if (!session) {
+  const userId = session.user?.id;
+
+  if (!session || !userId) {
     return Astro.redirect("/");
   }
-
-  const userId = session.user?.id;
 
   data = await getDocumentSummary(documentId, userId);
 
@@ -56,19 +59,21 @@ if (isUserDocument) {
 const document = await getEntry("documents", docId);
 
 if (document) {
-  if (!answers) {
+  if (!Object.keys(answers).length && document.data.seed) {
     answers = document.data.seed;
 
     // temp hack start date
     if (answers["start"] === "") {
       answers["start"] = new Date();
     }
-  } else {
-    document.data.encrypted.forEach((key) => {
-      try {
-        answers[key] = crypt.decrypt(answers[key]);
-      } catch {}
-    });
+    
+    if (document.data.encrypted) {
+      document.data.encrypted.forEach((key) => {
+        try {
+          answers[key] = crypt.decrypt(answers[key]);
+        } catch {}
+      });
+    }
   }
 } else {
   return Astro.redirect("/404");
@@ -77,6 +82,10 @@ if (document) {
 const {
   data: { index },
 } = document;
+
+if (!index) {
+  return Astro.redirect("/404");
+}
 
 if (!title) title = document.data.title;
 ---
@@ -197,8 +206,8 @@ if (!title) title = document.data.title;
 
 <script>
   class SaveForm extends HTMLElement {
-    draftInput: HTMLInputElement;
-    button: HTMLButtonElement;
+    draftInput: HTMLInputElement | null;
+    button: HTMLButtonElement | null;
 
     constructor() {
       super();
@@ -208,10 +217,13 @@ if (!title) title = document.data.title;
     }
 
     connectedCallback() {
-      this.button &&
+      if (this.button) {
         this.button.addEventListener("click", () => {
-          this.draftInput.value = String(true);
+          if (this.draftInput) {
+            this.draftInput.value = String(true);
+          }
         });
+      }
     }
   }
   customElements.define("save-form", SaveForm);

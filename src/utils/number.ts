@@ -1,4 +1,4 @@
-export default function (number) {
+export default function (number: number) {
   const options =
     number % 1 == 0
       ? { minimumFractionDigits: 0, maximumFractionDigits: 0 }

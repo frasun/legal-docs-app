@@ -31,7 +31,7 @@ const { values, selected, token, required, size = "default" } = Astro.props;
   import { EMPTY } from "../utils/constants";
 
   class CheckboxList extends HTMLElement {
-    valueInput: HTMLInputElement;
+    valueInput: HTMLInputElement | null;
     checkboxes: NodeListOf<HTMLInputElement>;
     required: boolean;
 
@@ -54,17 +54,24 @@ const { values, selected, token, required, size = "default" } = Astro.props;
 
       for (let checkbox of Array.from(this.checkboxes)) {
         const { checked, id } = checkbox;
+        const checkboxParent = checkbox.parentElement;
 
         if (checked) {
           value.push(id);
 
-          checkbox.parentElement.setAttribute("data-checked", "");
+          if (checkboxParent) {
+            checkboxParent.setAttribute("data-checked", "");
+          }
         } else {
-          checkbox.parentElement.removeAttribute("data-checked");
+          if (checkboxParent) {
+            checkboxParent.removeAttribute("data-checked");
+          }
         }
       }
 
-      this.valueInput.value = value.length ? value.join(", ") : EMPTY;
+      if (this.valueInput) {
+        this.valueInput.value = value.length ? value.join(", ") : EMPTY;
+      }
 
       if (this.required) {
         if (!value.length) {

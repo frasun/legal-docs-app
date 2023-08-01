@@ -47,37 +47,39 @@ const redirectUrl = url.searchParams.get("redirect");
   import errors from "../utils/errors";
 
   class LoginForm extends HTMLElement {
-    form: HTMLFormElement;
-    redirect: string;
+    form?: HTMLFormElement;
+    redirect?: string;
 
     constructor() {
       super();
 
-      this.form = this.querySelector("form");
-      this.redirect = this.getAttribute("redirect");
+      this.form = this.querySelector("form") || undefined;
+      this.redirect = this.getAttribute("redirect") || undefined;
     }
 
     connectedCallback() {
-      this.form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      if (this.form) {
+        this.form.addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-        const formData = new FormData(this.form);
-        const email = String(formData.get("email"));
-        const password = String(formData.get("password"));
+          const formData = new FormData(this.form);
+          const email = String(formData.get("email"));
+          const password = String(formData.get("password"));
 
-        this.hideError();
+          this.hideError();
 
-        const response = await signIn("credentials", {
-          redirect: false,
-          email,
-          password,
-          callbackUrl: `${document.location.origin}${
-            this.redirect ? `/${this.redirect}` : `/moje-dokumenty`
-          }`,
+          const response = await signIn("credentials", {
+            redirect: false,
+            email,
+            password,
+            callbackUrl: `${document.location.origin}${
+              this.redirect ? `/${this.redirect}` : `/moje-dokumenty`
+            }`,
+          });
+
+          response && this.showError();
         });
-
-        response && this.showError();
-      });
+      }
     }
 
     showError() {
@@ -86,7 +88,9 @@ const redirectUrl = url.searchParams.get("redirect");
       error.innerHTML = errors.WRONG_CREDENTIALS;
 
       window.setTimeout(() => {
-        this.form.append(error);
+        if (this.form) {
+          this.form.append(error);
+        }
       }, 200);
     }
 

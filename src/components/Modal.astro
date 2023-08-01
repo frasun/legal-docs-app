@@ -62,12 +62,14 @@
   const modalContainer = document.getElementById("modal");
   const modalClose = document.getElementById("modalClose");
 
-  const modal = new Modal(modalContainer, modalClose);
-  document.body.addEventListener("showModal", () => {
-    modal.show();
-  });
+  if (modalContainer && modalClose) {
+    const modal = new Modal(modalContainer, modalClose);
+    document.body.addEventListener("showModal", () => {
+      modal.show();
+    });
 
-  document.body.addEventListener("hideModal", () => {
-    modal.hide();
-  });
+    document.body.addEventListener("hideModal", () => {
+      modal.hide();
+    });
+  }
 </script>

@@ -1,17 +1,17 @@
-import { Generated } from "kysely";
+import type { Generated } from "kysely";
 import { getEntry } from "astro:content";
 import { db, sql } from "./db";
+import type { Answers } from "../src/types";
 
 export interface Document {
-  id: Generated<String>;
-  doc: String;
-  answers: JSON;
-  userid: String;
-  created: Date;
-  modified: Date | null;
-  title: String;
-  draft: Boolean;
-  test: Date;
+  id?: Generated<string>;
+  doc: string;
+  answers: Answers;
+  userid: string;
+  created?: Date;
+  modified?: Date | null;
+  title: string;
+  draft: boolean;
 }
 
 const KEY = "document";
@@ -34,7 +34,7 @@ export function createDocumentTable() {
     .execute();
 }
 
-export async function getDocument(id, userId) {
+export async function getDocument(id: string, userId: string) {
   try {
     return await db
       .selectFrom(KEY)
@@ -43,12 +43,12 @@ export async function getDocument(id, userId) {
       .where("id", "=", id)
       .select(["answers", "doc", "title", "draft"])
       .executeTakeFirst();
-  } catch (e: any) {
+  } catch (e) {
     throw e;
   }
 }
 
-export async function getUserDocument(docId, userId) {
+export async function getUserDocument(docId: string, userId: string) {
   try {
     return await db
       .selectFrom(KEY)
@@ -56,12 +56,12 @@ export async function getUserDocument(docId, userId) {
       .where("id", "=", docId)
       .select(["answers", "created", "doc", "title", "modified", "draft"])
       .executeTakeFirst();
-  } catch (e: any) {
+  } catch (e) {
     throw e;
   }
 }
 
-export async function getDocumentSummary(docId, userId) {
+export async function getDocumentSummary(docId: string, userId: string) {
   try {
     return await db
       .selectFrom(KEY)
@@ -69,12 +69,12 @@ export async function getDocumentSummary(docId, userId) {
       .where("id", "=", docId)
       .select(["answers", "doc", "title", "draft", "id"])
       .executeTakeFirst();
-  } catch (e: any) {
+  } catch (e) {
     throw e;
   }
 }
 
-export async function getDocuments(userId, page = 1, limit = LIMIT) {
+export async function getDocuments(userId: string, page = 1, limit = LIMIT) {
   const offset = (page - 1) * limit;
 
   try {
@@ -86,12 +86,16 @@ export async function getDocuments(userId, page = 1, limit = LIMIT) {
       .limit(limit)
       .orderBy(sql`COALESCE(modified, created)`, "desc")
       .execute();
-  } catch (e: any) {
+  } catch (e) {
     throw e;
   }
 }
 
-export async function updateAnswers(documentId, answers, docId) {
+export async function updateAnswers(
+  documentId: string,
+  answers: Answers,
+  docId: string
+) {
   const { default: schema } = await import(
     `../src/content/documents/${docId}/_schema.ts`
   );
@@ -113,12 +117,18 @@ export async function updateAnswers(documentId, answers, docId) {
     } catch (e: any) {
       throw e;
     }
-  } catch ({ errors }) {
+  } catch (errors) {
+    console.log(errors);
     throw errors;
   }
 }
 
-export async function createDocument(doc, answers, userid, draft = false) {
+export async function createDocument(
+  doc: string,
+  answers: Answers,
+  userid: string,
+  draft = false
+) {
   const template = await getEntry("documents", doc);
   const { default: schema } = await import(
     `../src/content/documents/${doc}/_schema.ts`
@@ -132,7 +142,7 @@ export async function createDocument(doc, answers, userid, draft = false) {
     data: { title },
   } = template;
 
-  let validatedAnswers;
+  let validatedAnswers: Answers;
 
   try {
     validatedAnswers = schema.parse(answers);
@@ -142,7 +152,7 @@ export async function createDocument(doc, answers, userid, draft = false) {
         .values([
           {
             doc,
-            answers: JSON.stringify(validatedAnswers),
+            answers: validatedAnswers,
             userid,
             draft,
             title: `${title} #${Math.floor(Math.random() * 1000)}`,
@@ -150,15 +160,16 @@ export async function createDocument(doc, answers, userid, draft = false) {
         ])
         .returning("id")
         .executeTakeFirst();
-    } catch (e: any) {
+    } catch (e) {
       throw e;
     }
-  } catch ({ errors }) {
+  } catch (errors) {
+    console.log(errors);
     throw errors;
   }
 }
 
-export async function publishDraft(id) {
+export async function publishDraft(id: string) {
   try {
     return await db
       .updateTable(KEY)
@@ -170,7 +181,7 @@ export async function publishDraft(id) {
   }
 }
 
-export async function changeDocumentName(id, title) {
+export async function changeDocumentName(id: string, title: string) {
   try {
     return await db
       .updateTable(KEY)

@@ -2,11 +2,11 @@
 import { LOCALE } from "../utils/date";
 import InputGroup, { InputSize } from "./InputGroup.astro";
 
-const { date, name, label, size } = Astro.props;
+const { date, name, label } = Astro.props;
 
 const dateValue = isNaN(Date.parse(date)) ? formatDate() : formatDate(date);
 
-function formatDate(date?) {
+function formatDate(date?: string | Date) {
   const dateObj = date ? new Date(`${date}`) : new Date();
   const year = dateObj.toLocaleDateString(LOCALE, { year: "numeric" });
   const month = dateObj.toLocaleDateString(LOCALE, { month: "2-digit" });

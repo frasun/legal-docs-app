@@ -1,6 +1,16 @@
 ---
 import InputGroup from "./InputGroup.astro";
 
+interface Props {
+  values: {
+    value: number | string;
+    label: string;
+    disabled?: boolean;
+  }[];
+  name: string;
+  selected: number;
+}
+
 const { values, name, selected = 0 } = Astro.props;
 ---
 

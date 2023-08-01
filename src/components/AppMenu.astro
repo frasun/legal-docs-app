@@ -174,7 +174,7 @@ const { session } = Astro.props;
   import screens from "../utils/screens";
 
   class AppMenu extends HTMLElement {
-    close: HTMLButtonElement;
+    close: HTMLButtonElement | null;
 
     constructor() {
       super();
@@ -195,9 +195,11 @@ const { session } = Astro.props;
         }
       });
 
-      this.close.addEventListener("click", () => {
-        this.hideMenu();
-      });
+      if (this.close) {
+        this.close.addEventListener("click", () => {
+          this.hideMenu();
+        });
+      }
     }
 
     showMenu() {

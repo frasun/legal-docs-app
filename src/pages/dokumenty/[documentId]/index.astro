@@ -3,7 +3,8 @@ import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
 import pageTitle from "../../../utils/pageTitle";
 
-const { documentId } = Astro.params;
+const { documentId: dId } = Astro.params;
+const documentId = String(dId);
 
 Astro.cookies.delete(documentId, { path: `/dokumenty/${documentId}` });
 
@@ -16,6 +17,10 @@ if (!info || !document) {
 
 const { Content } = await info.render();
 const { title, index } = document.data;
+
+if (!index) {
+  return Astro.redirect("/404");
+}
 
 const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0].questions[0].id.slug}`;
 ---

@@ -7,6 +7,7 @@ import crypt from "../../../utils/crypt";
 import { Icon } from "astro-icon";
 import { formatDateTime } from "../../../utils/date";
 import pageTitle from "../../../utils/pageTitle";
+import type { Answers } from "../../../types";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -24,9 +25,13 @@ Astro.cookies.delete(documentId);
 
 const userId = session.user?.id;
 
+if (!userId) {
+  return Astro.redirect("/404");
+}
+
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  let answers = {};
+  let answers: Answers = {};
 
   formData.forEach((value, key) => (answers[key] = value));
 
@@ -68,7 +73,7 @@ const { encrypted } = document.data;
 
 for (let key of Object.keys(qData.seed)) {
   if (key !== "title") {
-    if (encrypted.includes(key)) {
+    if (encrypted && encrypted.includes(key)) {
       try {
         qData.seed[key] = crypt.decrypt(answers[key]);
       } catch {
@@ -85,7 +90,7 @@ const urlParams = new URLSearchParams(url.search);
 const firstTime = urlParams.get("success") === "true" ? true : false;
 ---
 
-<Layout title={pageTitle(title)}>
+<Layout title={pageTitle(String(title))}>
   <span slot="topbar-title">{title}</span>
   <article id="doc" class="prose prose-document" data-title={title}>
     <Content />
@@ -113,7 +118,9 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
         <h6>
           Utworzony{" "}
           <time>
-            {modified ? formatDateTime(modified) : formatDateTime(created)}
+            {modified
+              ? formatDateTime(modified)
+              : formatDateTime(created as Date)}
           </time>
         </h6>
       )
@@ -202,14 +209,16 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
       this.button.addEventListener("click", () => {
         const docContent = document.querySelector(this.contentId);
 
-        exportPdf(
-          this.getContentArray(docContent),
-          docContent.getAttribute("data-title")
-        );
+        if (docContent) {
+          exportPdf(
+            this.getContentArray(docContent),
+            docContent.getAttribute("data-title") || ""
+          );
+        }
       });
     }
 
-    getContentArray(element) {
+    getContentArray(element: Element) {
       let array = [];
 
       for (let i = 0; i < element.children.length; i++) {
@@ -231,7 +240,7 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
       return array;
     }
 
-    getLisItems(list) {
+    getLisItems(list: Element) {
       let array = [];
       const lineBreakRegex = /<\s*br\s*\/?>/gi;
 
@@ -250,7 +259,7 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
       return array;
     }
 
-    cleanContent(line) {
+    cleanContent(line: string) {
       return line
         .replace("\n", "")
         .trim()

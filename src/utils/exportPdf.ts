@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, PageSizes } from "@cantoo/pdf-lib";
+import { PDFDocument, rgb, PageSizes, PDFFont } from "@cantoo/pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 
 export const CONTENT_TYPES = {
@@ -20,7 +20,10 @@ const COLOR = rgb(0, 0, 0);
 const CHIVO_REGULAR = "/chivo-v18-latin_latin-ext-regular.ttf";
 const CHIVO_BOLD = "/chivo-v18-latin_latin-ext-700.ttf";
 
-export default async function (paragraphs, documentTitle = "document") {
+export default async function (
+  paragraphs: (string | null)[][],
+  documentTitle = "document"
+) {
   const FONT_REGULAR = await fetch(CHIVO_REGULAR).then((res) =>
     res.arrayBuffer()
   );
@@ -71,7 +74,7 @@ export default async function (paragraphs, documentTitle = "document") {
     }
 
     const lines = splitIntoLines(
-      content,
+      content as string,
       font,
       size,
       width - MARGIN * 2 - indent
@@ -125,7 +128,12 @@ export default async function (paragraphs, documentTitle = "document") {
   downloadFile(pdfBytes, documentTitle);
 }
 
-function splitIntoLines(text, font, fontSize, maxWidth) {
+function splitIntoLines(
+  text: string,
+  font: PDFFont,
+  fontSize: number,
+  maxWidth: number
+) {
   const words = text.split(" ");
   const lines = [];
   let currentLine = words[0];
@@ -148,7 +156,7 @@ function splitIntoLines(text, font, fontSize, maxWidth) {
   return lines;
 }
 
-function downloadFile(bytes, filename) {
+function downloadFile(bytes: Uint8Array, filename: string) {
   const blob = new Blob([bytes], { type: "application/pdf" });
   const link = document.createElement("a");
 
@@ -157,7 +165,7 @@ function downloadFile(bytes, filename) {
   link.click();
 }
 
-function generateSafeFileName(inputString) {
+function generateSafeFileName(inputString: string) {
   const invalidCharsRegex = /[\\/:"*?<>|]/g;
   const safeString = inputString.replace(invalidCharsRegex, "");
   const trimmedString = safeString.trim().substring(0, 100);

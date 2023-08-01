@@ -1,73 +1,81 @@
 ---
 import { Icon } from "astro-icon";
 
+interface Props {
+  slug: string;
+  title: string;
+  docCategories: {
+    id: string;
+  }[];
+  categories: {
+    id: string;
+    data: {
+      name: string;
+    };
+  }[];
+}
+
 const { slug, title, docCategories, categories } = Astro.props;
 
-const getCategoryName = (slug) => {
-    const ct = categories.find(({ id }) => id === slug);
+const getCategoryName = (slug: string) => {
+  const ct = categories.find(({ id }: { id: string }) => id === slug);
 
-    return ct ? ct.data.name : null;
-};
-
-const getCategoryIcon = (slug) => {
-    const ct = categories.find(({ id }) => id === slug);
-
-    return ct ? ct.data.icon : null;
+  return ct ? ct.data.name : null;
 };
 ---
 
 <a href={`${Astro.url.origin}/dokumenty/${slug}`}>
-    <header><h3>{title}</h3></header>
-    <footer>
-        <ul>
-            {
-                docCategories
-                    .sort((a, b) => a.id.localeCompare(b.id))
-                    .map(({ id }) => (
-                        <li title={getCategoryName(id)}>
-                            <em>{getCategoryName(id)}</em>
-                        </li>
-                    ))
-            }
-        </ul>
-    </footer>
-    <aside>
-        <Icon name="arrow-right" width={24} height={24} />
-    </aside>
+  <header><h3>{title}</h3></header>
+  <footer>
+    <ul>
+      {
+        docCategories
+          .sort((a, b) => a.id.localeCompare(b.id))
+          .map(({ id }: { id: string }) => (
+            <li title={getCategoryName(id)}>
+              <em>{getCategoryName(id)}</em>
+            </li>
+          ))
+      }
+    </ul>
+  </footer>
+  <aside>
+    <Icon name="arrow-right" width={24} height={24} />
+  </aside>
 </a>
 
 <style>
-    a {
-        @apply grid grid-cols-[1fr_auto] grid-rows-[1fr_auto] grid-flow-col gap-15;
-        @apply p-15 pl-20 bg-white rounded-lg;
-    }
+  a {
+    @apply grid grid-cols-[1fr_auto] grid-rows-[1fr_auto] grid-flow-col gap-15;
+    @apply p-15 pl-20 bg-white rounded-lg;
+  }
 
-    header h3 {
-        @apply text-lg md:line-clamp-2;
-    }
+  header h3 {
+    @apply text-lg md:line-clamp-2;
+  }
 
-    a:hover header h3 {
-        @apply text-orangeDark;
-    }
+  a:hover header h3 {
+    @apply text-orangeDark;
+  }
 
-    footer {
-        @apply flex md:flex-col gap-10 items-center md:items-start;
-    }
+  footer {
+    @apply flex md:flex-col gap-10 items-center md:items-start;
+  }
 
-    footer ul {
-        @apply flex flex-wrap gap-5 sm:gap-10;
-    }
+  footer ul {
+    @apply flex flex-wrap gap-5 sm:gap-10;
+  }
 
-    footer li {
-        @apply text-xs;
-    }
+  footer li {
+    @apply text-xs;
+  }
 
-    a:hover footer li {
-        @apply text-dark65;
-    }
+  a:hover footer li {
+    @apply text-dark65;
+  }
 
-    aside {
-        @apply row-[1_/_span_2];
-        @apply h-full flex items-center;
-    }
+  aside {
+    @apply row-[1_/_span_2];
+    @apply h-full flex items-center;
+  }
 </style>

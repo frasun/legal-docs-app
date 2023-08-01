@@ -1,4 +1,11 @@
 ---
+interface Props {
+  options: string[];
+  labels: string[];
+  token: string[];
+  selected: string[];
+}
+
 const { options, labels, token, selected } = Astro.props;
 ---
 
@@ -109,7 +116,7 @@ const { options, labels, token, selected } = Astro.props;
     }
 
     getHiddenValue() {
-      let values = {};
+      let values: Record<string, string[]> = {};
 
       for (let { name, value, checked } of Array.from(this.radios)) {
         if (checked) {

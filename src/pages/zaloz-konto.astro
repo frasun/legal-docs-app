@@ -33,14 +33,18 @@ if (Astro.request.method === "POST") {
       if (active) {
         errors.push(error.EMAIL_TAKEN);
       } else {
-        const { code } = await sendCode(id);
+        const sendCodeResponse = await sendCode(id);
 
-        await sendEmail(email, code);
-        return Astro.redirect(
-          `/weryfikacja?email=${encodeURIComponent(email)}${
-            redirectUrl ? `&redirect=${redirectUrl}` : ""
-          }`
-        );
+        if (sendCodeResponse) {
+          const { code } = sendCodeResponse;
+
+          await sendEmail(email, code as string);
+          return Astro.redirect(
+            `/weryfikacja?email=${encodeURIComponent(email)}${
+              redirectUrl ? `&redirect=${redirectUrl}` : ""
+            }`
+          );
+        }
       }
     } else {
       try {
@@ -49,7 +53,7 @@ if (Astro.request.method === "POST") {
         if (newUser) {
           const { email, code } = newUser;
 
-          await sendEmail(email, code);
+          await sendEmail(email, code as string);
           return Astro.redirect(
             `/weryfikacja?email=${encodeURIComponent(String(email))}${
               redirectUrl ? `&redirect=${redirectUrl}` : ""
@@ -59,7 +63,9 @@ if (Astro.request.method === "POST") {
           return Astro.redirect("/404");
         }
       } catch (e) {
-        errors.push(e.message);
+        if (e instanceof Error) {
+          errors.push(e.message);
+        }
       }
     }
   }

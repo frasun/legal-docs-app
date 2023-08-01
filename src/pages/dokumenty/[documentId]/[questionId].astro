@@ -14,18 +14,19 @@ import pageTitle from "../../../utils/pageTitle";
 import QuestionAction from "../../../components/QuestionAction.astro";
 import Toast from "../../../components/Toast.astro";
 import { UPDATED_ANSWER_PARAM } from "../../../utils/toasts";
+import type { Answers } from "../../../types";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
 const isUserDocument = Number(documentId) && session;
 
-let answers, title;
+let answers: Answers = {};
 let docId = documentId;
 let draft = false;
-let formData, docTitle;
+let title, formData, docTitle;
 
-const questionEntry = await getEntry("questions", questionId);
+const questionEntry = await getEntry("questions", String(questionId));
 if (!questionEntry) {
   return Astro.redirect("/404");
 }
@@ -48,23 +49,29 @@ if (Astro.request.method === "POST") {
 if (isUserDocument) {
   const userId = session.user?.id;
 
-  try {
-    const {
-      doc,
-      answers: docAnswers,
-      title: docTitle,
-      draft: isDraft,
-    } = await getDocument(documentId, userId);
+  if (userId) {
+    try {
+      const document = await getDocument(documentId, userId);
 
-    docId = String(doc);
-    answers = docAnswers;
-    title = docTitle;
-    draft = Boolean(isDraft);
+      if (document) {
+        const {
+          doc,
+          answers: docAnswers,
+          title: docTitle,
+          draft: isDraft,
+        } = document;
 
-    if (!draft) {
-      return Astro.redirect(`/dokumenty/${documentId}/dokument`);
-    }
-  } catch {}
+        docId = doc;
+        answers = docAnswers;
+        title = docTitle;
+        draft = isDraft;
+
+        if (!draft) {
+          return Astro.redirect(`/dokumenty/${documentId}/dokument`);
+        }
+      }
+    } catch {}
+  }
 } else if (Astro.cookies.has(documentId)) {
   answers = Astro.cookies.get(documentId).json();
 }
@@ -72,21 +79,23 @@ if (isUserDocument) {
 const document = await getEntry("documents", docId);
 
 if (document) {
-  if (!answers) {
+  if (!Object.keys(answers).length && document.data.seed) {
     answers = document.data.seed;
 
     // temp hack start date
     if (answers["start"] === "") {
       answers["start"] = new Date();
     }
-  } else {
-    document.data.encrypted.forEach((key) => {
-      if (Object.keys(fields).includes(key)) {
-        try {
-          answers[key] = crypt.decrypt(answers[key]);
-        } catch {}
-      }
-    });
+
+    if (document.data.encrypted) {
+      document.data.encrypted.forEach((key) => {
+        if (Object.keys(fields).includes(key)) {
+          try {
+            answers[key] = crypt.decrypt(answers[key]);
+          } catch {}
+        }
+      });
+    }
   }
 } else {
   return Astro.redirect("/404");
@@ -98,8 +107,15 @@ const {
 
 if (!title) title = docuemntTitle;
 
-const qs = JSON.parse(JSON.stringify(qIndex)).reduce(
-  (pQuestions, { questions }) => pQuestions.concat(questions),
+if (!qIndex) {
+  return Astro.redirect("/404");
+}
+
+type Index = (typeof qIndex)[0]["questions"];
+
+const qs: Index = qIndex.reduce(
+  (pQuestions: Index, { questions }: { questions: Index }) =>
+    pQuestions.concat(questions),
   []
 );
 
@@ -121,7 +137,9 @@ for (let key of Object.keys(qData)) {
 const currentQuestionIndex = qs.findIndex(
   ({ id: { slug } }) => slug === questionId
 );
-const { title: qTitle } = qs[currentQuestionIndex];
+
+const qTitle = qs[currentQuestionIndex].title;
+
 const prevUrl =
   currentQuestionIndex > 0
     ? `${Astro.url.origin}/dokumenty/${documentId}/${
@@ -136,7 +154,7 @@ const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
 
 if (formData && !docTitle) {
   try {
-    let newAnswers = {};
+    let newAnswers: Answers = {};
     let isEqual = true;
 
     for (let [key, value] of formData.entries()) {
@@ -157,9 +175,11 @@ if (formData && !docTitle) {
 
       if (isUserDocument) {
         if (Object.keys(newAnswers).length) {
-          document.data.encrypted.forEach((key) => {
-            allAnswers[key] = crypt.encrypt(allAnswers[key]);
-          });
+          if (document.data.encrypted) {
+            document.data.encrypted.forEach((key) => {
+              allAnswers[key] = crypt.encrypt(allAnswers[key]);
+            });
+          }
 
           try {
             await updateAnswers(documentId, allAnswers, docId);
@@ -258,12 +278,16 @@ if (formData && !docTitle) {
       </footer>
     </form>
   </question-form>
-  <QuestionIndex
-    index={qIndex}
-    current={questionId}
-    documentId={documentId}
-    documentTitle={docuemntTitle}
-  />
+  {
+    qIndex && questionId && (
+      <QuestionIndex
+        index={qIndex}
+        current={questionId}
+        documentId={documentId}
+        documentTitle={docuemntTitle}
+      />
+    )
+  }
   {draft && <ChangeNameModal />}
   <Toast />
 </Layout>
@@ -326,20 +350,26 @@ if (formData && !docTitle) {
 
 <script>
   class QuestionForm extends HTMLElement {
-    form: HTMLFormElement;
-    submit: HTMLButtonElement;
+    form: HTMLFormElement | null;
+    submit: HTMLButtonElement | null;
 
     constructor() {
       super();
 
       this.form = this.querySelector("form");
-      this.submit = this.form.querySelector("button[type='submit']");
+      this.submit = this.form
+        ? this.form.querySelector("button[type='submit']")
+        : null;
     }
 
     connectedCallback() {
-      this.form.addEventListener("input", () => {
-        this.submit.removeAttribute("disabled");
-      });
+      if (this.form) {
+        this.form.addEventListener("input", () => {
+          if (this.submit) {
+            this.submit.removeAttribute("disabled");
+          }
+        });
+      }
     }
   }
   customElements.define("question-form", QuestionForm);

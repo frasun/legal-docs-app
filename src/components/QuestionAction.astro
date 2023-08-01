@@ -2,77 +2,84 @@
 import Progressbar from "./Progressbar.astro";
 import { Icon } from "astro-icon";
 
+interface Props {
+  current: number;
+  steps: number;
+  answers: [string, any][] | null;
+  docId: string;
+}
+
 const { current, steps, answers, docId } = Astro.props;
 ---
 
 <div>
-    <Progressbar current={current} steps={steps} />
-    {
-        answers ? (
-            <form method="POST" action={`${Astro.url.origin}/dokument`}>
-                {answers.map(([key, value]) => (
-                    <input type="hidden" name={key} value={String(value)} />
-                ))}
-                <input type="hidden" name="id" value={docId} />
-                <input type="hidden" name="draft" value="true" />
-                <button>
-                    <Icon name="save" width={18} height={18} />
-                    Zapisz
-                </button>
-            </form>
-        ) : null
-    }
-    <show-question-list>
-        <button aria-label="Pokaż listę pytań">
-            <Icon name="index" width={24} height={24} />
+  <Progressbar current={current} steps={steps} />
+  {
+    answers ? (
+      <form method="POST" action={`${Astro.url.origin}/dokument`}>
+        {answers.map(([key, value]) => (
+          <input type="hidden" name={key} value={String(value)} />
+        ))}
+        <input type="hidden" name="id" value={docId} />
+        <input type="hidden" name="draft" value="true" />
+        <button>
+          <Icon name="save" width={18} height={18} />
+          Zapisz
         </button>
-    </show-question-list>
+      </form>
+    ) : null
+  }
+  <show-question-list>
+    <button aria-label="Pokaż listę pytań">
+      <Icon name="index" width={24} height={24} />
+    </button>
+  </show-question-list>
 </div>
 
 <style>
-    div {
-        @apply flex items-center gap-15;
-        @apply fixed bottom-0 left-0 right-0 px-20 py-10 border-t-[1px] border-dark40 bg-gray;
-        @apply justify-around md:justify-normal md:px-0;
-        @apply md:static md:bottom-auto md:left-auto md:right-auto md:border-0 md:bg-transparent;
-    }
+  div {
+    @apply flex items-center gap-15;
+    @apply fixed bottom-0 left-0 right-0 px-20 py-10 border-t-[1px] border-dark40 bg-gray;
+    @apply justify-around md:justify-normal md:px-0;
+    @apply md:static md:bottom-auto md:left-auto md:right-auto md:border-0 md:bg-transparent;
+  }
 
-    div > *,
-    div :global(> div) {
-        @apply flex-grow basis-1/3 text-center;
-        @apply md:flex-grow-0 md:basis-auto md:text-left;
-    }
+  div > *,
+  div :global(> div) {
+    @apply flex-grow basis-1/3 text-center;
+    @apply md:flex-grow-0 md:basis-auto md:text-left;
+  }
 
-    div button {
-        @apply btn btn-alt;
-    }
+  div button {
+    @apply btn btn-alt;
+  }
 
-    div form {
-        @apply p-0;
-    }
+  div form {
+    @apply p-0;
+  }
 
-    div show-question-list {
-        @apply lg:hidden;
-    }
+  div show-question-list {
+    @apply lg:hidden;
+  }
 </style>
 
 <script>
-    class ShowQuestionList extends HTMLElement {
-        button: HTMLButtonElement;
+  class ShowQuestionList extends HTMLElement {
+    button: HTMLButtonElement | null;
 
-        constructor() {
-            super();
+    constructor() {
+      super();
 
-            this.button = this.querySelector("button");
-        }
-
-        connectedCallback() {
-            this.button.addEventListener("click", () => {
-                document.body.dispatchEvent(
-                    new CustomEvent("showQuestionList")
-                );
-            });
-        }
+      this.button = this.querySelector("button");
     }
-    customElements.define("show-question-list", ShowQuestionList);
+
+    connectedCallback() {
+      if (this.button) {
+        this.button.addEventListener("click", () => {
+          document.body.dispatchEvent(new CustomEvent("showQuestionList"));
+        });
+      }
+    }
+  }
+  customElements.define("show-question-list", ShowQuestionList);
 </script>

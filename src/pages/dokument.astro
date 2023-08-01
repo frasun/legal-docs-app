@@ -4,17 +4,18 @@ import { createDocument, publishDraft } from "../../db/document";
 import cryptr from "../utils/crypt";
 import { getEntry } from "astro:content";
 import { DRAFT_SAVED_PARAM } from "../utils/toasts";
+import type { Answers } from "../types";
 
 const session = await getSession(Astro.request);
 const userId = session ? session.user?.id : null;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  const id = formData.get("id");
+  const id = formData.get("id") as string;
   const draft = String(formData.get("draft")) === "true";
 
-  let answers = {},
-    encrypted = [];
+  let answers: Answers = {},
+    encrypted: string[] = [];
 
   if (Number(id)) {
     try {
@@ -22,15 +23,17 @@ if (Astro.request.method === "POST") {
 
       return Astro.redirect(`/dokumenty/${id}/dokument?success=true`);
     } catch {
-      Astro.redirect("/404");
+      return Astro.redirect("/404");
     }
   } else {
-    const template = await getEntry("documents", String(id));
+    const template = await getEntry("documents", id);
 
     if (!template) {
       Astro.redirect("/404");
     } else {
-      encrypted = template.data.encrypted;
+      encrypted = template.data.encrypted?.length
+        ? template.data.encrypted
+        : [];
     }
   }
 
@@ -39,12 +42,12 @@ if (Astro.request.method === "POST") {
       if (encrypted.includes(key) && answers[key] !== "") {
         answers[key] = cryptr.encrypt(String(value));
       } else {
-        answers[key] = value;
+        answers[key] = value as keyof Answers;
       }
     }
   });
 
-  if (session) {
+  if (session && userId) {
     try {
       const docId = await createDoc(id, answers, draft, userId);
 
@@ -71,7 +74,7 @@ if (Astro.request.method === "POST") {
     );
     return Astro.redirect("/zaloguj-sie?redirect=dokument");
   }
-} else if (Astro.cookies.has("document")) {
+} else if (Astro.cookies.has("document") && userId) {
   const { id, answers, draft } = Astro.cookies.get("document").json();
   const docId = await createDoc(id, answers, draft, userId);
 
@@ -90,7 +93,12 @@ if (Astro.request.method === "POST") {
   return Astro.redirect("/404");
 }
 
-async function createDoc(id, answers, draft, userId) {
+async function createDoc(
+  id: string,
+  answers: Answers,
+  draft: boolean,
+  userId: string
+) {
   const document = await createDocument(id, answers, userId, draft);
   const docId = document ? document.id : null;
 

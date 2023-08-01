@@ -1,5 +1,5 @@
 export function scrollToElement(elementId = null, offset = 0) {
-  const element = document.getElementById(elementId);
+  const element = elementId ? document.getElementById(elementId) : null;
   const cords = element ? element.getBoundingClientRect() : null;
 
   if (cords) {

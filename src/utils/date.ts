@@ -3,7 +3,7 @@ export const TIMEZONE = "Europe/Warsaw";
 export const LOCALE = "pl-PL";
 export const DATE_FORMAT = "dd.MM.yyyy";
 
-export default function (dateString?) {
+export default function (dateString?: string) {
   const dateObj = dateString ? new Date(dateString) : new Date();
   const date = dateObj.toLocaleDateString(LOCALE, {
     year: "numeric",
@@ -14,7 +14,7 @@ export default function (dateString?) {
   return date;
 }
 
-export function formatDateTime(datetime) {
+export function formatDateTime(datetime: Date) {
   const date = datetime.toLocaleDateString(LOCALE, {
     timeZone: TIMEZONE,
     day: "numeric",
