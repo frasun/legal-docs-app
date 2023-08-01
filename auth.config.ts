@@ -2,6 +2,7 @@ import type { AuthConfig } from "@auth/core";
 import { getUserByEmail } from "./db/auth";
 import CredentialsProvider from "@auth/core/providers/credentials";
 import bcrypt from "bcryptjs";
+import cookie from "cookie";
 
 export default {
   secret: process.env.AUTH_SECRET as string,
@@ -33,19 +34,53 @@ export default {
           return null;
         }
 
-        return user;
+        const cookies = cookie.parse(req.headers.get("cookie") || "");
+        const MIDDLEWARE = await import("./src/middleware");
+        const ssid = cookies[MIDDLEWARE.SESSION_COOKIE];
+
+        if (typeof ssid === "string" && ssid.trim() !== "") {
+          return { ...user, ssid: encodeURIComponent(ssid) };
+        } else {
+          return user;
+        }
       },
     }),
   ],
   session: { strategy: "jwt" },
   callbacks: {
     async session({ session, token }) {
-      return { ...session, user: { id: token.sub, email: token.email } };
+      // console.log("session callback");
+      // console.log({ session, token });
+      return {
+        ...session,
+        user: { id: token.sub, email: token.email, ssid: token.ssid },
+      };
+    },
+    // async signIn({ user, account, profile, email, credentials }) {
+    //   // console.log("signIn callback");
+    //   // console.log({ user, account, profile, email, credentials });
+    //   return true;
+    // },
+    // async redirect({ url, baseUrl }) {
+    //   // console.log("redirect callback");
+    //   return baseUrl;
+    // },
+    async jwt({ token, user, account, profile, isNewUser }) {
+      // console.log("jwt callback");
+      // console.log({ token, user, account, profile, isNewUser });
+      if (user && user.ssid) {
+        return { ...token, ssid: user.ssid };
+      }
+      return token;
     },
   },
 } as AuthConfig;
 
 declare module "@auth/core/types" {
+  interface User {
+    ssid?: string;
+  }
+
   interface Session {
     user?: User;
   }
