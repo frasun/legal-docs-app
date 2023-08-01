@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon";
-import { getSession } from "../auth-astro/server";
+import { getSession } from "auth-astro/server";
 import SignedInMenu from "./SignedInMenu.astro";
 
 const session = await getSession(Astro.request);

@@ -61,7 +61,7 @@ if (Astro.request.method === "POST") {
 </Layout>
 
 <script>
-  import { signIn } from "../auth-astro/client";
+  import { signIn } from "auth-astro/client";
 
   class AutoLogin extends HTMLElement {
     redirect?: string;

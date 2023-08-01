@@ -3,7 +3,7 @@ import { Icon } from "astro-icon";
 import { formatDateTime, LOCALE } from "../utils/date";
 import { getEntry } from "astro:content";
 import Layout from "../layouts/App.astro";
-import { getSession } from "../auth-astro/server";
+import { getSession } from "auth-astro/server";
 import { getDocuments, createDocument } from "../../db/document";
 import Badge from "../components/Badge.astro";
 import EmptyScreen from "../components/EmptyScreen.astro";

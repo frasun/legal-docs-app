@@ -3,7 +3,7 @@ import { getEntry } from "astro:content";
 import Layout from "../../../layouts/App.astro";
 import Answer from "../../../components/Answer.astro";
 import { getDocumentSummary } from "../../../../db/document";
-import { getSession } from "../../../auth-astro/server";
+import { getSession } from "auth-astro/server";
 import crypt from "../../../utils/crypt";
 import { Icon } from "astro-icon";
 import ChangeNameButton from "../../../components/ChangeNameButton.astro";
@@ -66,7 +66,7 @@ if (document) {
     if (answers["start"] === "") {
       answers["start"] = new Date();
     }
-    
+
     if (document.data.encrypted) {
       document.data.encrypted.forEach((key) => {
         try {

@@ -1,3 +1,4 @@
+import type { AuthConfig } from "@auth/core";
 import { getUserByEmail } from "./db/auth";
 import CredentialsProvider from "@auth/core/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -42,7 +43,7 @@ export default {
       return { ...session, user: { id: token.sub, email: token.email } };
     },
   },
-};
+} as AuthConfig;
 
 declare module "@auth/core/types" {
   interface Session {

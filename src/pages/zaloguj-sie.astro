@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getSession } from "../auth-astro/server";
+import { getSession } from "auth-astro/server";
 import pageTitle from "../utils/pageTitle";
 import AuthForm from "../components/AuthForm.astro";
 import InputGroup from "../components/InputGroup.astro";
@@ -43,7 +43,7 @@ const redirectUrl = url.searchParams.get("redirect");
 </Layout>
 
 <script>
-  import { signIn } from "../auth-astro/client";
+  import { signIn } from "auth-astro/client";
   import errors from "../utils/errors";
 
   class LoginForm extends HTMLElement {
