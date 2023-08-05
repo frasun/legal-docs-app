@@ -1,6 +1,6 @@
 ---
-billslandlord: 'zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci'
-billstenant: 'opłata za internet, opłata telewizyjna'
+billsLandlord: 'zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci'
+billsTenant: 'opłata za internet, opłata telewizyjna'
 question: Kto będzie ponosił opłaty za media?
 ---
 import Radios from '@components/Radios.astro'
@@ -8,5 +8,5 @@ import {billsEnum} from '@content/documents/umowa-najmu-lokalu/_schema'
 
 <fieldset>
     <legend>Dopasuj odpowiedzi do stron umowy</legend>
-    <Radios selected={[frontmatter.billslandlord, frontmatter.billstenant]} options={['Opłata', 'Wynajmujący', 'Najemca']} labels={billsEnum} token={['billslandlord', 'billstenant']} />
+    <Radios selected={[frontmatter.billsLandlord, frontmatter.billsTenant]} options={['Opłata', 'Wynajmujący', 'Najemca']} labels={billsEnum} token={['billsLandlord', 'billsTenant']} />
 </fieldset>

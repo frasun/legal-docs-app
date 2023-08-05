@@ -1,17 +1,17 @@
 ---
-l-data: 0
-l-type: osoba fizyczna
-l-name: ''
-l-address: ''
-l-pin: ''
+landlordData: 0
+landlordType: osoba fizyczna
+landlordName: ''
+landlordAddress: ''
+landlordPin: ''
 ---
 
 import PersonalData from "@components/PersonalData.astro";
 
 <PersonalData
-  data={frontmatter["l-data"]}
-  type={frontmatter["l-type"]}
-  name={frontmatter["l-name"]}
-  address={frontmatter["l-address"]}
-  pin={frontmatter["l-pin"]}
+  data={frontmatter["landlordData"]}
+  type={frontmatter["landlordType"]}
+  name={frontmatter["landlordName"]}
+  address={frontmatter["landlordAddress"]}
+  pin={frontmatter["landlordPin"]}
 />

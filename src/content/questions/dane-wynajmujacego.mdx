@@ -1,9 +1,9 @@
 ---
-t-data: 0
-t-type: 0
-t-name: ""
-t-address: ""
-t-pin: ""
+tenantData: 0
+tenantType: 0
+tenantName: ""
+tenantAddress: ""
+tenantPin: ""
 question: Czy chcesz uzupełnić dane Wynajmującego?
 ---
 
@@ -12,13 +12,13 @@ import DataSelector from "@components/DataSelector.astro";
 <fieldset>
   <legend>Wybierz pasującą odpowiedź</legend>
   <DataSelector
-    name="t"
-    selected={frontmatter["t-data"]}
+    name="tenant"
+    selected={frontmatter["tenantData"]}
     data={[
-      frontmatter["t-type"],
-      frontmatter["t-name"],
-      frontmatter["t-address"],
-      frontmatter["t-pin"],
+      frontmatter["tenantType"],
+      frontmatter["tenantName"],
+      frontmatter["tenantAddress"],
+      frontmatter["tenantPin"],
     ]}
   />
 </fieldset>

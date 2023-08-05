@@ -1,11 +1,11 @@
 ---
 question: W jakim terminie trzeba będzie dokonać zwrotu lokalu?
-return: 30
+returnTime: 30
 ---
 import InputGroup, { InputSize } from '@components/InputGroup.astro';
 
 <InputGroup size={InputSize.lg}>
     <span>Zwrot lokalu nastąpi do</span>
-    <input type="number" id="return" name="return" value={frontmatter.return} required min="1" aria-label="Termin zwrotu lokalu" />
+    <input type="number" id="returnTime" name="returnTime" value={frontmatter.returnTime} required min="1" aria-label="Termin zwrotu lokalu" />
     <span>dni od dnia zakończenia umowy</span>
 </InputGroup>

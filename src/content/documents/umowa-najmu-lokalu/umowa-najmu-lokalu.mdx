@@ -19,26 +19,26 @@ seed:
     equipment: "Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa",
     purpose: "do celów mieszkalnych",
     rent: 2300,
-    rentmethod: "przelewem na konto bankowe",
+    rentMethod: "przelewem na konto bankowe",
     rentdue: 14,
-    billslandlord: "zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci",
-    billstenant: "opłata za internet, opłata telewizyjna",
+    billsLandlord: "zużycie energii, zużycie gazu, zużycie wody, wywóz śmieci",
+    billsTenant: "opłata za internet, opłata telewizyjna",
     deposit: 2300,
-    depositmethod: "przelewem na konto bankowe",
+    depositMethod: "przelewem na konto bankowe",
     repairs: 2500,
     termination: 14,
-    return: 14,
+    returnTime: 14,
     start: '',
-    l-data: 0,
-    l-type: osoba fizyczna,
-    l-name: '',
-    l-address: '',
-    l-pin: '',
-    t-data: 0,
-    t-type: osoba fizyczna,
-    t-name: '',
-    t-address: '',
-    t-pin: ''
+    landlordData: 0,
+    landlordType: osoba fizyczna,
+    landlordName: '',
+    landlordAddress: '',
+    landlordPin: '',
+    tenantData: 0,
+    tenantType: osoba fizyczna,
+    tenantName: '',
+    tenantAddress: '',
+    tenantPin: ''
   }
 index: [
   {
@@ -78,12 +78,12 @@ index: [
   },
 ]
 encrypted: [
-  l-name,
-  l-address,
-  l-pin,
-  t-name,
-  t-address,
-  t-pin
+  landlordName,
+  landlordAddress,
+  landlordPin,
+  tenantName,
+  tenantAddress,
+  tenantPin
 ]
 ---
 import formatNumber from "@utils/number";
@@ -95,21 +95,21 @@ import formatDate from "@utils/date";
 
 1. Umowa zostaje zawarta pomiędzy Stronami:
     <br /><br />
-    {frontmatter.seed['l-name'].length ? frontmatter.seed['l-name'] : `[IMIĘ I NAZWISKO / NAZWA]`}
+    {frontmatter.seed['landlordName'].length ? frontmatter.seed['landlordName'] : `[IMIĘ I NAZWISKO / NAZWA]`}
     <br />
-    {frontmatter.seed['l-address'].length ? frontmatter.seed['l-address'] : `[ADRES]`}
+    {frontmatter.seed['landlordAddress'].length ? frontmatter.seed['landlordAddress'] : `[ADRES]`}
     <br />
-    {frontmatter.seed['l-pin'].length ? frontmatter.seed['l-pin'] : `[NUMER PESEL / NIP]`}
+    {frontmatter.seed['landlordPin'].length ? frontmatter.seed['landlordPin'] : `[NUMER PESEL / NIP]`}
     <br />
     zwanym dalej Najemcą.
     <br /><br />
     oraz
     <br /><br />
-    {frontmatter.seed['t-name'].length ? frontmatter.seed['t-name'] : `[IMIĘ I NAZWISKO / NAZWA]`}
+    {frontmatter.seed['tenantName'].length ? frontmatter.seed['tenantName'] : `[IMIĘ I NAZWISKO / NAZWA]`}
     <br />
-    {frontmatter.seed['t-address'].length ? frontmatter.seed['t-address'] : `[ADRES]`}
+    {frontmatter.seed['tenantAddress'].length ? frontmatter.seed['tenantAddress'] : `[ADRES]`}
     <br />
-    {frontmatter.seed['t-pin'].length ? frontmatter.seed['t-pin'] : `[NUMER PESEL / NIP]`}
+    {frontmatter.seed['tenantPin'].length ? frontmatter.seed['tenantPin'] : `[NUMER PESEL / NIP]`}
     <br />
     zwanym dalej Wynajmującym.
 
@@ -123,13 +123,13 @@ import formatDate from "@utils/date";
 #### Przebieg umowy
    
   1. Lokal będzie użytkowany {frontmatter.seed.purpose.includes(',') ? frontmatter.seed.purpose.split(', ').join(' i ') : frontmatter.seed.purpose}.
-  1. Czynsz w wysokości {formatNumber(frontmatter.seed.rent)} zł, płatny {frontmatter.seed.rentmethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
-  1. Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.seed.billslandlord}.<br/>
-    Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.seed.billstenant}.
-  1. Kaucja w wysokości {formatNumber(frontmatter.seed.deposit)} zł, płatna {frontmatter.seed.depositmethod}.
+  1. Czynsz w wysokości {formatNumber(frontmatter.seed.rent)} zł, płatny {frontmatter.seed.rentMethod} do {frontmatter.seed.rentdue}. dnia miesiąca.      
+  1. Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.seed.billsLandlord}.<br/>
+    Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.seed.billsTenant}.
+  1. Kaucja w wysokości {formatNumber(frontmatter.seed.deposit)} zł, płatna {frontmatter.seed.depositMethod}.
   1. Najemca pokrywa koszty napraw do {formatNumber(frontmatter.seed.repairs)} zł.      
   1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.seed.termination} dni.
-  1. Zwrot lokalu powinien nastąpić do {frontmatter.seed.return}. dnia od daty zakończenia Umowy.
+  1. Zwrot lokalu powinien nastąpić do {frontmatter.seed.returnTime}. dnia od daty zakończenia Umowy.
 
 #### Prawa i obowiązki
 

@@ -21,12 +21,12 @@ const { values, name, selected = 0 } = Astro.props;
         <input
           type="radio"
           name={name}
-          id={`${name}-${value}`}
+          id={`${name}${value}`}
           value={value}
           checked={selected.toString() === value.toString()}
           disabled={disabled}
         />
-        <label for={`${name}-${value}`}>{label}</label>
+        <label for={`${name}${value}`}>{label}</label>
       </InputGroup>
     ))
   }

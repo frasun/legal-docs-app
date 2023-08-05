@@ -1,6 +1,6 @@
 ---
 rent: 2500
-rentmethod: przelewem na konto bankowe
+rentMethod: przelewem na konto bankowe
 rentdue: 14
 question: Ile będzie wynosił czynsz?
 info: In sodales ante eu justo accumsan efficitur. Phasellus tincidunt nec ipsum dignissim interdum. Morbi in lectus id magna cursus egestas eget sed odio. Etiam iaculis pretium nibh quis pharetra. Fusce sagittis neque vitae efficitur tempor. In felis mauris, volutpat et egestas vel, facilisis et risus. Cras interdum nec eros in malesuada. Phasellus aliquam fermentum quam.
@@ -15,9 +15,9 @@ import InputGroup, { InputSize } from '@components/InputGroup.astro';
         <span>zł</span>
     </InputGroup>
     <InputGroup>
-        <label for="rentmethod">Sposób płatności</label> 
-        <select id="rentmethod" name="rentmethod" required>
-        {paymentMethodEnum.map((m) => <option value={m} selected={frontmatter.rentmethod === m}>{m}</option>)}
+        <label for="rentMethod">Sposób płatności</label> 
+        <select id="rentMethod" name="rentMethod" required>
+        {paymentMethodEnum.map((m) => <option value={m} selected={frontmatter.rentMethod === m}>{m}</option>)}
         </select>
     </InputGroup>
     <InputGroup>

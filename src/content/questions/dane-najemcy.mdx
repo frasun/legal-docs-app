@@ -1,9 +1,9 @@
 ---
-l-data: 0
-l-type: 0
-l-name: ""
-l-address: ""
-l-pin: ""
+landlordData: 0
+landlordType: 0
+landlordName: ""
+landlordAddress: ""
+landlordPin: ""
 question: Czy chcesz uzupełnić dane Najemcy?
 ---
 
@@ -12,13 +12,13 @@ import DataSelector from "@components/DataSelector.astro";
 <fieldset>
   <legend>Wybierz pasującą odpowiedź</legend>
   <DataSelector
-    name="l"
-    selected={frontmatter["l-data"]}
+    name="landlord"
+    selected={frontmatter["landlordData"]}
     data={[
-      frontmatter["l-type"],
-      frontmatter["l-name"],
-      frontmatter["l-address"],
-      frontmatter["l-pin"],
+      frontmatter["landlordType"],
+      frontmatter["landlordName"],
+      frontmatter["landlordAddress"],
+      frontmatter["landlordPin"],
     ]}
   />
 </fieldset>

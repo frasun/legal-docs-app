@@ -66,14 +66,14 @@ if (document) {
     if (answers["start"] === "") {
       answers["start"] = new Date();
     }
+  }
 
-    if (document.data.encrypted) {
-      document.data.encrypted.forEach((key) => {
-        try {
-          answers[key] = crypt.decrypt(answers[key]);
-        } catch {}
-      });
-    }
+  if (document.data.encrypted) {
+    document.data.encrypted.forEach((key) => {
+      try {
+        answers[key] = crypt.decrypt(answers[key]);
+      } catch {}
+    });
   }
 } else {
   return Astro.redirect("/404");
