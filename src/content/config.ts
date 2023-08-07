@@ -19,7 +19,7 @@ const documents = defineCollection({
     title: z.string(),
     categories: z.array(reference("categories")),
     keywords: z.array(z.string()).optional(),
-    seed: z.record(z.any()).optional(),
+    data: z.record(z.any()).optional(),
     index: z
       .array(
         z.object({
@@ -37,6 +37,7 @@ const documents = defineCollection({
       )
       .optional(),
     encrypted: z.array(z.string()).optional(),
+    dates: z.array(z.string()).optional(),
   }),
 });
 

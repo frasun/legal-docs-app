@@ -58,36 +58,58 @@ if (isUserDocument) {
 
 const document = await getEntry("documents", docId);
 
-if (document) {
-  if (!Object.keys(answers).length && document.data.seed) {
-    answers = document.data.seed;
-
-    // temp hack start date
-    if (answers["start"] === "") {
-      answers["start"] = new Date();
-    }
-  }
-
-  if (document.data.encrypted) {
-    document.data.encrypted.forEach((key) => {
-      try {
-        answers[key] = crypt.decrypt(answers[key]);
-      } catch {}
-    });
-  }
-} else {
+if (!document) {
   return Astro.redirect("/404");
 }
 
 const {
-  data: { index },
+  data: { index, encrypted, title: docTitle, dates },
 } = document;
 
 if (!index) {
   return Astro.redirect("/404");
 }
 
-if (!title) title = document.data.title;
+type Index = (typeof index)[0]["questions"];
+
+const qs: Index = [];
+for (let item of index) {
+  qs.push(...item.questions);
+}
+
+const questions = [];
+for (let {
+  id: { slug },
+} of qs) {
+  const question = await getEntry("questions", slug);
+  questions.push(question);
+}
+
+if (!Object.keys(answers).length) {
+  const qData: Answers = {};
+  for (let { data } of questions) {
+    const { questions, info, ...fields } = data;
+    Object.assign(qData, { ...fields });
+  }
+
+  for (let f of Object.keys(qData)) {
+    if (dates && dates.includes(f)) {
+      answers[f] = new Date();
+    } else {
+      answers[f] = qData[f];
+    }
+  }
+}
+
+if (encrypted) {
+  encrypted.forEach((key) => {
+    try {
+      answers[key] = crypt.decrypt(answers[key]);
+    } catch {}
+  });
+}
+
+if (!title) title = docTitle;
 ---
 
 <Layout title={pageTitle(`Podsumowanie - ${title}`)}>

@@ -66,24 +66,22 @@ if (!document) {
   return Astro.redirect("/404");
 }
 
-if (!title) title = document.data.title;
-
 const { remarkPluginFrontmatter: qData, Content } = await document.render();
-const { encrypted } = document.data;
+const { encrypted, title: docTitle } = document.data;
 
-for (let key of Object.keys(qData.seed)) {
+for (let key of Object.keys(answers)) {
   if (key !== "title") {
     if (encrypted && encrypted.includes(key)) {
       try {
-        qData.seed[key] = crypt.decrypt(answers[key]);
-      } catch {
-        qData.seed[key] = answers[key];
-      }
+        qData[key] = crypt.decrypt(answers[key]);
+      } catch {}
     } else {
-      qData.seed[key] = answers[key];
+      qData[key] = answers[key];
     }
   }
 }
+
+if (!title) title = docTitle;
 
 const url = new URL(Astro.request.url);
 const urlParams = new URLSearchParams(url.search);

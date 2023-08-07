@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
-import { getCollection, getEntry } from "astro:content";
+import { getEntry } from "astro:content";
 import { getDocument, updateAnswers } from "@db/document";
 import { getSession } from "auth-astro/server";
 import crypt from "@utils/crypt";
@@ -79,26 +79,7 @@ if (isUserDocument) {
 
 const document = await getEntry("documents", docId);
 
-if (document) {
-  if (!Object.keys(answers).length && document.data.seed) {
-    answers = document.data.seed;
-
-    // temp hack start date
-    if (answers["start"] === "") {
-      answers["start"] = new Date();
-    }
-
-    if (document.data.encrypted) {
-      document.data.encrypted.forEach((key) => {
-        if (Object.keys(fields).includes(key)) {
-          try {
-            answers[key] = crypt.decrypt(answers[key]);
-          } catch {}
-        }
-      });
-    }
-  }
-} else {
+if (!document) {
   return Astro.redirect("/404");
 }
 
@@ -114,19 +95,26 @@ if (!qIndex) {
 
 type Index = (typeof qIndex)[0]["questions"];
 
-const qs: Index = qIndex.reduce(
-  (pQuestions: Index, { questions }: { questions: Index }) =>
-    pQuestions.concat(questions),
-  []
-);
+const qs: Index = [];
+for (let item of qIndex) {
+  qs.push(...item.questions);
+}
 
-const questions = await getCollection("questions", ({ slug }) =>
-  qs.find(({ id: { slug: qSlug } }) => slug === qSlug)
-);
+const questions = [];
+for (let {
+  id: { slug },
+} of qs) {
+  const question = await getEntry("questions", slug);
+  questions.push(question);
+}
 
 const q = questions.find(({ slug }) => slug === questionId);
 if (!q) {
   return Astro.redirect("/404");
+}
+
+if (!Object.keys(answers).length) {
+  answers = fields;
 }
 
 const { remarkPluginFrontmatter: qData, Content } = await q.render();
