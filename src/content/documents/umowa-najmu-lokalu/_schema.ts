@@ -35,7 +35,8 @@ export const address = z
 export const apt = z
   .string()
   .nonempty()
-  .transform((val) => trimWhitespace(val));
+  .or(z.number())
+  .transform((val) => trimWhitespace(val.toString()));
 
 export const area = z
   .string()

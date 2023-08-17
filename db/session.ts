@@ -1,21 +1,49 @@
+import type { Answers } from "@type";
 import { kv } from "@vercel/kv";
 
-export async function documentExists(ssid: string, docId: string) {
+const EXPIRATION_TIME = 3600;
+
+export async function storeAnswers(
+  ssid: string,
+  documentId: string,
+  answers: Answers
+) {
   try {
-    const document = await kv.exists(`${ssid}-${docId}`);
-    return Boolean(document);
+    await kv.hset(`${ssid}-${documentId}`, answers);
+    await kv.expire(`${ssid}-${documentId}`, EXPIRATION_TIME);
   } catch (e) {
     console.log(e);
     throw e;
   }
 }
 
-export async function createDocument(ssid: string, docId: string) {}
-
-export async function updateDocument(
+export async function getAnswers(
   ssid: string,
-  docId: string,
-  answers: FormData
-) {}
+  documentId: string,
+  fields: string[]
+) {
+  try {
+    return await kv.hmget(`${ssid}-${documentId}`, ...fields);
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
 
-export async function deleteDocument(ssid: string, docId: string) {}
+export async function getAllAnswers(ssid: string, documentId: string) {
+  try {
+    return await kv.hgetall(`${ssid}-${documentId}`);
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
+
+export async function deleteSessionDocument(ssid: string, documentId: string) {
+  try {
+    await kv.del(`${ssid}-${documentId}`);
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}

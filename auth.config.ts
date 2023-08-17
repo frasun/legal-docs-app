@@ -3,6 +3,7 @@ import { getUserByEmail } from "./db/auth";
 import CredentialsProvider from "@auth/core/providers/credentials";
 import bcrypt from "bcryptjs";
 import cookie from "cookie";
+import { SESSION_COOKIE } from "@utils/cookies";
 
 export default {
   secret: process.env.AUTH_SECRET as string,
@@ -35,8 +36,7 @@ export default {
         }
 
         const cookies = cookie.parse(req.headers.get("cookie") || "");
-        const MIDDLEWARE = await import("./src/middleware");
-        const ssid = cookies[MIDDLEWARE.SESSION_COOKIE];
+        const ssid = cookies[SESSION_COOKIE];
 
         if (typeof ssid === "string" && ssid.trim() !== "") {
           return { ...user, ssid: encodeURIComponent(ssid) };
@@ -62,7 +62,7 @@ export default {
     //   return true;
     // },
     // async redirect({ url, baseUrl }) {
-    //   // console.log("redirect callback");
+    //   // console.log("redirect callback", { url, baseUrl });
     //   return baseUrl;
     // },
     async jwt({ token, user, account, profile, isNewUser }) {

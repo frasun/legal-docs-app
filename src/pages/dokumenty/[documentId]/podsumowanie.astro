@@ -13,6 +13,8 @@ import { handleNameChange } from "@utils/document";
 import pageTitle from "@utils/pageTitle";
 import Toast from "@components/Toast.astro";
 import type { Answers } from "@type";
+import { deleteSessionDocument, getAllAnswers } from "@db/session";
+import { SESSION_COOKIE } from "@utils/cookies";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -24,11 +26,25 @@ const documentId = String(dId);
 
 const session = await getSession(Astro.request);
 const isUserDocument = session && Number(documentId);
+const ssid = session
+  ? session.user?.ssid
+  : Astro.cookies.get(SESSION_COOKIE).value;
+
+if (!ssid) {
+  return Astro.redirect("/404");
+}
+
+if (!Number(documentId)) {
+  const refererUrl = Astro.request.headers.get("referer");
+
+  if (!refererUrl || !refererUrl.includes(documentId)) {
+    await deleteSessionDocument(ssid, documentId);
+  }
+}
 
 let docId = documentId;
 let draft = false;
-let data,
-  answers: Answers = {},
+let answers: Answers = {},
   title;
 
 if (isUserDocument) {
@@ -38,7 +54,7 @@ if (isUserDocument) {
     return Astro.redirect("/");
   }
 
-  data = await getDocumentSummary(documentId, userId);
+  const data = await getDocumentSummary(documentId, userId);
 
   if (data) {
     docId = data.doc;
@@ -52,8 +68,6 @@ if (isUserDocument) {
   if (!draft) {
     return Astro.redirect(`/dokumenty/${documentId}/dokument`);
   }
-} else if (Astro.cookies.has(documentId)) {
-  answers = Astro.cookies.get(documentId).json();
 }
 
 const document = await getEntry("documents", docId);
@@ -88,20 +102,30 @@ for (let {
 if (!Object.keys(answers).length) {
   const qData: Answers = {};
   for (let { data } of questions) {
-    const { questions, info, ...fields } = data;
+    const { question, info, ...fields } = data;
     Object.assign(qData, { ...fields });
   }
 
-  for (let f of Object.keys(qData)) {
-    if (dates && dates.includes(f)) {
-      answers[f] = new Date();
-    } else {
-      answers[f] = qData[f];
+  try {
+    const sessionAnswers = await getAllAnswers(ssid, documentId);
+
+    if (sessionAnswers) {
+      answers = sessionAnswers;
+    }
+  } catch {}
+
+  if (Object.keys(answers).length !== Object.keys(qData).length) {
+    for (let field of Object.keys(qData)) {
+      if (!answers[field]) {
+        if (dates && dates.includes(field)) {
+          answers[field] = new Date();
+        } else {
+          answers[field] = qData[field];
+        }
+      }
     }
   }
-}
-
-if (encrypted) {
+} else if (encrypted) {
   encrypted.forEach((key) => {
     try {
       answers[key] = crypt.decrypt(answers[key]);
@@ -153,12 +177,6 @@ if (!title) title = docTitle;
     <footer>
       <save-form>
         <form method="POST" action={`${Astro.url.origin}/dokument`}>
-          {
-            !isUserDocument &&
-              Object.entries(answers).map(([key, value]) => (
-                <input type="hidden" name={key} value={String(value)} />
-              ))
-          }
           <input type="hidden" name="id" value={documentId} />
           {
             !isUserDocument && (
@@ -166,14 +184,10 @@ if (!title) title = docTitle;
             )
           }
           <button type="submit">Generuj dokument</button>
-          {
-            Astro.cookies.has(documentId) && (
-              <button>
-                <Icon name="save" width={18} height={18} />
-                Zapisz szkic
-              </button>
-            )
-          }
+          <button>
+            <Icon name="save" width={18} height={18} />
+            Zapisz szkic
+          </button>
         </form>
       </save-form>
     </footer>

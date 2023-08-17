@@ -6,92 +6,142 @@ import { getEntry } from "astro:content";
 //@ts-ignore
 import { DRAFT_SAVED_PARAM } from "@utils/toasts";
 import type { Answers } from "@type";
+import { deleteSessionDocument, getAllAnswers } from "@db/session";
+import { SESSION_COOKIE } from "@utils/cookies";
 
 const session = await getSession(Astro.request);
 const userId = session ? session.user?.id : null;
+const ssid = session
+  ? session.user?.ssid
+  : Astro.cookies.get(SESSION_COOKIE).value;
+
+if (!ssid) {
+  return Astro.redirect("/404");
+}
+
+let documentId, draft;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  const id = formData.get("id") as string;
-  const draft = String(formData.get("draft")) === "true";
+  documentId = formData.get("id") as string;
+  draft = String(formData.get("draft")) === "true";
+} else {
+  const urlParams = new URL(Astro.request.url).searchParams;
+  documentId = urlParams.get("doc");
+  draft = String(urlParams.get("draft")) === "true";
+}
 
-  let answers: Answers = {},
-    encrypted: string[] = [];
+if (!documentId) {
+  console.log(`missing document id`);
+  return Astro.redirect("/404");
+}
 
-  if (Number(id)) {
-    try {
-      await publishDraft(id);
+if (!userId) {
+  return Astro.redirect(
+    `/zaloguj-sie?redirect=dokument&doc=${documentId}&draft=${draft}`
+  );
+}
 
-      return Astro.redirect(`/dokumenty/${id}/dokument?success=true`);
-    } catch {
-      return Astro.redirect("/404");
-    }
-  } else {
-    const template = await getEntry("documents", id);
+if (Number(documentId)) {
+  try {
+    await publishDraft(documentId);
 
-    if (!template) {
-      Astro.redirect("/404");
-    } else {
-      encrypted = template.data.encrypted?.length
-        ? template.data.encrypted
-        : [];
-    }
-  }
-
-  formData.forEach((value, key) => {
-    if (!["id", "draft"].includes(key)) {
-      if (encrypted.includes(key) && answers[key] !== "") {
-        answers[key] = cryptr.encrypt(String(value));
-      } else {
-        answers[key] = value as keyof Answers;
-      }
-    }
-  });
-
-  if (session && userId) {
-    try {
-      const docId = await createDoc(id, answers, draft, userId);
-
-      if (docId) {
-        return Astro.redirect(
-          `${Astro.url.origin}/${
-            draft
-              ? `moje-dokumenty?${DRAFT_SAVED_PARAM}`
-              : `dokumenty/${docId}/dokument?success=true`
-          }`
-        );
-      } else {
-        return Astro.redirect("/404");
-      }
-    } catch (e) {
-      console.log(e);
-      return Astro.redirect("/404");
-    }
-  } else {
-    Astro.cookies.set(
-      "document",
-      { id, answers, draft },
-      { maxAge: 6000, httpOnly: true }
-    );
-    return Astro.redirect("/zaloguj-sie?redirect=dokument");
-  }
-} else if (Astro.cookies.has("document") && userId) {
-  const { id, answers, draft } = Astro.cookies.get("document").json();
-  const docId = await createDoc(id, answers, draft, userId);
-
-  Astro.cookies.delete("document");
-
-  if (docId) {
-    return Astro.redirect(
-      `${Astro.url.origin}/${
-        draft ? `moje-dokumenty` : `dokumenty/${docId}/dokument?success=true`
-      }`
-    );
-  } else {
+    return Astro.redirect(`/dokumenty/${documentId}/dokument?success=true`);
+  } catch {
     return Astro.redirect("/404");
   }
 } else {
-  return Astro.redirect("/404");
+  const template = await getEntry("documents", documentId);
+
+  if (!template) {
+    return Astro.redirect("/404");
+  }
+
+  const {
+    data: { index, encrypted, dates },
+  } = template;
+
+  if (!index) {
+    return Astro.redirect("/404");
+  }
+
+  type Index = (typeof index)[0]["questions"];
+
+  const qs: Index = [];
+  for (let item of index) {
+    qs.push(...item.questions);
+  }
+
+  const questions = [];
+  for (let {
+    id: { slug },
+  } of qs) {
+    const question = await getEntry("questions", slug);
+    questions.push(question);
+  }
+
+  const qData: Answers = {};
+  for (let { data } of questions) {
+    const { question, info, ...fields } = data;
+    Object.assign(qData, { ...fields });
+  }
+
+  let answers: Answers = {};
+
+  try {
+    const sessionAnswers = await getAllAnswers(ssid, documentId);
+
+    if (sessionAnswers) {
+      answers = sessionAnswers;
+    } else {
+      return Astro.redirect("/404");
+    }
+  } catch {
+    return Astro.redirect("/404");
+  }
+
+  if (Object.keys(answers).length !== Object.keys(qData).length) {
+    for (let field of Object.keys(qData)) {
+      if (!answers[field]) {
+        if (dates && dates.includes(field)) {
+          answers[field] = String(new Date());
+        } else {
+          answers[field] = qData[field];
+        }
+      }
+    }
+  }
+
+  if (encrypted) {
+    for (let field of encrypted) {
+      try {
+        answers[field] = cryptr.encrypt(answers[field]);
+      } catch {}
+    }
+  }
+
+  try {
+    const docId = await createDoc(documentId, answers, draft, userId);
+
+    if (docId) {
+      try {
+        await deleteSessionDocument(ssid, documentId);
+      } catch {}
+
+      return Astro.redirect(
+        `${Astro.url.origin}/${
+          draft
+            ? `moje-dokumenty?${DRAFT_SAVED_PARAM}`
+            : `dokumenty/${docId}/dokument?success=true`
+        }`
+      );
+    } else {
+      return Astro.redirect("/404");
+    }
+  } catch (e) {
+    console.log(e);
+    return Astro.redirect("/404");
+  }
 }
 
 async function createDoc(

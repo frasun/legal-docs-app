@@ -12,7 +12,6 @@ let errors = [],
   userPassword;
 
 const url = new URL(Astro.request.url);
-const redirectUrl = url.searchParams.get("redirect");
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -27,6 +26,24 @@ if (Astro.request.method === "POST") {
     errors.push(error.ACCEPT_TERMS);
   } else {
     const user = await getUserByEmail(email);
+    const redirectParam = url.searchParams.get("redirect");
+    const docParam = url.searchParams.get("doc");
+    const draftParam = url.searchParams.get("draft");
+    let userEmail;
+
+    const redirectUrl = new URL(`/weryfikacja`, Astro.url.origin);
+
+    if (redirectParam) {
+      redirectUrl.searchParams.append("redirect", redirectParam);
+
+      if (docParam) {
+        redirectUrl.searchParams.append("doc", docParam);
+      }
+
+      if (draftParam) {
+        redirectUrl.searchParams.append("draft", draftParam);
+      }
+    }
 
     if (user) {
       const { id, active } = user;
@@ -39,11 +56,8 @@ if (Astro.request.method === "POST") {
           const { code } = sendCodeResponse;
 
           await sendEmail(email, code as string);
-          return Astro.redirect(
-            `/weryfikacja?email=${encodeURIComponent(email)}${
-              redirectUrl ? `&redirect=${redirectUrl}` : ""
-            }`
-          );
+
+          userEmail = email;
         }
       }
     } else {
@@ -54,11 +68,8 @@ if (Astro.request.method === "POST") {
           const { email, code } = newUser;
 
           await sendEmail(email, code as string);
-          return Astro.redirect(
-            `/weryfikacja?email=${encodeURIComponent(String(email))}${
-              redirectUrl ? `&redirect=${redirectUrl}` : ""
-            }`
-          );
+
+          userEmail = email;
         } else {
           return Astro.redirect("/404");
         }
@@ -67,6 +78,14 @@ if (Astro.request.method === "POST") {
           errors.push(e.message);
         }
       }
+    }
+
+    if (!errors.length) {
+      if (redirectUrl) {
+        redirectUrl.searchParams.append("email", encodeURIComponent(email));
+      }
+
+      return Astro.redirect(redirectUrl);
     }
   }
 }
@@ -111,11 +130,7 @@ if (Astro.request.method === "POST") {
     }
     <footer slot="form-footer">
       Masz już konto?
-      <a
-        href={`${Astro.url.origin}/zaloguj-sie${
-          redirectUrl ? `/?redirect=${redirectUrl}` : ""
-        }`}>Zaloguj się</a
-      >
+      <a href={`${Astro.url.origin}/zaloguj-sie${url.search}`}>Zaloguj się</a>
     </footer>
   </AuthForm>
 </Layout>

@@ -12,7 +12,23 @@ if (session) {
 }
 
 const url = new URL(Astro.request.url);
-const redirectUrl = url.searchParams.get("redirect");
+const redirectParam = url.searchParams.get("redirect");
+const docParam = url.searchParams.get("doc");
+const draftParam = url.searchParams.get("draft");
+
+const redirectUrl = redirectParam
+  ? new URL(redirectParam, Astro.url.origin)
+  : null;
+
+if (redirectUrl) {
+  if (docParam) {
+    redirectUrl.searchParams.append("doc", docParam);
+  }
+
+  if (draftParam) {
+    redirectUrl.searchParams.append("draft", draftParam);
+  }
+}
 ---
 
 <Layout title={pageTitle("Zaloguj się")}>
@@ -30,11 +46,7 @@ const redirectUrl = url.searchParams.get("redirect");
       <button type="submit">Zaloguj się</button>
       <footer slot="form-footer">
         Nie masz jeszcze konta?
-        <a
-          href={`${Astro.url.origin}/zaloz-konto${
-            redirectUrl ? `/?redirect=${redirectUrl}` : ""
-          }`}
-        >
+        <a href={`${Astro.url.origin}/zaloz-konto${url.search}`}>
           Załóż konto
         </a>
       </footer>
@@ -72,8 +84,10 @@ const redirectUrl = url.searchParams.get("redirect");
             redirect: false,
             email,
             password,
-            callbackUrl: `${document.location.origin}${
-              this.redirect ? `/${this.redirect}` : `/moje-dokumenty`
+            callbackUrl: `${
+              this.redirect
+                ? this.redirect
+                : `${document.location.origin}/moje-dokumenty`
             }`,
           });
 

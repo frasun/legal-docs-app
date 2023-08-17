@@ -8,10 +8,27 @@ import AuthForm from "@components/AuthForm.astro";
 const url = new URL(Astro.request.url);
 const emailParam = url.searchParams.get("email");
 const userEmail = emailParam ? decodeURIComponent(emailParam) : null;
-const redirectUrl = url.searchParams.get("redirect");
 
 if (!userEmail) {
   return Astro.redirect("/404");
+}
+
+const redirectParam = url.searchParams.get("redirect");
+const docParam = url.searchParams.get("doc");
+const draftParam = url.searchParams.get("draft");
+
+const redirectUrl = redirectParam
+  ? new URL(redirectParam, Astro.url.origin)
+  : null;
+
+if (redirectUrl) {
+  if (docParam) {
+    redirectUrl.searchParams.append("doc", docParam);
+  }
+
+  if (draftParam) {
+    redirectUrl.searchParams.append("draft", draftParam);
+  }
 }
 
 let errors = [];
@@ -81,8 +98,10 @@ if (Astro.request.method === "POST") {
         redirect: false,
         email: this.email,
         password: this.password,
-        callbackUrl: `${document.location.origin}${
-          this.redirect ? `/${this.redirect}` : `/moje-dokumenty`
+        callbackUrl: `${
+          this.redirect
+            ? this.redirect
+            : `${document.location.origin}/moje-dokumenty`
         }`,
       });
 

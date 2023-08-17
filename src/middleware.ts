@@ -1,7 +1,7 @@
 import { defineMiddleware } from "astro/middleware";
 import { nanoid } from "nanoid";
 
-export const SESSION_COOKIE = "pr-ssid";
+const SESSION_COOKIE = "pr-ssid";
 const SESSION_TOKEN_PREFIX = "__Secure-next-auth";
 const SESSION_TOKEN_DEV_PREFIX = "next-auth";
 const SESSION_TOKEN = `${

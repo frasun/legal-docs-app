@@ -16,25 +16,37 @@ import Toast from "@components/Toast.astro";
 //@ts-ignore
 import { UPDATED_ANSWER_PARAM } from "@utils/toasts";
 import type { Answers } from "@type";
+import { SESSION_COOKIE } from "@utils/cookies";
+import { storeAnswers, getAnswers, deleteSessionDocument } from "@db/session";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
 const isUserDocument = Number(documentId) && session;
+const ssid = session
+  ? session.user?.ssid
+  : Astro.cookies.get(SESSION_COOKIE).value;
+
+if (!ssid) {
+  return Astro.redirect("/404");
+}
+
+if (!Number(documentId)) {
+  const refererUrl = Astro.request.headers.get("referer");
+
+  if (
+    !refererUrl ||
+    !refererUrl.includes(documentId) ||
+    refererUrl.endsWith(documentId)
+  ) {
+    await deleteSessionDocument(ssid, documentId);
+  }
+}
 
 let answers: Answers = {};
 let docId = documentId;
 let draft = false;
 let title, formData, docTitle;
-
-const questionEntry = await getEntry("questions", String(questionId));
-if (!questionEntry) {
-  return Astro.redirect("/404");
-}
-
-const {
-  data: { question: questionContent, info: qinfo, ...fields },
-} = questionEntry;
 
 if (Astro.request.method === "POST") {
   formData = await Astro.request.formData();
@@ -47,6 +59,16 @@ if (Astro.request.method === "POST") {
   }
 }
 
+const questionEntry = await getEntry("questions", String(questionId));
+
+if (!questionEntry) {
+  return Astro.redirect("/404");
+}
+
+const {
+  data: { question: questionContent, info: qinfo, ...fields },
+} = questionEntry;
+
 if (isUserDocument) {
   const userId = session.user?.id;
 
@@ -55,17 +77,10 @@ if (isUserDocument) {
       const document = await getDocument(documentId, userId);
 
       if (document) {
-        const {
-          doc,
-          answers: docAnswers,
-          title: docTitle,
-          draft: isDraft,
-        } = document;
-
-        docId = doc;
-        answers = docAnswers;
-        title = docTitle;
-        draft = isDraft;
+        docId = document.doc;
+        answers = document.answers;
+        title = document.title;
+        draft = document.draft;
 
         if (!draft) {
           return Astro.redirect(`/dokumenty/${documentId}/dokument`);
@@ -73,8 +88,22 @@ if (isUserDocument) {
       }
     } catch {}
   }
-} else if (Astro.cookies.has(documentId)) {
-  answers = Astro.cookies.get(documentId).json();
+} else {
+  try {
+    const sessionAnswers = await getAnswers(
+      ssid,
+      documentId,
+      Object.keys(fields)
+    );
+
+    if (sessionAnswers) {
+      answers = sessionAnswers;
+    }
+  } catch {}
+}
+
+if (!Object.keys(answers).length) {
+  answers = fields;
 }
 
 const document = await getEntry("documents", docId);
@@ -84,8 +113,16 @@ if (!document) {
 }
 
 const {
-  data: { index: qIndex, title: docuemntTitle },
+  data: { index: qIndex, title: docuemntTitle, encrypted },
 } = document;
+
+if (isUserDocument && encrypted) {
+  encrypted.forEach((key) => {
+    try {
+      answers[key] = crypt.decrypt(answers[key]);
+    } catch {}
+  });
+}
 
 if (!title) title = docuemntTitle;
 
@@ -109,12 +146,9 @@ for (let {
 }
 
 const q = questions.find(({ slug }) => slug === questionId);
+
 if (!q) {
   return Astro.redirect("/404");
-}
-
-if (!Object.keys(answers).length) {
-  answers = fields;
 }
 
 const { remarkPluginFrontmatter: qData, Content } = await q.render();
@@ -144,7 +178,6 @@ const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
 if (formData && !docTitle) {
   try {
     let newAnswers: Answers = {};
-    let isEqual = true;
 
     for (let [key, value] of formData.entries()) {
       if (key in answers) {
@@ -152,41 +185,29 @@ if (formData && !docTitle) {
       }
     }
 
-    for (let key of Object.keys(newAnswers)) {
-      if (String(newAnswers[key]) !== String(answers[key])) {
-        isEqual = false;
-        break;
-      }
-    }
+    const allAnswers = { ...answers, ...newAnswers };
 
-    if (!isEqual) {
-      const allAnswers = { ...answers, ...newAnswers };
-
-      if (isUserDocument) {
-        if (Object.keys(newAnswers).length) {
-          if (document.data.encrypted) {
-            document.data.encrypted.forEach((key) => {
-              allAnswers[key] = crypt.encrypt(allAnswers[key]);
-            });
-          }
-
-          try {
-            await updateAnswers(documentId, allAnswers, docId);
-
-            return Astro.redirect(`${Astro.url}?${UPDATED_ANSWER_PARAM}`);
-          } catch (error) {
-            console.log(error);
-          }
+    if (Number(documentId)) {
+      if (Object.keys(newAnswers).length) {
+        if (document.data.encrypted) {
+          document.data.encrypted.forEach((key) => {
+            allAnswers[key] = crypt.encrypt(allAnswers[key]);
+          });
         }
-      } else {
-        Astro.cookies.set(documentId, allAnswers, {
-          maxAge: 600,
-          httpOnly: true,
-        });
 
-        return Astro.redirect(nextUrl);
+        try {
+          await updateAnswers(documentId, allAnswers, docId);
+
+          return Astro.redirect(`${Astro.url}?${UPDATED_ANSWER_PARAM}`);
+        } catch (error) {
+          console.log(error);
+        }
       }
     } else {
+      try {
+        await storeAnswers(ssid, documentId, newAnswers);
+      } catch {}
+
       return Astro.redirect(nextUrl);
     }
   } catch (error) {
