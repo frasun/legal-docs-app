@@ -13,6 +13,26 @@ const info = defineCollection({
   type: "content",
 });
 
+const questionsIndex = z.array(
+  z.object({
+    id: reference("questions"),
+    title: z.string(),
+    token: z.string().or(z.array(z.string())).optional(),
+    answer: reference("answers").optional(),
+    type: z.enum(["date"]).optional(),
+  })
+);
+
+const documentIndex = z.array(
+  z.object({
+    title: z.string(),
+    questions: questionsIndex,
+  })
+);
+
+export type QuestionIndex = z.infer<typeof questionsIndex>;
+export type DocumentIndex = z.infer<typeof documentIndex>;
+
 const documents = defineCollection({
   type: "content",
   schema: z.object({
@@ -20,22 +40,7 @@ const documents = defineCollection({
     categories: z.array(reference("categories")),
     keywords: z.array(z.string()).optional(),
     data: z.record(z.any()).optional(),
-    index: z
-      .array(
-        z.object({
-          title: z.string(),
-          questions: z.array(
-            z.object({
-              id: reference("questions"),
-              title: z.string(),
-              token: z.string().or(z.array(z.string())).optional(),
-              answer: reference("answers").optional(),
-              type: z.enum(["date"]).optional(),
-            })
-          ),
-        })
-      )
-      .optional(),
+    index: documentIndex.optional(),
     encrypted: z.array(z.string()).optional(),
     dates: z.array(z.string()).optional(),
   }),

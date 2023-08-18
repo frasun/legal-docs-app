@@ -15,6 +15,7 @@ import Toast from "@components/Toast.astro";
 import type { Answers } from "@type";
 import { deleteSessionDocument, getAllAnswers } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
+import getQuesitons from "@utils/questions";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -84,20 +85,7 @@ if (!index) {
   return Astro.redirect("/404");
 }
 
-type Index = (typeof index)[0]["questions"];
-
-const qs: Index = [];
-for (let item of index) {
-  qs.push(...item.questions);
-}
-
-const questions = [];
-for (let {
-  id: { slug },
-} of qs) {
-  const question = await getEntry("questions", slug);
-  questions.push(question);
-}
+const { questionEntries: questions } = await getQuesitons(index);
 
 if (!Object.keys(answers).length) {
   const qData: Answers = {};

@@ -18,6 +18,7 @@ import { UPDATED_ANSWER_PARAM } from "@utils/toasts";
 import type { Answers } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { storeAnswers, getAnswers, deleteSessionDocument } from "@db/session";
+import getQuesitons from "@utils/questions";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -113,7 +114,7 @@ if (!document) {
 }
 
 const {
-  data: { index: qIndex, title: docuemntTitle, encrypted },
+  data: { index, title: docuemntTitle, encrypted },
 } = document;
 
 if (isUserDocument && encrypted) {
@@ -126,26 +127,12 @@ if (isUserDocument && encrypted) {
 
 if (!title) title = docuemntTitle;
 
-if (!qIndex) {
+if (!index) {
   return Astro.redirect("/404");
 }
 
-type Index = (typeof qIndex)[0]["questions"];
-
-const qs: Index = [];
-for (let item of qIndex) {
-  qs.push(...item.questions);
-}
-
-const questions = [];
-for (let {
-  id: { slug },
-} of qs) {
-  const question = await getEntry("questions", slug);
-  questions.push(question);
-}
-
-const q = questions.find(({ slug }) => slug === questionId);
+const { questionIndex, questionEntries } = await getQuesitons(index);
+const q = questionEntries.find(({ slug }) => slug === questionId);
 
 if (!q) {
   return Astro.redirect("/404");
@@ -157,21 +144,21 @@ for (let key of Object.keys(qData)) {
   if (key !== "question" && answers[key]) qData[key] = answers[key];
 }
 
-const currentQuestionIndex = qs.findIndex(
+const currentQuestionIndex = questionIndex.findIndex(
   ({ id: { slug } }) => slug === questionId
 );
 
-const qTitle = qs[currentQuestionIndex].title;
+const qTitle = questionIndex[currentQuestionIndex].title;
 
 const prevUrl =
   currentQuestionIndex > 0
     ? `${Astro.url.origin}/dokumenty/${documentId}/${
-        qs[currentQuestionIndex - 1].id.slug
+        questionIndex[currentQuestionIndex - 1].id.slug
       }`
     : null;
 const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
-  currentQuestionIndex < qs.length - 1
-    ? `${qs[currentQuestionIndex + 1].id.slug}`
+  currentQuestionIndex < questionIndex.length - 1
+    ? `${questionIndex[currentQuestionIndex + 1].id.slug}`
     : `podsumowanie`
 }`;
 
@@ -235,7 +222,7 @@ if (formData && !docTitle) {
   <QuestionAction
     slot="topbar-aside"
     current={currentQuestionIndex + 1}
-    steps={questions.length}
+    steps={questionIndex.length}
     answers={Astro.cookies.has(documentId)
       ? Object.entries(Astro.cookies.get(docId).json())
       : null}
@@ -277,7 +264,7 @@ if (formData && !docTitle) {
               <>
                 {prevUrl && <a href={prevUrl}>Poprzednie</a>}
                 <button type="submit">
-                  {currentQuestionIndex >= questions.length - 1
+                  {currentQuestionIndex >= questionIndex.length - 1
                     ? "Podsumowanie"
                     : "Następne"}
                 </button>
@@ -289,9 +276,9 @@ if (formData && !docTitle) {
     </form>
   </question-form>
   {
-    qIndex && questionId && (
+    index && questionId && (
       <QuestionIndex
-        index={qIndex}
+        index={index}
         current={questionId}
         documentId={documentId}
         documentTitle={docuemntTitle}
