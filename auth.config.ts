@@ -29,7 +29,8 @@ export default {
           !(
             (await bcrypt.compare(password, user.password)) ||
             password === user.password
-          )
+          ) ||
+          !user.active
         ) {
           // throw new Error("Invalid username or password");
           return null;
