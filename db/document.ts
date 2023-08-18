@@ -161,6 +161,13 @@ export async function createDocument(
 
   try {
     validatedAnswers = schema.parse(answers);
+
+    const userDocuments = await db
+      .selectFrom(KEY)
+      .where(sql`userid::text`, "=", userid)
+      .select((eb) => eb.fn.countAll().as("count"))
+      .execute();
+
     try {
       return await db
         .insertInto(KEY)
@@ -170,7 +177,7 @@ export async function createDocument(
             answers: validatedAnswers,
             userid,
             draft,
-            title: `${title} #${Math.floor(Math.random() * 1000)}`,
+            title: `#${Number(userDocuments[0].count) + 1} ${title}`,
           },
         ])
         .returning("id")
