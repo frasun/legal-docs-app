@@ -43,7 +43,9 @@ if (Astro.request.method === "POST") {
   }
 }
 
-const documents = await getDocuments(userId);
+const page =
+  Number(new URL(Astro.request.url).searchParams.get("page")) || undefined;
+const { documents, pages, currentPage } = await getDocuments(userId, page);
 const groupedItems: Record<string, typeof documents> = {};
 
 documents.forEach((item) => {
@@ -84,58 +86,94 @@ const getDocTitle = async (docId: string) => {
   <span slot="topbar-title">{PAGE_TITLE}</span>
   {
     documents.length ? (
-      <section>
-        {Object.keys(groupedItems).map((monthYear) => (
-          <>
-            <h6>{monthYear}</h6>
-            {groupedItems[monthYear].map(
-              ({ doc, id, title, created, draft, modified }) => (
-                <div>
-                  <header>
-                    <a
-                      href={`${Astro.url.origin}/dokumenty/${id}/${
-                        draft ? `podsumowanie` : `dokument`
-                      }`}
-                    >
-                      <span>{title}</span>
-                      {draft && <Badge>Szkic</Badge>}
-                    </a>
-                    <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
-                      <Icon name="document" width={16} height={16} />
-                      {getDocTitle(String(doc))}
-                    </a>
-                  </header>
-                  {draft ? (
-                    <dl>
-                      <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
-                      <dd>
-                        <time>
-                          {modified
-                            ? formatDateTime(modified)
-                            : formatDateTime(created as Date)}
-                        </time>
-                      </dd>
-                    </dl>
-                  ) : (
-                    <time>
-                      {modified
-                        ? formatDateTime(modified)
-                        : formatDateTime(created as Date)}
-                    </time>
-                  )}
-                  <aside>
-                    <ChangeNameButton
-                      id={id}
-                      title={title}
-                      label="Zmień nazwę"
-                    />
-                  </aside>
-                </div>
-              )
-            )}
-          </>
-        ))}
-      </section>
+      <>
+        <section>
+          {Object.keys(groupedItems).map((monthYear) => (
+            <>
+              <h6>{monthYear}</h6>
+              {groupedItems[monthYear].map(
+                ({ doc, id, title, created, draft, modified }) => (
+                  <div>
+                    <header>
+                      <a
+                        href={`${Astro.url.origin}/dokumenty/${id}/${
+                          draft ? `podsumowanie` : `dokument`
+                        }`}
+                      >
+                        <span>{title}</span>
+                        {draft && <Badge>Szkic</Badge>}
+                      </a>
+                      <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
+                        <Icon name="document" width={16} height={16} />
+                        {getDocTitle(String(doc))}
+                      </a>
+                    </header>
+                    {draft ? (
+                      <dl>
+                        <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
+                        <dd>
+                          <time>
+                            {modified
+                              ? formatDateTime(modified)
+                              : formatDateTime(created as Date)}
+                          </time>
+                        </dd>
+                      </dl>
+                    ) : (
+                      <time>
+                        {modified
+                          ? formatDateTime(modified)
+                          : formatDateTime(created as Date)}
+                      </time>
+                    )}
+                    <aside>
+                      <ChangeNameButton
+                        id={id}
+                        title={title}
+                        label="Zmień nazwę"
+                      />
+                    </aside>
+                  </div>
+                )
+              )}
+            </>
+          ))}
+          {pages > 0 && (
+            <footer>
+              {currentPage > 1 ? (
+                <a
+                  href={`${Astro.url.origin}/moje-dokumenty?page=${
+                    currentPage - 1
+                  }`}
+                  aria-label="Poprzednia strona"
+                  title="Poprzednia strona"
+                >
+                  <Icon name="arrow-left" width={24} height={24} />
+                </a>
+              ) : (
+                <span />
+              )}
+              <small>
+                Strona{" "}
+                <strong>
+                  {currentPage} z {pages}
+                </strong>
+              </small>
+              {currentPage < pages && (
+                <a
+                  href={`${Astro.url.origin}/moje-dokumenty?page=${
+                    currentPage + 1
+                  }`}
+                  aria-label="Następna strona"
+                  title="Następna strona"
+                >
+                  <Icon name="arrow-right" width={24} height={24} />
+                </a>
+              )}
+            </footer>
+          )}
+        </section>
+      </>
     ) : (
       <EmptyScreen
         icon="document"
@@ -205,5 +243,17 @@ const getDocTitle = async (docId: string) => {
 
   section > div :global(change-name span) {
     @apply hidden md:inline-block;
+  }
+
+  section > footer {
+    @apply grid grid-cols-[1fr_auto_1fr] gap-20 items-center w-full;
+  }
+
+  section > footer > small {
+    @apply justify-self-center;
+  }
+
+  section > footer > a:first-child {
+    @apply justify-self-end;
   }
 </style>

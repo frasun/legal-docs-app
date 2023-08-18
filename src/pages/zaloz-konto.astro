@@ -81,8 +81,10 @@ if (Astro.request.method === "POST") {
     }
 
     if (!errors.length) {
-      if (redirectUrl) {
-        redirectUrl.searchParams.append("email", encodeURIComponent(email));
+      if (userEmail) {
+        redirectUrl.searchParams.append("email", encodeURIComponent(userEmail));
+      } else {
+        return Astro.redirect("/404");
       }
 
       return Astro.redirect(redirectUrl);

@@ -15,7 +15,7 @@ export interface Document {
 }
 
 const KEY = "document";
-const LIMIT = 100;
+const LIMIT = 10;
 
 export function createDocumentTable() {
   db.schema
@@ -74,18 +74,33 @@ export async function getDocumentSummary(docId: string, userId: string) {
   }
 }
 
-export async function getDocuments(userId: string, page = 1, limit = LIMIT) {
-  const offset = (page - 1) * limit;
-
+export async function getDocuments(
+  userId: string,
+  page?: number,
+  limit: number = LIMIT
+) {
   try {
-    return await db
-      .selectFrom(KEY)
-      .where(sql`userid::text`, "=", userId)
+    const query = db.selectFrom(KEY).where(sql`userid::text`, "=", userId);
+
+    const count = await query
+      .select((eb) => eb.fn.countAll().as("length"))
+      .execute();
+
+    const pages = Math.floor(Number(count[0].length) / limit);
+    const offset = page && page > 0 && page <= pages ? (page - 1) * limit : 0;
+
+    const documents = await query
       .select(["created", "doc", "draft", "title", "modified", "id"])
       .offset(offset)
       .limit(limit)
       .orderBy(sql`COALESCE(modified, created)`, "desc")
       .execute();
+
+    return {
+      documents,
+      pages,
+      currentPage: offset / limit + 1,
+    };
   } catch (e) {
     throw e;
   }
