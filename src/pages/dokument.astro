@@ -17,6 +17,7 @@ const ssid = session
   : Astro.cookies.get(SESSION_COOKIE).value;
 
 if (!ssid) {
+  console.log("missing ssid");
   return Astro.redirect("/404");
 }
 
@@ -33,6 +34,7 @@ if (Astro.request.method === "POST") {
 }
 
 if (!documentId) {
+  console.log("missing documentId");
   return Astro.redirect("/404");
 }
 
@@ -48,12 +50,14 @@ if (Number(documentId)) {
 
     return Astro.redirect(`/dokumenty/${documentId}/dokument?success=true`);
   } catch {
+    console.log("publish draft error");
     return Astro.redirect("/404");
   }
 } else {
   const template = await getEntry("documents", documentId);
 
   if (!template) {
+    console.log("missing template");
     return Astro.redirect("/404");
   }
 
@@ -62,6 +66,7 @@ if (Number(documentId)) {
   } = template;
 
   if (!index) {
+    console.log("missing index");
     return Astro.redirect("/404");
   }
 
@@ -80,10 +85,9 @@ if (Number(documentId)) {
 
     if (sessionAnswers) {
       answers = sessionAnswers;
-    } else {
-      return Astro.redirect("/404");
     }
   } catch {
+    console.log("missing documentId");
     return Astro.redirect("/404");
   }
 
@@ -123,10 +127,12 @@ if (Number(documentId)) {
         }`
       );
     } else {
+      console.log("create doc error");
       return Astro.redirect("/404");
     }
   } catch (e) {
     console.log(e);
+    console.log("catch create doc error");
     return Astro.redirect("/404");
   }
 }
