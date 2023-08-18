@@ -6,6 +6,8 @@ export async function handleNameChange(formData: FormData) {
   const title = trimWhitespace(String(formData.get("title")));
 
   if (title && docId) {
-    await changeDocumentName(String(docId), title);
+    try {
+      await changeDocumentName(String(docId), title);
+    } catch {}
   }
 }

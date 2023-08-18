@@ -29,7 +29,7 @@ export function createDocumentTable() {
     .addColumn("created", "timestamptz", (cb) =>
       cb.notNull().defaultTo(sql`current_timestamp`)
     )
-    .addColumn("title", "varchar(255)", (cb) => cb.notNull())
+    .addColumn("title", "varchar(50)", (cb) => cb.notNull())
     .addColumn("draft", "boolean", (cb) => cb.notNull())
     .execute();
 }

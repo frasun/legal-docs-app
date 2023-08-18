@@ -11,7 +11,7 @@ import { DOCUMENT_NAME_CHANGED_PARAM } from "@utils/toasts";
       method="POST"
       action={`${Astro.url.origin}${Astro.url.pathname}?${DOCUMENT_NAME_CHANGED_PARAM}`}
     >
-      <input type="text" name="title" required />
+      <input type="text" name="title" maxlength="50" />
       <input type="hidden" name="template" />
       <button>Zapisz</button>
     </form>
@@ -68,7 +68,7 @@ import { DOCUMENT_NAME_CHANGED_PARAM } from "@utils/toasts";
         }
       }) as EventListener);
 
-      this.form &&
+      if (this.form) {
         this.form.addEventListener("submit", (event) => {
           event.preventDefault();
 
@@ -81,6 +81,7 @@ import { DOCUMENT_NAME_CHANGED_PARAM } from "@utils/toasts";
             document.body.dispatchEvent(new CustomEvent("hideModal"));
           }
         });
+      }
     }
   }
   customElements.define("change-name-form", ChangeNameForm);
