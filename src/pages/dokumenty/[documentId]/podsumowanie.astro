@@ -172,10 +172,14 @@ if (!title) title = docTitle;
             )
           }
           <button type="submit">Generuj dokument</button>
-          <button>
-            <Icon name="save" width={18} height={18} />
-            Zapisz szkic
-          </button>
+          {
+            !isUserDocument && (
+              <button>
+                <Icon name="save" width={18} height={18} />
+                Zapisz szkic
+              </button>
+            )
+          }
         </form>
       </save-form>
     </footer>
