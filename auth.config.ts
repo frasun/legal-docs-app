@@ -1,8 +1,8 @@
 import type { AuthConfig } from "@auth/core";
-import { getUserByEmail } from "./db/auth";
 import CredentialsProvider from "@auth/core/providers/credentials";
 import bcrypt from "bcryptjs";
 import cookie from "cookie";
+import { getUserByEmail } from "@db/auth";
 import { SESSION_COOKIE } from "@utils/cookies";
 
 export default {
