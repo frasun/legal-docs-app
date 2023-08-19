@@ -1,86 +1,74 @@
 ---
 import Logo from "../images/logo.astro";
-
-const { hasBackLink = true } = Astro.props;
 ---
 
 <div>
-    <header>
-        {
-            hasBackLink ? (
-                <a href={Astro.url.origin} aria-label="Strona główna">
-                    <Logo />
-                </a>
-            ) : (
-                <Logo />
-            )
-        }
-        <slot name="form-header" />
-    </header>
-    <form spellcheck="false" method="POST">
-        <slot />
-        <slot name="after-submit" />
-    </form>
-    <slot name="form-footer" />
+  <header>
+    <a href={Astro.url.origin} aria-label="Strona główna">
+      <Logo />
+    </a>
+    <slot name="form-header" />
+  </header>
+  <form spellcheck="false" method="POST">
+    <slot />
+    <slot name="after-submit" />
+  </form>
+  <slot name="form-footer" />
 </div>
-{
-    hasBackLink ? (
-        <aside>
-            <a href={Astro.url.origin}>
-                <small>Wróć do strony głównej</small>
-            </a>
-        </aside>
-    ) : null
-}
+<aside>
+  <a href={Astro.url.origin}>
+    <small>Wróć do strony głównej</small>
+  </a>
+</aside>
 
 <style>
-    div {
-        @apply bg-white rounded-lg p-30;
-        @apply flex flex-col gap-20;
-        @apply w-[90%] sm:w-full max-w-[500px] mx-auto;
-        @apply mt-20 sm:mt-30;
-    }
+  div {
+    @apply bg-white rounded-lg p-30;
+    @apply flex flex-col gap-20;
+    @apply w-[90%] sm:w-full max-w-[500px] mx-auto;
+    @apply mt-20 sm:mt-30;
+  }
 
-    header {
-        @apply flex flex-col gap-20;
-    }
+  header {
+    @apply flex flex-col gap-20;
+  }
 
-    header :global(h1) {
-        @apply text-2xl;
-    }
+  header :global(h1) {
+    @apply text-2xl;
+  }
 
-    form {
-        @apply flex flex-col gap-10 items-center;
-    }
+  form {
+    @apply flex flex-col gap-10 items-center;
+  }
 
-    form
-        :global(
-            div,
-            input[type="text"],
-            input[type="password"],
-            input[type="email"]
-        ) {
-        @apply w-full;
-    }
+  form
+    :global(
+      div,
+      input[type="text"],
+      input[type="password"],
+      input[type="email"]
+    ) {
+    @apply w-full;
+  }
 
-    form :global(p) {
-        @apply text-orangeDark;
-    }
+  form :global(p) {
+    @apply text-orangeDark;
+  }
 
-    form :global(button[type="submit"]) {
-        @apply btn btn-big btn-default;
-        @apply mt-20;
-    }
+  form :global(button[type="submit"]) {
+    @apply btn btn-big btn-default;
+    @apply mt-20;
+  }
 
-    div :global(footer) {
-        @apply mt-20 flex gap-10 sm:gap-15 items-center flex-wrap;
-    }
+  div :global(footer) {
+    @apply mt-20 flex gap-10 sm:gap-15 items-center flex-wrap;
+  }
 
-    div :global(footer a) {
-        @apply btn btn-alt;
-    }
+  div :global(footer a) {
+    @apply btn btn-alt;
+  }
 
-    aside {
-        @apply w-full max-w-[500px] mx-auto text-center my-20;
-    }
+  aside {
+    @apply w-full max-w-[500px] mx-auto text-center my-20;
+  }
 </style>

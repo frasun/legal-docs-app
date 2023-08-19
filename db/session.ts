@@ -9,8 +9,8 @@ export async function storeAnswers(
   answers: Answers
 ) {
   try {
-    await kv.hset(`${ssid}-${documentId}`, answers);
-    await kv.expire(`${ssid}-${documentId}`, EXPIRATION_TIME);
+    await kv.hset(`document-${ssid}-${documentId}`, answers);
+    await kv.expire(`document-${ssid}-${documentId}`, EXPIRATION_TIME);
   } catch (e) {
     console.log(e);
     throw e;
@@ -23,7 +23,7 @@ export async function getAnswers(
   fields: string[]
 ) {
   try {
-    return await kv.hmget(`${ssid}-${documentId}`, ...fields);
+    return await kv.hmget(`document-${ssid}-${documentId}`, ...fields);
   } catch (e) {
     console.log(e);
     throw e;
@@ -32,7 +32,7 @@ export async function getAnswers(
 
 export async function getAllAnswers(ssid: string, documentId: string) {
   try {
-    return await kv.hgetall(`${ssid}-${documentId}`);
+    return await kv.hgetall(`document-${ssid}-${documentId}`);
   } catch (e) {
     console.log(e);
     throw e;
@@ -41,7 +41,7 @@ export async function getAllAnswers(ssid: string, documentId: string) {
 
 export async function deleteSessionDocument(ssid: string, documentId: string) {
   try {
-    await kv.del(`${ssid}-${documentId}`);
+    await kv.del(`document-${ssid}-${documentId}`);
   } catch (e) {
     console.log(e);
     throw e;

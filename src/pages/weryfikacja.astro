@@ -1,15 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getUserByEmail, activateUser } from "@db/auth";
+import {
+  getVerificationData,
+  createUser,
+  verificationInProgress,
+  wrongVerificationCode,
+} from "@db/auth";
 import error from "@utils/errors";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
+import * as PARAMS from "@utils/urlParams";
 
 const url = new URL(Astro.request.url);
-const emailParam = url.searchParams.get("email");
+const emailParam = url.searchParams.get(PARAMS.EMAIL);
 const userEmail = emailParam ? decodeURIComponent(emailParam) : null;
 
 if (!userEmail) {
+  return Astro.redirect("/404");
+}
+
+const verificationInitialiased = await verificationInProgress(userEmail);
+
+if (!verificationInitialiased) {
   return Astro.redirect("/404");
 }
 
@@ -37,19 +49,26 @@ let userPassword;
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const postedCode = formData.get("code");
-  const user = await getUserByEmail(userEmail);
+  const verificationData = await getVerificationData(userEmail);
 
-  if (user) {
-    const { code, id, password } = user;
-    if (code === postedCode) {
-      await activateUser(id);
+  if (!verificationData) {
+    return Astro.redirect("/404");
+  }
 
-      userPassword = password;
+  const { code, password, rateLimit } = verificationData;
+
+  if (code === postedCode) {
+    await createUser(userEmail, password as string);
+
+    userPassword = password;
+  } else {
+    if ((rateLimit as number) === 2) {
+      errors.push(error.VERIFICATION_CODE_EXPIRED);
     } else {
       errors.push(error.WRONG_VERIFICATION_CODE);
     }
-  } else {
-    return Astro.redirect("/404");
+
+    await wrongVerificationCode(userEmail, (rateLimit as number) + 1);
   }
 }
 ---
@@ -63,7 +82,7 @@ if (Astro.request.method === "POST") {
         redirect={redirectUrl}
       />
     ) : (
-      <AuthForm hasBackLink={false}>
+      <AuthForm>
         <p slot="form-header">
           Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong>
         </p>

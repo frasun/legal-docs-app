@@ -1,11 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getUserByEmail, createUser, sendCode } from "@db/auth";
+import {
+  getUserByEmail,
+  initAccountVerify,
+  verificationInProgress,
+} from "@db/auth";
 import sendEmail from "@utils/email";
 import error from "@utils/errors";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import InputGroup, { InputType } from "@components/InputGroup.astro";
+import * as PARAMS from "@utils/urlParams";
 
 let errors = [],
   userEmail,
@@ -26,68 +31,46 @@ if (Astro.request.method === "POST") {
     errors.push(error.ACCEPT_TERMS);
   } else {
     const user = await getUserByEmail(email);
-    const redirectParam = url.searchParams.get("redirect");
-    const docParam = url.searchParams.get("doc");
-    const draftParam = url.searchParams.get("draft");
-    let userEmail;
-
-    const redirectUrl = new URL(`/weryfikacja`, Astro.url.origin);
-
-    if (redirectParam) {
-      redirectUrl.searchParams.append("redirect", redirectParam);
-
-      if (docParam) {
-        redirectUrl.searchParams.append("doc", docParam);
-      }
-
-      if (draftParam) {
-        redirectUrl.searchParams.append("draft", draftParam);
-      }
-    }
 
     if (user) {
-      const { id, active } = user;
-      if (active) {
+      errors.push(error.EMAIL_TAKEN);
+    } else {
+      const redirectParam = url.searchParams.get("redirect");
+      const docParam = url.searchParams.get("doc");
+      const draftParam = url.searchParams.get("draft");
+      const redirectUrl = new URL(`/weryfikacja`, Astro.url.origin);
+      const alreadyInitialised = await verificationInProgress(email);
+
+      if (alreadyInitialised) {
         errors.push(error.EMAIL_TAKEN);
       } else {
-        const sendCodeResponse = await sendCode(id);
-
-        if (sendCodeResponse) {
-          const { code } = sendCodeResponse;
-
-          await sendEmail(email, code as string);
-
-          userEmail = email;
+        try {
+          const code = await initAccountVerify(email, password);
+          await sendEmail(email, code);
+        } catch (e) {
+          if (e instanceof Error) {
+            errors.push(e.message);
+          }
         }
       }
-    } else {
-      try {
-        const newUser = await createUser(email, password);
 
-        if (newUser) {
-          const { email, code } = newUser;
+      redirectUrl.searchParams.append(PARAMS.EMAIL, decodeURIComponent(email));
 
-          await sendEmail(email, code as string);
+      if (redirectParam) {
+        redirectUrl.searchParams.append("redirect", redirectParam);
 
-          userEmail = email;
-        } else {
-          return Astro.redirect("/404");
+        if (docParam) {
+          redirectUrl.searchParams.append("doc", docParam);
         }
-      } catch (e) {
-        if (e instanceof Error) {
-          errors.push(e.message);
+
+        if (draftParam) {
+          redirectUrl.searchParams.append("draft", draftParam);
         }
       }
-    }
 
-    if (!errors.length) {
-      if (userEmail) {
-        redirectUrl.searchParams.append("email", encodeURIComponent(userEmail));
-      } else {
-        return Astro.redirect("/404");
+      if (!errors.length) {
+        return Astro.redirect(redirectUrl);
       }
-
-      return Astro.redirect(redirectUrl);
     }
   }
 }
