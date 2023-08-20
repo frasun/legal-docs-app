@@ -7,9 +7,9 @@ index: [
   {
     title: Przedmiot umowy, 
     questions: [
-      { id: adres, title: Adres, answer: address }, 
-      { id: powierzchnia, title: Powierzchnia, answer: area }, 
-      { id: pomieszczenia, title: Pomieszczenia, answer: rooms }, 
+      { id: adres, title: Adres, answer: adres }, 
+      { id: powierzchnia, title: Powierzchnia, answer: powierzchnia }, 
+      { id: pomieszczenia, title: Pomieszczenia, answer: pomieszczenia }, 
       { id: instalacje, title: Instalacje, token: systems }, 
       { id: wyposazenie-lokalu, title: Wyposażenie, token: equipment }
     ]
@@ -18,12 +18,12 @@ index: [
     title: Przebieg umowy, 
     questions: [
       { id: przeznaczenie-lokalu, title: Przeznaczenie lokalu, token: purpose },
-      { id: czynsz, title: Czynsz, answer: rent }, 
-      { id: oplaty, title: Oplaty, answer: bills }, 
-      { id: kaucja, title: Kaucja, answer: deposit },
-      { id: naprawy, title: Naprawy, answer: repairs }, 
-      { id: wypowiedzenie, title: Wypowiedzenie, answer: termination }, 
-      { id: zwrot-lokalu, title: Zwrot, answer: return },      
+      { id: czynsz, title: Czynsz, answer: czynsz }, 
+      { id: oplaty, title: Oplaty, answer: oplaty }, 
+      { id: kaucja, title: Kaucja, answer: kaucja },
+      { id: naprawy, title: Naprawy, answer: naprawy }, 
+      { id: wypowiedzenie, title: Wypowiedzenie, answer: wypowiedzenie }, 
+      { id: zwrot-lokalu, title: Zwrot, answer: zwrot-lokalu },      
     ]
   },  
   {
@@ -35,8 +35,8 @@ index: [
   {
     title: Dane stron,
     questions: [
-      { id: dane-najemcy, title: Dane Najemcy, answer: landlord-data },
-      { id: dane-wynajmujacego, title: Dane Wynajmującego,  answer: tenant-data },      
+      { id: dane-najemcy, title: Dane Najemcy, answer: dane-najemcy },
+      { id: dane-wynajmujacego, title: Dane Wynajmującego,  answer: dane-wynajmujacego },      
     ]
   },
 ]
@@ -54,6 +54,9 @@ dates: [
 ---
 import formatNumber from "@utils/number";
 import formatDate from "@utils/date";
+import getAmount from '@utils/amount';
+import getItems from '@utils/itemlist';
+import PLURALS from "@utils/plurals";
 
 ### Umowa najmu lokalu
 
@@ -82,18 +85,18 @@ import formatDate from "@utils/date";
 #### Przedmiot Umowy
 
   1. Umowa dotyczy lokalu o powierzchni {formatNumber(frontmatter.area)} m<sup>2</sup>, znajdującego się pod adresem {frontmatter.address} / {frontmatter.apt}.
-  1. W skład lokalu wchodzą następujące pomieszczenia: {frontmatter.room} x pokój, {frontmatter.kitchen} x kuchnia, {frontmatter.hall} x przedpokój, {frontmatter.bathroom} x łazienka, {frontmatter.toilet} x toaleta, {frontmatter.balcony} x balkon, {frontmatter.wardrobe} x garderoba, {frontmatter.garage} x garaż.
+  1. W skład lokalu wchodzą następujące pomieszczenia: {getItems([[frontmatter.room, PLURALS.ROOM], [frontmatter.kitchen, PLURALS.KITCHEN, true], [frontmatter.hall, PLURALS.HALL], [frontmatter.bathroom, PLURALS.BATHROOM, true], [frontmatter.toilet, PLURALS.TOILET, true], [frontmatter.balcony, PLURALS.BALCONY], [frontmatter.wardrobe, PLURALS.WARDROBE, true], [frontmatter.garage, PLURALS.GARAGE]])}.
   1. W lokalu dostępne są instalacje: {frontmatter.systems}.
   1. Na stanie lokalu znajduje się wyposażenie {frontmatter.equipment}.
 
 #### Przebieg umowy
    
   1. Lokal będzie użytkowany {frontmatter.purpose}.
-  1. Czynsz w wysokości {formatNumber(frontmatter.rent)} zł, płatny {frontmatter.rentMethod} do {frontmatter.rentdue}. dnia miesiąca.      
+  1. Czynsz w wysokości {getAmount(frontmatter.rent)}, płatny {frontmatter.rentMethod} do {frontmatter.rentdue}. dnia miesiąca.      
   1. Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.billsLandlord}.<br/>
     Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.billsTenant}.
-  1. Kaucja w wysokości {formatNumber(frontmatter.deposit)} zł, płatna {frontmatter.depositMethod}.
-  1. Najemca pokrywa koszty napraw do {formatNumber(frontmatter.repairs)} zł.      
+  1. Kaucja w wysokości {getAmount(frontmatter.deposit)}, płatna {frontmatter.depositMethod}.
+  1. Najemca pokrywa koszty napraw do {getAmount(frontmatter.repairs)}.      
   1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.termination} dni.
   1. Zwrot lokalu powinien nastąpić do {frontmatter.returnTime}. dnia od daty zakończenia Umowy.
 

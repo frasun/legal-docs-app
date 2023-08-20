@@ -1,0 +1,14 @@
+---
+room: 2
+kitchen: 2
+hall: 0
+bathroom: 1
+toilet: 1
+balcony: 1
+wardrobe: 2
+garage: 0
+---
+import PLURALS from "@utils/plurals";
+import getItems from "@utils/itemlist";
+
+{getItems([[frontmatter.room, PLURALS.ROOM], [frontmatter.kitchen, PLURALS.KITCHEN, true], [frontmatter.hall, PLURALS.HALL], [frontmatter.bathroom, PLURALS.BATHROOM, true], [frontmatter.toilet, PLURALS.TOILET, true], [frontmatter.balcony, PLURALS.BALCONY], [frontmatter.wardrobe, PLURALS.WARDROBE, true], [frontmatter.garage, PLURALS.GARAGE]])}

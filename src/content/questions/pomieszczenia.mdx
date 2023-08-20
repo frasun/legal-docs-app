@@ -5,9 +5,9 @@ kitchen: 1
 hall: 1
 bathroom: 1
 toilet: 1
-balcony: 1
-wardrobe: 1
-garage: 1
+balcony: 0
+wardrobe: 0
+garage: 0
 ---
 import InputGroup from '@components/InputGroup.astro';
 
@@ -31,7 +31,7 @@ import InputGroup from '@components/InputGroup.astro';
     </InputGroup>
     <InputGroup>
         <input type="number" value={frontmatter.toilet} name="toilet" min="0"  aria-label="Ilość toalet" />
-        <span>x toaleta</span>
+        <span>x toaldeta</span>
     </InputGroup>
     <InputGroup>
         <input type="number" value={frontmatter.balcony} name="balcony" min="0"  aria-label="Ilość balkonów" />

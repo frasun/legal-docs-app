@@ -141,7 +141,7 @@ if (!q) {
 const { remarkPluginFrontmatter: qData, Content } = await q.render();
 
 for (let key of Object.keys(qData)) {
-  if (key !== "question" && answers[key]) qData[key] = answers[key];
+  if (key !== "question" && key in answers) qData[key] = answers[key];
 }
 
 const currentQuestionIndex = questionIndex.findIndex(

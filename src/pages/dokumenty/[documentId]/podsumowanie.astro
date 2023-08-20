@@ -104,7 +104,7 @@ if (!Object.keys(answers).length) {
 
   if (Object.keys(answers).length !== Object.keys(qData).length) {
     for (let field of Object.keys(qData)) {
-      if (!answers[field]) {
+      if (!(field in answers)) {
         if (dates && dates.includes(field)) {
           answers[field] = new Date();
         } else {

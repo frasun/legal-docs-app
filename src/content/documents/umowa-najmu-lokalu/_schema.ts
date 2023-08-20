@@ -23,8 +23,8 @@ export const billsEnum = [
   "zużycie gazu",
   "zużycie wody",
   "wywóz śmieci",
-  "opłata za internet",
-  "opłata telewizyjna",
+  "dostęp do internetu",
+  "usługa telewizyjna",
 ] as const;
 
 export const address = z
