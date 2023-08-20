@@ -25,9 +25,9 @@ if (!verificationInitialiased) {
   return Astro.redirect("/404");
 }
 
-const redirectParam = url.searchParams.get("redirect");
-const docParam = url.searchParams.get("doc");
-const draftParam = url.searchParams.get("draft");
+const redirectParam = url.searchParams.get(PARAMS.REDIRECT);
+const docParam = url.searchParams.get(PARAMS.DOCUMENT);
+const draftParam = url.searchParams.get(PARAMS.DRAFT);
 
 const redirectUrl = redirectParam
   ? new URL(redirectParam, Astro.url.origin)
@@ -35,11 +35,11 @@ const redirectUrl = redirectParam
 
 if (redirectUrl) {
   if (docParam) {
-    redirectUrl.searchParams.append("doc", docParam);
+    redirectUrl.searchParams.append(PARAMS.DOCUMENT, docParam);
   }
 
   if (draftParam) {
-    redirectUrl.searchParams.append("draft", draftParam);
+    redirectUrl.searchParams.append(PARAMS.DRAFT, draftParam);
   }
 }
 

@@ -7,10 +7,11 @@ import DocumentTile from "@components/DocumentTile.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
+import * as PARAMS from "@utils/urlParams";
 
 const url = new URL(Astro.request.url);
-const currentCat = url.searchParams.get("kategoria");
-const search = url.searchParams.get("szukaj");
+const currentCat = url.searchParams.get(PARAMS.CATEGORY);
+const search = url.searchParams.get(PARAMS.SEARCH);
 
 const categories = await getCollection("categories");
 const documents = await getCollection("documents", ({ data: { categories } }) =>
@@ -40,12 +41,12 @@ const title = currentCategory
           type="search"
           placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
           spellcheck="false"
-          name="szukaj"
+          name={PARAMS.SEARCH}
           value={search ? trimWhitespace(search) : ""}
         />
         {
           currentCat && (
-            <input type="hidden" name="kategoria" value={currentCat} />
+            <input type="hidden" name={PARAMS.CATEGORY} value={currentCat} />
           )
         }
         <Icon name="search" width={24} height={24} />
@@ -192,6 +193,8 @@ const title = currentCategory
 </style>
 
 <script>
+  import * as PARAMS from "@utils/urlParams";
+
   class CategorySelector extends HTMLElement {
     select: HTMLSelectElement;
 
@@ -208,9 +211,9 @@ const title = currentCategory
         const params = new URLSearchParams(url.search);
 
         if (val.length) {
-          params.set("kategoria", val);
+          params.set(PARAMS.CATEGORY, val);
         } else {
-          params.delete("kategoria");
+          params.delete(PARAMS.CATEGORY);
         }
 
         url.search = params.toString();
@@ -236,7 +239,7 @@ const title = currentCategory
           const url = new URL(window.location.href);
           const params = new URLSearchParams(url.search);
 
-          params.delete("szukaj");
+          params.delete(PARAMS.SEARCH);
 
           url.search = params.toString();
           document.location = url.toString();

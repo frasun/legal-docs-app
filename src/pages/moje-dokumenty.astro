@@ -12,6 +12,7 @@ import ChangeNameModal from "@components/ChangeNameModal.astro";
 import { handleNameChange } from "@utils/document";
 import pageTitle from "@utils/pageTitle";
 import Toast from "@components/Toast.astro";
+import * as PARAMS from "@utils/urlParams";
 
 const session = await getSession(Astro.request);
 
@@ -44,7 +45,7 @@ if (Astro.request.method === "POST") {
 }
 
 const page =
-  Number(new URL(Astro.request.url).searchParams.get("page")) || undefined;
+  Number(new URL(Astro.request.url).searchParams.get(PARAMS.PAGE)) || undefined;
 const { documents, pages, currentPage } = await getDocuments(userId, page);
 const groupedItems: Record<string, typeof documents> = {};
 
@@ -142,7 +143,7 @@ const getDocTitle = async (docId: string) => {
             <footer>
               {currentPage > 1 ? (
                 <a
-                  href={`${Astro.url.origin}/moje-dokumenty?page=${
+                  href={`${Astro.url.origin}/moje-dokumenty?${PARAMS.PAGE}=${
                     currentPage - 1
                   }`}
                   aria-label="Poprzednia strona"
@@ -161,7 +162,7 @@ const getDocTitle = async (docId: string) => {
               </small>
               {currentPage < pages && (
                 <a
-                  href={`${Astro.url.origin}/moje-dokumenty?page=${
+                  href={`${Astro.url.origin}/moje-dokumenty?${PARAMS.PAGE}=${
                     currentPage + 1
                   }`}
                   aria-label="Następna strona"

@@ -9,6 +9,7 @@ import type { Answers } from "@type";
 import { deleteSessionDocument, getAllAnswers } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
 import getQuesitons from "@utils/questions";
+import * as PARAMS from "@utils/urlParams";
 
 const session = await getSession(Astro.request);
 const userId = session ? session.user?.id : null;
@@ -29,8 +30,8 @@ if (Astro.request.method === "POST") {
   draft = String(formData.get("draft")) === "true";
 } else {
   const urlParams = new URL(Astro.request.url).searchParams;
-  documentId = urlParams.get("doc");
-  draft = String(urlParams.get("draft")) === "true";
+  documentId = urlParams.get(PARAMS.DOCUMENT);
+  draft = String(urlParams.get(PARAMS.DRAFT)) === "true";
 }
 
 if (!documentId) {
@@ -40,7 +41,7 @@ if (!documentId) {
 
 if (!userId) {
   return Astro.redirect(
-    `/zaloguj-sie?redirect=dokument&doc=${documentId}&draft=${draft}`
+    `/zaloguj-sie?${PARAMS.REDIRECT}=dokument&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=${draft}`
   );
 }
 

@@ -4,6 +4,7 @@ import { getSession } from "auth-astro/server";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import InputGroup from "@components/InputGroup.astro";
+import * as PARAMS from "@utils/urlParams";
 
 const session = await getSession(Astro.request);
 
@@ -12,9 +13,9 @@ if (session) {
 }
 
 const url = new URL(Astro.request.url);
-const redirectParam = url.searchParams.get("redirect");
-const docParam = url.searchParams.get("doc");
-const draftParam = url.searchParams.get("draft");
+const redirectParam = url.searchParams.get(PARAMS.REDIRECT);
+const docParam = url.searchParams.get(PARAMS.DOCUMENT);
+const draftParam = url.searchParams.get(PARAMS.DRAFT);
 
 const redirectUrl = redirectParam
   ? new URL(redirectParam, Astro.url.origin)
@@ -22,11 +23,11 @@ const redirectUrl = redirectParam
 
 if (redirectUrl) {
   if (docParam) {
-    redirectUrl.searchParams.append("doc", docParam);
+    redirectUrl.searchParams.append(PARAMS.DOCUMENT, docParam);
   }
 
   if (draftParam) {
-    redirectUrl.searchParams.append("draft", draftParam);
+    redirectUrl.searchParams.append(PARAMS.DRAFT, draftParam);
   }
 }
 ---
