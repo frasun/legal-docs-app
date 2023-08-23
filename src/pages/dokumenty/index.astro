@@ -86,7 +86,7 @@ const title = currentCategory
               ({
                 item: {
                   slug,
-                  data: { title, categories: cats },
+                  data: { title, categories: cats, price },
                 },
               }) => (
                 <DocumentTile
@@ -94,6 +94,7 @@ const title = currentCategory
                   title={title}
                   docCategories={cats}
                   categories={categories}
+                  price={price}
                 />
               )
             )}
@@ -103,14 +104,17 @@ const title = currentCategory
         )
       ) : (
         <section>
-          {documents.map(({ slug, data: { title, categories: cats } }) => (
-            <DocumentTile
-              slug={slug}
-              title={title}
-              docCategories={cats}
-              categories={categories}
-            />
-          ))}
+          {documents.map(
+            ({ slug, data: { title, categories: cats, price } }) => (
+              <DocumentTile
+                slug={slug}
+                title={title}
+                docCategories={cats}
+                categories={categories}
+                price={price}
+              />
+            )
+          )}
         </section>
       )
     ) : (

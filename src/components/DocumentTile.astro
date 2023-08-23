@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon";
+import formatNumber from "@utils/number";
 
 interface Props {
   slug: string;
@@ -13,31 +14,28 @@ interface Props {
       name: string;
     };
   }[];
+  price: number;
 }
 
-const { slug, title, docCategories, categories } = Astro.props;
+const { slug, title, docCategories, categories, price } = Astro.props;
 
 const getCategoryName = (slug: string) => {
   const ct = categories.find(({ id }: { id: string }) => id === slug);
 
-  return ct ? ct.data.name : null;
+  return ct ? ct.data.name.toLowerCase() : null;
 };
+
+const categoryList = docCategories
+  .sort((a, b) => a.id.localeCompare(b.id))
+  .map(({ id }: { id: string }) => getCategoryName(id))
+  .join(", ");
 ---
 
-<a href={`${Astro.url.origin}/dokumenty/${slug}`}>
+<a href={`${Astro.url.origin}/dokumenty/${slug}`} title={title}>
   <header><h3>{title}</h3></header>
+  <strong>{formatNumber(price)} zł</strong>
   <footer>
-    <ul>
-      {
-        docCategories
-          .sort((a, b) => a.id.localeCompare(b.id))
-          .map(({ id }: { id: string }) => (
-            <li title={getCategoryName(id)}>
-              <em>{getCategoryName(id)}</em>
-            </li>
-          ))
-      }
-    </ul>
+    {categoryList}
   </footer>
   <aside>
     <Icon name="arrow-right" width={24} height={24} />
@@ -46,12 +44,12 @@ const getCategoryName = (slug: string) => {
 
 <style>
   a {
-    @apply grid grid-cols-[1fr_auto] grid-rows-[1fr_auto] grid-flow-col gap-15;
+    @apply grid grid-cols-[1fr_auto] grid-rows-[1fr_auto_auto] grid-flow-col gap-5;
     @apply p-15 pl-20 bg-white rounded-lg;
   }
 
   header h3 {
-    @apply text-lg md:line-clamp-2;
+    @apply text-lg xl:text-xl md:line-clamp-2 xl:line-clamp-3 pb-5;
   }
 
   a:hover header h3 {
@@ -59,14 +57,6 @@ const getCategoryName = (slug: string) => {
   }
 
   footer {
-    @apply flex md:flex-col gap-10 items-center md:items-start;
-  }
-
-  footer ul {
-    @apply flex flex-wrap gap-5 sm:gap-10;
-  }
-
-  footer li {
     @apply text-xs;
   }
 

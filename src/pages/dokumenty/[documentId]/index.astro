@@ -2,6 +2,7 @@
 import Layout from "../../../layouts/App.astro";
 import { getEntry } from "astro:content";
 import pageTitle from "@utils/pageTitle";
+import formatNumber from "@utils/number";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -16,7 +17,7 @@ if (!info || !document) {
 }
 
 const { Content } = await info.render();
-const { title, index } = document.data;
+const { title, index, price } = document.data;
 
 if (!index) {
   return Astro.redirect("/404");
@@ -30,6 +31,10 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0]
   <div>
     <header>
       <h1>{title}</h1>
+      <span>
+        <small>Cena za 1 dokument:</small>
+        <strong>{formatNumber(price)} zł</strong>
+      </span>
       <a href={firstQuestionUrl}>Stwórz dokument</a>
     </header>
     <hr />
@@ -48,12 +53,21 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0]
   }
 
   header {
-    @apply flex items-center gap-15 flex-wrap;
+    @apply flex items-center gap-15 lg:gap-30 flex-wrap;
   }
 
   header h1 {
     @apply flex-grow;
     @apply text-2xl;
+    @apply w-full lg:w-auto;
+  }
+
+  header span {
+    @apply flex flex-col lg:items-end flex-grow;
+  }
+
+  header span strong {
+    @apply text-lg;
   }
 
   footer a,
