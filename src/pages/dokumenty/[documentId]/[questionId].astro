@@ -223,9 +223,6 @@ if (formData && !docTitle) {
     slot="topbar-aside"
     current={currentQuestionIndex + 1}
     steps={questionIndex.length}
-    answers={Astro.cookies.has(documentId)
-      ? Object.entries(Astro.cookies.get(docId).json())
-      : null}
     docId={docId}
   />
   <question-form>

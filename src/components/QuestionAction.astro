@@ -5,30 +5,22 @@ import { Icon } from "astro-icon";
 interface Props {
   current: number;
   steps: number;
-  answers: [string, any][] | null;
   docId: string;
 }
 
-const { current, steps, answers, docId } = Astro.props;
+const { current, steps, docId } = Astro.props;
 ---
 
 <div>
   <Progressbar current={current} steps={steps} />
-  {
-    answers ? (
-      <form method="POST" action={`${Astro.url.origin}/dokument`}>
-        {answers.map(([key, value]) => (
-          <input type="hidden" name={key} value={String(value)} />
-        ))}
-        <input type="hidden" name="id" value={docId} />
-        <input type="hidden" name="draft" value="true" />
-        <button>
-          <Icon name="save" width={18} height={18} />
-          Zapisz
-        </button>
-      </form>
-    ) : null
-  }
+  <form method="POST" action={`${Astro.url.origin}/dokument`}>
+    <input type="hidden" name="id" value={docId} />
+    <input type="hidden" name="draft" value="true" />
+    <button>
+      <Icon name="save" width={18} height={18} />
+      Zapisz szkic
+    </button>
+  </form>
   <show-question-list>
     <button aria-label="Pokaż listę pytań">
       <Icon name="index" width={24} height={24} />
