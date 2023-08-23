@@ -1,0 +1,95 @@
+---
+import Modal from "@components/Modal.astro";
+import { Image } from "@astrojs/image/components";
+import p24 from "public/p24.png";
+import { Icon } from "astro-icon";
+---
+
+<Modal modalId="payment" slot="footer">
+  <header>
+    <h4>Za chwilę przekierujemy Cię na stronę płatności</h4>
+  </header>
+  <section>
+    <header>
+      <a href="">Zaloguj się</a> lub <a href="">Załóż konto</a>
+    </header>
+    <ul>
+      <li>aby uzyskać dostęp do dodatkowych funkcjonalności takich jak:</li>
+      <li>
+        <Icon name="tick" width={24} height={24} />dostęp do stworzonych
+        dokumentów
+      </li>
+      <li><Icon name="tick" width={24} height={24} />szkice dokumentów</li>
+      <li>
+        <Icon name="tick" width={24} height={24} />współpraca z innymi
+        użytkownikami przy tworzeniu dokumentów
+      </li>
+      <li>
+        <Icon name="tick" width={24} height={24} />wypełnianie danych przez
+        Profil Zaufany, Nowy Dowód lub bank
+      </li>
+      <li>
+        <Icon name="tick" width={24} height={24} />tworzenie podobnych
+        dokumentów
+      </li>
+    </ul>
+  </section>
+  <footer>
+    <a href="">Zakup bez konta</a>
+    <Image
+      src={p24}
+      alt="Płatności Przelewy24"
+      width={600}
+      height={306}
+      format="avif"
+      fit="fill"
+    />
+  </footer>
+</Modal>
+
+<style>
+  :global(#payment) {
+    @apply lg:w-auto py-50 justify-start;
+  }
+
+  header,
+  section,
+  footer {
+    @apply flex flex-col gap-20 items-center w-full;
+  }
+
+  section header {
+    @apply text-xxl sm:flex-row justify-center;
+    @apply py-30;
+  }
+
+  section {
+    @apply py-10;
+  }
+
+  section a {
+    @apply btn btn-default btn-big;
+  }
+
+  section ul li:first-child {
+    @apply pb-15;
+  }
+
+  section ul li:not(:first-child) {
+    @apply text-dark90 text-lg;
+    @apply flex gap-15 pb-5;
+  }
+
+  section ul li:not(:first-child) svg {
+    @apply text-orange;
+    @apply flex-shrink-0;
+  }
+
+  footer {
+    @apply pt-30 pb-10;
+  }
+
+  footer a {
+    @apply btn btn-alt;
+  }
+</style>

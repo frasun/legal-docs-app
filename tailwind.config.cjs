@@ -169,6 +169,7 @@ module.exports = {
 					fontSize: theme('fontSize.sm'),
 					lineHeight: theme('lineHeight.tight'),
 					fontWeight: theme('fontWeight.bold'),
+					fontFamily: theme('fontFamily.sans'),
 					gap: theme('spacing.10'),
 					letterSpacing: theme('letterSpacing.tighter'),
 					color: theme('colors.white95'),

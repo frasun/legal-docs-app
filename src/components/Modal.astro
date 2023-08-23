@@ -1,75 +1,97 @@
-<div id="modalBackdrop"></div>
-<div id="modal">
-  <button id="modalClose" aria-label="Zamknij">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-    >
-      <path
-        d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
-        fill="currentColor"
+---
+import { DEFAULT_MODAL } from "@utils/modal";
+
+interface Props {
+  modalId?: string;
+}
+
+const { modalId } = Astro.props;
+
+const id = modalId || DEFAULT_MODAL;
+---
+
+<modal-dialog data-modal-id={modalId}>
+  <div id={id} class="modal">
+    <button class="modalClose" aria-label="Zamknij">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
       >
-      </path>
-    </svg>
-  </button>
-  <slot />
-</div>
+        <path
+          d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
+          fill="currentColor"
+        >
+        </path>
+      </svg>
+    </button>
+    <slot />
+  </div>
+</modal-dialog>
 
 <style>
-  #modalBackdrop {
-    @apply fixed w-full h-full top-0 -left-full flex items-center justify-center overflow-y-auto z-max;
-    @apply bg-dark30;
-    @apply opacity-0;
-  }
-
-  #modalBackdrop.touched {
-    @apply transition-opacity duration-700;
-    @apply left-0;
-  }
-
-  #modalBackdrop.open {
-    @apply opacity-100;
-  }
-
-  #modal {
+  .modal {
     @apply fixed w-[90%] m-auto max-w-[800px] max-h-[90%] overflow-y-auto z-max;
     @apply top-[50%] left-[50%] -translate-x-1/2;
-    @apply flex items-start justify-center;
+    @apply flex items-start justify-center flex-col;
     @apply bg-white rounded-xl;
     @apply -translate-y-[200vh];
     @apply p-30;
   }
 
-  #modal.touched {
+  .modal.touched {
     @apply transition-transform duration-300;
   }
 
-  #modal.open {
+  .modal.open {
     @apply -translate-y-1/2;
   }
 
-  #modalClose {
+  .modalClose {
     @apply absolute top-10 right-10 z-50;
     @apply btn btn-alt;
   }
 </style>
 
 <script>
-  import Modal from "@utils/modal";
+  import Modal, { DEFAULT_MODAL } from "@utils/modal";
 
-  const modalContainer = document.getElementById("modal");
-  const modalClose = document.getElementById("modalClose");
+  class ModalDialog extends HTMLElement {
+    modalId: string;
+    modalContainer: HTMLElement | null;
+    modalClose: HTMLButtonElement | null;
 
-  if (modalContainer && modalClose) {
-    const modal = new Modal(modalContainer, modalClose);
-    document.body.addEventListener("showModal", () => {
-      modal.show();
-    });
+    constructor() {
+      super();
 
-    document.body.addEventListener("hideModal", () => {
-      modal.hide();
-    });
+      this.modalId = this.dataset.modalId || DEFAULT_MODAL;
+      this.modalContainer = document.getElementById(this.modalId);
+      this.modalClose =
+        this.modalContainer && this.modalContainer.querySelector(".modalClose");
+    }
+
+    connectedCallback() {
+      if (this.modalContainer && this.modalClose) {
+        const modal = new Modal(this.modalContainer, this.modalClose);
+        document.body.addEventListener("showModal", ((event: CustomEvent) => {
+          if (event.detail) {
+            const { modalId } = event.detail;
+
+            if (modalId === this.modalId) {
+              modal.show();
+            }
+          } else if (this.modalId === DEFAULT_MODAL) {
+            modal.show();
+          }
+        }) as EventListener);
+
+        document.body.addEventListener("hideModal", () => {
+          modal.hide();
+        });
+      }
+    }
   }
+
+  customElements.define("modal-dialog", ModalDialog);
 </script>

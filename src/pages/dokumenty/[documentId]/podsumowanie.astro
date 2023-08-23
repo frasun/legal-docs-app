@@ -16,6 +16,7 @@ import type { Answers } from "@type";
 import { deleteSessionDocument, getAllAnswers } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
 import getQuesitons from "@utils/questions";
+import PaymentModal from "@components/PaymentModal.astro";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -163,28 +164,31 @@ if (!title) title = docTitle;
       ))
     }
     <footer>
-      <save-form>
-        <form method="POST" action={`${Astro.url.origin}/dokument`}>
-          <input type="hidden" name="id" value={documentId} />
-          {
-            !isUserDocument && (
-              <input type="hidden" name="draft" value="false" />
-            )
-          }
-          <button type="submit">Generuj dokument</button>
-          {
-            !isUserDocument && (
-              <button>
-                <Icon name="save" width={18} height={18} />
-                Zapisz szkic
-              </button>
-            )
-          }
-        </form>
-      </save-form>
+      {
+        session ? (
+          <a href="">Generuj dokument</a>
+        ) : (
+          <show-payment-modal>
+            <button>Generuj dokument</button>
+          </show-payment-modal>
+        )
+      }
+      {
+        !isUserDocument && (
+          <form method="POST" action={`${Astro.url.origin}/dokument`}>
+            <input type="hidden" name="id" value={documentId} />
+            <input type="hidden" name="draft" value="true" />
+            <button>
+              <Icon name="save" width={18} height={18} />
+              Zapisz szkic
+            </button>
+          </form>
+        )
+      }
     </footer>
   </section>
   <ChangeNameModal />
+  <PaymentModal />
   <Toast />
 </Layout>
 <style>
@@ -215,44 +219,39 @@ if (!title) title = docTitle;
   }
 
   footer {
-    @apply p-50;
+    @apply pt-50;
+    @apply flex flex-col justify-center gap-20 items-center;
   }
 
-  button {
+  footer button {
     @apply btn btn-alt;
   }
 
   footer a,
-  button[type="submit"] {
+  show-payment-modal button {
     @apply btn btn-default btn-big;
-  }
-
-  save-form form {
-    @apply flex flex-col justify-center gap-20 items-center;
   }
 </style>
 
 <script>
-  class SaveForm extends HTMLElement {
-    draftInput: HTMLInputElement | null;
+  class ShowPaymentModal extends HTMLElement {
     button: HTMLButtonElement | null;
-
     constructor() {
       super();
 
-      this.draftInput = this.querySelector('input[name="draft"]');
-      this.button = this.querySelector('button:not([type="submit"])');
+      this.button = this.querySelector("button");
     }
 
     connectedCallback() {
       if (this.button) {
         this.button.addEventListener("click", () => {
-          if (this.draftInput) {
-            this.draftInput.value = String(true);
-          }
+          document.body.dispatchEvent(
+            new CustomEvent("showModal", { detail: { modalId: "payment" } })
+          );
         });
       }
     }
   }
-  customElements.define("save-form", SaveForm);
+
+  customElements.define("show-payment-modal", ShowPaymentModal);
 </script>

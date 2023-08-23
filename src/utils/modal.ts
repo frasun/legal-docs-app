@@ -1,5 +1,7 @@
 import * as backdrop from "@utils/backdrop";
 
+export const DEFAULT_MODAL = "modal";
+
 export default class Modal {
   modal: HTMLElement;
   modalClose: HTMLElement;
