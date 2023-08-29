@@ -12,18 +12,24 @@ import * as PARAMS from "@utils/urlParams";
 
 const SUMMARY = "podsumowanie";
 const refererUrl = Astro.request.headers.get("referer");
+const urlParams = new URL(Astro.request.url).searchParams;
+let documentId;
 
 if (!refererUrl) {
   return Astro.redirect("/404");
 }
 
-const urlSegments = refererUrl.split("/");
+documentId = urlParams.get(PARAMS.DOCUMENT);
 
-if (urlSegments[urlSegments.length - 1] !== SUMMARY) {
-  return Astro.redirect("/404");
+if (!documentId) {
+  const urlSegments = refererUrl.split("/");
+  if (urlSegments[urlSegments.length - 1] !== SUMMARY) {
+    return Astro.redirect("/404");
+  }
+
+  documentId = urlSegments[urlSegments.length - 2];
 }
 
-const documentId = urlSegments[urlSegments.length - 2];
 const document = await getEntry("documents", documentId);
 
 if (!document) {

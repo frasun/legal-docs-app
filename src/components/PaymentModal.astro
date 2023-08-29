@@ -3,6 +3,13 @@ import Modal from "@components/Modal.astro";
 import { Image } from "@astrojs/image/components";
 import p24 from "public/p24.png";
 import { Icon } from "astro-icon";
+import * as PARAMS from "@utils/urlParams";
+
+interface Props {
+  documentId: string;
+}
+
+const { documentId } = Astro.props;
 ---
 
 <Modal modalId="payment" slot="footer">
@@ -11,7 +18,13 @@ import { Icon } from "astro-icon";
   </header>
   <section>
     <header>
-      <a href="">Zaloguj się</a> lub <a href="">Załóż konto</a>
+      <a
+        href={`${Astro.url.origin}/zaloguj-sie?${PARAMS.REDIRECT}=zamowienie&${PARAMS.DOCUMENT}=${documentId}`}
+        >Zaloguj się</a
+      > lub <a
+        href={`${Astro.url.origin}/zaloz-konto?${PARAMS.REDIRECT}=zamowienie&${PARAMS.DOCUMENT}=${documentId}`}
+        >Załóż konto</a
+      >
     </header>
     <ul>
       <li>aby uzyskać dostęp do dodatkowych funkcjonalności takich jak:</li>
