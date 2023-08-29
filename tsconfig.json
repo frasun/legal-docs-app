@@ -8,6 +8,8 @@
       "@utils/*": ["src/utils/*"],
       "@type": ["src/types.ts"],
       "@db/*": ["db/*"]
-    }
+    },
+    "allowJs": true,
+    "checkJs": false,
   }
 }

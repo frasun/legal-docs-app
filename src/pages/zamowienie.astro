@@ -1,0 +1,82 @@
+---
+import Stripe from "stripe";
+import { nanoid } from "nanoid";
+import { Icon } from "astro-icon";
+import Layout from "../layouts/Layout.astro";
+import pageTitle from "@utils/pageTitle";
+import { getEntry } from "astro:content";
+import { getSession } from "auth-astro/server";
+import { SESSION_COOKIE } from "@utils/cookies";
+import { createPaymentSession } from "@db/session";
+import * as PARAMS from "@utils/urlParams";
+
+const SUMMARY = "podsumowanie";
+const refererUrl = Astro.request.headers.get("referer");
+
+if (!refererUrl) {
+  return Astro.redirect("/404");
+}
+
+const urlSegments = refererUrl.split("/");
+
+if (urlSegments[urlSegments.length - 1] !== SUMMARY) {
+  return Astro.redirect("/404");
+}
+
+const documentId = urlSegments[urlSegments.length - 2];
+const document = await getEntry("documents", documentId);
+
+if (!document) {
+  return Astro.redirect("/404");
+}
+
+const { priceId } = document.data;
+
+const session = await getSession(Astro.request);
+const ssid = session
+  ? session.user?.ssid
+  : Astro.cookies.get(SESSION_COOKIE).value;
+
+if (!ssid) {
+  return Astro.redirect("/404");
+}
+
+const pid = nanoid();
+await createPaymentSession(pid, ssid, documentId);
+
+const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
+  apiVersion: import.meta.env.STRIPE_API_V,
+});
+
+const stripeSession = await stripe.checkout.sessions.create({
+  line_items: [
+    {
+      price: priceId,
+      quantity: 1,
+    },
+  ],
+  mode: "payment",
+  success_url: `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=false`,
+  cancel_url: `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=true`,
+});
+
+if (stripeSession.url) {
+  return Astro.redirect(stripeSession.url);
+} else {
+  return Astro.redirect("/404");
+}
+---
+
+<Layout title={pageTitle("Zamówienie")}>
+  <Icon name="loader" width={64} height={64} />
+</Layout>
+
+<style is:inline>
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+  }
+</style>

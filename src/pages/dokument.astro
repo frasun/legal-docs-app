@@ -6,7 +6,12 @@ import { getEntry } from "astro:content";
 //@ts-ignore
 import { DRAFT_SAVED_PARAM } from "@utils/toasts";
 import type { Answers } from "@type";
-import { deleteSessionDocument, getAllAnswers } from "@db/session";
+import {
+  deletePaymentSession,
+  deleteSessionDocument,
+  getAllAnswers,
+  getPaymentSession,
+} from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
 import getQuesitons from "@utils/questions";
 import * as PARAMS from "@utils/urlParams";
@@ -23,19 +28,33 @@ if (!ssid) {
 }
 
 let documentId, draft;
+let paymentId;
 
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  documentId = formData.get("id") as string;
-  draft = String(formData.get("draft")) === "true";
-} else {
-  const urlParams = new URL(Astro.request.url).searchParams;
-  documentId = urlParams.get(PARAMS.DOCUMENT);
-  draft = String(urlParams.get(PARAMS.DRAFT)) === "true";
+const urlParams = new URL(Astro.request.url).searchParams;
+paymentId = urlParams.get(PARAMS.PAYMENT);
+draft = String(urlParams.get(PARAMS.DRAFT)) === "true";
+
+if (!paymentId) {
+  console.log("missing documentId");
+  return Astro.redirect("/404");
 }
+
+const paymentSession = await getPaymentSession(paymentId);
+
+if (!paymentSession) {
+  console.log("missing payment Session");
+  return Astro.redirect("/404");
+}
+
+documentId = paymentSession.documentId as string;
 
 if (!documentId) {
   console.log("missing documentId");
+  return Astro.redirect("/404");
+}
+
+if (paymentSession.ssid !== ssid) {
+  console.log("ssid mismatch");
   return Astro.redirect("/404");
 }
 
@@ -118,6 +137,7 @@ if (Number(documentId)) {
     if (docId) {
       try {
         await deleteSessionDocument(ssid, documentId);
+        await deletePaymentSession(paymentId);
       } catch {}
 
       return Astro.redirect(

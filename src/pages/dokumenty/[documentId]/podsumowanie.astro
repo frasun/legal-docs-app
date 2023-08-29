@@ -166,7 +166,7 @@ if (!title) title = docTitle;
     <footer>
       {
         session ? (
-          <a href="">Generuj dokument</a>
+          <a href={`${Astro.url.origin}/zamowienie`}>Generuj dokument</a>
         ) : (
           <show-payment-modal>
             <button>Generuj dokument</button>

@@ -5,3 +5,4 @@ export const DRAFT = "dr";
 export const CATEGORY = "k";
 export const SEARCH = "s";
 export const PAGE = "p";
+export const PAYMENT = "pid";

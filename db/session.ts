@@ -47,3 +47,35 @@ export async function deleteSessionDocument(ssid: string, documentId: string) {
     throw e;
   }
 }
+
+export async function createPaymentSession(
+  pid: string,
+  ssid: string,
+  documentId: string
+) {
+  try {
+    await kv.hset(`payment-${pid}`, { ssid, documentId });
+    await kv.persist(`document-${ssid}-${documentId}`);
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
+
+export async function getPaymentSession(pid: string) {
+  try {
+    return await kv.hgetall(`payment-${pid}`);
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
+
+export async function deletePaymentSession(pid: string) {
+  try {
+    await kv.del(`payment-${pid}`);
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
