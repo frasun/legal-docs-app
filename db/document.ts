@@ -86,7 +86,7 @@ export async function getDocuments(
       .select((eb) => eb.fn.countAll().as("length"))
       .execute();
 
-    const pages = Math.floor(Number(count[0].length) / limit);
+    const pages = Math.ceil(Number(count[0].length) / limit);
     const offset = page && page > 0 && page <= pages ? (page - 1) * limit : 0;
 
     const documents = await query
