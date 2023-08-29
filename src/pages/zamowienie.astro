@@ -58,6 +58,7 @@ const stripeSession = await stripe.checkout.sessions.create({
   mode: "payment",
   success_url: `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=false`,
   cancel_url: `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=true`,
+  customer_email: session ? (session.user?.email as string) : undefined,
 });
 
 if (stripeSession.url) {
