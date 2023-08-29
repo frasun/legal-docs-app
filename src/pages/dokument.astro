@@ -67,6 +67,7 @@ if (!userId) {
 if (Number(documentId)) {
   try {
     await publishDraft(documentId);
+    await deletePaymentSession(paymentId);
 
     return Astro.redirect(`/dokumenty/${documentId}/dokument?success=true`);
   } catch {

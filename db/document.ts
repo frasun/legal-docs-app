@@ -74,6 +74,22 @@ export async function getDocumentSummary(docId: string, userId: string) {
   }
 }
 
+export async function getDocumentId(id: string, userId: string) {
+  try {
+    const document = await db
+      .selectFrom(KEY)
+      .selectAll()
+      .where(sql`userid::text`, "=", userId)
+      .where("id", "=", id)
+      .select(["doc"])
+      .executeTakeFirst();
+
+    return document?.doc;
+  } catch (e) {
+    throw e;
+  }
+}
+
 export async function getDocuments(
   userId: string,
   page?: number,
