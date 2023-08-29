@@ -1,5 +1,4 @@
-//@ts-ignore;
-import n2words from "n2words/i18n/pl.js";
+import n2words from "node_modules/n2words/lib/i18n/pl.js";
 
 export function getItem(
   number: number,
