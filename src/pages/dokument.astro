@@ -12,69 +12,183 @@ import {
   getAllAnswers,
   getPaymentSession,
 } from "@db/session";
-import { SESSION_COOKIE } from "@utils/cookies";
 import getQuesitons from "@utils/questions";
 import * as PARAMS from "@utils/urlParams";
 
-const session = await getSession(Astro.request);
-const userId = session ? session.user?.id : null;
-const ssid = session
-  ? session.user?.ssid
-  : Astro.cookies.get(SESSION_COOKIE).value;
-
-if (!ssid) {
-  console.log("missing ssid");
-  return Astro.redirect("/404");
-}
-
-let documentId, draft;
-let paymentId;
-
 const urlParams = new URL(Astro.request.url).searchParams;
-paymentId = urlParams.get(PARAMS.PAYMENT);
-draft = String(urlParams.get(PARAMS.DRAFT)) === "true";
+const draftParam = String(urlParams.get(PARAMS.DRAFT)) === "true";
+const draftForm = Astro.request.method === "POST";
+const session = await getSession(Astro.request);
 
-if (!paymentId) {
-  console.log("missing documentId");
-  return Astro.redirect("/404");
-}
+let documentId;
 
-const paymentSession = await getPaymentSession(paymentId);
+if (draftForm) {
+  const formData = await Astro.request.formData();
+  documentId = formData.get("id") as string;
 
-if (!paymentSession) {
-  console.log("missing payment Session");
-  return Astro.redirect("/404");
-}
+  if (!documentId) {
+    console.log("missing documentId");
+    return Astro.redirect("/404");
+  }
 
-documentId = paymentSession.documentId as string;
+  if (session) {
+    const ssid = session.user?.ssid as string;
+    const userId = session.user?.id as string;
+    const document = await createDoc(documentId, userId, ssid, true);
 
-if (!documentId) {
-  console.log("missing documentId");
-  return Astro.redirect("/404");
-}
+    if (document) {
+      return Astro.redirect(
+        `${Astro.url.origin}/moje-dokumenty?${DRAFT_SAVED_PARAM}`
+      );
+    } else {
+      return Astro.redirect("/404");
+    }
+  } else {
+    return Astro.redirect(
+      `/zaloguj-sie?${PARAMS.REDIRECT}=dokument&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`
+    );
+  }
+} else if (draftParam) {
+  if (!session) {
+    console.log("anonymous draft param error");
+    return Astro.redirect("/404");
+  }
 
-if (paymentSession.ssid !== ssid) {
-  console.log("ssid mismatch");
-  return Astro.redirect("/404");
-}
+  const documentIdParam = urlParams.get(PARAMS.DOCUMENT);
+  const paymentId = urlParams.get(PARAMS.PAYMENT);
+  let ssid;
+  const userId = session.user?.id as string;
 
-if (!userId) {
-  return Astro.redirect(
-    `/zaloguj-sie?${PARAMS.REDIRECT}=dokument&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=${draft}`
-  );
-}
+  if (documentIdParam) {
+    documentId = documentIdParam;
+    ssid = session.user?.ssid as string;
+  } else if (paymentId) {
+    const paymentSession = await getPaymentSession(paymentId);
 
-if (Number(documentId)) {
-  try {
-    await publishDraft(documentId);
-    await deletePaymentSession(paymentId);
+    if (!paymentSession) {
+      console.log("missing payment Session");
+      return Astro.redirect("/404");
+    }
 
-    return Astro.redirect(`/dokumenty/${documentId}/dokument?success=true`);
-  } catch {
-    console.log("publish draft error");
+    documentId = paymentSession.documentId as string;
+    ssid = paymentSession.ssid as string;
+  }
+
+  if (!documentId) {
+    console.log("missing documentId");
+    return Astro.redirect("/404");
+  }
+
+  if (!ssid) {
+    console.log("missing ssid");
+    return Astro.redirect("/404");
+  }
+
+  const document = await createDoc(documentId, userId, ssid, true);
+
+  if (document) {
+    return Astro.redirect(
+      `${Astro.url.origin}/moje-dokumenty?${DRAFT_SAVED_PARAM}`
+    );
+  } else {
     return Astro.redirect("/404");
   }
 } else {
+  const paymentId = urlParams.get(PARAMS.PAYMENT);
+
+  if (!paymentId) {
+    console.log("missing paymentId");
+    return Astro.redirect("/404");
+  }
+
+  const emailParam = urlParams.get(PARAMS.EMAIL);
+  const userId = session
+    ? session.user?.id
+    : emailParam
+    ? decodeURIComponent(emailParam)
+    : undefined;
+
+  const paymentSession = await getPaymentSession(paymentId);
+
+  if (!paymentSession) {
+    console.log("missing payment Session");
+    return Astro.redirect("/404");
+  }
+
+  const ssid = paymentSession.ssid as string;
+  documentId = paymentSession.documentId as string;
+
+  if (!ssid) {
+    console.log("missing ssid");
+    return Astro.redirect("/404");
+  }
+
+  if (!documentId) {
+    console.log("missing documentId");
+    return Astro.redirect("/404");
+  }
+
+  if (!userId) {
+    console.log("missing userId");
+    return Astro.redirect("/404");
+  }
+
+  if (Number(documentId)) {
+    try {
+      await publishDraft(documentId);
+      await deletePaymentSession(paymentId);
+
+      return Astro.redirect(`/dokumenty/${documentId}/dokument?success=true`);
+    } catch {
+      console.log("publish draft error");
+      return Astro.redirect("/404");
+    }
+  } else {
+    const document = await createDoc(documentId, userId, ssid, false);
+
+    if (document) {
+      try {
+        await deletePaymentSession(paymentId);
+      } catch {}
+
+      if (session) {
+        return Astro.redirect(
+          `${Astro.url.origin}/dokumenty/${document}/dokument?success=true`
+        );
+      } else {
+        return Astro.redirect(
+          `${Astro.url.origin}/dokumenty/${document}/dokument?${
+            PARAMS.EMAIL
+          }=${encodeURIComponent(userId)}&success=true`
+        );
+      }
+    }
+  }
+}
+
+async function createDoc(
+  documentId: string,
+  userId: string,
+  ssid: string,
+  draft: boolean
+) {
+  try {
+    const answers = await prepareAnswers(documentId, ssid);
+    const document = await createDocument(documentId, answers, userId, draft);
+
+    if (document) {
+      try {
+        await deleteSessionDocument(ssid, documentId);
+      } catch {}
+
+      return document.id;
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function prepareAnswers(documentId: string, ssid: string) {
   const template = await getEntry("documents", documentId);
 
   if (!template) {
@@ -132,42 +246,6 @@ if (Number(documentId)) {
     }
   }
 
-  try {
-    const docId = await createDoc(documentId, answers, draft, userId);
-
-    if (docId) {
-      try {
-        await deleteSessionDocument(ssid, documentId);
-        await deletePaymentSession(paymentId);
-      } catch {}
-
-      return Astro.redirect(
-        `${Astro.url.origin}/${
-          draft
-            ? `moje-dokumenty?${DRAFT_SAVED_PARAM}`
-            : `dokumenty/${docId}/dokument?success=true`
-        }`
-      );
-    } else {
-      console.log("create doc error");
-      return Astro.redirect("/404");
-    }
-  } catch (e) {
-    console.log(e);
-    console.log("catch create doc error");
-    return Astro.redirect("/404");
-  }
-}
-
-async function createDoc(
-  id: string,
-  answers: Answers,
-  draft: boolean,
-  userId: string
-) {
-  const document = await createDocument(id, answers, userId, draft);
-  const docId = document ? document.id : null;
-
-  return docId;
+  return answers;
 }
 ---

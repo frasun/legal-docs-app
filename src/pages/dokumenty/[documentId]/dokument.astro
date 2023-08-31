@@ -7,43 +7,26 @@ import crypt from "@utils/crypt";
 import { Icon } from "astro-icon";
 import { formatDateTime } from "@utils/date";
 import pageTitle from "@utils/pageTitle";
-import type { Answers } from "@type";
+import * as PARAMS from "@utils/urlParams";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
+const urlParams = new URL(Astro.request.url).searchParams;
+const emailParam = urlParams.get(PARAMS.EMAIL);
 
 let data, title;
 
-if (!session) {
-  return Astro.redirect(
-    `/zaloguj-sie?redirect=dokumenty/${documentId}/dokument`
-  );
-}
-
 Astro.cookies.delete(documentId);
 
-const userId = session.user?.id;
+const userId = session
+  ? session.user?.id
+  : emailParam
+  ? decodeURIComponent(emailParam)
+  : undefined;
 
 if (!userId) {
   return Astro.redirect("/404");
-}
-
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  let answers: Answers = {};
-
-  formData.forEach((value, key) => (answers[key] = value));
-
-  const document = await createDocument(documentId, answers, userId);
-
-  if (document) {
-    return Astro.redirect(
-      `${Astro.url.origin}/dokumenty/${document.id}/dokument?success=true`
-    );
-  } else {
-    return Astro.redirect("/404");
-  }
 }
 
 if (Number(documentId)) {
@@ -83,8 +66,6 @@ for (let key of Object.keys(answers)) {
 
 if (!title) title = docTitle;
 
-const url = new URL(Astro.request.url);
-const urlParams = new URLSearchParams(url.search);
 const firstTime = urlParams.get("success") === "true" ? true : false;
 ---
 
@@ -131,10 +112,15 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
         </button>
       </download-pdf>
     </div>
-    <footer>
-      <a href=`${Astro.url.origin}/moje-dokumenty`>Zobacz w moich dokumentach</a
-      >
-    </footer>
+    {
+      !emailParam && (
+        <footer>
+          <a href={`${Astro.url.origin}/moje-dokumenty`}>
+            Zobacz w moich dokumentach
+          </a>
+        </footer>
+      )
+    }
   </aside>
 </Layout>
 

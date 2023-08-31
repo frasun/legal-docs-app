@@ -14,7 +14,7 @@ const { documentId } = Astro.props;
 
 <Modal modalId="payment" slot="footer">
   <header>
-    <h4>Za chwilę przekierujemy Cię na stronę płatności</h4>
+    <h3>Za chwilę przekierujemy Cię na stronę płatności</h3>
   </header>
   <section>
     <header>
@@ -27,7 +27,9 @@ const { documentId } = Astro.props;
       >
     </header>
     <ul>
-      <li>aby uzyskać dostęp do dodatkowych funkcjonalności takich jak:</li>
+      <li>
+        Zalogowani użytkownicy mogą korzystać z dodatkowych funkcjonalności:
+      </li>
       <li>
         <Icon name="tick" width={24} height={24} />dostęp do stworzonych
         dokumentów
@@ -48,7 +50,16 @@ const { documentId } = Astro.props;
     </ul>
   </section>
   <footer>
-    <a href={`${Astro.url.origin}/zamowienie`}>Zakup bez konta</a>
+    <h4>Zakup bez tworzenia konta</h4>
+    <form method="POST" action={`${Astro.url.origin}/zamowienie`}>
+      <input
+        type="email"
+        name="email"
+        placeholder="Podaj adres e-mail"
+        required
+      />
+      <button type="submit">Zakup bez konta</button>
+    </form>
     <Image
       src={p24}
       alt="Płatności Przelewy24"
@@ -99,10 +110,19 @@ const { documentId } = Astro.props;
   }
 
   footer {
-    @apply pt-30 pb-10;
+    @apply pt-30 pb-10 border-t border-t-dark30 mt-30;
   }
 
-  footer a {
+  footer form {
+    @apply flex gap-10 items-center justify-center w-full px-20 flex-wrap sm:flex-nowrap;
+  }
+
+  footer form input {
+    @apply flex-grow;
+  }
+
+  footer button[type="submit"] {
     @apply btn btn-alt;
+    @apply flex-shrink-0;
   }
 </style>

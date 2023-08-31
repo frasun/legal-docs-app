@@ -5,10 +5,11 @@ import { kv } from "@vercel/kv";
 import { string } from "astro/zod";
 
 const KEY = "user";
-const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegExp = /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$/;
 const getVerificationCode = () => Math.random().toString(16).substring(2, 8);
-const testString = (string: string, regexp: RegExp) => regexp.test(string);
+export const testString = (string: string, regexp: RegExp) =>
+  regexp.test(string);
 
 export async function getUserByEmail(email: string) {
   const user = await db

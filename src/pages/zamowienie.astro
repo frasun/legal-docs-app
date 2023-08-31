@@ -10,12 +10,22 @@ import { SESSION_COOKIE } from "@utils/cookies";
 import { createPaymentSession } from "@db/session";
 import * as PARAMS from "@utils/urlParams";
 import { getDocumentId } from "@db/document";
+import { emailRegExp, testString } from "@db/auth";
 
 const SUMMARY = "podsumowanie";
 const refererUrl = Astro.request.headers.get("referer");
 const urlParams = new URL(Astro.request.url).searchParams;
 const session = await getSession(Astro.request);
-let documentId, documentName;
+let documentId, documentName, anonymousEmail;
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  anonymousEmail = String(formData.get("email"));
+
+  if (!anonymousEmail || !testString(anonymousEmail, emailRegExp)) {
+    return Astro.redirect("/404");
+  }
+}
 
 if (!refererUrl) {
   return Astro.redirect("/404");
@@ -38,13 +48,15 @@ if (!documentId) {
   }
 }
 
-if (!documentName || !documentId) {
+if (!documentId) {
+  console.log("no document name or document id");
   return Astro.redirect("/404");
 }
 
 const document = await getEntry("documents", documentId);
 
 if (!document) {
+  console.log("no document");
   return Astro.redirect("/404");
 }
 
@@ -55,15 +67,29 @@ const ssid = session
   : Astro.cookies.get(SESSION_COOKIE).value;
 
 if (!ssid) {
+  console.log("no ssid");
   return Astro.redirect("/404");
 }
 
 const pid = nanoid();
-await createPaymentSession(pid, ssid, documentName);
+const docId = documentName && Number(documentName) ? documentName : documentId;
+
+await createPaymentSession(pid, ssid, docId);
 
 const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
   apiVersion: import.meta.env.STRIPE_API_V,
 });
+
+const successUrl = `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${
+  PARAMS.DRAFT
+}=false${
+  anonymousEmail ? `&${PARAMS.EMAIL}=${encodeURIComponent(anonymousEmail)}` : ``
+}`;
+const cancelUrl = anonymousEmail
+  ? Astro.url.origin
+  : Number(documentName)
+  ? refererUrl
+  : `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=true`;
 
 const stripeSession = await stripe.checkout.sessions.create({
   line_items: [
@@ -73,11 +99,9 @@ const stripeSession = await stripe.checkout.sessions.create({
     },
   ],
   mode: "payment",
-  success_url: `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=false`,
-  cancel_url: Number(documentName)
-    ? refererUrl
-    : `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=true`,
-  customer_email: session ? (session.user?.email as string) : undefined,
+  success_url: successUrl,
+  cancel_url: cancelUrl,
+  customer_email: session ? (session.user?.email as string) : anonymousEmail,
 });
 
 if (stripeSession.url) {

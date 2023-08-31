@@ -1,7 +1,8 @@
 import type { Answers } from "@type";
 import { kv } from "@vercel/kv";
 
-const EXPIRATION_TIME = 3600;
+const DOCUMENT_EXPIRATION_TIME = 3600;
+const PAYMENT_EXPIRATION_TIME = 86400;
 
 export async function storeAnswers(
   ssid: string,
@@ -10,7 +11,7 @@ export async function storeAnswers(
 ) {
   try {
     await kv.hset(`document-${ssid}-${documentId}`, answers);
-    await kv.expire(`document-${ssid}-${documentId}`, EXPIRATION_TIME);
+    await kv.expire(`document-${ssid}-${documentId}`, DOCUMENT_EXPIRATION_TIME);
   } catch (e) {
     console.log(e);
     throw e;
@@ -55,7 +56,8 @@ export async function createPaymentSession(
 ) {
   try {
     await kv.hset(`payment-${pid}`, { ssid, documentId });
-    await kv.persist(`document-${ssid}-${documentId}`);
+    await kv.expire(`payment-${pid}`, PAYMENT_EXPIRATION_TIME);
+    await kv.expire(`document-${ssid}-${documentId}`, PAYMENT_EXPIRATION_TIME);
   } catch (e) {
     console.log(e);
     throw e;

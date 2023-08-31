@@ -2,6 +2,7 @@ import type { Generated } from "kysely";
 import { getEntry } from "astro:content";
 import { db, sql } from "@db/db";
 import type { Answers } from "@type";
+import { emailRegExp, testString } from "./auth";
 
 export interface Document {
   id?: Generated<string>;
@@ -178,11 +179,20 @@ export async function createDocument(
   try {
     validatedAnswers = schema.parse(answers);
 
-    const userDocuments = await db
-      .selectFrom(KEY)
-      .where(sql`userid::text`, "=", userid)
-      .select((eb) => eb.fn.countAll().as("count"))
-      .execute();
+    const anonymousUser = testString(userid, emailRegExp);
+    let documentTitle;
+
+    if (anonymousUser) {
+      documentTitle = title;
+    } else {
+      const userDocuments = await db
+        .selectFrom(KEY)
+        .where(sql`userid::text`, "=", userid)
+        .select((eb) => eb.fn.countAll().as("count"))
+        .execute();
+
+      documentTitle = `#${Number(userDocuments[0].count) + 1} ${title}`;
+    }
 
     try {
       return await db
@@ -193,7 +203,7 @@ export async function createDocument(
             answers: validatedAnswers,
             userid,
             draft,
-            title: `#${Number(userDocuments[0].count) + 1} ${title}`,
+            title: documentTitle,
           },
         ])
         .returning("id")
