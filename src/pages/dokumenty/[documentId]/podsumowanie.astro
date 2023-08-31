@@ -17,6 +17,7 @@ import { deleteSessionDocument, getAllAnswers } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
 import getQuesitons from "@utils/questions";
 import PaymentModal from "@components/PaymentModal.astro";
+import * as PARAMS from "@utils/urlParams";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -175,14 +176,12 @@ if (!title) title = docTitle;
       }
       {
         !isUserDocument && (
-          <form method="POST" action={`${Astro.url.origin}/dokument`}>
-            <input type="hidden" name="id" value={documentId} />
-            <input type="hidden" name="draft" value="true" />
-            <button>
-              <Icon name="save" width={18} height={18} />
-              Zapisz szkic
-            </button>
-          </form>
+          <a
+            href={`${Astro.url.origin}/dokument?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`}
+          >
+            <Icon name="save" width={18} height={18} />
+            Zapisz szkic
+          </a>
         )
       }
     </footer>
@@ -223,11 +222,11 @@ if (!title) title = docTitle;
     @apply flex flex-col justify-center gap-20 items-center;
   }
 
-  footer button {
+  footer a {
     @apply btn btn-alt;
   }
 
-  footer a,
+  footer a:first-child,
   show-payment-modal button {
     @apply btn btn-default btn-big;
   }

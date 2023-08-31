@@ -17,51 +17,26 @@ import * as PARAMS from "@utils/urlParams";
 
 const urlParams = new URL(Astro.request.url).searchParams;
 const draftParam = String(urlParams.get(PARAMS.DRAFT)) === "true";
-const draftForm = Astro.request.method === "POST";
 const session = await getSession(Astro.request);
 
 let documentId;
 
-if (draftForm) {
-  const formData = await Astro.request.formData();
-  documentId = formData.get("id") as string;
-
-  if (!documentId) {
-    console.log("missing documentId");
-    return Astro.redirect("/404");
-  }
-
-  if (session) {
-    const ssid = session.user?.ssid as string;
-    const userId = session.user?.id as string;
-    const document = await createDoc(documentId, userId, ssid, true);
-
-    if (document) {
-      return Astro.redirect(
-        `${Astro.url.origin}/moje-dokumenty?${DRAFT_SAVED_PARAM}`
-      );
-    } else {
-      return Astro.redirect("/404");
-    }
-  } else {
-    return Astro.redirect(
-      `/zaloguj-sie?${PARAMS.REDIRECT}=dokument&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`
-    );
-  }
-} else if (draftParam) {
-  if (!session) {
-    console.log("anonymous draft param error");
-    return Astro.redirect("/404");
-  }
-
+if (draftParam) {
   const documentIdParam = urlParams.get(PARAMS.DOCUMENT);
   const paymentId = urlParams.get(PARAMS.PAYMENT);
-  let ssid;
-  const userId = session.user?.id as string;
+  let ssid, userId;
 
   if (documentIdParam) {
     documentId = documentIdParam;
+
+    if (!session) {
+      return Astro.redirect(
+        `/zaloguj-sie?${PARAMS.REDIRECT}=dokument&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`
+      );
+    }
+
     ssid = session.user?.ssid as string;
+    userId = session.user?.id as string;
   } else if (paymentId) {
     const paymentSession = await getPaymentSession(paymentId);
 
@@ -72,6 +47,13 @@ if (draftForm) {
 
     documentId = paymentSession.documentId as string;
     ssid = paymentSession.ssid as string;
+
+    if (!session) {
+      console.log("anonymous draft param error");
+      return Astro.redirect("/404");
+    }
+
+    userId = session.user?.id as string;
   }
 
   if (!documentId) {
@@ -81,6 +63,11 @@ if (draftForm) {
 
   if (!ssid) {
     console.log("missing ssid");
+    return Astro.redirect("/404");
+  }
+
+  if (!userId) {
+    console.log("missing userId");
     return Astro.redirect("/404");
   }
 

@@ -1,6 +1,7 @@
 ---
 import Progressbar from "@components/Progressbar.astro";
 import { Icon } from "astro-icon";
+import * as PARAMS from "@utils/urlParams";
 
 interface Props {
   current: number;
@@ -13,14 +14,12 @@ const { current, steps, docId } = Astro.props;
 
 <div>
   <Progressbar current={current} steps={steps} />
-  <form method="POST" action={`${Astro.url.origin}/dokument`}>
-    <input type="hidden" name="id" value={docId} />
-    <input type="hidden" name="draft" value="true" />
-    <button>
-      <Icon name="save" width={18} height={18} />
-      Zapisz szkic
-    </button>
-  </form>
+  <a
+    href={`${Astro.url.origin}/dokument?${PARAMS.DOCUMENT}=${docId}&${PARAMS.DRAFT}=true`}
+  >
+    <Icon name="save" width={18} height={18} />
+    Zapisz szkic
+  </a>
   <show-question-list>
     <button aria-label="Pokaż listę pytań">
       <Icon name="index" width={24} height={24} />
@@ -42,12 +41,9 @@ const { current, steps, docId } = Astro.props;
     @apply md:flex-grow-0 md:basis-auto md:text-left;
   }
 
-  div button {
+  div button,
+  div a {
     @apply btn btn-alt;
-  }
-
-  div form {
-    @apply p-0;
   }
 
   div show-question-list {
