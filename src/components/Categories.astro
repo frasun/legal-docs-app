@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import CategoryBlock from "@components/CategoryBlock.astro";
+import { CATEGORY } from "@utils/urlParams";
 
 const categories = await getCollection("categories", ({ data }) => data.index);
 ---
@@ -13,7 +14,7 @@ const categories = await getCollection("categories", ({ data }) => data.index);
         <CategoryBlock
           title={name}
           icon={icon}
-          href={`${Astro.url.origin}/dokumenty?kategoria=${id}`}
+          href={`${Astro.url.origin}/dokumenty?${CATEGORY}=${id}`}
         />
       ))
     }
