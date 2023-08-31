@@ -8,6 +8,7 @@ import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
+import Stripe from "stripe";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get(PARAMS.CATEGORY);
@@ -17,19 +18,40 @@ const categories = await getCollection("categories");
 const documents = await getCollection("documents", ({ data: { categories } }) =>
   currentCat ? categories.find(({ id }) => id === currentCat) : true
 );
+const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
+  apiVersion: import.meta.env.STRIPE_API_V,
+});
+
+let prices: any[];
+
+try {
+  const priceList = await stripe.prices.list({
+    limit: 100,
+  });
+
+  prices = priceList.data;
+} catch {}
 
 const fuse = new Fuse(documents, {
   keys: ["data.title", "data.keywords"],
   threshold: 0.5,
 });
 const filteredDocs = fuse.search(search ? trimWhitespace(search) : "");
-
 const currentCategory = categories.find(({ id }) => id === currentCat);
 
 const PAGE_TITLE = "Wszystkie dokumenty";
 const title = currentCategory
   ? `Dokumenty w kategorii ${currentCategory.data.name.toLowerCase()}`
   : PAGE_TITLE;
+
+function getPrice(priceId: string) {
+  if (!prices) {
+    return 0;
+  }
+
+  const priceObj = prices.find((price) => price.id === priceId);
+  return priceObj.unit_amount ? priceObj.unit_amount / 100 : 0;
+}
 ---
 
 <Layout title={pageTitle(title)}>
@@ -86,7 +108,7 @@ const title = currentCategory
               ({
                 item: {
                   slug,
-                  data: { title, categories: cats, price },
+                  data: { title, categories: cats, priceId },
                 },
               }) => (
                 <DocumentTile
@@ -94,7 +116,7 @@ const title = currentCategory
                   title={title}
                   docCategories={cats}
                   categories={categories}
-                  price={price}
+                  price={getPrice(priceId)}
                 />
               )
             )}
@@ -105,13 +127,13 @@ const title = currentCategory
       ) : (
         <section>
           {documents.map(
-            ({ slug, data: { title, categories: cats, price } }) => (
+            ({ slug, data: { title, categories: cats, priceId } }) => (
               <DocumentTile
                 slug={slug}
                 title={title}
                 docCategories={cats}
                 categories={categories}
-                price={price}
+                price={getPrice(priceId)}
               />
             )
           )}

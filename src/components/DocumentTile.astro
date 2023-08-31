@@ -33,7 +33,7 @@ const categoryList = docCategories
 
 <a href={`${Astro.url.origin}/dokumenty/${slug}`} title={title}>
   <header><h3>{title}</h3></header>
-  <strong>{formatNumber(price)} zł</strong>
+  <strong>{price ? `${formatNumber(price)} zł` : "-"}</strong>
   <footer>
     {categoryList}
   </footer>

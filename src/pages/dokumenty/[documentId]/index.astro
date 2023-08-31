@@ -3,6 +3,7 @@ import Layout from "../../../layouts/App.astro";
 import { getEntry } from "astro:content";
 import pageTitle from "@utils/pageTitle";
 import formatNumber from "@utils/number";
+import Stripe from "stripe";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -17,7 +18,14 @@ if (!info || !document) {
 }
 
 const { Content } = await info.render();
-const { title, index, price } = document.data;
+const { title, index, priceId } = document.data;
+
+const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
+  apiVersion: import.meta.env.STRIPE_API_V,
+});
+
+const documentPrice = await stripe.prices.retrieve(priceId);
+const price = documentPrice.unit_amount ? documentPrice.unit_amount / 100 : 0;
 
 if (!index) {
   return Astro.redirect("/404");
