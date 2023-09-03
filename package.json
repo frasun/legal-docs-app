@@ -1,7 +1,7 @@
 {
   "name": "prawniczek",
   "type": "module",
-  "version": "0.5.8",
+  "version": "0.6.0",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -33,6 +33,7 @@
     "cssnano": "^6.0.1",
     "fuse.js": "^6.6.2",
     "kysely": "^0.24.2",
+    "mongodb": "6.0",
     "n2words": "^1.16.4",
     "polish-plurals": "^1.1.0",
     "postmark": "^3.0.18",
