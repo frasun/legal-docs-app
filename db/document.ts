@@ -3,6 +3,21 @@ import { getEntry } from "astro:content";
 import { db, sql } from "@db/db";
 import type { Answers } from "@type";
 import { emailRegExp, testString } from "./auth";
+import { ObjectId } from "mongodb";
+
+import mongo from "@db/mongodb";
+
+interface Doc {
+  doc: string;
+  answers: Answers;
+  userid: string;
+  created?: Date;
+  modified?: Date | null;
+  title: string;
+  draft: boolean;
+}
+
+const documentCollection = mongo.collection<Doc>("documents");
 
 export interface Document {
   id?: Generated<string>;
@@ -97,24 +112,35 @@ export async function getDocuments(
   limit: number = LIMIT
 ) {
   try {
-    const query = db.selectFrom(KEY).where(sql`userid::text`, "=", userId);
+    const userDocumentCount = await documentCollection.countDocuments({
+      userid: { $eq: userId },
+    });
 
-    const count = await query
-      .select((eb) => eb.fn.countAll().as("length"))
-      .execute();
-
-    const pages = Math.ceil(Number(count[0].length) / limit);
+    const pages = Math.ceil(userDocumentCount / limit);
     const offset = page && page > 0 && page <= pages ? (page - 1) * limit : 0;
 
-    const documents = await query
-      .select(["created", "doc", "draft", "title", "modified", "id"])
-      .offset(offset)
+    const documents = await documentCollection
+      .aggregate([
+        { $match: { userid: userId } },
+        {
+          $addFields: {
+            sortBy: {
+              $cond: {
+                if: { $gt: ["$modified", null] },
+                then: "$modified",
+                else: "$created",
+              },
+            },
+          },
+        },
+      ])
+      .sort({ sortBy: -1 })
+      .skip(offset)
       .limit(limit)
-      .orderBy(sql`COALESCE(modified, created)`, "desc")
-      .execute();
+      .project({ answers: 0, userid: 0, sortBy: 0 });
 
     return {
-      documents,
+      documents: await documents.toArray(),
       pages,
       currentPage: offset / limit + 1,
     };
@@ -185,29 +211,24 @@ export async function createDocument(
     if (anonymousUser) {
       documentTitle = title;
     } else {
-      const userDocuments = await db
-        .selectFrom(KEY)
-        .where(sql`userid::text`, "=", userid)
-        .select((eb) => eb.fn.countAll().as("count"))
-        .execute();
+      const userDocumentCount = await documentCollection.countDocuments({
+        userid: { $eq: userid },
+      });
 
-      documentTitle = `#${Number(userDocuments[0].count) + 1} ${title}`;
+      documentTitle = `#${userDocumentCount + 1} ${title}`;
     }
 
     try {
-      return await db
-        .insertInto(KEY)
-        .values([
-          {
-            doc,
-            answers: validatedAnswers,
-            userid,
-            draft,
-            title: documentTitle,
-          },
-        ])
-        .returning("id")
-        .executeTakeFirst();
+      const result = await documentCollection.insertOne({
+        doc,
+        answers: validatedAnswers,
+        userid,
+        draft,
+        title: documentTitle,
+        created: new Date(),
+      });
+
+      return result.insertedId;
     } catch (e) {
       throw e;
     }
@@ -231,11 +252,13 @@ export async function publishDraft(id: string) {
 
 export async function changeDocumentName(id: string, title: string) {
   try {
-    return await db
-      .updateTable(KEY)
-      .set({ title, modified: sql`current_timestamp` })
-      .where("id", "=", id)
-      .execute();
+    return await documentCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: { title },
+        $currentDate: { modified: true },
+      }
+    );
   } catch (e: any) {
     throw e;
   }

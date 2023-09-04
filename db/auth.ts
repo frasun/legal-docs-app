@@ -2,7 +2,6 @@ import { db } from "@db/db";
 import bcrypt from "bcryptjs";
 import errors from "@utils/errors";
 import { kv } from "@vercel/kv";
-import { string } from "astro/zod";
 
 const KEY = "user";
 export const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

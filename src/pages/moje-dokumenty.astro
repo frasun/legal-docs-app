@@ -4,7 +4,7 @@ import { Icon } from "astro-icon";
 import { formatDateTime, LOCALE } from "@utils/date";
 import { getEntry } from "astro:content";
 import { getSession } from "auth-astro/server";
-import { getDocuments, createDocument } from "@db/document";
+import { getDocuments } from "@db/document";
 import Badge from "@components/Badge.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
@@ -28,20 +28,10 @@ if (!userId) {
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  const docId = formData.get("template");
-  const localAnswers = formData.get("answers");
 
-  await handleNameChange(formData);
-
-  if (localAnswers && docId) {
-    const answers = JSON.parse(String(localAnswers));
-    await createDocument(
-      String(docId),
-      JSON.parse(Object(answers)),
-      userId,
-      true
-    );
-  }
+  try {
+    await handleNameChange(formData);
+  } catch {}
 }
 
 const page =
@@ -93,11 +83,11 @@ const getDocTitle = async (docId: string) => {
             <>
               <h6>{monthYear}</h6>
               {groupedItems[monthYear].map(
-                ({ doc, id, title, created, draft, modified }) => (
+                ({ doc, _id, title, created, draft, modified }) => (
                   <div>
                     <header>
                       <a
-                        href={`${Astro.url.origin}/dokumenty/${id}/${
+                        href={`${Astro.url.origin}/dokumenty/${_id}/${
                           draft ? `podsumowanie` : `dokument`
                         }`}
                       >
@@ -129,7 +119,7 @@ const getDocTitle = async (docId: string) => {
                     )}
                     <aside>
                       <ChangeNameButton
-                        id={id}
+                        id={_id}
                         title={title}
                         label="Zmień nazwę"
                       />
