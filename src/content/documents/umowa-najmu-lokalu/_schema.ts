@@ -184,20 +184,13 @@ export const landlordData = z
 
 export const landlordType = z.enum(entityEnum);
 
-export const landlordName = z
-  .string()
-  .nonempty()
-  .transform((val) => trimWhitespace(val));
+export const landlordName = z.string().transform((val) => trimWhitespace(val));
 
 export const landlordAddress = z
   .string()
-  .nonempty()
   .transform((val) => trimWhitespace(val));
 
-export const landlordPin = z
-  .string()
-  .nonempty()
-  .transform((val) => trimWhitespace(val));
+export const landlordPin = z.string().transform((val) => trimWhitespace(val));
 
 export const tenantData = z
   .string()
@@ -208,20 +201,11 @@ export const tenantData = z
 
 export const tenantType = z.enum(entityEnum);
 
-export const tenantName = z
-  .string()
-  .nonempty()
-  .transform((val) => trimWhitespace(val));
+export const tenantName = z.string().transform((val) => trimWhitespace(val));
 
-export const tenantAddress = z
-  .string()
-  .nonempty()
-  .transform((val) => trimWhitespace(val));
+export const tenantAddress = z.string().transform((val) => trimWhitespace(val));
 
-export const tenantPin = z
-  .string()
-  .nonempty()
-  .transform((val) => trimWhitespace(val));
+export const tenantPin = z.string().transform((val) => trimWhitespace(val));
 
 export default z.object({
   address,

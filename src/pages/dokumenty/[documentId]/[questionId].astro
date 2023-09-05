@@ -125,7 +125,10 @@ const {
   data: { index, title: docuemntTitle, encrypted },
 } = document;
 
-if (isUserDocument && encrypted) {
+const encryptedAnswers =
+  encrypted && Object.keys(answers).some((field) => encrypted.includes(field));
+
+if (isUserDocument && encryptedAnswers) {
   encrypted.forEach((key) => {
     try {
       answers[key] = crypt.decrypt(answers[key]);
@@ -183,18 +186,23 @@ if (formData && !docTitle) {
     let newAnswers: Answers = {};
 
     for (let [key, value] of formData.entries()) {
-      if (key in answers && value !== String(fields[key])) {
-        newAnswers[key] = value;
+      if (key in answers && value !== String(answers[key])) {
+        Object.assign(newAnswers, { [key]: value });
       }
     }
 
     if (isUserDocumentId) {
       if (Object.keys(newAnswers).length) {
-        // if (document.data.encrypted) {
-        //   document.data.encrypted.forEach((key) => {
-        //     allAnswers[key] = crypt.encrypt(allAnswers[key]);
-        //   });
-        // }
+        if (encryptedAnswers) {
+          encrypted.forEach((key) => {
+            if (newAnswers[key] && newAnswers[key].length) {
+              try {
+                newAnswers[key] = crypt.encrypt(newAnswers[key]);
+              } catch {}
+            }
+          });
+        }
+
         try {
           await updateAnswers(documentId, newAnswers, docId);
           return Astro.redirect(`${Astro.url}?${UPDATED_ANSWER_PARAM}`);
