@@ -50,15 +50,32 @@ export function createDocumentTable() {
     .execute();
 }
 
-export async function getDocument(id: string, userId: string) {
+export async function getDocumentAnswers(
+  id: string,
+  userId: string,
+  fields: string[]
+) {
+  type UserDocument = Pick<Doc, "answers" | "doc" | "title" | "draft">;
+
+  const selectedAnswers: Record<string, number> = {};
+
+  fields.forEach((key) => {
+    selectedAnswers[`answers.${key}`] = 1;
+  });
+
   try {
-    return await db
-      .selectFrom(KEY)
-      .selectAll()
-      .where(sql`userid::text`, "=", userId)
-      .where("id", "=", id)
-      .select(["answers", "doc", "title", "draft"])
-      .executeTakeFirst();
+    return await documentCollection.findOne<UserDocument>(
+      { _id: new ObjectId(id), userid: userId },
+      {
+        projection: {
+          _id: 0,
+          doc: 1,
+          title: 1,
+          draft: 1,
+          ...selectedAnswers,
+        },
+      }
+    );
   } catch (e) {
     throw e;
   }

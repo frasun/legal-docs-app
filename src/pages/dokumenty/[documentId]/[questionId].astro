@@ -2,7 +2,7 @@
 import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
 import { getEntry } from "astro:content";
-import { getDocument, updateAnswers } from "@db/document";
+import { getDocumentAnswers, updateAnswers } from "@db/document";
 import { getSession } from "auth-astro/server";
 import crypt from "@utils/crypt";
 import QuestionIndex from "@components/QuestionIndex.astro";
@@ -19,20 +19,23 @@ import type { Answers } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { storeAnswers, getAnswers, deleteSessionDocument } from "@db/session";
 import getQuesitons from "@utils/questions";
+import isObjectId from "@utils/objectId";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
+const isUserDocumentId = isObjectId(documentId);
 const session = await getSession(Astro.request);
-const isUserDocument = Number(documentId) && session;
+const isUserDocument = isUserDocumentId && session;
 const ssid = session
   ? session.user?.ssid
   : Astro.cookies.get(SESSION_COOKIE).value;
 
 if (!ssid) {
+  console.log("missing ssid");
   return Astro.redirect("/404");
 }
 
-if (!Number(documentId)) {
+if (!isUserDocumentId) {
   const refererUrl = Astro.request.headers.get("referer");
 
   if (
@@ -44,14 +47,16 @@ if (!Number(documentId)) {
   }
 }
 
-let answers: Answers = {};
-let docId = documentId;
-let draft = false;
-let title, formData, docTitle;
+let answers: Answers = {},
+  docId = documentId,
+  draft = false,
+  title: string | undefined,
+  formData: FormData | undefined,
+  docTitle: FormDataEntryValue | undefined;
 
 if (Astro.request.method === "POST") {
   formData = await Astro.request.formData();
-  docTitle = formData.get("title");
+  docTitle = String(formData.get("title"));
 
   if (docTitle && isUserDocument) {
     try {
@@ -63,6 +68,7 @@ if (Astro.request.method === "POST") {
 const questionEntry = await getEntry("questions", String(questionId));
 
 if (!questionEntry) {
+  console.log("missing question entry");
   return Astro.redirect("/404");
 }
 
@@ -75,13 +81,14 @@ if (isUserDocument) {
 
   if (userId) {
     try {
-      const document = await getDocument(documentId, userId);
+      const document = await getDocumentAnswers(
+        documentId,
+        userId,
+        Object.keys(fields)
+      );
 
       if (document) {
-        docId = document.doc;
-        answers = document.answers;
-        title = document.title;
-        draft = document.draft;
+        ({ doc: docId, answers, title, draft } = document);
 
         if (!draft) {
           return Astro.redirect(`/dokumenty/${documentId}/dokument`);
@@ -110,6 +117,7 @@ if (!Object.keys(answers).length) {
 const document = await getEntry("documents", docId);
 
 if (!document) {
+  console.log("missing document");
   return Astro.redirect("/404");
 }
 
@@ -128,6 +136,7 @@ if (isUserDocument && encrypted) {
 if (!title) title = docuemntTitle;
 
 if (!index) {
+  console.log("missing index");
   return Astro.redirect("/404");
 }
 
@@ -135,6 +144,7 @@ const { questionIndex, questionEntries } = await getQuesitons(index);
 const q = questionEntries.find(({ slug }) => slug === questionId);
 
 if (!q) {
+  console.log("missing question");
   return Astro.redirect("/404");
 }
 
@@ -174,7 +184,7 @@ if (formData && !docTitle) {
 
     const allAnswers = { ...answers, ...newAnswers };
 
-    if (Number(documentId)) {
+    if (isUserDocumentId) {
       if (Object.keys(newAnswers).length) {
         if (document.data.encrypted) {
           document.data.encrypted.forEach((key) => {
@@ -224,6 +234,7 @@ if (formData && !docTitle) {
     current={currentQuestionIndex + 1}
     steps={questionIndex.length}
     docId={docId}
+    draft={draft}
   />
   <question-form>
     <form method="POST">

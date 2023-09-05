@@ -63,10 +63,7 @@ if (isUserDocument) {
   const data = await getDocumentSummary(documentId, userId);
 
   if (data) {
-    docId = data.doc;
-    answers = data.answers;
-    draft = data.draft;
-    title = data.title;
+    ({ doc: docId, answers, draft, title } = data);
   } else {
     return Astro.redirect("/404");
   }
