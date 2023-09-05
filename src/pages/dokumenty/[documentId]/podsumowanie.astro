@@ -18,6 +18,7 @@ import { SESSION_COOKIE } from "@utils/cookies";
 import getQuesitons from "@utils/questions";
 import PaymentModal from "@components/PaymentModal.astro";
 import * as PARAMS from "@utils/urlParams";
+import isObjectId from "@utils/objectId";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -26,9 +27,11 @@ if (Astro.request.method === "POST") {
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
+const userDocumentId = isObjectId(documentId);
 
 const session = await getSession(Astro.request);
-const isUserDocument = session && Number(documentId);
+const isUserDocument = session && userDocumentId;
+
 const ssid = session
   ? session.user?.ssid
   : Astro.cookies.get(SESSION_COOKIE).value;
@@ -37,7 +40,7 @@ if (!ssid) {
   return Astro.redirect("/404");
 }
 
-if (!Number(documentId)) {
+if (!userDocumentId) {
   const refererUrl = Astro.request.headers.get("referer");
 
   if (!refererUrl || !refererUrl.includes(documentId)) {

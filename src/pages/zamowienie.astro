@@ -11,12 +11,16 @@ import { createPaymentSession } from "@db/session";
 import * as PARAMS from "@utils/urlParams";
 import { getDocumentId } from "@db/document";
 import { emailRegExp, testString } from "@db/auth";
+import isObjectId from "@utils/objectId";
 
 const SUMMARY = "podsumowanie";
 const refererUrl = Astro.request.headers.get("referer");
 const urlParams = new URL(Astro.request.url).searchParams;
 const session = await getSession(Astro.request);
-let documentId, documentName, anonymousEmail;
+
+let documentId: string | null,
+  documentName: string | undefined,
+  anonymousEmail: string | undefined;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -41,8 +45,10 @@ if (!documentId) {
 
   documentName = urlSegments[urlSegments.length - 2];
 
-  if (Number(documentName) && session) {
-    documentId = await getDocumentId(documentName, session.user?.id as string);
+  if (isObjectId(documentName) && session) {
+    documentId = String(
+      await getDocumentId(documentName, session.user?.id as string)
+    );
   } else {
     documentId = urlSegments[urlSegments.length - 2];
   }
@@ -72,7 +78,8 @@ if (!ssid) {
 }
 
 const pid = nanoid();
-const docId = documentName && Number(documentName) ? documentName : documentId;
+const docId =
+  documentName && isObjectId(documentName) ? documentName : documentId;
 
 await createPaymentSession(pid, ssid, docId);
 
@@ -87,7 +94,7 @@ const successUrl = `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${
 }`;
 const cancelUrl = anonymousEmail
   ? Astro.url.origin
-  : Number(documentName)
+  : docId
   ? refererUrl
   : `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=true`;
 

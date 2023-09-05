@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb";
 
 import mongo from "@db/mongodb";
 
-interface Doc {
+export interface Doc {
   doc: string;
   answers: Answers;
   userid: string;
@@ -65,42 +65,44 @@ export async function getDocument(id: string, userId: string) {
 }
 
 export async function getUserDocument(docId: string, userId: string) {
+  type UserDocument = Pick<
+    Doc,
+    "answers" | "doc" | "title" | "draft" | "created" | "modified"
+  >;
+
   try {
-    return await db
-      .selectFrom(KEY)
-      .where(sql`userid::text`, "=", userId)
-      .where("id", "=", docId)
-      .select(["answers", "created", "doc", "title", "modified", "draft"])
-      .executeTakeFirst();
+    return await documentCollection.findOne<UserDocument>(
+      { _id: new ObjectId(docId), userid: userId },
+      { projection: { _id: 0, userid: 0 } }
+    );
   } catch (e) {
     throw e;
   }
 }
 
 export async function getDocumentSummary(docId: string, userId: string) {
+  type DocumentSummary = Pick<Doc, "answers" | "doc" | "title" | "draft">;
+
   try {
-    return await db
-      .selectFrom(KEY)
-      .where(sql`userid::text`, "=", userId)
-      .where("id", "=", docId)
-      .select(["answers", "doc", "title", "draft", "id"])
-      .executeTakeFirst();
+    return await documentCollection.findOne<DocumentSummary>(
+      { _id: new ObjectId(docId), userid: userId },
+      { projection: { _id: 1, answers: 1, doc: 1, title: 1, draft: 1 } }
+    );
   } catch (e) {
     throw e;
   }
 }
 
 export async function getDocumentId(id: string, userId: string) {
-  try {
-    const document = await db
-      .selectFrom(KEY)
-      .selectAll()
-      .where(sql`userid::text`, "=", userId)
-      .where("id", "=", id)
-      .select(["doc"])
-      .executeTakeFirst();
+  type TemplateId = Pick<Doc, "doc">;
 
-    return document?.doc;
+  try {
+    const document = await documentCollection.findOne<TemplateId>(
+      { _id: new ObjectId(id), userid: userId },
+      { projection: { doc: 1, _id: 0 } }
+    );
+
+    return document ? document.doc : null;
   } catch (e) {
     throw e;
   }
@@ -119,8 +121,10 @@ export async function getDocuments(
     const pages = Math.ceil(userDocumentCount / limit);
     const offset = page && page > 0 && page <= pages ? (page - 1) * limit : 0;
 
+    type Documents = Omit<Doc, "answers" | "userid">;
+
     const documents = await documentCollection
-      .aggregate([
+      .aggregate<Documents>([
         { $match: { userid: userId } },
         {
           $addFields: {
@@ -240,11 +244,13 @@ export async function createDocument(
 
 export async function publishDraft(id: string) {
   try {
-    return await db
-      .updateTable(KEY)
-      .set({ draft: false, modified: sql`current_timestamp` })
-      .where("id", "=", id)
-      .execute();
+    return await documentCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: { draft: false },
+        $currentDate: { modified: true },
+      }
+    );
   } catch (e: any) {
     throw e;
   }

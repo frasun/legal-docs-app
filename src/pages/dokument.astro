@@ -14,6 +14,7 @@ import {
 } from "@db/session";
 import getQuesitons from "@utils/questions";
 import * as PARAMS from "@utils/urlParams";
+import isObjectId from "@utils/objectId";
 
 const urlParams = new URL(Astro.request.url).searchParams;
 const draftParam = String(urlParams.get(PARAMS.DRAFT)) === "true";
@@ -120,7 +121,7 @@ if (draftParam) {
     return Astro.redirect("/404");
   }
 
-  if (Number(documentId)) {
+  if (isObjectId(documentId)) {
     try {
       await publishDraft(documentId);
       await deletePaymentSession(paymentId);
