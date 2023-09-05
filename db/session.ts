@@ -10,7 +10,24 @@ export async function storeAnswers(
   answers: Answers
 ) {
   try {
-    await kv.hset(`document-${ssid}-${documentId}`, answers);
+    const validatedAnswers: Answers = {};
+    const schema = await import(
+      `../src/content/documents/${documentId}/_schema.ts`
+    );
+
+    if (!schema) {
+      throw new Error("missing field schema");
+    }
+
+    for (const [field, answer] of Object.entries(answers)) {
+      const fieldSchema = schema[field];
+
+      Object.assign(validatedAnswers, {
+        [field]: fieldSchema.parse(answer),
+      });
+    }
+
+    await kv.hset(`document-${ssid}-${documentId}`, validatedAnswers);
     await kv.expire(`document-${ssid}-${documentId}`, DOCUMENT_EXPIRATION_TIME);
   } catch (e) {
     console.log(e);

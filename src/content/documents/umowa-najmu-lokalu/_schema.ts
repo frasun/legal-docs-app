@@ -80,6 +80,13 @@ export const toilet = z
   .transform((val) => parseInt(String(val)))
   .refine((val) => val >= 0);
 
+export const balcony = z
+  .string()
+  .nonempty()
+  .or(z.number())
+  .transform((val) => parseInt(String(val)))
+  .refine((val) => val >= 0);
+
 export const wardrobe = z
   .string()
   .nonempty()
@@ -225,6 +232,7 @@ export default z.object({
   hall,
   bathroom,
   toilet,
+  balcony,
   wardrobe,
   garage,
   systems,

@@ -145,18 +145,17 @@ export async function updateAnswers(
 ) {
   try {
     const validatedAnswers: Answers = {};
+    const schema = await import(`../src/content/documents/${docId}/_schema.ts`);
+
+    if (!schema) {
+      throw new Error("missing field schema");
+    }
 
     for (const [field, answer] of Object.entries(answers)) {
-      const { [field]: schema } = await import(
-        `../src/content/documents/${docId}/_schema.ts`
-      );
-
-      if (!schema) {
-        throw new Error("missing field schema");
-      }
+      const fieldSchema = schema[field];
 
       Object.assign(validatedAnswers, {
-        [`answers.${field}`]: schema.parse(answer),
+        [`answers.${field}`]: fieldSchema.parse(answer),
       });
     }
 

@@ -151,7 +151,13 @@ if (!q) {
 const { remarkPluginFrontmatter: qData, Content } = await q.render();
 
 for (let key of Object.keys(qData)) {
-  if (key !== "question" && key in answers) qData[key] = answers[key];
+  if (key !== "question" && key in fields) {
+    if (answers[key]) {
+      qData[key] = answers[key];
+    } else {
+      qData[key] = fields[key];
+    }
+  }
 }
 
 const currentQuestionIndex = questionIndex.findIndex(
@@ -177,7 +183,7 @@ if (formData && !docTitle) {
     let newAnswers: Answers = {};
 
     for (let [key, value] of formData.entries()) {
-      if (key in answers && value !== answers[key]) {
+      if (key in answers && value !== String(fields[key])) {
         newAnswers[key] = value;
       }
     }
@@ -198,8 +204,12 @@ if (formData && !docTitle) {
       }
     } else {
       try {
-        await storeAnswers(ssid, documentId, newAnswers);
-      } catch {}
+        if (Object.keys(newAnswers).length) {
+          await storeAnswers(ssid, documentId, newAnswers);
+        }
+      } catch {
+        return Astro.redirect(Astro.request.url);
+      }
 
       return Astro.redirect(nextUrl);
     }
