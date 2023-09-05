@@ -81,7 +81,12 @@ const pid = nanoid();
 const docId =
   documentName && isObjectId(documentName) ? documentName : documentId;
 
-await createPaymentSession(pid, ssid, docId);
+try {
+  await createPaymentSession(pid, ssid, docId);
+} catch (e) {
+  console.log("error creating payment session");
+  console.log(e);
+}
 
 const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
   apiVersion: import.meta.env.STRIPE_API_V,
@@ -94,7 +99,7 @@ const successUrl = `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${
 }`;
 const cancelUrl = anonymousEmail
   ? Astro.url.origin
-  : docId
+  : isObjectId(docId)
   ? refererUrl
   : `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=true`;
 
@@ -130,5 +135,4 @@ if (stripeSession.url) {
     height: 100vh;
     width: 100vw;
   }
-</style>
-@db/user
+</style>@db/user

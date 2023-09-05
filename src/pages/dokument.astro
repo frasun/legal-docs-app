@@ -132,24 +132,28 @@ if (draftParam) {
       return Astro.redirect("/404");
     }
   } else {
-    const document = await createDoc(documentId, userId, ssid, false);
+    try {
+      const document = await createDoc(documentId, userId, ssid, false);
 
-    if (document) {
-      try {
-        await deletePaymentSession(paymentId);
-      } catch {}
+      if (document) {
+        try {
+          await deletePaymentSession(paymentId);
+        } catch {}
 
-      if (session) {
-        return Astro.redirect(
-          `${Astro.url.origin}/dokumenty/${document}/dokument?success=true`
-        );
-      } else {
-        return Astro.redirect(
-          `${Astro.url.origin}/dokumenty/${document}/dokument?${
-            PARAMS.EMAIL
-          }=${encodeURIComponent(userId)}&success=true`
-        );
+        if (session) {
+          return Astro.redirect(
+            `${Astro.url.origin}/dokumenty/${document}/dokument?success=true`
+          );
+        } else {
+          return Astro.redirect(
+            `${Astro.url.origin}/dokumenty/${document}/dokument?${
+              PARAMS.EMAIL
+            }=${encodeURIComponent(userId)}&success=true`
+          );
+        }
       }
+    } catch (e) {
+      console.log(e);
     }
   }
 }
@@ -169,7 +173,7 @@ async function createDoc(
         await deleteSessionDocument(ssid, documentId);
       } catch {}
 
-      return document.id;
+      return document;
     }
   } catch (e) {
     console.log(e);

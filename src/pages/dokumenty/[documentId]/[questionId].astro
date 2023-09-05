@@ -50,20 +50,7 @@ if (!isUserDocumentId) {
 let answers: Answers = {},
   docId = documentId,
   draft = false,
-  title: string | undefined,
-  formData: FormData | undefined,
-  docTitle: FormDataEntryValue | null | undefined;
-
-if (Astro.request.method === "POST") {
-  formData = await Astro.request.formData();
-  docTitle = formData.get("title");
-
-  if (docTitle && isUserDocument) {
-    try {
-      await handleNameChange(formData);
-    } catch {}
-  }
-}
+  title: string | undefined;
 
 const questionEntry = await getEntry("questions", String(questionId));
 
@@ -181,51 +168,63 @@ const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
     : `podsumowanie`
 }`;
 
-if (formData && !docTitle) {
-  try {
-    let newAnswers: Answers = {};
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const newTitle = formData.get("title");
 
-    for (let [key, value] of formData.entries()) {
-      if (key in answers && value !== String(answers[key])) {
-        Object.assign(newAnswers, { [key]: value });
-      }
-    }
+  if (newTitle && isUserDocument) {
+    try {
+      await handleNameChange(formData);
+      return Astro.redirect(Astro.request.url);
+    } catch {}
+  }
 
-    if (isUserDocumentId) {
-      if (Object.keys(newAnswers).length) {
-        if (encryptedAnswers) {
-          encrypted.forEach((key) => {
-            if (newAnswers[key] && newAnswers[key].length) {
-              try {
-                newAnswers[key] = crypt.encrypt(newAnswers[key]);
-              } catch {}
-            }
-          });
-        }
+  if (formData && !newTitle) {
+    try {
+      let newAnswers: Answers = {};
 
-        try {
-          await updateAnswers(documentId, newAnswers, docId);
-          return Astro.redirect(`${Astro.url}?${UPDATED_ANSWER_PARAM}`);
-        } catch (error) {
-          console.log(error);
+      for (let [key, value] of formData.entries()) {
+        if (key in answers && value !== String(answers[key])) {
+          Object.assign(newAnswers, { [key]: value });
         }
       }
-    } else {
-      try {
+
+      if (isUserDocumentId) {
         if (Object.keys(newAnswers).length) {
-          await storeAnswers(ssid, documentId, newAnswers);
-        }
-      } catch {
-        return Astro.redirect(Astro.request.url);
-      }
+          if (encryptedAnswers) {
+            encrypted.forEach((key) => {
+              if (newAnswers[key] && newAnswers[key].length) {
+                try {
+                  newAnswers[key] = crypt.encrypt(newAnswers[key]);
+                } catch {}
+              }
+            });
+          }
 
-      return Astro.redirect(nextUrl);
+          try {
+            await updateAnswers(documentId, newAnswers, docId);
+            return Astro.redirect(`${Astro.url}?${UPDATED_ANSWER_PARAM}`);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      } else {
+        try {
+          if (Object.keys(newAnswers).length) {
+            await storeAnswers(ssid, documentId, newAnswers);
+          }
+        } catch {
+          return Astro.redirect(Astro.request.url);
+        }
+
+        return Astro.redirect(nextUrl);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      return Astro.redirect("/404");
     }
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message);
-    }
-    return Astro.redirect("/404");
   }
 }
 ---

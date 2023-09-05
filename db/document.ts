@@ -219,7 +219,7 @@ export async function createDocument(
         created: new Date(),
       });
 
-      return result.insertedId;
+      return result.insertedId.toString();
     } catch (e) {
       throw e;
     }
