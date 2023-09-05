@@ -1,26 +1,10 @@
-import type { Generated } from "kysely";
-import { getEntry } from "astro:content";
-import { db, sql } from "@db/db";
-import type { Answers } from "@type";
-import { emailRegExp, testString } from "./auth";
 import { ObjectId } from "mongodb";
-
 import mongo from "@db/mongodb";
-
-export interface Doc {
-  doc: string;
-  answers: Answers;
-  userid: string;
-  created?: Date;
-  modified?: Date | null;
-  title: string;
-  draft: boolean;
-}
-
-const documentCollection = mongo.collection<Doc>("documents");
+import { getEntry } from "astro:content";
+import type { Answers } from "@type";
+import { emailRegExp, testString } from "./user";
 
 export interface Document {
-  id?: Generated<string>;
   doc: string;
   answers: Answers;
   userid: string;
@@ -30,32 +14,16 @@ export interface Document {
   draft: boolean;
 }
 
-const KEY = "document";
-const LIMIT = 10;
+const documentCollection = mongo.collection<Document>("documents");
 
-export function createDocumentTable() {
-  db.schema
-    .createTable(KEY)
-    .ifNotExists()
-    .addColumn("id", "serial", (cb) => cb.primaryKey())
-    .addColumn("userid", "varchar(255)", (cb) => cb.notNull())
-    .addColumn("doc", "varchar(255)", (cb) => cb.notNull())
-    .addColumn("answers", "jsonb", (cb) => cb.notNull())
-    .addColumn("modified", "timestamptz")
-    .addColumn("created", "timestamptz", (cb) =>
-      cb.notNull().defaultTo(sql`current_timestamp`)
-    )
-    .addColumn("title", "varchar(50)", (cb) => cb.notNull())
-    .addColumn("draft", "boolean", (cb) => cb.notNull())
-    .execute();
-}
+const LIMIT = 10;
 
 export async function getDocumentAnswers(
   id: string,
   userId: string,
   fields: string[]
 ) {
-  type UserDocument = Pick<Doc, "answers" | "doc" | "title" | "draft">;
+  type UserDocument = Pick<Document, "answers" | "doc" | "title" | "draft">;
 
   const selectedAnswers: Record<string, number> = {};
 
@@ -83,7 +51,7 @@ export async function getDocumentAnswers(
 
 export async function getUserDocument(docId: string, userId: string) {
   type UserDocument = Pick<
-    Doc,
+    Document,
     "answers" | "doc" | "title" | "draft" | "created" | "modified"
   >;
 
@@ -98,7 +66,7 @@ export async function getUserDocument(docId: string, userId: string) {
 }
 
 export async function getDocumentSummary(docId: string, userId: string) {
-  type DocumentSummary = Pick<Doc, "answers" | "doc" | "title" | "draft">;
+  type DocumentSummary = Pick<Document, "answers" | "doc" | "title" | "draft">;
 
   try {
     return await documentCollection.findOne<DocumentSummary>(
@@ -111,7 +79,7 @@ export async function getDocumentSummary(docId: string, userId: string) {
 }
 
 export async function getDocumentId(id: string, userId: string) {
-  type TemplateId = Pick<Doc, "doc">;
+  type TemplateId = Pick<Document, "doc">;
 
   try {
     const document = await documentCollection.findOne<TemplateId>(
@@ -138,7 +106,7 @@ export async function getDocuments(
     const pages = Math.ceil(userDocumentCount / limit);
     const offset = page && page > 0 && page <= pages ? (page - 1) * limit : 0;
 
-    type Documents = Omit<Doc, "answers" | "userid">;
+    type Documents = Omit<Document, "answers" | "userid">;
 
     const documents = await documentCollection
       .aggregate<Documents>([
@@ -175,27 +143,30 @@ export async function updateAnswers(
   answers: Answers,
   docId: string
 ) {
-  const { default: schema } = await import(
-    `../src/content/documents/${docId}/_schema.ts`
-  );
-
-  if (!schema) {
-    throw "No template found";
-  }
-
-  let validatedAnswers;
-
   try {
-    validatedAnswers = schema.parse(answers);
-    try {
-      return await db
-        .updateTable(KEY)
-        .set({ answers: validatedAnswers, modified: sql`current_timestamp` })
-        .where("id", "=", documentId)
-        .execute();
-    } catch (e: any) {
-      throw e;
+    const validatedAnswers: Answers = {};
+
+    for (const [field, answer] of Object.entries(answers)) {
+      const { [field]: schema } = await import(
+        `../src/content/documents/${docId}/_schema.ts`
+      );
+
+      if (!schema) {
+        throw new Error("missing field schema");
+      }
+
+      Object.assign(validatedAnswers, {
+        [`answers.${field}`]: schema.parse(answer),
+      });
     }
+
+    return await documentCollection.updateOne(
+      { _id: new ObjectId(documentId) },
+      {
+        $set: { ...validatedAnswers },
+        $currentDate: { modified: true },
+      }
+    );
   } catch (errors) {
     console.log(errors);
     throw errors;
@@ -227,7 +198,7 @@ export async function createDocument(
     validatedAnswers = schema.parse(answers);
 
     const anonymousUser = testString(userid, emailRegExp);
-    let documentTitle;
+    let documentTitle: string;
 
     if (anonymousUser) {
       documentTitle = title;

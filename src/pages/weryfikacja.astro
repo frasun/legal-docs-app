@@ -5,7 +5,7 @@ import {
   createUser,
   verificationInProgress,
   wrongVerificationCode,
-} from "@db/auth";
+} from "@db/user";
 import error from "@utils/errors";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
@@ -131,3 +131,4 @@ if (Astro.request.method === "POST") {
   }
   customElements.define("auto-login", AutoLogin);
 </script>
+@db/user

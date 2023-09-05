@@ -10,7 +10,7 @@ import { SESSION_COOKIE } from "@utils/cookies";
 import { createPaymentSession } from "@db/session";
 import * as PARAMS from "@utils/urlParams";
 import { getDocumentId } from "@db/document";
-import { emailRegExp, testString } from "@db/auth";
+import { emailRegExp, testString } from "@db/user";
 import isObjectId from "@utils/objectId";
 
 const SUMMARY = "podsumowanie";
@@ -131,3 +131,4 @@ if (stripeSession.url) {
     width: 100vw;
   }
 </style>
+@db/user

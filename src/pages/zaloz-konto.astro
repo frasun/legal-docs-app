@@ -4,7 +4,7 @@ import {
   getUserByEmail,
   initAccountVerify,
   verificationInProgress,
-} from "@db/auth";
+} from "@db/user";
 import sendEmail from "@utils/email";
 import error from "@utils/errors";
 import pageTitle from "@utils/pageTitle";
@@ -119,3 +119,4 @@ if (Astro.request.method === "POST") {
     </footer>
   </AuthForm>
 </Layout>
+@db/user

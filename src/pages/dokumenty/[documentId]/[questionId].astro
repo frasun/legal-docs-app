@@ -52,11 +52,11 @@ let answers: Answers = {},
   draft = false,
   title: string | undefined,
   formData: FormData | undefined,
-  docTitle: FormDataEntryValue | undefined;
+  docTitle: FormDataEntryValue | null | undefined;
 
 if (Astro.request.method === "POST") {
   formData = await Astro.request.formData();
-  docTitle = String(formData.get("title"));
+  docTitle = formData.get("title");
 
   if (docTitle && isUserDocument) {
     try {
@@ -177,24 +177,20 @@ if (formData && !docTitle) {
     let newAnswers: Answers = {};
 
     for (let [key, value] of formData.entries()) {
-      if (key in answers) {
+      if (key in answers && value !== answers[key]) {
         newAnswers[key] = value;
       }
     }
 
-    const allAnswers = { ...answers, ...newAnswers };
-
     if (isUserDocumentId) {
       if (Object.keys(newAnswers).length) {
-        if (document.data.encrypted) {
-          document.data.encrypted.forEach((key) => {
-            allAnswers[key] = crypt.encrypt(allAnswers[key]);
-          });
-        }
-
+        // if (document.data.encrypted) {
+        //   document.data.encrypted.forEach((key) => {
+        //     allAnswers[key] = crypt.encrypt(allAnswers[key]);
+        //   });
+        // }
         try {
-          await updateAnswers(documentId, allAnswers, docId);
-
+          await updateAnswers(documentId, newAnswers, docId);
           return Astro.redirect(`${Astro.url}?${UPDATED_ANSWER_PARAM}`);
         } catch (error) {
           console.log(error);
