@@ -1,122 +1,43 @@
 ---
-import RadioButtons from "@components/RadioButtons.astro";
-import lib from "@content/questions/_lib";
 import { entityEnum } from "@content/documents/umowa-najmu-lokalu/_schema";
 import InputGroup from "@components/InputGroup.astro";
 
-const { name, selected, data } = Astro.props;
+const { name, data } = Astro.props;
 ---
 
-<data-selector>
-  <RadioButtons values={lib} selected={selected} name={`${name}Data`} />
-  <fieldset style={parseInt(selected) === 0 ? `display: none;` : ``}>
-    <InputGroup>
-      <label for="type">Rodzaj podmiotu</label>
-      <select id="type" name={`${name}Type`} value={data[0]}>
-        {
-          entityEnum.map((type) => (
-            <option selected={data[0] === type}>{type}</option>
-          ))
-        }
-      </select>
-    </InputGroup>
-    <InputGroup>
-      <label for="name">Imię i nazwisko / nazwa</label>
-      <input
-        id="name"
-        type="text"
-        name={`${name}Name`}
-        required={parseInt(selected) === 0 ? false : true}
-        value={data[1]}
-        class="flex-grow"
-      />
-    </InputGroup>
-    <InputGroup>
-      <label for="address">Adres</label>
-      <input
-        id="address"
-        type="text"
-        name={`${name}Address`}
-        required={parseInt(selected) === 0 ? false : true}
-        value={data[2]}
-        class="flex-grow"
-      />
-    </InputGroup>
-    <InputGroup>
-      <label for="pin">PESEL / NIP</label>
-      <input
-        id="pin"
-        type="text"
-        name={`${name}Pin`}
-        required={parseInt(selected) === 0 ? false : true}
-        value={data[3]}
-      />
-    </InputGroup>
-  </fieldset>
-</data-selector>
-<script>
-  class DataSelector extends HTMLElement {
-    radios: NodeListOf<HTMLInputElement>;
-    fieldset: HTMLFieldSetElement | null;
-
-    constructor() {
-      super();
-
-      this.radios = this.querySelectorAll('input[type="radio"]');
-      this.fieldset = this.querySelector("fieldset");
-    }
-
-    connectedCallback() {
-      Array.from(this.radios).forEach((radio) => {
-        radio.addEventListener("change", () => {
-          if (radio.value === "0") {
-            this.resetForm();
-          } else {
-            this.setForm();
-          }
-        });
-      });
-    }
-
-    resetForm() {
-      if (this.fieldset) {
-        const inputs = this.fieldset.querySelectorAll("input");
-        const selects = this.fieldset.querySelectorAll("select");
-
-        this.fieldset.style.display = "none";
-
-        Array.from(inputs).forEach((input) => {
-          input.value = "";
-          input.required = false;
-        });
-        Array.from(selects).forEach((select) => (select.selectedIndex = 0));
+<fieldset>
+  <InputGroup>
+    <label for="type">Rodzaj podmiotu</label>
+    <select id="type" name={`${name}Type`} value={data[0]}>
+      {
+        entityEnum.map((type) => (
+          <option selected={data[0] === type}>{type}</option>
+        ))
       }
-    }
-
-    setForm() {
-      if (this.fieldset) {
-        const inputs = this.fieldset.querySelectorAll("input");
-        const selects = this.fieldset.querySelectorAll("select");
-
-        this.fieldset.removeAttribute("style");
-
-        Array.from(inputs).forEach((input) => {
-          input.value = "";
-          input.required = true;
-        });
-
-        Array.from(selects).forEach((select) => {
-          select.selectedIndex = 0;
-        });
-      }
-    }
-  }
-
-  customElements.define("data-selector", DataSelector);
-</script>
-
-<style>
-  data-selector {
-    @apply flex flex-col gap-30;
-  }
-</style>
+    </select>
+  </InputGroup>
+  <InputGroup>
+    <label for="name">Imię i nazwisko / nazwa</label>
+    <input
+      id="name"
+      type="text"
+      name={`${name}Name`}
+      value={data[1]}
+      class="flex-grow"
+    />
+  </InputGroup>
+  <InputGroup>
+    <label for="address">Adres</label>
+    <input
+      id="address"
+      type="text"
+      name={`${name}Address`}
+      value={data[2]}
+      class="flex-grow"
+    />
+  </InputGroup>
+  <InputGroup>
+    <label for="pin">PESEL / NIP</label>
+    <input id="pin" type="text" name={`${name}Pin`} value={data[3]} />
+  </InputGroup>
+</fieldset>

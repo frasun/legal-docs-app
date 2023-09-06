@@ -48,10 +48,11 @@ if (!userDocumentId) {
   }
 }
 
-let docId = documentId;
-let draft = false;
-let answers: Answers = {},
-  title;
+let docId = documentId,
+  draft = false,
+  answers: Answers = {},
+  title,
+  canGenerate = true;
 
 if (isUserDocument) {
   const userId = session.user?.id;
@@ -80,7 +81,7 @@ if (!document) {
 }
 
 const {
-  data: { index, encrypted, title: docTitle, dates },
+  data: { index, encrypted, title: docTitle, dates, required },
 } = document;
 
 if (!index) {
@@ -123,7 +124,13 @@ if (!Object.keys(answers).length) {
   });
 }
 
+if (required) {
+  canGenerate = required.every((field) => answers[field] !== "");
+}
+
 if (!title) title = docTitle;
+
+const GENERATE = "Generuj dokument";
 ---
 
 <Layout title={pageTitle(`Podsumowanie - ${title}`)}>
@@ -166,12 +173,16 @@ if (!title) title = docTitle;
     }
     <footer>
       {
-        session ? (
-          <a href={`${Astro.url.origin}/zamowienie`}>Generuj dokument</a>
+        canGenerate ? (
+          session ? (
+            <a href={`${Astro.url.origin}/zamowienie`}>{GENERATE}</a>
+          ) : (
+            <show-payment-modal>
+              <button>{GENERATE}</button>
+            </show-payment-modal>
+          )
         ) : (
-          <show-payment-modal>
-            <button>Generuj dokument</button>
-          </show-payment-modal>
+          <h4>Aby wygenerować dokument wypełnij wszystkie wymagane pola</h4>
         )
       }
       {
@@ -227,6 +238,7 @@ if (!title) title = docTitle;
   }
 
   footer a:first-child,
+  footer button,
   show-payment-modal button {
     @apply btn btn-default btn-big;
   }

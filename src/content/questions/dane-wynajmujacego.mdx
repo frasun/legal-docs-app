@@ -1,24 +1,20 @@
 ---
-tenantData: 0
 tenantType: osoba fizyczna
 tenantName: ""
 tenantAddress: ""
 tenantPin: ""
-question: Czy chcesz uzupełnić dane Wynajmującego?
+question: Podaj dane Wynajmującego
+info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
 ---
 
 import DataSelector from "@components/DataSelector.astro";
 
-<fieldset>
-  <legend>Wybierz pasującą odpowiedź</legend>
-  <DataSelector
-    name="tenant"
-    selected={frontmatter["tenantData"]}
-    data={[
-      frontmatter["tenantType"],
-      frontmatter["tenantName"],
-      frontmatter["tenantAddress"],
-      frontmatter["tenantPin"],
-    ]}
-  />
-</fieldset>
+<DataSelector
+  name="tenant"
+  data={[
+    frontmatter["tenantType"],
+    frontmatter["tenantName"],
+    frontmatter["tenantAddress"],
+    frontmatter["tenantPin"],
+  ]}
+/>

@@ -1,24 +1,20 @@
 ---
-landlordData: 0
 landlordType: osoba fizyczna
 landlordName: ""
 landlordAddress: ""
 landlordPin: ""
-question: Czy chcesz uzupełnić dane Najemcy?
+question: Podaj dane Najemcy
+info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
 ---
 
 import DataSelector from "@components/DataSelector.astro";
 
-<fieldset>
-  <legend>Wybierz pasującą odpowiedź</legend>
-  <DataSelector
-    name="landlord"
-    selected={frontmatter["landlordData"]}
-    data={[
-      frontmatter["landlordType"],
-      frontmatter["landlordName"],
-      frontmatter["landlordAddress"],
-      frontmatter["landlordPin"],
-    ]}
-  />
-</fieldset>
+<DataSelector
+  name="landlord"
+  data={[
+    frontmatter["landlordType"],
+    frontmatter["landlordName"],
+    frontmatter["landlordAddress"],
+    frontmatter["landlordPin"],
+  ]}
+/>

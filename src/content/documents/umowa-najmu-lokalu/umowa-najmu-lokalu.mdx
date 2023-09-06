@@ -36,8 +36,8 @@ index: [
   {
     title: Dane stron,
     questions: [
-      { id: dane-najemcy, title: Dane Najemcy, answer: dane-najemcy },
-      { id: dane-wynajmujacego, title: Dane Wynajmującego,  answer: dane-wynajmujacego },      
+      { id: dane-najemcy, title: Dane Najemcy, answer: dane-najemcy, required: true },
+      { id: dane-wynajmujacego, title: Dane Wynajmującego,  answer: dane-wynajmujacego, required: true },      
     ]
   },
 ]
@@ -52,36 +52,45 @@ encrypted: [
 dates: [
   start
 ]
+required: [
+  landlordName,
+  landlordAddress,
+  landlordPin,
+  tenantName,
+  tenantAddress,
+  tenantPin
+]
 ---
 import formatNumber from "@utils/number";
 import formatDate from "@utils/date";
 import getAmount from '@utils/amount';
 import getItems from '@utils/itemlist';
 import PLURALS from "@utils/plurals";
+import PersonalData from "@components/PersonalData.astro";
 
 ### Umowa najmu lokalu
 
 #### Strony Umowy
 
 1. Umowa zostaje zawarta pomiędzy Stronami:
-    <br /><br />    
-    {frontmatter.landlordName || `[IMIĘ I NAZWISKO / NAZWA]`}
-    <br />
-    {frontmatter.landlordAddress || `[ADRES]`}
-    <br />
-    {frontmatter.landlordPin || `[NUMER PESEL / NIP]`}
-    <br />
-    zwanym dalej Najemcą.
     <br /><br />
-    oraz
+    Najemca:
+    <br />
+    <PersonalData
+      type={frontmatter["landlordType"]}
+      name={frontmatter["landlordName"]}
+      address={frontmatter["landlordAddress"]}
+      pin={frontmatter["landlordPin"]}
+    />
     <br /><br />
-    {frontmatter.tenantName || `[IMIĘ I NAZWISKO / NAZWA]`}
+    Wynajmujący:
     <br />
-    {frontmatter.tenantAddress || `[ADRES]`}
-    <br />
-    {frontmatter.tenantPin || `[NUMER PESEL / NIP]`}
-    <br />
-    zwanym dalej Wynajmującym.
+    <PersonalData
+      type={frontmatter["tenantType"]}
+      name={frontmatter["tenantName"]}
+      address={frontmatter["tenantAddress"]}
+      pin={frontmatter["tenantPin"]}
+    />
 
 #### Przedmiot Umowy
 

@@ -175,13 +175,6 @@ export const start = z
   .transform((val) => new Date(val).toISOString())
   .refine((val) => z.coerce.date().safeParse(val).success);
 
-export const landlordData = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => validateDataType(val));
-
 export const landlordType = z.enum(entityEnum);
 
 export const landlordName = z.string().transform((val) => trimWhitespace(val));
@@ -191,13 +184,6 @@ export const landlordAddress = z
   .transform((val) => trimWhitespace(val));
 
 export const landlordPin = z.string().transform((val) => trimWhitespace(val));
-
-export const tenantData = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => validateDataType(val));
 
 export const tenantType = z.enum(entityEnum);
 
@@ -233,12 +219,10 @@ export default z.object({
   termination,
   returnTime,
   start,
-  landlordData,
   landlordType,
   landlordName,
   landlordAddress,
   landlordPin,
-  tenantData,
   tenantType,
   tenantName,
   tenantAddress,
