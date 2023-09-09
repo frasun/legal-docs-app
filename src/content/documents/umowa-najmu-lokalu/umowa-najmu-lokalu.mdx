@@ -52,13 +52,9 @@ encrypted: [
 dates: [
   start
 ]
-required: [
-  landlordName,
-  landlordAddress,
-  landlordPin,
-  tenantName,
-  tenantAddress,
-  tenantPin
+dataFields: [
+  landlord,
+  tenant
 ]
 ---
 import formatNumber from "@utils/number";
@@ -66,7 +62,7 @@ import formatDate from "@utils/date";
 import getAmount from '@utils/amount';
 import getItems from '@utils/itemlist';
 import PLURALS from "@utils/plurals";
-import PersonalData from "@components/PersonalData.astro";
+import DataDisplay from "@components/DataDisplay.astro";
 
 ### Umowa najmu lokalu
 
@@ -76,20 +72,26 @@ import PersonalData from "@components/PersonalData.astro";
     <br /><br />
     Najemca:
     <br />
-    <PersonalData
+    <DataDisplay
       type={frontmatter["landlordType"]}
-      name={frontmatter["landlordName"]}
-      address={frontmatter["landlordAddress"]}
-      pin={frontmatter["landlordPin"]}
+      personName={frontmatter["landlordPersonName"]}
+      personAddress={frontmatter["landlordPersonAddress"]}
+      personPin={frontmatter["landlordPersonPin"]}
+      companyName={frontmatter["landlordCompanyName"]}
+      companyAddress={frontmatter["landlordCompanyAddress"]}
+      companyPin={frontmatter["landlordCompanyPin"]}
     />
     <br /><br />
     Wynajmujący:
     <br />
-    <PersonalData
+    <DataDisplay
       type={frontmatter["tenantType"]}
-      name={frontmatter["tenantName"]}
-      address={frontmatter["tenantAddress"]}
-      pin={frontmatter["tenantPin"]}
+      personName={frontmatter["tenantPersonName"]}
+      personAddress={frontmatter["tenantPersonAddress"]}
+      personPin={frontmatter["tenantPersonPin"]}
+      companyName={frontmatter["tenantCompanyName"]}
+      companyAddress={frontmatter["tenantCompanyAddress"]}
+      companyPin={frontmatter["tenantCompanyPin"]}
     />
 
 #### Przedmiot Umowy

@@ -1,0 +1,65 @@
+---
+import { Icon } from "astro-icon";
+import { entityEnum } from "@utils/constants";
+
+const {
+  type,
+  personName,
+  personAddress,
+  personPin,
+  companyName,
+  companyAddress,
+  companyPin,
+} = Astro.props;
+
+let name, address, pin;
+let typeLabel, pinLabel;
+
+if (type === entityEnum[0]) {
+  name = personName;
+  address = personAddress;
+  pin = personPin;
+  typeLabel = entityEnum[0];
+  pinLabel = "NIP";
+} else {
+  name = companyName;
+  address = companyAddress;
+  pin = companyPin;
+  typeLabel = entityEnum[1];
+  pinLabel = "PESEL";
+}
+
+const data = name && address && pin;
+---
+
+{
+  data ? (
+    <>
+      <span>
+        {name} ({typeLabel})
+      </span>
+      <br />
+      <span>{address}</span>
+      <br />
+      <span>
+        {pinLabel}: {pin}
+      </span>
+    </>
+  ) : (
+    <div>
+      <Icon name="info" width={24} height={24} />
+      Uzupełnij dane
+    </div>
+  )
+}
+
+<style>
+  div {
+    @apply text-orangeDark;
+    @apply flex gap-10 items-center;
+  }
+
+  div svg {
+    @apply text-orange;
+  }
+</style>

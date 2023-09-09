@@ -1,16 +1,21 @@
 ---
-tenantData: 0
 tenantType: osoba fizyczna
-tenantName: ''
-tenantAddress: ''
-tenantPin: ''
+tenantPersonName: ''
+tenantPersonAddress: ''
+tenantPersonPin: ''
+tenantCompanyName: ''
+tenantCompanyAddress: ''
+tenantCompanyPin: ''
 ---
 
-import PersonalData from "@components/PersonalData.astro";
+import DataDisplay from "@components/DataDisplay.astro";
 
-<PersonalData
+<DataDisplay
   type={frontmatter["tenantType"]}
-  name={frontmatter["tenantName"]}
-  address={frontmatter["tenantAddress"]}
-  pin={frontmatter["tenantPin"]}
+  personName={frontmatter["tenantPersonName"]}
+  personAddress={frontmatter["tenantPersonAddress"]}
+  personPin={frontmatter["tenantPersonPin"]}
+  companyName={frontmatter["tenantCompanyName"]}
+  companyAddress={frontmatter["tenantCompanyAddress"]}
+  companyPin={frontmatter["tenantCompanyPin"]}
 />

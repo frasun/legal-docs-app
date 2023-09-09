@@ -1,16 +1,21 @@
 ---
-landlordData: 0
 landlordType: osoba fizyczna
-landlordName: ''
-landlordAddress: ''
-landlordPin: ''
+landlordPersonName: ''
+landlordPersonAddress: ''
+landlordPersonPin: ''
+landlordCompanyName: ''
+landlordCompanyAddress: ''
+landlordCompanyPin: ''
 ---
 
-import PersonalData from "@components/PersonalData.astro";
+import DataDisplay from "@components/DataDisplay.astro";
 
-<PersonalData
+<DataDisplay
   type={frontmatter["landlordType"]}
-  name={frontmatter["landlordName"]}
-  address={frontmatter["landlordAddress"]}
-  pin={frontmatter["landlordPin"]}
+  personName={frontmatter["landlordPersonName"]}
+  personAddress={frontmatter["landlordPersonAddress"]}
+  personPin={frontmatter["landlordPersonPin"]}
+  companyName={frontmatter["landlordCompanyName"]}
+  companyAddress={frontmatter["landlordCompanyAddress"]}
+  companyPin={frontmatter["landlordCompanyPin"]}
 />

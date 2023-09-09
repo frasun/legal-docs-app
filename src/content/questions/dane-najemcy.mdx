@@ -1,20 +1,24 @@
 ---
 landlordType: osoba fizyczna
-landlordName: ""
-landlordAddress: ""
-landlordPin: ""
+landlordPersonName: ""
+landlordPersonAddress: ""
+landlordPersonPin: ""
+landlordCompanyName: ""
+landlordCompanyAddress: ""
+landlordCompanyPin: ""
 question: Podaj dane Najemcy
 info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
 ---
 
-import DataSelector from "@components/DataSelector.astro";
+import DataInput from "@components/DataInput.astro";
 
-<DataSelector
-  name="landlord"
-  data={[
-    frontmatter["landlordType"],
-    frontmatter["landlordName"],
-    frontmatter["landlordAddress"],
-    frontmatter["landlordPin"],
-  ]}
+<DataInput
+  name="landlord"  
+  type={frontmatter["landlordType"]}
+  personName={frontmatter["landlordPersonName"]}
+  personAddress={frontmatter["landlordPersonAddress"]}
+  personPin={frontmatter["landlordPersonPin"]}
+  companyName={frontmatter["landlordCompanyName"]}
+  companyAddress={frontmatter["landlordCompanyAddress"]}
+  companyPin={frontmatter["landlordCompanyPin"]}
 />

@@ -20,6 +20,7 @@ import getQuesitons from "@utils/questions";
 import PaymentModal from "@components/PaymentModal.astro";
 import * as PARAMS from "@utils/urlParams";
 import isObjectId from "@utils/objectId";
+import { entityEnum } from "@utils/constants";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -84,7 +85,7 @@ if (!document) {
 }
 
 const {
-  data: { index, encrypted, title: docTitle, dates, required },
+  data: { index, encrypted, title: docTitle, dates, dataFields },
 } = document;
 
 if (!index) {
@@ -127,8 +128,33 @@ if (!Object.keys(answers).length) {
   });
 }
 
-if (required) {
-  canGenerate = required.every((field) => answers[field] !== "");
+if (dataFields) {
+  const required: string[] = [];
+
+  dataFields.map((field) => {
+    const dataType = answers[`${field}Type`];
+
+    switch (dataType) {
+      case entityEnum[0]:
+        required.push(
+          `${field}PersonName`,
+          `${field}PersonAddress`,
+          `${field}PersonPin`
+        );
+        break;
+      case entityEnum[1]:
+        required.push(
+          `${field}CompanyName`,
+          `${field}CompanyAddress`,
+          `${field}CompanyPin`
+        );
+        break;
+    }
+  });
+
+  canGenerate = required.every(
+    (field) => answers[field] !== undefined && answers[field] !== ""
+  );
 }
 
 if (!title) title = docTitle;

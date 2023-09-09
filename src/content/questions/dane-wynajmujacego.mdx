@@ -1,20 +1,24 @@
 ---
 tenantType: osoba fizyczna
-tenantName: ""
-tenantAddress: ""
-tenantPin: ""
+tenantPersonName: ""
+tenantPersonAddress: ""
+tenantPersonPin: ""
+tenantCompanyName: ""
+tenantCompanyAddress: ""
+tenantCompanyPin: ""
 question: Podaj dane Wynajmującego
 info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
 ---
 
-import DataSelector from "@components/DataSelector.astro";
+import DataInput from "@components/DataInput.astro";
 
-<DataSelector
-  name="tenant"
-  data={[
-    frontmatter["tenantType"],
-    frontmatter["tenantName"],
-    frontmatter["tenantAddress"],
-    frontmatter["tenantPin"],
-  ]}
+<DataInput
+  name="tenant"  
+  type={frontmatter["tenantType"]}
+  personName={frontmatter["tenantPersonName"]}
+  personAddress={frontmatter["tenantPersonAddress"]}
+  personPin={frontmatter["tenantPersonPin"]}
+  companyName={frontmatter["tenantCompanyName"]}
+  companyAddress={frontmatter["tenantCompanyAddress"]}
+  companyPin={frontmatter["tenantCompanyPin"]}
 />

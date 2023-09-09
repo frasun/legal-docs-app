@@ -1,7 +1,8 @@
 import { z } from "astro:content";
 import trimWhitespace from "@utils/whitespace";
+import { entityEnum } from "@utils/constants";
+import { personalPin, companyPin } from "@utils/dataValidation";
 
-export const entityEnum = ["osoba fizyczna", "firma"] as const;
 export const paymentMethodEnum = [
   "przelewem na konto bankowe",
   "gotówką",
@@ -177,21 +178,47 @@ export const start = z
 
 export const landlordType = z.enum(entityEnum);
 
-export const landlordName = z.string().transform((val) => trimWhitespace(val));
-
-export const landlordAddress = z
+export const landlordPersonName = z
   .string()
   .transform((val) => trimWhitespace(val));
 
-export const landlordPin = z.string().transform((val) => trimWhitespace(val));
+export const landlordPersonAddress = z
+  .string()
+  .transform((val) => trimWhitespace(val));
+
+export const landlordPersonPin = personalPin("landlordPersonPin");
+
+export const landlordCompanyName = z
+  .string()
+  .transform((val) => trimWhitespace(val));
+
+export const landlordCompanyAddress = z
+  .string()
+  .transform((val) => trimWhitespace(val));
+
+export const landlordCompanyPin = companyPin("landlordCompanyPin");
 
 export const tenantType = z.enum(entityEnum);
 
-export const tenantName = z.string().transform((val) => trimWhitespace(val));
+export const tenantPersonName = z
+  .string()
+  .transform((val) => trimWhitespace(val));
 
-export const tenantAddress = z.string().transform((val) => trimWhitespace(val));
+export const tenantPersonAddress = z
+  .string()
+  .transform((val) => trimWhitespace(val));
 
-export const tenantPin = z.string().transform((val) => trimWhitespace(val));
+export const tenantPersonPin = personalPin("tenantPersonPin");
+
+export const tenantCompanyName = z
+  .string()
+  .transform((val) => trimWhitespace(val));
+
+export const tenantCompanyAddress = z
+  .string()
+  .transform((val) => trimWhitespace(val));
+
+export const tenantCompanyPin = companyPin("tenantCompanyPin");
 
 export default z.object({
   address,
@@ -220,18 +247,20 @@ export default z.object({
   returnTime,
   start,
   landlordType,
-  landlordName,
-  landlordAddress,
-  landlordPin,
+  landlordPersonName,
+  landlordPersonAddress,
+  landlordPersonPin,
+  landlordCompanyName,
+  landlordCompanyAddress,
+  landlordCompanyPin,
   tenantType,
-  tenantName,
-  tenantAddress,
-  tenantPin,
+  tenantPersonName,
+  tenantPersonAddress,
+  tenantPersonPin,
+  tenantCompanyName,
+  tenantCompanyAddress,
+  tenantCompanyPin,
 });
-
-function validateDataType(val: number) {
-  return [0, 1, 2].includes(val);
-}
 
 function validateEnum(val: string, array: Readonly<string[]>) {
   const arr = val.split(", ");
