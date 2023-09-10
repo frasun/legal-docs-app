@@ -175,7 +175,8 @@ if (Astro.request.method === "POST") {
   if (newTitle && isUserDocument) {
     try {
       await handleNameChange(formData);
-      return Astro.redirect(Astro.request.url);
+
+      title = String(newTitle);
     } catch {}
   }
 
