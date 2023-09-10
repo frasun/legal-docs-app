@@ -1,10 +1,16 @@
 ---
 landlordType: osoba fizyczna
 landlordPersonName: ''
-landlordPersonAddress: ''
+landlordPersonStreet: ''
+landlordPersonApt: ''
+landlordPersonPostalCode: ''
+landlordPersonCity: ''
 landlordPersonPin: ''
 landlordCompanyName: ''
-landlordCompanyAddress: ''
+landlordCompanyStreet: ''
+landlordCompanyApt: ''
+landlordCompanyPostalCode: ''
+landlordCompanyCity: ''
 landlordCompanyPin: ''
 ---
 
@@ -13,9 +19,15 @@ import DataDisplay from "@components/DataDisplay.astro";
 <DataDisplay
   type={frontmatter["landlordType"]}
   personName={frontmatter["landlordPersonName"]}
-  personAddress={frontmatter["landlordPersonAddress"]}
   personPin={frontmatter["landlordPersonPin"]}
+  personStreet={frontmatter["landlordPersonStreet"]}
+  personApt={frontmatter["landlordPersonApt"]}
+  personPostalCode={frontmatter["landlordPersonPostalCode"]}
+  personCity={frontmatter["landlordPersonCity"]}
   companyName={frontmatter["landlordCompanyName"]}
-  companyAddress={frontmatter["landlordCompanyAddress"]}
   companyPin={frontmatter["landlordCompanyPin"]}
+  companyStreet={frontmatter["landlordCompanyStreet"]}
+  companyApt={frontmatter["landlordCompanyApt"]}
+  companyPostalCode={frontmatter["landlordCompanyPostalCode"]}
+  companyCity={frontmatter["landlordCompanyCity"]}
 />

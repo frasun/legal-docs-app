@@ -1,15 +1,22 @@
 ---
 import { entityEnum } from "@utils/constants";
-import InputGroup from "@components/InputGroup.astro";
+import InputGroup, { InputSize } from "@components/InputGroup.astro";
+import Address from "./Address.astro";
 
 const {
   name,
   type,
   personName,
-  personAddress,
+  personStreet,
+  personApt,
+  personPostalCode,
+  personCity,
   personPin,
   companyName,
-  companyAddress,
+  companyStreet,
+  companyApt,
+  companyPostalCode,
+  companyCity,
   companyPin,
 } = Astro.props;
 ---
@@ -29,23 +36,13 @@ const {
     data-type={entityEnum[0]}
     style={type === entityEnum[1] ? `display:none` : ``}
   >
-    <InputGroup>
+    <InputGroup size={InputSize.lg}>
       <label for="personName">Imię i nazwisko</label>
       <input
         id="personName"
         type="text"
         name={`${name}PersonName`}
         value={personName}
-        class="flex-grow"
-      />
-    </InputGroup>
-    <InputGroup>
-      <label for="personAddress">Adres zamieszkania</label>
-      <input
-        id="personAddress"
-        type="text"
-        name={`${name}PersonAddress`}
-        value={personAddress}
         class="flex-grow"
       />
     </InputGroup>
@@ -58,28 +55,28 @@ const {
         value={personPin}
       />
     </InputGroup>
+    <Address
+      street={personStreet}
+      apt={personApt}
+      postalCode={personPostalCode}
+      city={personCity}
+      streetFieldName={`${name}PersonStreet`}
+      aptFieldName={`${name}PersonApt`}
+      postalCodeFieldName={`${name}PersonPostalCode`}
+      cityFieldName={`${name}PersonCity`}
+    />
   </fieldset>
   <fieldset
     data-type={entityEnum[1]}
     style={type === entityEnum[0] ? `display:none` : ``}
   >
-    <InputGroup>
+    <InputGroup size={InputSize.lg}>
       <label for="companyName">Nazwa firmy</label>
       <input
         id="companyName"
         type="text"
         name={`${name}CompanyName`}
         value={companyName}
-        class="flex-grow"
-      />
-    </InputGroup>
-    <InputGroup>
-      <label for="companyAddress">Adres firmy</label>
-      <input
-        id="companyAddress"
-        type="text"
-        name={`${name}CompanyAddress`}
-        value={companyAddress}
         class="flex-grow"
       />
     </InputGroup>
@@ -92,6 +89,16 @@ const {
         value={companyPin}
       />
     </InputGroup>
+    <Address
+      street={companyStreet}
+      apt={companyApt}
+      postalCode={companyPostalCode}
+      city={companyCity}
+      streetFieldName={`${name}CompanyStreet`}
+      aptFieldName={`${name}CompanyApt`}
+      postalCodeFieldName={`${name}CompanyPostalCode`}
+      cityFieldName={`${name}CompanyCity`}
+    />
   </fieldset>
 </data-selector>
 

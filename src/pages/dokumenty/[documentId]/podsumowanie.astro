@@ -138,14 +138,20 @@ if (dataFields) {
       case entityEnum[0]:
         required.push(
           `${field}PersonName`,
-          `${field}PersonAddress`,
+          `${field}PersonStreet`,
+          `${field}PersonApt`,
+          `${field}PersonPostalCode`,
+          `${field}PersonCity`,
           `${field}PersonPin`
         );
         break;
       case entityEnum[1]:
         required.push(
           `${field}CompanyName`,
-          `${field}CompanyAddress`,
+          `${field}CompanyStreet`,
+          `${field}CompanyApt`,
+          `${field}CompanyPostalCode`,
+          `${field}CompanyCity`,
           `${field}CompanyPin`
         );
         break;

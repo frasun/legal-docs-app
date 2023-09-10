@@ -5,10 +5,16 @@ import { entityEnum } from "@utils/constants";
 const {
   type,
   personName,
-  personAddress,
+  personStreet,
+  personApt,
+  personPostalCode,
+  personCity,
   personPin,
   companyName,
-  companyAddress,
+  companyStreet,
+  companyApt,
+  companyPostalCode,
+  companyCity,
   companyPin,
 } = Astro.props;
 
@@ -16,14 +22,18 @@ let name, address, pin;
 let typeLabel, pinLabel;
 
 if (type === entityEnum[0]) {
+  let street = `${personStreet}${personApt.length ? ` /${personApt}` : ``}`;
+
   name = personName;
-  address = personAddress;
+  address = `${personPostalCode} ${personCity}, ${street}`;
   pin = personPin;
   typeLabel = entityEnum[0];
   pinLabel = "PESEL";
 } else {
+  let street = `${companyStreet}${companyApt.length ? ` /${companyApt}` : ``}`;
+
   name = companyName;
-  address = companyAddress;
+  address = `${companyPostalCode} ${companyCity}, ${street}`;
   pin = companyPin;
   typeLabel = entityEnum[1];
   pinLabel = "NIP";

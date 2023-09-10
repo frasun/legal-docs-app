@@ -40,7 +40,6 @@ const documents = defineCollection({
     categories: z.array(reference("categories")),
     keywords: z.array(z.string()).optional(),
     priceId: z.string(),
-    data: z.record(z.any()).optional(),
     index: documentIndex.optional(),
     encrypted: z.array(z.string()).optional(),
     dates: z.array(z.string()).optional(),

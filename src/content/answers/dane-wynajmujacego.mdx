@@ -1,10 +1,16 @@
 ---
 tenantType: osoba fizyczna
 tenantPersonName: ''
-tenantPersonAddress: ''
+tenantPersonStreet: ''
+tenantPersonApt: ''
+tenantPersonPostalCode: ''
+tenantPersonCity: ''
 tenantPersonPin: ''
 tenantCompanyName: ''
-tenantCompanyAddress: ''
+tenantCompanyStreet: ''
+tenantCompanyApt: ''
+tenantCompanyPostalCode: ''
+tenantCompanyCity: ''
 tenantCompanyPin: ''
 ---
 
@@ -13,9 +19,15 @@ import DataDisplay from "@components/DataDisplay.astro";
 <DataDisplay
   type={frontmatter["tenantType"]}
   personName={frontmatter["tenantPersonName"]}
-  personAddress={frontmatter["tenantPersonAddress"]}
   personPin={frontmatter["tenantPersonPin"]}
+  personStreet={frontmatter["tenantPersonStreet"]}
+  personApt={frontmatter["tenantPersonApt"]}
+  personPostalCode={frontmatter["tenantPersonPostalCode"]}
+  personCity={frontmatter["tenantPersonCity"]}
   companyName={frontmatter["tenantCompanyName"]}
-  companyAddress={frontmatter["tenantCompanyAddress"]}
   companyPin={frontmatter["tenantCompanyPin"]}
+  companyStreet={frontmatter["tenantCompanyStreet"]}
+  companyApt={frontmatter["tenantCompanyApt"]}
+  companyPostalCode={frontmatter["tenantCompanyPostalCode"]}
+  companyCity={frontmatter["tenantCompanyCity"]}
 />

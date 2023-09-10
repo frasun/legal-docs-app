@@ -1,10 +1,16 @@
 ---
 tenantType: osoba fizyczna
 tenantPersonName: ""
-tenantPersonAddress: ""
+tenantPersonStreet: ""
+tenantPersonApt: ""
+tenantPersonPostalCode: ""
+tenantPersonCity: ""
 tenantPersonPin: ""
 tenantCompanyName: ""
-tenantCompanyAddress: ""
+tenantCompanyStreet: ""
+tenantCompanyApt: ""
+tenantCompanyPostalCode: ""
+tenantCompanyCity: ""
 tenantCompanyPin: ""
 question: Podaj dane Wynajmującego
 info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
@@ -16,9 +22,15 @@ import DataInput from "@components/DataInput.astro";
   name="tenant"  
   type={frontmatter["tenantType"]}
   personName={frontmatter["tenantPersonName"]}
-  personAddress={frontmatter["tenantPersonAddress"]}
+  personStreet={frontmatter["tenantPersonStreet"]}
+  personApt={frontmatter["tenantPersonApt"]}
+  personPostalCode={frontmatter["tenantPersonPostalCode"]}
+  personCity={frontmatter["tenantPersonCity"]}
   personPin={frontmatter["tenantPersonPin"]}
   companyName={frontmatter["tenantCompanyName"]}
-  companyAddress={frontmatter["tenantCompanyAddress"]}
+  companyStreet={frontmatter["tenantCompanyStreet"]}
+  companyApt={frontmatter["tenantCompanyApt"]}
+  companyPostalCode={frontmatter["tenantCompanyPostalCode"]}
+  companyCity={frontmatter["tenantCompanyCity"]}
   companyPin={frontmatter["tenantCompanyPin"]}
 />

@@ -1,0 +1,69 @@
+---
+import InputGroup from "@components/InputGroup.astro";
+
+const {
+  street,
+  apt,
+  postalCode,
+  city,
+  streetFieldName,
+  aptFieldName,
+  postalCodeFieldName,
+  cityFieldName,
+  required = false,
+} = Astro.props;
+---
+
+<InputGroup>
+  <label for={streetFieldName || "street"}>Adres (ulica i numer domu)</label>
+  <input
+    id={streetFieldName || "street"}
+    type="text"
+    name={streetFieldName || "street"}
+    value={street}
+    class="flex-grow"
+    required={required || undefined}
+  />
+</InputGroup>
+<InputGroup>
+  <label for={aptFieldName || "apt"}>Adres (numer lokalu)</label>
+  <input
+    id={aptFieldName || "apt"}
+    type="text"
+    name={aptFieldName || "apt"}
+    value={apt}
+    required={required || undefined}
+  />
+</InputGroup>
+<section>
+  <InputGroup>
+    <label for={postalCodeFieldName || "postalCode"}>Kod pocztowy</label>
+    <input
+      id={postalCodeFieldName || "postalCode"}
+      type="text"
+      name={postalCodeFieldName || "postalCode"}
+      value={postalCode}
+      required={required || undefined}
+    />
+  </InputGroup>
+  <InputGroup>
+    <label for={cityFieldName || "city"}>Miasto</label>
+    <input
+      id={cityFieldName || "city"}
+      type="text"
+      name={cityFieldName || "city"}
+      value={city}
+      required={required || undefined}
+    />
+  </InputGroup>
+</section>
+
+<style>
+  section {
+    @apply flex gap-20 flex-wrap lg:flex-nowrap;
+  }
+
+  section :global(div) {
+    @apply flex-grow;
+  }
+</style>

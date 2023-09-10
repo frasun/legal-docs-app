@@ -1,6 +1,5 @@
 import type { Answers } from "@type";
 import { kv } from "@vercel/kv";
-import { z } from "astro:content";
 
 const DOCUMENT_EXPIRATION_TIME = 3600;
 const PAYMENT_EXPIRATION_TIME = 86400;

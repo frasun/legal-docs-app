@@ -1,10 +1,16 @@
 ---
 landlordType: osoba fizyczna
 landlordPersonName: ""
-landlordPersonAddress: ""
+landlordPersonStreet: ""
+landlordPersonApt: ""
+landlordPersonPostalCode: ""
+landlordPersonCity: ""
 landlordPersonPin: ""
 landlordCompanyName: ""
-landlordCompanyAddress: ""
+landlordCompanyStreet: ""
+landlordCompanyApt: ""
+landlordCompanyPostalCode: ""
+landlordCompanyCity: ""
 landlordCompanyPin: ""
 question: Podaj dane Najemcy
 info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
@@ -16,9 +22,15 @@ import DataInput from "@components/DataInput.astro";
   name="landlord"  
   type={frontmatter["landlordType"]}
   personName={frontmatter["landlordPersonName"]}
-  personAddress={frontmatter["landlordPersonAddress"]}
+  personStreet={frontmatter["landlordPersonStreet"]}
+  personApt={frontmatter["landlordPersonApt"]}
+  personPostalCode={frontmatter["landlordPersonPostalCode"]}
+  personCity={frontmatter["landlordPersonCity"]}
   personPin={frontmatter["landlordPersonPin"]}
   companyName={frontmatter["landlordCompanyName"]}
-  companyAddress={frontmatter["landlordCompanyAddress"]}
+  companyStreet={frontmatter["landlordCompanyStreet"]}
+  companyApt={frontmatter["landlordCompanyApt"]}
+  companyPostalCode={frontmatter["landlordCompanyPostalCode"]}
+  companyCity={frontmatter["landlordCompanyCity"]}
   companyPin={frontmatter["landlordCompanyPin"]}
 />

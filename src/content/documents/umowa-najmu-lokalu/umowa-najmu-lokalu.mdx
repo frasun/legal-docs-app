@@ -75,11 +75,17 @@ import DataDisplay from "@components/DataDisplay.astro";
     <DataDisplay
       type={frontmatter["landlordType"]}
       personName={frontmatter["landlordPersonName"]}
-      personAddress={frontmatter["landlordPersonAddress"]}
       personPin={frontmatter["landlordPersonPin"]}
+      personStreet={frontmatter["landlordPersonStreet"]}
+      personApt={frontmatter["landlordPersonApt"]}
+      personPostalCode={frontmatter["landlordPersonPostalCode"]}
+      personCity={frontmatter["landlordPersonCity"]}
       companyName={frontmatter["landlordCompanyName"]}
-      companyAddress={frontmatter["landlordCompanyAddress"]}
       companyPin={frontmatter["landlordCompanyPin"]}
+      companyStreet={frontmatter["landlordCompanyStreet"]}
+      companyApt={frontmatter["landlordCompanyApt"]}
+      companyPostalCode={frontmatter["landlordCompanyPostalCode"]}
+      companyCity={frontmatter["landlordCompanyCity"]}
     />
     <br /><br />
     Wynajmujący:
@@ -87,16 +93,22 @@ import DataDisplay from "@components/DataDisplay.astro";
     <DataDisplay
       type={frontmatter["tenantType"]}
       personName={frontmatter["tenantPersonName"]}
-      personAddress={frontmatter["tenantPersonAddress"]}
       personPin={frontmatter["tenantPersonPin"]}
+      personStreet={frontmatter["tenantPersonStreet"]}
+      personApt={frontmatter["tenantPersonApt"]}
+      personPostalCode={frontmatter["tenantPersonPostalCode"]}
+      personCity={frontmatter["tenantPersonCity"]}
       companyName={frontmatter["tenantCompanyName"]}
-      companyAddress={frontmatter["tenantCompanyAddress"]}
       companyPin={frontmatter["tenantCompanyPin"]}
+      companyStreet={frontmatter["tenantCompanyStreet"]}
+      companyApt={frontmatter["tenantCompanyApt"]}
+      companyPostalCode={frontmatter["tenantCompanyPostalCode"]}
+      companyCity={frontmatter["tenantCompanyCity"]}
     />
 
 #### Przedmiot Umowy
 
-  1. Umowa dotyczy lokalu o powierzchni {formatNumber(frontmatter.area)} m<sup>2</sup>, znajdującego się pod adresem {frontmatter.address} / {frontmatter.apt}.
+  1. Umowa dotyczy lokalu o powierzchni {formatNumber(frontmatter.area)} m<sup>2</sup>, znajdującego się pod adresem {frontmatter.postalCode} {frontmatter.city}, {frontmatter.street} / {frontmatter.apt}.
   1. W skład lokalu wchodzą następujące pomieszczenia: {getItems([[frontmatter.room, PLURALS.ROOM], [frontmatter.kitchen, PLURALS.KITCHEN, true], [frontmatter.hall, PLURALS.HALL], [frontmatter.bathroom, PLURALS.BATHROOM, true], [frontmatter.toilet, PLURALS.TOILET, true], [frontmatter.balcony, PLURALS.BALCONY], [frontmatter.wardrobe, PLURALS.WARDROBE, true], [frontmatter.garage, PLURALS.GARAGE]])}.
   1. W lokalu dostępne są instalacje: {frontmatter.systems}.
   1. Na stanie lokalu znajduje się wyposażenie {frontmatter.equipment}.

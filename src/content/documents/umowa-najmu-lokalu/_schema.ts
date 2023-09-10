@@ -1,12 +1,7 @@
 import { z } from "astro:content";
-import trimWhitespace from "@utils/whitespace";
-import { entityEnum } from "@utils/constants";
-import { personalPin, companyPin } from "@utils/dataValidation";
+import { entityEnum, paymentMethodEnum, EMPTY } from "@utils/constants";
+import * as validators from "@utils/dataValidation";
 
-export const paymentMethodEnum = [
-  "przelewem na konto bankowe",
-  "gotówką",
-] as const;
 export const systemsEnum = [
   "elektryczna",
   "gazowa",
@@ -14,7 +9,6 @@ export const systemsEnum = [
   "kanalizacja",
   "klimatyzacja",
 ] as const;
-export const EMPTY = "brak";
 export const purposeEnum = [
   "do celów mieszkalnych",
   "do prowadzenia działalności gospodarczej",
@@ -28,201 +22,77 @@ export const billsEnum = [
   "usługa telewizyjna",
 ] as const;
 
-export const address = z
-  .string()
-  .nonempty()
-  .transform((val) => trimWhitespace(val));
-
-export const apt = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => trimWhitespace(val.toString()));
-
-export const area = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseFloat(String(val)))
-  .refine((val) => val > 0);
-
-export const room = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val >= 0);
-
-export const kitchen = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val >= 0);
-
-export const hall = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val >= 0);
-
-export const bathroom = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val >= 0);
-
-export const toilet = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val >= 0);
-
-export const balcony = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val >= 0);
-
-export const wardrobe = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val >= 0);
-
-export const garage = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val >= 0);
-
-export const systems = z
-  .string()
-  .nonempty()
-  .refine((val) => validateEnum(val, [...systemsEnum, EMPTY]));
-
+export const street = validators.notEmptyString;
+export const apt = validators.notEmptyStringOrNumber;
+export const postalCode = validators.zipCode("postalCode", true);
+export const city = validators.notEmptyString;
+export const area = validators.positiveFloat;
+export const room = validators.positiveNumber;
+export const kitchen = validators.positiveNumber;
+export const hall = validators.positiveNumber;
+export const bathroom = validators.positiveNumber;
+export const toilet = validators.positiveNumber;
+export const balcony = validators.positiveNumber;
+export const wardrobe = validators.positiveNumber;
+export const garage = validators.positiveNumber;
+export const systems = validators.stringEnum([...systemsEnum, EMPTY]);
 export const equipment = z.string();
-
-export const purpose = z
-  .string()
-  .nonempty()
-  .refine((val) => validateEnum(val, purposeEnum));
-
-export const rent = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseFloat(String(val)))
-  .refine((val) => val > 0);
-
+export const purpose = validators.stringEnum(purposeEnum);
+export const rent = validators.positiveFloat;
 export const rentMethod = z.enum(paymentMethodEnum);
-
-export const rentdue = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val > 1);
-
-export const billsLandlord = z
-  .string()
-  .nonempty()
-  .refine((val) => validateEnum(val, [...billsEnum, EMPTY]));
-
-export const billsTenant = z
-  .string()
-  .nonempty()
-  .refine((val) => validateEnum(val, [...billsEnum, EMPTY]));
-
-export const deposit = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseFloat(String(val)))
-  .refine((val) => val > 0);
-
+export const rentdue = validators.days;
+export const billsLandlord = validators.stringEnum([...billsEnum, EMPTY]);
+export const billsTenant = validators.stringEnum([...billsEnum, EMPTY]);
+export const deposit = validators.positiveFloat;
 export const depositMethod = z.enum(paymentMethodEnum);
-
-export const repairs = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseFloat(String(val)))
-  .refine((val) => val > 0);
-
-export const termination = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val > 1);
-
-export const returnTime = z
-  .string()
-  .nonempty()
-  .or(z.number())
-  .transform((val) => parseInt(String(val)))
-  .refine((val) => val > 1);
-
+export const repairs = validators.positiveFloat;
+export const termination = validators.days;
+export const returnTime = validators.days;
 export const start = z
   .string()
   .nonempty()
   .transform((val) => new Date(val).toISOString())
   .refine((val) => z.coerce.date().safeParse(val).success);
-
 export const landlordType = z.enum(entityEnum);
-
-export const landlordPersonName = z
-  .string()
-  .transform((val) => trimWhitespace(val));
-
-export const landlordPersonAddress = z
-  .string()
-  .transform((val) => trimWhitespace(val));
-
-export const landlordPersonPin = personalPin("landlordPersonPin");
-
-export const landlordCompanyName = z
-  .string()
-  .transform((val) => trimWhitespace(val));
-
-export const landlordCompanyAddress = z
-  .string()
-  .transform((val) => trimWhitespace(val));
-
-export const landlordCompanyPin = companyPin("landlordCompanyPin");
-
+export const landlordPersonName = validators.trimmedString;
+export const landlordPersonStreet = validators.trimmedString;
+export const landlordPersonApt = validators.notEmptyStringOrNumber;
+export const landlordPersonPostalCode = validators.zipCode(
+  "landlordPersonPostalCode"
+);
+export const landlordPersonCity = validators.trimmedString;
+export const landlordPersonPin = validators.personalPin("landlordPersonPin");
+export const landlordCompanyName = validators.trimmedString;
+export const landlordCompanyPin = validators.companyPin("landlordCompanyPin");
+export const landlordCompanyStreet = validators.trimmedString;
+export const landlordCompanyApt = validators.notEmptyStringOrNumber;
+export const landlordCompanyPostalCode = validators.zipCode(
+  "landlordCompanyPostalCode"
+);
+export const landlordCompanyCity = validators.trimmedString;
 export const tenantType = z.enum(entityEnum);
-
-export const tenantPersonName = z
-  .string()
-  .transform((val) => trimWhitespace(val));
-
-export const tenantPersonAddress = z
-  .string()
-  .transform((val) => trimWhitespace(val));
-
-export const tenantPersonPin = personalPin("tenantPersonPin");
-
-export const tenantCompanyName = z
-  .string()
-  .transform((val) => trimWhitespace(val));
-
-export const tenantCompanyAddress = z
-  .string()
-  .transform((val) => trimWhitespace(val));
-
-export const tenantCompanyPin = companyPin("tenantCompanyPin");
+export const tenantPersonName = validators.trimmedString;
+export const tenantPersonStreet = validators.trimmedString;
+export const tenantPersonApt = validators.notEmptyStringOrNumber;
+export const tenantPersonPostalCode = validators.zipCode(
+  "tenantPersonPostalCode"
+);
+export const tenantPersonCity = validators.trimmedString;
+export const tenantPersonPin = validators.personalPin("tenantPersonPin");
+export const tenantCompanyName = validators.trimmedString;
+export const tenantCompanyStreet = validators.trimmedString;
+export const tenantCompanyApt = validators.notEmptyStringOrNumber;
+export const tenantCompanyPostalCode = validators.zipCode(
+  "tenantCompanyPostalCode"
+);
+export const tenantCompanyCity = validators.trimmedString;
+export const tenantCompanyPin = validators.companyPin("tenantCompanyPin");
 
 export default z.object({
-  address,
+  street,
   apt,
+  postalCode,
+  city,
   area,
   room,
   kitchen,
@@ -248,21 +118,28 @@ export default z.object({
   start,
   landlordType,
   landlordPersonName,
-  landlordPersonAddress,
+  landlordPersonStreet,
+  landlordPersonApt,
+  landlordPersonPostalCode,
+  landlordPersonCity,
   landlordPersonPin,
   landlordCompanyName,
-  landlordCompanyAddress,
+  landlordCompanyStreet,
+  landlordCompanyApt,
+  landlordCompanyPostalCode,
+  landlordCompanyCity,
   landlordCompanyPin,
   tenantType,
   tenantPersonName,
-  tenantPersonAddress,
+  tenantPersonStreet,
+  tenantPersonApt,
+  tenantPersonPostalCode,
+  tenantPersonCity,
   tenantPersonPin,
   tenantCompanyName,
-  tenantCompanyAddress,
+  tenantCompanyStreet,
+  tenantCompanyApt,
+  tenantCompanyPostalCode,
+  tenantCompanyCity,
   tenantCompanyPin,
 });
-
-function validateEnum(val: string, array: Readonly<string[]>) {
-  const arr = val.split(", ");
-  return arr.every((el) => array.includes(el));
-}
