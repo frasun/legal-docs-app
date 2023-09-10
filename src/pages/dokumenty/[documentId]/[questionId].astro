@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
-import { getEntry } from "astro:content";
+import { getEntry, z } from "astro:content";
 import { getDocumentAnswers, updateAnswers } from "@db/document";
 import { getSession } from "auth-astro/server";
 import crypt from "@utils/crypt";
@@ -19,6 +19,7 @@ import { SESSION_COOKIE } from "@utils/cookies";
 import { storeAnswers, getAnswers, deleteSessionDocument } from "@db/session";
 import getQuesitons from "@utils/questions";
 import isObjectId from "@utils/objectId";
+import ErrorList from "@components/ErrorList.astro";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -50,7 +51,8 @@ let answers: Answers = {},
   docId = documentId,
   draft = false,
   title: string | undefined,
-  toast: string | null = null;
+  toast: string | null = null,
+  errors: string[] = [];
 
 const questionEntry = await getEntry("questions", String(questionId));
 
@@ -138,18 +140,6 @@ if (!q) {
   return Astro.redirect("/404");
 }
 
-const { remarkPluginFrontmatter: qData, Content } = await q.render();
-
-for (let key of Object.keys(qData)) {
-  if (key !== "question" && key in fields) {
-    if (answers[key]) {
-      qData[key] = answers[key];
-    } else {
-      qData[key] = fields[key];
-    }
-  }
-}
-
 const currentQuestionIndex = questionIndex.findIndex(
   ({ id: { slug } }) => slug === questionId
 );
@@ -206,26 +196,43 @@ if (Astro.request.method === "POST") {
           try {
             await updateAnswers(documentId, newAnswers, docId);
             toast = ANSWER_UPDATED;
-          } catch (error) {
-            console.log(error);
+          } catch (e) {
+            if (e instanceof z.ZodError) {
+              e.errors.map(({ message }) => errors.push(message));
+              answers = { ...answers, ...newAnswers };
+            }
           }
         }
       } else {
         try {
           if (Object.keys(newAnswers).length) {
             await storeAnswers(ssid, documentId, newAnswers);
+            return Astro.redirect(nextUrl);
           }
-        } catch {
-          return Astro.redirect(Astro.request.url);
+        } catch (e) {
+          if (e instanceof z.ZodError) {
+            e.errors.map(({ message }) => errors.push(message));
+            answers = { ...answers, ...newAnswers };
+          }
         }
-
-        return Astro.redirect(nextUrl);
       }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
       }
       return Astro.redirect("/404");
+    }
+  }
+}
+
+const { remarkPluginFrontmatter: qData, Content } = await q.render();
+
+for (let key of Object.keys(qData)) {
+  if (key in fields) {
+    if (answers[key]) {
+      qData[key] = answers[key];
+    } else {
+      qData[key] = fields[key];
     }
   }
 }
@@ -264,6 +271,17 @@ if (Astro.request.method === "POST") {
           )
         }
       </header>
+      {
+        errors.length ? (
+          <ErrorList>
+            {errors.map((message) => (
+              <p>{message}</p>
+            ))}
+          </ErrorList>
+        ) : (
+          ``
+        )
+      }
       <Content />
       <footer>
         <div>
@@ -355,7 +373,7 @@ if (Astro.request.method === "POST") {
   }
 
   header p {
-    @apply bg-white border-orange border-2 rounded-xl;
+    @apply bg-white border-dark55 border-2 rounded-xl;
     @apply p-20;
     @apply flex gap-15;
     @apply font-serif italic text-dark90;

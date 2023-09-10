@@ -1,0 +1,26 @@
+---
+import { Icon } from "astro-icon";
+---
+
+<section>
+  <Icon name="info" width={24} height={24} />
+  <div>
+    <slot />
+  </div>
+</section>
+
+<style>
+  section {
+    @apply border-2 border-orange rounded-lg px-20 py-15 text-dark90 bg-white95;
+    @apply mb-10;
+    @apply flex gap-15;
+  }
+
+  section div {
+    @apply flex flex-col gap-5;
+  }
+
+  section svg {
+    @apply text-orange;
+  }
+</style>
