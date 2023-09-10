@@ -12,6 +12,7 @@ import Badge from "@components/Badge.astro";
 import { handleNameChange } from "@utils/document";
 import pageTitle from "@utils/pageTitle";
 import Toast from "@components/Toast.astro";
+import { DOCUMENT_NAME_CHANGED } from "@utils/toasts";
 import type { Answers } from "@type";
 import { deleteSessionDocument, getAllAnswers } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
@@ -19,11 +20,6 @@ import getQuesitons from "@utils/questions";
 import PaymentModal from "@components/PaymentModal.astro";
 import * as PARAMS from "@utils/urlParams";
 import isObjectId from "@utils/objectId";
-
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  await handleNameChange(formData);
-}
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -52,7 +48,14 @@ let docId = documentId,
   draft = false,
   answers: Answers = {},
   title,
-  canGenerate = true;
+  canGenerate = true,
+  toast: string | null = null;
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  await handleNameChange(formData);
+  toast = DOCUMENT_NAME_CHANGED;
+}
 
 if (isUserDocument) {
   const userId = session.user?.id;
@@ -199,7 +202,7 @@ const GENERATE = "Generuj dokument";
   </section>
   <ChangeNameModal />
   <PaymentModal documentId={documentId} />
-  <Toast />
+  {toast && <Toast info={toast} />}
 </Layout>
 <style>
   section {

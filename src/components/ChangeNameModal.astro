@@ -1,16 +1,11 @@
 ---
 import Modal from "@components/Modal.astro";
-import { DOCUMENT_NAME_CHANGED_PARAM } from "@utils/toasts";
 ---
 
 <Modal slot="footer">
   <change-name-form>
     <h3>Zmień nazwę</h3>
-    <form
-      spellcheck="false"
-      method="POST"
-      action={`${Astro.url.origin}${Astro.url.pathname}?${DOCUMENT_NAME_CHANGED_PARAM}`}
-    >
+    <form spellcheck="false" method="POST">
       <input type="text" name="title" maxlength="50" />
       <input type="hidden" name="template" />
       <button>Zapisz</button>

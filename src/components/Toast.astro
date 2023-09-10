@@ -1,18 +1,13 @@
 ---
 import { Icon } from "astro-icon";
-import toasts from "@utils/toasts";
+
+const { info } = Astro.props;
 ---
 
-{
-  toasts.map(({ param, info }) =>
-    Astro.url.searchParams.has(param) ? (
-      <toast-element>
-        <Icon name="tick" width={32} height={32} />
-        {info}
-      </toast-element>
-    ) : null
-  )
-}
+<toast-element>
+  <Icon name="tick" width={32} height={32} />
+  {info}
+</toast-element>
 
 <style>
   toast-element {
@@ -62,19 +57,12 @@ import toasts from "@utils/toasts";
 </style>
 
 <script>
-  import toasts from "@utils/toasts";
-
   class ToastElement extends HTMLElement {
     constructor() {
       super();
     }
 
     connectedCallback() {
-      const url = new URL(window.location.href);
-
-      toasts.forEach(({ param }) => url.searchParams.delete(param));
-      window.history.replaceState({}, "", url.toString());
-
       this.addEventListener("animationend", () => this.remove());
     }
   }

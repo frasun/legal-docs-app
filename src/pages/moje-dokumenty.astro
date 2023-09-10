@@ -12,6 +12,11 @@ import ChangeNameModal from "@components/ChangeNameModal.astro";
 import { handleNameChange } from "@utils/document";
 import pageTitle from "@utils/pageTitle";
 import Toast from "@components/Toast.astro";
+import {
+  DOCUMENT_NAME_CHANGED,
+  DRAFT_SAVED,
+  DRAFT_SAVED_PARAM,
+} from "@utils/toasts";
 import * as PARAMS from "@utils/urlParams";
 
 const session = await getSession(Astro.request);
@@ -26,11 +31,19 @@ if (!userId) {
   return Astro.redirect("/zaloguj-sie");
 }
 
+let toast: string | null = null;
+const urlParams = new URL(Astro.request.url).searchParams;
+
+if (urlParams.has(DRAFT_SAVED_PARAM)) {
+  toast = DRAFT_SAVED;
+}
+
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
 
   try {
     await handleNameChange(formData);
+    toast = DOCUMENT_NAME_CHANGED;
   } catch {}
 }
 
@@ -176,7 +189,7 @@ const getDocTitle = async (docId: string) => {
     )
   }
   <ChangeNameModal />
-  <Toast />
+  {toast && <Toast info={toast} />}
 </Layout>
 
 <style>

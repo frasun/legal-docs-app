@@ -13,8 +13,7 @@ import Badge from "@components/Badge.astro";
 import pageTitle from "@utils/pageTitle";
 import QuestionAction from "@components/QuestionAction.astro";
 import Toast from "@components/Toast.astro";
-//@ts-ignore
-import { UPDATED_ANSWER_PARAM } from "@utils/toasts";
+import { DOCUMENT_NAME_CHANGED, ANSWER_UPDATED } from "@utils/toasts";
 import type { Answers } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { storeAnswers, getAnswers, deleteSessionDocument } from "@db/session";
@@ -50,7 +49,8 @@ if (!isUserDocumentId) {
 let answers: Answers = {},
   docId = documentId,
   draft = false,
-  title: string | undefined;
+  title: string | undefined,
+  toast: string | null = null;
 
 const questionEntry = await getEntry("questions", String(questionId));
 
@@ -177,6 +177,7 @@ if (Astro.request.method === "POST") {
       await handleNameChange(formData);
 
       title = String(newTitle);
+      toast = DOCUMENT_NAME_CHANGED;
     } catch {}
   }
 
@@ -204,7 +205,7 @@ if (Astro.request.method === "POST") {
 
           try {
             await updateAnswers(documentId, newAnswers, docId);
-            return Astro.redirect(`${Astro.url}?${UPDATED_ANSWER_PARAM}`);
+            toast = ANSWER_UPDATED;
           } catch (error) {
             console.log(error);
           }
@@ -308,7 +309,7 @@ if (Astro.request.method === "POST") {
     )
   }
   {draft && <ChangeNameModal />}
-  <Toast />
+  {toast && <Toast info={toast} />}
 </Layout>
 
 <style>
