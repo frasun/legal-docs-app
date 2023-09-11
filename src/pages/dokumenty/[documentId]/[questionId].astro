@@ -199,8 +199,9 @@ if (Astro.request.method === "POST") {
           } catch (e) {
             if (e instanceof z.ZodError) {
               e.errors.map(({ message }) => errors.push(message));
-              answers = { ...answers, ...newAnswers };
             }
+          } finally {
+            answers = { ...answers, ...newAnswers };
           }
         }
       } else {
@@ -213,8 +214,9 @@ if (Astro.request.method === "POST") {
           // console.log(e);
           if (e instanceof z.ZodError) {
             e.errors.map(({ message }) => errors.push(message));
-            answers = { ...answers, ...newAnswers };
           }
+        } finally {
+          answers = { ...answers, ...newAnswers };
         }
       }
     } catch (error) {
