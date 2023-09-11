@@ -4,7 +4,6 @@ import { Icon } from "astro-icon";
 import { getEntry, z } from "astro:content";
 import { getDocumentAnswers, updateAnswers } from "@db/document";
 import { getSession } from "auth-astro/server";
-import crypt from "@utils/crypt";
 import QuestionIndex from "@components/QuestionIndex.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
@@ -111,19 +110,8 @@ if (!document) {
 }
 
 const {
-  data: { index, title: docuemntTitle, encrypted },
+  data: { index, title: docuemntTitle, encryptedFields },
 } = document;
-
-const encryptedAnswers =
-  encrypted && Object.keys(answers).some((field) => encrypted.includes(field));
-
-if (isUserDocument && encryptedAnswers) {
-  encrypted.forEach((key) => {
-    try {
-      answers[key] = crypt.decrypt(answers[key]);
-    } catch {}
-  });
-}
 
 if (!title) title = docuemntTitle;
 
@@ -183,18 +171,8 @@ if (Astro.request.method === "POST") {
 
       if (isUserDocumentId) {
         if (Object.keys(newAnswers).length) {
-          if (encryptedAnswers) {
-            encrypted.forEach((key) => {
-              if (newAnswers[key] && newAnswers[key].length) {
-                try {
-                  newAnswers[key] = crypt.encrypt(newAnswers[key]);
-                } catch {}
-              }
-            });
-          }
-
           try {
-            await updateAnswers(documentId, newAnswers, docId);
+            await updateAnswers(documentId, newAnswers, docId, encryptedFields);
             toast = ANSWER_UPDATED;
           } catch (e) {
             if (e instanceof z.ZodError) {

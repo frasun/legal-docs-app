@@ -1,7 +1,7 @@
 {
   "name": "prawniczek",
   "type": "module",
-  "version": "0.6.4",
+  "version": "0.6.6",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -34,6 +34,7 @@
     "fuse.js": "^6.6.2",
     "kysely": "^0.24.2",
     "mongodb": "6.0",
+    "mongodb-client-encryption": "^6.0.0",
     "n2words": "^1.16.4",
     "polish-plurals": "^1.1.0",
     "postmark": "^3.0.18",
@@ -44,7 +45,6 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/cookie": "^0.5.1",
-    "cryptr": "^6.3.0",
     "svgo": "^2.8.0"
   }
 }

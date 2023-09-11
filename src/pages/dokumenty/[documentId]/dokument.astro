@@ -3,7 +3,6 @@ import Layout from "../../../layouts/App.astro";
 import { getEntry } from "astro:content";
 import { getUserDocument } from "@db/document";
 import { getSession } from "auth-astro/server";
-import crypt from "@utils/crypt";
 import { Icon } from "astro-icon";
 import { formatDateTime } from "@utils/date";
 import pageTitle from "@utils/pageTitle";
@@ -51,18 +50,10 @@ if (!document) {
 }
 
 const { remarkPluginFrontmatter: qData, Content } = await document.render();
-const { encrypted, title: docTitle } = document.data;
+const { title: docTitle } = document.data;
 
 for (let key of Object.keys(answers)) {
-  if (key !== "title") {
-    if (encrypted && encrypted.includes(key)) {
-      try {
-        qData[key] = crypt.decrypt(answers[key]);
-      } catch {}
-    } else {
-      qData[key] = answers[key];
-    }
-  }
+  qData[key] = answers[key];
 }
 
 if (!title) title = docTitle;

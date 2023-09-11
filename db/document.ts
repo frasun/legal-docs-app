@@ -2,7 +2,8 @@ import { ObjectId } from "mongodb";
 import mongo from "@db/mongodb";
 import { getEntry } from "astro:content";
 import type { Answers } from "@type";
-import { emailRegExp, testString } from "./user";
+import { emailRegExp, testString } from "@db/user";
+import encryption, { encryptField } from "@db/encryption";
 
 export interface Document {
   doc: string;
@@ -32,7 +33,7 @@ export async function getDocumentAnswers(
   });
 
   try {
-    return await documentCollection.findOne<UserDocument>(
+    const document = await documentCollection.findOne<UserDocument>(
       { _id: new ObjectId(id), userid: userId },
       {
         projection: {
@@ -44,6 +45,15 @@ export async function getDocumentAnswers(
         },
       }
     );
+
+    if (document) {
+      const docId = document.doc;
+      const answers = await decryptAnswers(docId, document.answers);
+
+      return { ...document, answers: { ...document.answers, ...answers } };
+    }
+
+    return document;
   } catch (e) {
     throw e;
   }
@@ -56,10 +66,19 @@ export async function getUserDocument(docId: string, userId: string) {
   >;
 
   try {
-    return await documentCollection.findOne<UserDocument>(
+    const document = await documentCollection.findOne<UserDocument>(
       { _id: new ObjectId(docId), userid: userId },
       { projection: { _id: 0, userid: 0 } }
     );
+
+    if (document) {
+      const docId = document.doc;
+      const answers = await decryptAnswers(docId, document.answers);
+
+      return { ...document, answers: { ...document.answers, ...answers } };
+    }
+
+    return document;
   } catch (e) {
     throw e;
   }
@@ -69,10 +88,19 @@ export async function getDocumentSummary(docId: string, userId: string) {
   type DocumentSummary = Pick<Document, "answers" | "doc" | "title" | "draft">;
 
   try {
-    return await documentCollection.findOne<DocumentSummary>(
+    const document = await documentCollection.findOne<DocumentSummary>(
       { _id: new ObjectId(docId), userid: userId },
       { projection: { _id: 1, answers: 1, doc: 1, title: 1, draft: 1 } }
     );
+
+    if (document) {
+      const docId = document.doc;
+      const answers = await decryptAnswers(docId, document.answers);
+
+      return { ...document, answers: { ...document.answers, ...answers } };
+    }
+
+    return document;
   } catch (e) {
     throw e;
   }
@@ -141,7 +169,8 @@ export async function getDocuments(
 export async function updateAnswers(
   documentId: string,
   answers: Answers,
-  docId: string
+  docId: string,
+  encryptedFields?: string[]
 ) {
   try {
     const validatedAnswers: Answers = {};
@@ -153,9 +182,18 @@ export async function updateAnswers(
 
     for (const [field, answer] of Object.entries(answers)) {
       const fieldSchema = schema[field];
+      let parsedAnswer = fieldSchema.parse(answer);
+
+      if (
+        encryptedFields &&
+        encryptedFields.includes(field) &&
+        parsedAnswer !== ""
+      ) {
+        parsedAnswer = await encryptField(parsedAnswer);
+      }
 
       Object.assign(validatedAnswers, {
-        [`answers.${field}`]: fieldSchema.parse(answer),
+        [`answers.${field}`]: parsedAnswer,
       });
     }
 
@@ -188,13 +226,21 @@ export async function createDocument(
   }
 
   const {
-    data: { title },
+    data: { title, encryptedFields },
   } = template;
 
   let validatedAnswers: Answers;
 
   try {
     validatedAnswers = schema.parse(answers);
+
+    if (encryptedFields) {
+      for (let key of encryptedFields) {
+        if (validatedAnswers[key] !== "") {
+          validatedAnswers[key] = await encryptField(validatedAnswers[key]);
+        }
+      }
+    }
 
     const anonymousUser = testString(userid, emailRegExp);
     let documentTitle: string;
@@ -255,4 +301,23 @@ export async function changeDocumentName(id: string, title: string) {
   } catch (e: any) {
     throw e;
   }
+}
+
+async function decryptAnswers(docId: string, answers: Answers) {
+  const documentTemplate = await getEntry("documents", docId);
+  const encryptedFields = documentTemplate
+    ? documentTemplate.data.encryptedFields
+    : null;
+
+  if (encryptedFields) {
+    let encrypted = answers;
+
+    for (let key of encryptedFields) {
+      try {
+        encrypted[key] = await encryption.decrypt(answers[key]);
+      } catch {}
+    }
+  }
+
+  return answers;
 }

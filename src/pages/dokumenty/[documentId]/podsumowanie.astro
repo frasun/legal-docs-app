@@ -4,7 +4,6 @@ import { getEntry } from "astro:content";
 import Answer from "@components/Answer.astro";
 import { getDocumentSummary } from "@db/document";
 import { getSession } from "auth-astro/server";
-import crypt from "@utils/crypt";
 import { Icon } from "astro-icon";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
@@ -85,7 +84,7 @@ if (!document) {
 }
 
 const {
-  data: { index, encrypted, title: docTitle, dates, dataFields },
+  data: { index, title: docTitle, dates, dataFields },
 } = document;
 
 if (!index) {
@@ -120,12 +119,6 @@ if (!Object.keys(answers).length) {
       }
     }
   }
-} else if (encrypted) {
-  encrypted.forEach((key) => {
-    try {
-      answers[key] = crypt.decrypt(answers[key]);
-    } catch {}
-  });
 }
 
 if (dataFields) {
@@ -139,7 +132,6 @@ if (dataFields) {
         required.push(
           `${field}PersonName`,
           `${field}PersonStreet`,
-          `${field}PersonApt`,
           `${field}PersonPostalCode`,
           `${field}PersonCity`,
           `${field}PersonPin`
@@ -149,7 +141,6 @@ if (dataFields) {
         required.push(
           `${field}CompanyName`,
           `${field}CompanyStreet`,
-          `${field}CompanyApt`,
           `${field}CompanyPostalCode`,
           `${field}CompanyCity`,
           `${field}CompanyPin`

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import cookie from "cookie";
 import { getUserByEmail } from "@db/user";
 import { SESSION_COOKIE } from "@utils/cookies";
+import encryption from "@db/encryption";
 
 export default {
   secret: process.env.AUTH_SECRET as string,

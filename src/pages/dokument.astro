@@ -1,7 +1,6 @@
 ---
 import { getSession } from "auth-astro/server";
 import { createDocument, publishDraft } from "@db/document";
-import cryptr from "@utils/crypt";
 import { getEntry } from "astro:content";
 //@ts-ignore
 import { DRAFT_SAVED_PARAM } from "@utils/toasts";
@@ -189,7 +188,7 @@ async function prepareAnswers(documentId: string, ssid: string) {
   }
 
   const {
-    data: { index, encrypted, dates },
+    data: { index, dates },
   } = template;
 
   if (!index) {
@@ -227,14 +226,6 @@ async function prepareAnswers(documentId: string, ssid: string) {
           answers[field] = qData[field];
         }
       }
-    }
-  }
-
-  if (encrypted) {
-    for (let field of encrypted) {
-      try {
-        answers[field] = cryptr.encrypt(answers[field]);
-      } catch {}
     }
   }
 

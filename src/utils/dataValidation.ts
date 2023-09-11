@@ -46,6 +46,10 @@ export const notEmptyStringOrNumber = z
   .transform((val) => trimWhitespace(val.toString()));
 
 export const trimmedString = z.string().transform((val) => trimWhitespace(val));
+export const trimmedStringOrNumber = z
+  .string()
+  .or(z.number())
+  .transform((val) => trimWhitespace(val.toString()));
 
 export const positiveNumber = z
   .string()

@@ -41,9 +41,9 @@ const documents = defineCollection({
     keywords: z.array(z.string()).optional(),
     priceId: z.string(),
     index: documentIndex.optional(),
-    encrypted: z.array(z.string()).optional(),
     dates: z.array(z.string()).optional(),
     dataFields: z.array(z.string()).optional(),
+    encryptedFields: z.array(z.string()).optional(),
   }),
 });
 

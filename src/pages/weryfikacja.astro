@@ -57,7 +57,7 @@ if (Astro.request.method === "POST") {
 
   const { code, password, rateLimit } = verificationData;
 
-  if (code === postedCode) {
+  if (String(code) === postedCode) {
     await createUser(userEmail, password as string);
 
     userPassword = password;
