@@ -6,3 +6,4 @@ export const CATEGORY = "k";
 export const SEARCH = "s";
 export const PAGE = "p";
 export const PAYMENT = "pid";
+export const DATA_TYPE = "dt";

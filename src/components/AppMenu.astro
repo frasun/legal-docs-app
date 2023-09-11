@@ -39,17 +39,30 @@ const { session } = Astro.props;
     </a>
     {
       session && (
-        <a
-          href={`${Astro.url.origin}/moje-dokumenty`}
-          aria-label="Moje dokumenty"
-          title="Moje dokumenty"
-          class:list={{
-            active: `${Astro.url.pathname}` === `/moje-dokumenty`,
-          }}
-        >
-          <Icon name="document" width={24} height={24} />
-          <span>Moje dokumenty</span>
-        </a>
+        <>
+          <a
+            href={`${Astro.url.origin}/moje-dokumenty`}
+            aria-label="Moje dokumenty"
+            title="Moje dokumenty"
+            class:list={{
+              active: `${Astro.url.pathname}` === `/moje-dokumenty`,
+            }}
+          >
+            <Icon name="document" width={24} height={24} />
+            <span>Moje dokumenty</span>
+          </a>
+          <a
+            href={`${Astro.url.origin}/tozsamosci`}
+            aria-label="Tożsamości"
+            title="Tożsamości"
+            class:list={{
+              active: `${Astro.url.pathname}` === `/tozsamosci`,
+            }}
+          >
+            <Icon name="id" width={24} height={24} />
+            <span>Tożsamości</span>
+          </a>
+        </>
       )
     }
   </div>

@@ -2,35 +2,38 @@ import { z } from "astro:content";
 import { validatePolish } from "validate-polish";
 import trimWhitespace from "@utils/whitespace";
 
-export const personalPin = (name: string) =>
+export const personalPin = (required = false) =>
   z
     .string()
     .or(z.number())
     .transform((val) => val.toString())
-    .refine((val) => (val.length ? validatePolish.pesel(val) : true), {
-      message: "Podaj prawidłowy numer PESEL",
-      path: [name],
-    });
+    .refine(
+      (val) => (required || val.length ? validatePolish.pesel(val) : true),
+      {
+        message: "Podaj prawidłowy numer PESEL",
+      }
+    );
 
-export const companyPin = (name: string) =>
+export const companyPin = (required = false) =>
   z
     .string()
     .or(z.number())
     .transform((val) => val.toString())
-    .refine((val) => (val.length ? validatePolish.nip(val) : true), {
-      message: "Podaj prawidłowy numer NIP",
-      path: [name],
-    });
+    .refine(
+      (val) => (required || val.length ? validatePolish.nip(val) : true),
+      {
+        message: "Podaj prawidłowy numer NIP",
+      }
+    );
 
-const postalCodeRegExp = new RegExp("^[0-9]{2}-[0-9]{3}$");
-export const zipCode = (name: string, required: boolean = false) =>
+const postalCodeRegExp = new RegExp("[0-9]{2}-[0-9]{3}$");
+export const zipCode = (required: boolean = false) =>
   z
     .string()
     .refine(
       (val) => (required || val.length ? postalCodeRegExp.test(val) : true),
       {
         message: "Podaj prawidłowy kod pocztowy",
-        path: [name],
       }
     );
 

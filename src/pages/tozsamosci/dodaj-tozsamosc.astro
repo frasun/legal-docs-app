@@ -4,12 +4,11 @@ import pageTitle from "@utils/pageTitle";
 import DataInput from "@components/DataInput.astro";
 import { entityEnum } from "@utils/constants";
 import ErrorList from "@components/ErrorList.astro";
-import { getUserIdentity, updateUserIdentity } from "@db/identity";
+import { createUserIdentity } from "@db/identity";
 import { getSession } from "auth-astro/server";
 import { z } from "astro:content";
-import { UUID } from "mongodb";
-import { IDENTITY_UPDATED } from "@utils/toasts";
-import Toast from "@components/Toast.astro";
+//@ts-ignore
+import { IDENTITY_SAVED_PARAM } from "@utils/toasts";
 
 const session = await getSession(Astro.request);
 if (!session) {
@@ -21,70 +20,33 @@ if (!userId) {
   return Astro.redirect("/zaloguj-sie");
 }
 
-const { identityId: iId } = Astro.params;
-const identityId = String(iId);
-
-if (!UUID.isValid(String(identityId))) {
-  return Astro.redirect("/404");
-}
-
-const PAGE_TITLE = "Edytuj tożsamość";
+const PAGE_TITLE = "Dodaj tożsamość";
 let errors: string[] = [],
-  type: (typeof entityEnum)[number],
   name: string,
   pin: string,
   street: string,
-  apt: string | undefined,
+  apt: string,
   postalCode: string,
   city: string,
+  type: (typeof entityEnum)[number] = entityEnum[0],
   personName = "",
   personStreet = "",
-  personApt: string | undefined = "",
+  personApt = "",
   personPostalCode = "",
   personCity = "",
   personPin = "",
   companyName = "",
   companyStreet = "",
-  companyApt: string | undefined = "",
+  companyApt = "",
   companyPostalCode = "",
   companyCity = "",
-  companyPin = "",
-  toast: string | null = null;
-
-const identity = await getUserIdentity(String(identityId), userId);
-
-if (!identity) {
-  return Astro.redirect("/404");
-}
-
-({ type, name, pin, street, apt, postalCode, city } = identity);
-
-switch (type) {
-  case entityEnum[0]:
-    personName = name;
-    personPin = pin;
-    personStreet = street;
-    personApt = apt;
-    personPostalCode = postalCode;
-    personCity = city;
-    break;
-  case entityEnum[1]:
-    companyName = name;
-    companyPin = pin;
-    companyStreet = street;
-    companyApt = apt;
-    companyPostalCode = postalCode;
-    companyCity = city;
-    break;
-  default:
-    return Astro.redirect("/404");
-}
+  companyPin = "";
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  const type = formData.get("Type");
+  const dataType = formData.get("Type");
 
-  switch (type) {
+  switch (dataType) {
     case entityEnum[0]:
       name = String(formData.get("PersonName") || "");
       pin = String(formData.get("PersonPin") || "");
@@ -107,7 +69,7 @@ if (Astro.request.method === "POST") {
 
   const identity = {
     userId,
-    type,
+    type: dataType,
     name,
     pin,
     street,
@@ -117,32 +79,37 @@ if (Astro.request.method === "POST") {
   };
 
   try {
-    await updateUserIdentity(identityId, identity);
-    toast = IDENTITY_UPDATED;
+    await createUserIdentity(identity);
+
+    return Astro.redirect(
+      `${Astro.url.origin}/tozsamosci?${IDENTITY_SAVED_PARAM}`
+    );
   } catch (e) {
     if (e instanceof z.ZodError) {
       e.errors.map(({ message }) => errors.push(message));
-    }
-  } finally {
-    switch (type) {
-      case entityEnum[0]:
-        personName = name;
-        personPin = pin;
-        personStreet = street;
-        personApt = apt;
-        personPostalCode = postalCode;
-        personCity = city;
-        break;
-      case entityEnum[1]:
-        companyName = name;
-        companyPin = pin;
-        companyStreet = street;
-        companyApt = apt;
-        companyPostalCode = postalCode;
-        companyCity = city;
-        break;
-      default:
-        return Astro.redirect("/404");
+
+      type = dataType;
+
+      switch (dataType) {
+        case entityEnum[0]:
+          personName = name;
+          personPin = pin;
+          personStreet = street;
+          personApt = apt;
+          personPostalCode = postalCode;
+          personCity = city;
+          break;
+        case entityEnum[1]:
+          companyName = name;
+          companyPin = pin;
+          companyStreet = street;
+          companyApt = apt;
+          companyPostalCode = postalCode;
+          companyCity = city;
+          break;
+        default:
+          return Astro.redirect("/404");
+      }
     }
   }
 }
@@ -185,7 +152,6 @@ if (Astro.request.method === "POST") {
       <button type="submit">Zapisz</button>
     </footer>
   </form>
-  {toast && <Toast info={toast} />}
 </Layout>
 
 <style>

@@ -5,25 +5,25 @@ const { icon, cta, ctaUrl } = Astro.props;
 ---
 
 <div>
-    {icon && <Icon name={icon} width={80} height={80} />}
-    <slot />
-    {ctaUrl && <a href={ctaUrl}>{cta}</a>}
+  {icon && <Icon name={icon} width={80} height={80} />}
+  <slot />
+  {ctaUrl && <a href={ctaUrl}>{cta}</a>}
 </div>
 
 <style>
-    div {
-        @apply h-full flex flex-col gap-20 items-center justify-center;
-    }
+  div {
+    @apply h-full flex flex-col gap-20 items-center justify-center;
+  }
 
-    p {
-        @apply text-xl;
-    }
+  p {
+    @apply text-xl;
+  }
 
-    a {
-        @apply btn btn-default;
-    }
+  a {
+    @apply btn btn-default btn-big;
+  }
 
-    div :global(svg path) {
-        @apply fill-dark40;
-    }
+  div :global(svg path) {
+    @apply fill-dark40;
+  }
 </style>

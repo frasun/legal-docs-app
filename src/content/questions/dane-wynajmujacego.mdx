@@ -14,6 +14,7 @@ tenantCompanyCity: ""
 tenantCompanyPin: ""
 question: Podaj dane Wynajmującego
 info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
+userId: ""
 ---
 
 import DataInput from "@components/DataInput.astro";
@@ -33,4 +34,5 @@ import DataInput from "@components/DataInput.astro";
   companyPostalCode={frontmatter["tenantCompanyPostalCode"]}
   companyCity={frontmatter["tenantCompanyCity"]}
   companyPin={frontmatter["tenantCompanyPin"]}
+  userId={frontmatter["userId"]}
 />

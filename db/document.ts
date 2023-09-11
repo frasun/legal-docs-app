@@ -1,5 +1,5 @@
 import { UUID } from "mongodb";
-import mongo, { encryption, encryptField } from "@db/mongodb";
+import mongo, { getDataKey, encryptField } from "@db/mongodb";
 import { getEntry } from "astro:content";
 import type { Answers } from "@type";
 import { emailRegExp, testString } from "@db/user";
@@ -148,7 +148,11 @@ export async function updateAnswers(
         encryptedFields.includes(field) &&
         parsedAnswer !== ""
       ) {
-        parsedAnswer = await encryptField(parsedAnswer);
+        const key = await getDataKey();
+
+        if (key) {
+          parsedAnswer = await encryptField(parsedAnswer, key);
+        }
       }
 
       Object.assign(validatedAnswers, {
@@ -194,9 +198,16 @@ export async function createDocument(
     validatedAnswers = schema.parse(answers);
 
     if (encryptedFields) {
-      for (let key of encryptedFields) {
-        if (validatedAnswers[key] !== "") {
-          validatedAnswers[key] = await encryptField(validatedAnswers[key]);
+      const dataKey = await getDataKey();
+
+      if (dataKey) {
+        for (let key of encryptedFields) {
+          if (validatedAnswers[key] !== "") {
+            validatedAnswers[key] = await encryptField(
+              validatedAnswers[key],
+              dataKey
+            );
+          }
         }
       }
     }

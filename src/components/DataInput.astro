@@ -2,6 +2,8 @@
 import { entityEnum } from "@utils/constants";
 import InputGroup, { InputSize } from "@components/InputGroup.astro";
 import Address from "./Address.astro";
+import { UUID } from "mongodb";
+import { getUserIdentityList } from "@db/identity";
 
 const {
   name,
@@ -18,13 +20,40 @@ const {
   companyPostalCode,
   companyCity,
   companyPin,
+  userId,
 } = Astro.props;
+
+let prefix = name || "";
+let identities;
+
+if (userId && UUID.isValid(userId)) {
+  try {
+    identities = await getUserIdentityList(userId);
+  } catch {
+    return Astro.redirect("/404");
+  }
+}
 ---
 
-<data-selector>
+{
+  identities && (
+    <identity-selector data-userid={userId}>
+      <select>
+        <option>Wybierz z zapisanych tożsamości</option>
+        {identities.map(({ name, type, _id }) => (
+          <option value={_id}>
+            {name} ({type})
+          </option>
+        ))}
+      </select>
+    </identity-selector>
+  )
+}
+
+<data-selector data-prefix={prefix}>
   <InputGroup>
     <label for="type">Rodzaj podmiotu</label>
-    <select id="type" name={`${name}Type`} value={type}>
+    <select id="type" name={`${prefix}Type`} value={type}>
       {
         entityEnum.map((entityType) => (
           <option selected={type === entityType}>{entityType}</option>
@@ -41,9 +70,8 @@ const {
       <input
         id="personName"
         type="text"
-        name={`${name}PersonName`}
+        name={`${prefix}PersonName`}
         value={personName}
-        class="flex-grow"
       />
     </InputGroup>
     <InputGroup>
@@ -51,7 +79,7 @@ const {
       <input
         id="personPin"
         type="text"
-        name={`${name}PersonPin`}
+        name={`${prefix}PersonPin`}
         value={personPin}
         class="flex-grow"
       />
@@ -61,10 +89,10 @@ const {
       apt={personApt}
       postalCode={personPostalCode}
       city={personCity}
-      streetFieldName={`${name}PersonStreet`}
-      aptFieldName={`${name}PersonApt`}
-      postalCodeFieldName={`${name}PersonPostalCode`}
-      cityFieldName={`${name}PersonCity`}
+      streetFieldName={`${prefix}PersonStreet`}
+      aptFieldName={`${prefix}PersonApt`}
+      postalCodeFieldName={`${prefix}PersonPostalCode`}
+      cityFieldName={`${prefix}PersonCity`}
     />
   </fieldset>
   <fieldset
@@ -76,9 +104,8 @@ const {
       <input
         id="companyName"
         type="text"
-        name={`${name}CompanyName`}
+        name={`${prefix}CompanyName`}
         value={companyName}
-        class="flex-grow"
       />
     </InputGroup>
     <InputGroup>
@@ -86,7 +113,7 @@ const {
       <input
         id="companyPin"
         type="text"
-        name={`${name}CompanyPin`}
+        name={`${prefix}CompanyPin`}
         value={companyPin}
         class="flex-grow"
       />
@@ -96,10 +123,10 @@ const {
       apt={companyApt}
       postalCode={companyPostalCode}
       city={companyCity}
-      streetFieldName={`${name}CompanyStreet`}
-      aptFieldName={`${name}CompanyApt`}
-      postalCodeFieldName={`${name}CompanyPostalCode`}
-      cityFieldName={`${name}CompanyCity`}
+      streetFieldName={`${prefix}CompanyStreet`}
+      aptFieldName={`${prefix}CompanyApt`}
+      postalCodeFieldName={`${prefix}CompanyPostalCode`}
+      cityFieldName={`${prefix}CompanyCity`}
     />
   </fieldset>
 </data-selector>
@@ -108,24 +135,38 @@ const {
   data-selector {
     @apply flex flex-col gap-20;
   }
+
+  :global(data-selector div input) {
+    @apply flex-grow;
+  }
+
+  identity-selector select {
+    @apply w-full;
+  }
 </style>
 
 <script>
+  import { entityEnum } from "@utils/constants";
+
   class DataSelector extends HTMLElement {
     selector: HTMLSelectElement | null;
     fieldsets: NodeListOf<HTMLFieldSetElement>;
+    prefix: string | null;
 
     constructor() {
       super();
 
       this.selector = this.querySelector("select");
       this.fieldsets = this.querySelectorAll("fieldset");
+      this.prefix = this.getAttribute("data-prefix");
     }
 
     connectedCallback() {
       if (this.selector) {
         this.selector.addEventListener("change", () => {
           const activeTab = this.selector?.value;
+
+          console.log({ activeTab });
 
           if (activeTab) {
             Array.from(this.fieldsets).forEach((fieldset) => {
@@ -145,8 +186,141 @@ const {
           }
         });
       }
+
+      this.addEventListener("select-identity", ((event: CustomEvent) => {
+        if (event.detail) {
+          const { type, name, pin, street, apt, postalCode, city } =
+            event.detail;
+          let typePrefix = "";
+          let fieldPrefix = "";
+
+          switch (type) {
+            case entityEnum[0]:
+              typePrefix = "Person";
+              break;
+            case entityEnum[1]:
+              typePrefix = "Company";
+              break;
+            default:
+              return;
+          }
+
+          if (this.prefix) {
+            fieldPrefix = `${this.prefix}${typePrefix}`;
+          }
+
+          const typeField = this.querySelector(
+            "[name*='Type']"
+          ) as HTMLSelectElement;
+          const nameField = this.querySelector(
+            `[name*="${fieldPrefix}Name"]`
+          ) as HTMLInputElement;
+          const pinField = this.querySelector(
+            `[name*="${fieldPrefix}Pin"]`
+          ) as HTMLInputElement;
+          const streetField = this.querySelector(
+            `[name*="${fieldPrefix}Street"]`
+          ) as HTMLInputElement;
+          const aptField = this.querySelector(
+            `[name*="${fieldPrefix}Apt"]`
+          ) as HTMLInputElement;
+          const postalCodeField = this.querySelector(
+            `[name*="${fieldPrefix}PostalCode"]`
+          ) as HTMLInputElement;
+          const cityField = this.querySelector(
+            `[name*="${fieldPrefix}City"]`
+          ) as HTMLInputElement;
+
+          if (typeField) {
+            typeField.value = type;
+            typeField.dispatchEvent(new Event("change"));
+          }
+
+          if (nameField) {
+            nameField.value = name;
+          }
+
+          if (pinField) {
+            pinField.value = pin;
+          }
+
+          if (streetField) {
+            streetField.value = street;
+          }
+
+          if (aptField) {
+            aptField.value = apt;
+          }
+
+          if (postalCodeField) {
+            postalCodeField.value = postalCode;
+          }
+
+          if (cityField) {
+            cityField.value = city;
+          }
+        }
+      }) as EventListener);
     }
   }
 
   customElements.define("data-selector", DataSelector);
+
+  class IdentitySelector extends HTMLElement {
+    selector: HTMLSelectElement | null;
+    userId: string | null;
+
+    constructor() {
+      super();
+
+      this.selector = this.querySelector("select");
+      this.userId = this.getAttribute("data-userid");
+    }
+
+    connectedCallback() {
+      if (this.selector) {
+        const dataSelector = document.querySelector("data-selector");
+        this.selector.addEventListener("change", async () => {
+          if (this.selector?.value && this.userId) {
+            try {
+              const id = await fetch("/api/identity.json", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  identityId: this.selector?.value,
+                  userId: this.userId,
+                }),
+              });
+
+              const response = await id.json();
+
+              if (response) {
+                const { type, name, pin, street, apt, postalCode, city } =
+                  response;
+
+                dataSelector?.dispatchEvent(
+                  new CustomEvent("select-identity", {
+                    detail: {
+                      type,
+                      name,
+                      pin,
+                      street,
+                      apt,
+                      postalCode,
+                      city,
+                    },
+                  })
+                );
+              }
+            } catch {}
+          }
+        });
+      }
+    }
+  }
+
+  customElements.define("identity-selector", IdentitySelector);
 </script>

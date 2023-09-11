@@ -47,7 +47,7 @@ switch (type) {
     return Astro.redirect("/404");
 }
 
-let streetAddr = `${street}${apt.length ? ` /${apt}` : ``}`;
+let streetAddr = `${street}${apt.length ? ` / ${apt}` : ``}`;
 address = `${postalCode} ${city}, ${streetAddr}`;
 
 const data = [name, pin, street, postalCode, city].every((field) => field);

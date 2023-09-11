@@ -24,7 +24,7 @@ export const billsEnum = [
 
 export const street = validators.notEmptyString;
 export const apt = validators.notEmptyStringOrNumber;
-export const postalCode = validators.zipCode("postalCode", true);
+export const postalCode = validators.zipCode(true);
 export const city = validators.notEmptyString;
 export const area = validators.positiveFloat;
 export const room = validators.positiveNumber;
@@ -57,36 +57,28 @@ export const landlordType = z.enum(entityEnum);
 export const landlordPersonName = validators.trimmedString;
 export const landlordPersonStreet = validators.trimmedString;
 export const landlordPersonApt = validators.trimmedStringOrNumber;
-export const landlordPersonPostalCode = validators.zipCode(
-  "landlordPersonPostalCode"
-);
+export const landlordPersonPostalCode = validators.zipCode();
 export const landlordPersonCity = validators.trimmedString;
-export const landlordPersonPin = validators.personalPin("landlordPersonPin");
+export const landlordPersonPin = validators.personalPin();
 export const landlordCompanyName = validators.trimmedString;
-export const landlordCompanyPin = validators.companyPin("landlordCompanyPin");
+export const landlordCompanyPin = validators.companyPin();
 export const landlordCompanyStreet = validators.trimmedString;
 export const landlordCompanyApt = validators.trimmedStringOrNumber;
-export const landlordCompanyPostalCode = validators.zipCode(
-  "landlordCompanyPostalCode"
-);
+export const landlordCompanyPostalCode = validators.zipCode();
 export const landlordCompanyCity = validators.trimmedString;
 export const tenantType = z.enum(entityEnum);
 export const tenantPersonName = validators.trimmedString;
 export const tenantPersonStreet = validators.trimmedString;
 export const tenantPersonApt = validators.trimmedStringOrNumber;
-export const tenantPersonPostalCode = validators.zipCode(
-  "tenantPersonPostalCode"
-);
+export const tenantPersonPostalCode = validators.zipCode();
 export const tenantPersonCity = validators.trimmedString;
-export const tenantPersonPin = validators.personalPin("tenantPersonPin");
+export const tenantPersonPin = validators.personalPin();
 export const tenantCompanyName = validators.trimmedString;
 export const tenantCompanyStreet = validators.trimmedString;
 export const tenantCompanyApt = validators.trimmedStringOrNumber;
-export const tenantCompanyPostalCode = validators.zipCode(
-  "tenantCompanyPostalCode"
-);
+export const tenantCompanyPostalCode = validators.zipCode();
 export const tenantCompanyCity = validators.trimmedString;
-export const tenantCompanyPin = validators.companyPin("tenantCompanyPin");
+export const tenantCompanyPin = validators.companyPin();
 
 export default z.object({
   street,

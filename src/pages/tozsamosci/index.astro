@@ -1,0 +1,199 @@
+---
+import EmptyScreen from "@components/EmptyScreen.astro";
+import Layout from "../../layouts/App.astro";
+import pageTitle from "@utils/pageTitle";
+import { getUserIdentities, deleteUserIdentity } from "@db/identity";
+import { getSession } from "auth-astro/server";
+import {
+  IDENTITY_SAVED_PARAM,
+  IDENTITY_SAVED,
+  IDENTITY_REMOVED,
+  IDENTITY_REMOVED_PARAM,
+} from "@utils/toasts";
+import Toast from "@components/Toast.astro";
+import { entityEnum } from "@utils/constants";
+import { DATA_TYPE } from "@utils/urlParams";
+import { UUID } from "mongodb";
+
+const PAGE_TITLE = "Tożsamości";
+
+const session = await getSession(Astro.request);
+
+if (!session) {
+  return Astro.redirect("/zaloguj-sie");
+}
+
+const userId = session.user?.id;
+
+if (!userId) {
+  return Astro.redirect("/zaloguj-sie");
+}
+
+let toast: string | null = null;
+const urlParams = new URL(Astro.request.url).searchParams;
+let dataTypeFilter = urlParams.has(DATA_TYPE)
+  ? decodeURIComponent(String(urlParams.get(DATA_TYPE)))
+  : undefined;
+let ids;
+
+if (dataTypeFilter === entityEnum[0] || dataTypeFilter === entityEnum[1]) {
+  ids = await getUserIdentities(userId, dataTypeFilter);
+} else {
+  ids = await getUserIdentities(userId);
+}
+
+const { identities, count } = ids;
+
+if (urlParams.has(IDENTITY_SAVED_PARAM)) {
+  toast = IDENTITY_SAVED;
+}
+
+if (urlParams.has(IDENTITY_REMOVED_PARAM)) {
+  toast = IDENTITY_REMOVED;
+}
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const id = formData.get("id");
+
+  if (UUID.isValid(String(id))) {
+    try {
+      await deleteUserIdentity(String(id), userId);
+    } finally {
+      return Astro.redirect(
+        `${Astro.url.origin}/tozsamosci?${IDENTITY_REMOVED_PARAM}`
+      );
+    }
+  }
+}
+---
+
+<Layout title={pageTitle(PAGE_TITLE)}>
+  <span slot="topbar-title">{PAGE_TITLE}</span>
+  {
+    count > 0 ? (
+      <section>
+        <header>
+          <a href={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}>
+            Dodaj tożsamość
+          </a>
+          <data-type-selector>
+            <label for="category">Rodzaj podmiotu</label>
+            <select id="category">
+              <option value="">Wszystkie</option>
+              {entityEnum.map((type) => (
+                <option value={type} selected={type === dataTypeFilter}>
+                  {`${type[0].toUpperCase()}${type.slice(1)}`}
+                </option>
+              ))}
+            </select>
+          </data-type-selector>
+        </header>
+        {identities.length ? (
+          <div>
+            {identities.map(({ _id, name, type }) => (
+              <div>
+                <div>
+                  <h3>{name}</h3>
+                  <span>{type}</span>
+                </div>
+                <aside>
+                  <a href={`${Astro.url.origin}/tozsamosci/${_id}`}>Edytuj</a>
+                  <form method="POST">
+                    <input type="hidden" name="id" value={_id} />
+                    <button>Usuń</button>
+                  </form>
+                </aside>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyScreen>Brak tożsamości do wyświetlenia</EmptyScreen>
+        )}
+      </section>
+    ) : (
+      <EmptyScreen
+        icon="id"
+        cta="Dodaj tożsamość"
+        ctaUrl={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}
+      >
+        Nie masz jeszcze zapisanych tożsamości
+      </EmptyScreen>
+    )
+  }
+  {toast && <Toast info={toast} />}
+</Layout>
+
+<style>
+  section {
+    @apply w-full max-w-[1024px] mx-auto py-20 h-full;
+    @apply flex flex-col gap-20;
+  }
+
+  section > div {
+    @apply flex flex-col gap-20;
+  }
+
+  section > div > div {
+    @apply flex w-full items-center flex-wrap gap-10;
+    @apply px-20 py-15 bg-white rounded-lg w-full;
+  }
+
+  section > div > div > div {
+    @apply flex-grow w-full sm:w-auto;
+  }
+
+  section div aside {
+    @apply flex gap-10;
+  }
+
+  section div a,
+  section div button {
+    @apply btn btn-alt;
+  }
+
+  section header {
+    @apply flex justify-between items-center flex-wrap gap-20;
+  }
+
+  data-type-selector {
+    @apply flex gap-10 items-center;
+  }
+
+  section header a {
+    @apply btn btn-default btn-big;
+    @apply flex-shrink-0;
+  }
+</style>
+
+<script>
+  import { DATA_TYPE } from "@utils/urlParams";
+
+  class DataTypeSelector extends HTMLElement {
+    select: HTMLSelectElement;
+
+    constructor() {
+      super();
+
+      this.select = this.querySelector("select") as HTMLSelectElement;
+    }
+
+    connectedCallback() {
+      this.select.addEventListener("change", (event) => {
+        const val = (event.target as HTMLInputElement).value;
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+
+        if (val.length) {
+          params.set(DATA_TYPE, encodeURIComponent(val));
+        } else {
+          params.delete(DATA_TYPE);
+        }
+
+        url.search = params.toString();
+        document.location = url.toString();
+      });
+    }
+  }
+  customElements.define("data-type-selector", DataTypeSelector);
+</script>

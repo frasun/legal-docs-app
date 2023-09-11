@@ -200,7 +200,7 @@ async function prepareAnswers(documentId: string, ssid: string) {
 
   const qData: Answers = {};
   for (let { data } of questions) {
-    const { question, info, ...fields } = data;
+    const { question, info, userId, ...fields } = data;
     Object.assign(qData, { ...fields });
   }
 

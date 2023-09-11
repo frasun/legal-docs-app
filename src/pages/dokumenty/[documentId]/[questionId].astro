@@ -217,6 +217,12 @@ for (let key of Object.keys(qData)) {
     }
   }
 }
+
+if (session) {
+  if ("userId" in fields) {
+    qData["userId"] = session.user?.id;
+  }
+}
 ---
 
 <Layout title={pageTitle(`${qTitle} - ${title}`)}>

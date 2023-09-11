@@ -6,16 +6,14 @@ import {
   UUID,
 } from "mongodb";
 
-export const keyVaultNamespace = `${import.meta.env.MONGODB_KVNAME}.${
+const keyVaultNamespace = `${import.meta.env.MONGODB_KVNAME}.${
   import.meta.env.MONGODB_KVCOLL
 }`;
-export const kmsProviders = {
+const kmsProviders = {
   local: {
     key: import.meta.env.MK,
   },
 };
-
-const ENCRYPTION_ALGORITHM = "AEAD_AES_256_CBC_HMAC_SHA_512-Random";
 
 export const client = new MongoClient(import.meta.env.MONGODB_URI, {
   serverApi: {
@@ -25,14 +23,8 @@ export const client = new MongoClient(import.meta.env.MONGODB_URI, {
   },
   compressors: ["zlib"],
   autoEncryption: {
-    keyVaultNamespace: `${import.meta.env.MONGODB_KVNAME}.${
-      import.meta.env.MONGODB_KVCOLL
-    }`,
-    kmsProviders: {
-      local: {
-        key: import.meta.env.MK,
-      },
-    },
+    keyVaultNamespace,
+    kmsProviders,
     bypassAutoEncryption: true,
   },
   pkFactory: { createPk: () => new UUID().toBinary() },
@@ -49,17 +41,18 @@ export const getDataKey = async () => {
   return key ? key._id.toString("base64") : null;
 };
 
-export async function encryptField(field: string) {
-  const key = await getDataKey();
+const RANDOM_ENCRYPTION_ALGORITHM = "AEAD_AES_256_CBC_HMAC_SHA_512-Random";
+const DETEMINISTIC_ENCRYPTION_ALGORITHM =
+  "AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic";
 
-  if (key) {
-    return await encryption.encrypt(field, {
-      algorithm: ENCRYPTION_ALGORITHM,
-      keyId: new Binary(Buffer.from(key, "base64"), 4),
-    });
-  }
+export async function encryptField(field: string, key: string, random = true) {
+  return await encryption.encrypt(field, {
+    algorithm: random
+      ? RANDOM_ENCRYPTION_ALGORITHM
+      : DETEMINISTIC_ENCRYPTION_ALGORITHM,
+    keyId: new Binary(Buffer.from(key, "base64"), 4),
+  });
 }
 
 const database = client.db(import.meta.env.MONGODB_DBNAME);
-
 export default database;
