@@ -3,6 +3,7 @@ import {
   ServerApiVersion,
   Binary,
   ClientEncryption,
+  UUID,
 } from "mongodb";
 
 export const keyVaultNamespace = `${import.meta.env.MONGODB_KVNAME}.${
@@ -34,6 +35,7 @@ export const client = new MongoClient(import.meta.env.MONGODB_URI, {
     },
     bypassAutoEncryption: true,
   },
+  pkFactory: { createPk: () => new UUID().toBinary() },
 });
 
 export const encryption = new ClientEncryption(client, {

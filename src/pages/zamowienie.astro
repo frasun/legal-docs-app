@@ -11,7 +11,7 @@ import { createPaymentSession } from "@db/session";
 import * as PARAMS from "@utils/urlParams";
 import { getDocumentId } from "@db/document";
 import { emailRegExp, testString } from "@db/user";
-import isObjectId from "@utils/objectId";
+import { UUID } from "mongodb";
 
 const SUMMARY = "podsumowanie";
 const refererUrl = Astro.request.headers.get("referer");
@@ -45,7 +45,7 @@ if (!documentId) {
 
   documentName = urlSegments[urlSegments.length - 2];
 
-  if (isObjectId(documentName) && session) {
+  if (UUID.isValid(documentName) && session) {
     documentId = String(
       await getDocumentId(documentName, session.user?.id as string)
     );
@@ -79,7 +79,7 @@ if (!ssid) {
 
 const pid = nanoid();
 const docId =
-  documentName && isObjectId(documentName) ? documentName : documentId;
+  documentName && UUID.isValid(documentName) ? documentName : documentId;
 
 try {
   await createPaymentSession(pid, ssid, docId);
@@ -99,7 +99,7 @@ const successUrl = `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${
 }`;
 const cancelUrl = anonymousEmail
   ? Astro.url.origin
-  : isObjectId(docId)
+  : UUID.isValid(docId)
   ? refererUrl
   : `${Astro.url.origin}/dokument?${PARAMS.PAYMENT}=${pid}&${PARAMS.DRAFT}=true`;
 

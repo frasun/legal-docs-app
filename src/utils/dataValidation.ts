@@ -22,7 +22,7 @@ export const companyPin = (name: string) =>
       path: [name],
     });
 
-const postalCodeRegExp = new RegExp("^[0-9]{2}-[0-9]{3}");
+const postalCodeRegExp = new RegExp("^[0-9]{2}-[0-9]{3}$");
 export const zipCode = (name: string, required: boolean = false) =>
   z
     .string()

@@ -17,12 +17,12 @@ import type { Answers } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { storeAnswers, getAnswers, deleteSessionDocument } from "@db/session";
 import getQuesitons from "@utils/questions";
-import isObjectId from "@utils/objectId";
 import ErrorList from "@components/ErrorList.astro";
+import { UUID } from "mongodb";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
-const isUserDocumentId = isObjectId(documentId);
+const isUserDocumentId = UUID.isValid(documentId);
 const session = await getSession(Astro.request);
 const isUserDocument = isUserDocumentId && session;
 const ssid = session

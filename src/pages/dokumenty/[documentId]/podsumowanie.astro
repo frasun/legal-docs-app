@@ -18,13 +18,12 @@ import { SESSION_COOKIE } from "@utils/cookies";
 import getQuesitons from "@utils/questions";
 import PaymentModal from "@components/PaymentModal.astro";
 import * as PARAMS from "@utils/urlParams";
-import isObjectId from "@utils/objectId";
 import { entityEnum } from "@utils/constants";
+import { UUID } from "mongodb";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
-const userDocumentId = isObjectId(documentId);
-
+const userDocumentId = UUID.isValid(documentId);
 const session = await getSession(Astro.request);
 const isUserDocument = session && userDocumentId;
 

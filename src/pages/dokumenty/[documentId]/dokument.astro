@@ -7,7 +7,7 @@ import { Icon } from "astro-icon";
 import { formatDateTime } from "@utils/date";
 import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
-import isObjectId from "@utils/objectId";
+import { UUID } from "mongodb";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -29,7 +29,7 @@ if (!userId) {
   return Astro.redirect("/404");
 }
 
-if (isObjectId(documentId)) {
+if (UUID.isValid(documentId)) {
   data = await getUserDocument(documentId, userId);
 
   if (!data || data.draft) {

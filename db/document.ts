@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { UUID } from "mongodb";
 import mongo, { encryption, encryptField } from "@db/mongodb";
 import { getEntry } from "astro:content";
 import type { Answers } from "@type";
@@ -33,7 +33,7 @@ export async function getDocumentAnswers(
 
   try {
     return await documentCollection.findOne<UserDocument>(
-      { _id: new ObjectId(id), userid: userId },
+      { _id: new UUID(id).toBinary(), userid: userId },
       {
         projection: {
           _id: 0,
@@ -57,7 +57,7 @@ export async function getUserDocument(docId: string, userId: string) {
 
   try {
     return await documentCollection.findOne<UserDocument>(
-      { _id: new ObjectId(docId), userid: userId },
+      { _id: new UUID(docId).toBinary(), userid: userId },
       { projection: { _id: 0, userid: 0 } }
     );
   } catch (e) {
@@ -70,7 +70,7 @@ export async function getDocumentSummary(docId: string, userId: string) {
 
   try {
     return await documentCollection.findOne<DocumentSummary>(
-      { _id: new ObjectId(docId), userid: userId },
+      { _id: new UUID(docId).toBinary(), userid: userId },
       { projection: { _id: 1, answers: 1, doc: 1, title: 1, draft: 1 } }
     );
   } catch (e) {
@@ -83,7 +83,7 @@ export async function getDocumentId(id: string, userId: string) {
 
   try {
     const document = await documentCollection.findOne<TemplateId>(
-      { _id: new ObjectId(id), userid: userId },
+      { _id: new UUID(id).toBinary(), userid: userId },
       { projection: { doc: 1, _id: 0 } }
     );
 
@@ -157,7 +157,7 @@ export async function updateAnswers(
     }
 
     return await documentCollection.updateOne(
-      { _id: new ObjectId(documentId) },
+      { _id: new UUID(documentId).toBinary() },
       {
         $set: { ...validatedAnswers },
         $currentDate: { modified: true },
@@ -239,7 +239,7 @@ export async function createDocument(
 export async function publishDraft(id: string) {
   try {
     return await documentCollection.updateOne(
-      { _id: new ObjectId(id) },
+      { _id: new UUID(id).toBinary() },
       {
         $set: { draft: false },
         $currentDate: { modified: true },
@@ -253,7 +253,7 @@ export async function publishDraft(id: string) {
 export async function changeDocumentName(id: string, title: string) {
   try {
     return await documentCollection.updateOne(
-      { _id: new ObjectId(id) },
+      { _id: new UUID(id).toBinary() },
       {
         $set: { title },
         $currentDate: { modified: true },

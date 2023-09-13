@@ -13,7 +13,7 @@ import {
 } from "@db/session";
 import getQuesitons from "@utils/questions";
 import * as PARAMS from "@utils/urlParams";
-import isObjectId from "@utils/objectId";
+import { UUID } from "mongodb";
 
 const urlParams = new URL(Astro.request.url).searchParams;
 const draftParam = String(urlParams.get(PARAMS.DRAFT)) === "true";
@@ -120,7 +120,7 @@ if (draftParam) {
     return Astro.redirect("/404");
   }
 
-  if (isObjectId(documentId)) {
+  if (UUID.isValid(documentId)) {
     try {
       await publishDraft(documentId);
       await deletePaymentSession(paymentId);
