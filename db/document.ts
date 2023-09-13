@@ -1,9 +1,8 @@
 import { ObjectId } from "mongodb";
-import mongo from "@db/mongodb";
+import mongo, { encryption, encryptField } from "@db/mongodb";
 import { getEntry } from "astro:content";
 import type { Answers } from "@type";
 import { emailRegExp, testString } from "@db/user";
-import encryption, { encryptField } from "@db/encryption";
 
 export interface Document {
   doc: string;
@@ -33,7 +32,7 @@ export async function getDocumentAnswers(
   });
 
   try {
-    const document = await documentCollection.findOne<UserDocument>(
+    return await documentCollection.findOne<UserDocument>(
       { _id: new ObjectId(id), userid: userId },
       {
         projection: {
@@ -45,15 +44,6 @@ export async function getDocumentAnswers(
         },
       }
     );
-
-    if (document) {
-      const docId = document.doc;
-      const answers = await decryptAnswers(docId, document.answers);
-
-      return { ...document, answers: { ...document.answers, ...answers } };
-    }
-
-    return document;
   } catch (e) {
     throw e;
   }
@@ -66,19 +56,10 @@ export async function getUserDocument(docId: string, userId: string) {
   >;
 
   try {
-    const document = await documentCollection.findOne<UserDocument>(
+    return await documentCollection.findOne<UserDocument>(
       { _id: new ObjectId(docId), userid: userId },
       { projection: { _id: 0, userid: 0 } }
     );
-
-    if (document) {
-      const docId = document.doc;
-      const answers = await decryptAnswers(docId, document.answers);
-
-      return { ...document, answers: { ...document.answers, ...answers } };
-    }
-
-    return document;
   } catch (e) {
     throw e;
   }
@@ -88,19 +69,10 @@ export async function getDocumentSummary(docId: string, userId: string) {
   type DocumentSummary = Pick<Document, "answers" | "doc" | "title" | "draft">;
 
   try {
-    const document = await documentCollection.findOne<DocumentSummary>(
+    return await documentCollection.findOne<DocumentSummary>(
       { _id: new ObjectId(docId), userid: userId },
       { projection: { _id: 1, answers: 1, doc: 1, title: 1, draft: 1 } }
     );
-
-    if (document) {
-      const docId = document.doc;
-      const answers = await decryptAnswers(docId, document.answers);
-
-      return { ...document, answers: { ...document.answers, ...answers } };
-    }
-
-    return document;
   } catch (e) {
     throw e;
   }
@@ -290,23 +262,4 @@ export async function changeDocumentName(id: string, title: string) {
   } catch (e: any) {
     throw e;
   }
-}
-
-async function decryptAnswers(docId: string, answers: Answers) {
-  const documentTemplate = await getEntry("documents", docId);
-  const encryptedFields = documentTemplate
-    ? documentTemplate.data.encryptedFields
-    : null;
-
-  if (encryptedFields) {
-    let encrypted = answers;
-
-    for (let key of encryptedFields) {
-      try {
-        encrypted[key] = await encryption.decrypt(answers[key]);
-      } catch {}
-    }
-  }
-
-  return answers;
 }
