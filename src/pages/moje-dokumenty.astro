@@ -71,7 +71,7 @@ documents.forEach((item) => {
 
 const PAGE_TITLE = "Moje dokumenty";
 
-const getDocTitle = async (docId: string) => {
+async function getDocTitle(docId: string) {
   const docEntry = await getEntry("documents", docId);
   let docTitle = "";
 
@@ -83,7 +83,11 @@ const getDocTitle = async (docId: string) => {
   }
 
   return docTitle;
-};
+}
+
+function getDateLabel(created: Date, modified: Date) {
+  return modified > created ? "Ostatnia zmiana" : "Utworzony";
+}
 ---
 
 <Layout title={pageTitle(PAGE_TITLE)}>
@@ -114,21 +118,13 @@ const getDocTitle = async (docId: string) => {
                     </header>
                     {draft ? (
                       <dl>
-                        <dt>{modified ? `Ostatnia zmiana:` : `Utworzony`}</dt>
+                        <dt>{getDateLabel(created, modified)}</dt>
                         <dd>
-                          <time>
-                            {modified
-                              ? formatDateTime(modified)
-                              : formatDateTime(created as Date)}
-                          </time>
+                          <time>{formatDateTime(modified)}</time>
                         </dd>
                       </dl>
                     ) : (
-                      <time>
-                        {modified
-                          ? formatDateTime(modified)
-                          : formatDateTime(created as Date)}
-                      </time>
+                      <time>{formatDateTime(modified)}</time>
                     )}
                     <aside>
                       <ChangeNameButton

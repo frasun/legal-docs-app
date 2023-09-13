@@ -9,8 +9,8 @@ export interface Document {
   doc: string;
   answers: Answers;
   userid: string;
-  created?: Date;
-  modified?: Date | null;
+  created: Date;
+  modified: Date;
   title: string;
   draft: boolean;
 }
@@ -137,24 +137,11 @@ export async function getDocuments(
     type Documents = Omit<Document, "answers" | "userid">;
 
     const documents = await documentCollection
-      .aggregate<Documents>([
-        { $match: { userid: userId } },
-        {
-          $addFields: {
-            sortBy: {
-              $cond: {
-                if: { $gt: ["$modified", null] },
-                then: "$modified",
-                else: "$created",
-              },
-            },
-          },
-        },
-      ])
-      .sort({ sortBy: -1 })
+      .find<Documents>({ userid: userId })
+      .sort({ modified: -1 })
       .skip(offset)
       .limit(limit)
-      .project({ answers: 0, userid: 0, sortBy: 0 });
+      .project({ answers: 0, userid: 0 });
 
     return {
       documents: await documents.toArray(),
@@ -256,13 +243,15 @@ export async function createDocument(
     }
 
     try {
+      const created = new Date();
       const result = await documentCollection.insertOne({
         doc,
         answers: validatedAnswers,
         userid,
         draft,
         title: documentTitle,
-        created: new Date(),
+        created,
+        modified: created,
       });
 
       return result.insertedId.toString();
