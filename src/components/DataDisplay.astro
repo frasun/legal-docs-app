@@ -18,28 +18,39 @@ const {
   companyPin,
 } = Astro.props;
 
-let name, address, pin;
-let typeLabel, pinLabel;
+let name, street, apt, postalCode, city, pin, address, typeLabel, pinLabel;
 
-if (type === entityEnum[0]) {
-  let street = `${personStreet}${personApt.length ? ` /${personApt}` : ``}`;
+switch (type) {
+  case entityEnum[0]:
+    name = personName;
+    street = personStreet;
+    apt = personApt;
+    postalCode = personPostalCode;
+    city = personCity;
+    pin = personPin;
 
-  name = personName;
-  address = `${personPostalCode} ${personCity}, ${street}`;
-  pin = personPin;
-  typeLabel = entityEnum[0];
-  pinLabel = "PESEL";
-} else {
-  let street = `${companyStreet}${companyApt.length ? ` /${companyApt}` : ``}`;
+    typeLabel = entityEnum[0];
+    pinLabel = "PESEL";
+    break;
+  case entityEnum[1]:
+    name = companyName;
+    street = companyStreet;
+    apt = companyApt;
+    postalCode = companyPostalCode;
+    city = companyCity;
+    pin = companyPin;
 
-  name = companyName;
-  address = `${companyPostalCode} ${companyCity}, ${street}`;
-  pin = companyPin;
-  typeLabel = entityEnum[1];
-  pinLabel = "NIP";
+    typeLabel = entityEnum[1];
+    pinLabel = "NIP";
+    break;
+  default:
+    return Astro.redirect("/404");
 }
 
-const data = name && address && pin;
+let streetAddr = `${street}${apt.length ? ` /${apt}` : ``}`;
+address = `${postalCode} ${city}, ${streetAddr}`;
+
+const data = [name, pin, street, postalCode, city].every((field) => field);
 ---
 
 {
