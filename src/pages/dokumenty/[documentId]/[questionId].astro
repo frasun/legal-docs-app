@@ -186,8 +186,8 @@ if (Astro.request.method === "POST") {
         try {
           if (Object.keys(newAnswers).length) {
             await storeAnswers(ssid, documentId, newAnswers);
-            return Astro.redirect(nextUrl);
           }
+          return Astro.redirect(nextUrl);
         } catch (e) {
           // console.log(e);
           if (e instanceof z.ZodError) {

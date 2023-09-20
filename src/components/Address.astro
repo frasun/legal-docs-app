@@ -14,52 +14,54 @@ const {
 } = Astro.props;
 ---
 
-<InputGroup>
-  <label for={streetFieldName || "street"}>Adres (ulica i numer domu)</label>
-  <input
-    id={streetFieldName || "street"}
-    type="text"
-    name={streetFieldName || "street"}
-    value={street}
-    required={required || undefined}
-    class="flex-grow"
-  />
-</InputGroup>
-<InputGroup>
-  <label for={aptFieldName || "apt"}>Adres (numer lokalu)</label>
-  <input
-    id={aptFieldName || "apt"}
-    type="text"
-    name={aptFieldName || "apt"}
-    value={apt}
-    required={required || undefined}
-    class="flex-grow"
-  />
-</InputGroup>
-<section>
+<address>
   <InputGroup>
-    <label for={postalCodeFieldName || "postalCode"}>Kod pocztowy</label>
+    <label for={streetFieldName || "street"}>Adres (ulica i numer domu)</label>
     <input
-      id={postalCodeFieldName || "postalCode"}
+      id={streetFieldName || "street"}
       type="text"
-      name={postalCodeFieldName || "postalCode"}
-      value={postalCode}
+      name={streetFieldName || "street"}
+      value={street}
       required={required || undefined}
       class="flex-grow"
     />
   </InputGroup>
   <InputGroup>
-    <label for={cityFieldName || "city"}>Miasto</label>
+    <label for={aptFieldName || "apt"}>Adres (numer lokalu)</label>
     <input
-      id={cityFieldName || "city"}
+      id={aptFieldName || "apt"}
       type="text"
-      name={cityFieldName || "city"}
-      value={city}
+      name={aptFieldName || "apt"}
+      value={apt}
       required={required || undefined}
       class="flex-grow"
     />
   </InputGroup>
-</section>
+  <section>
+    <InputGroup>
+      <label for={postalCodeFieldName || "postalCode"}>Kod pocztowy</label>
+      <input
+        id={postalCodeFieldName || "postalCode"}
+        type="text"
+        name={postalCodeFieldName || "postalCode"}
+        value={postalCode}
+        required={required || undefined}
+        class="flex-grow"
+      />
+    </InputGroup>
+    <InputGroup>
+      <label for={cityFieldName || "city"}>Miasto</label>
+      <input
+        id={cityFieldName || "city"}
+        type="text"
+        name={cityFieldName || "city"}
+        value={city}
+        required={required || undefined}
+        class="flex-grow"
+      />
+    </InputGroup>
+  </section>
+</address>
 
 <style>
   section {
@@ -67,7 +69,11 @@ const {
   }
 
   section :global(div),
-  :global(div input) {
+  address :global(div input) {
     @apply flex-grow;
+  }
+
+  address {
+    @apply flex flex-col gap-20;
   }
 </style>
