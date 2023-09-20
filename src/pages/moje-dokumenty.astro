@@ -16,6 +16,7 @@ import {
   DOCUMENT_NAME_CHANGED,
   DRAFT_SAVED,
   DRAFT_SAVED_PARAM,
+  DOCUMENT_NAME_PARAM,
 } from "@utils/toasts";
 import * as PARAMS from "@utils/urlParams";
 
@@ -38,12 +39,23 @@ if (urlParams.has(DRAFT_SAVED_PARAM)) {
   toast = DRAFT_SAVED;
 }
 
+if (urlParams.has(DOCUMENT_NAME_PARAM)) {
+  toast = DOCUMENT_NAME_CHANGED;
+}
+
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
 
   try {
     await handleNameChange(formData);
-    toast = DOCUMENT_NAME_CHANGED;
+
+    const redirectUrl = new URL(Astro.request.url);
+
+    if (!redirectUrl.searchParams.has(DOCUMENT_NAME_PARAM)) {
+      redirectUrl.searchParams.append(DOCUMENT_NAME_PARAM, "true");
+    }
+
+    return Astro.redirect(redirectUrl);
   } catch {}
 }
 

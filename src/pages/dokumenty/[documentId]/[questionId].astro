@@ -12,7 +12,12 @@ import Badge from "@components/Badge.astro";
 import pageTitle from "@utils/pageTitle";
 import QuestionAction from "@components/QuestionAction.astro";
 import Toast from "@components/Toast.astro";
-import { DOCUMENT_NAME_CHANGED, ANSWER_UPDATED } from "@utils/toasts";
+import {
+  DOCUMENT_NAME_CHANGED,
+  ANSWER_UPDATED,
+  DOCUMENT_NAME_PARAM,
+  ANSWER_UPDATED_PARAM,
+} from "@utils/toasts";
 import type { Answers } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { storeAnswers, getAnswers, deleteSessionDocument } from "@db/session";
@@ -146,6 +151,16 @@ const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
     : `podsumowanie`
 }`;
 
+const urlParams = new URL(Astro.request.url).searchParams;
+
+if (urlParams.has(DOCUMENT_NAME_PARAM)) {
+  toast = DOCUMENT_NAME_CHANGED;
+}
+
+if (urlParams.has(ANSWER_UPDATED_PARAM)) {
+  toast = ANSWER_UPDATED;
+}
+
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const newTitle = formData.get("title");
@@ -154,8 +169,15 @@ if (Astro.request.method === "POST") {
     try {
       await handleNameChange(formData);
 
-      title = String(newTitle);
-      toast = DOCUMENT_NAME_CHANGED;
+      const redirectUrl = new URL(Astro.request.url);
+
+      redirectUrl.searchParams.delete(ANSWER_UPDATED_PARAM);
+
+      if (!redirectUrl.searchParams.has(DOCUMENT_NAME_PARAM)) {
+        redirectUrl.searchParams.append(DOCUMENT_NAME_PARAM, "true");
+      }
+
+      return Astro.redirect(redirectUrl);
     } catch {}
   }
 
@@ -173,7 +195,16 @@ if (Astro.request.method === "POST") {
         if (Object.keys(newAnswers).length) {
           try {
             await updateAnswers(documentId, newAnswers, docId, encryptedFields);
-            toast = ANSWER_UPDATED;
+
+            const redirectUrl = new URL(Astro.request.url);
+
+            redirectUrl.searchParams.delete(DOCUMENT_NAME_PARAM);
+
+            if (!redirectUrl.searchParams.has(ANSWER_UPDATED_PARAM)) {
+              redirectUrl.searchParams.append(ANSWER_UPDATED_PARAM, "true");
+            }
+
+            return Astro.redirect(redirectUrl);
           } catch (e) {
             if (e instanceof z.ZodError) {
               e.errors.map(({ message }) => errors.push(message));

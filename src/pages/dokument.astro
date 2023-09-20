@@ -74,9 +74,11 @@ if (draftParam) {
   const document = await createDoc(documentId, userId, ssid, true);
 
   if (document) {
-    return Astro.redirect(
-      `${Astro.url.origin}/moje-dokumenty?${DRAFT_SAVED_PARAM}`
-    );
+    const redirectUrl = new URL(`${Astro.url.origin}/moje-dokumenty`);
+
+    redirectUrl.searchParams.append(DRAFT_SAVED_PARAM, "true");
+
+    return Astro.redirect(redirectUrl);
   } else {
     return Astro.redirect("/404");
   }

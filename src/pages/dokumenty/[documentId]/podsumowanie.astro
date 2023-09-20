@@ -11,7 +11,7 @@ import Badge from "@components/Badge.astro";
 import { handleNameChange } from "@utils/document";
 import pageTitle from "@utils/pageTitle";
 import Toast from "@components/Toast.astro";
-import { DOCUMENT_NAME_CHANGED } from "@utils/toasts";
+import { DOCUMENT_NAME_CHANGED, DOCUMENT_NAME_PARAM } from "@utils/toasts";
 import type { Answers } from "@type";
 import { deleteSessionDocument, getAllAnswers } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
@@ -50,10 +50,23 @@ let docId = documentId,
   canGenerate = true,
   toast: string | null = null;
 
+const urlParams = new URL(Astro.request.url).searchParams;
+
+if (urlParams.has(DOCUMENT_NAME_PARAM)) {
+  toast = DOCUMENT_NAME_CHANGED;
+}
+
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   await handleNameChange(formData);
-  toast = DOCUMENT_NAME_CHANGED;
+
+  const redirectUrl = new URL(Astro.request.url);
+
+  if (!redirectUrl.searchParams.has(DOCUMENT_NAME_PARAM)) {
+    redirectUrl.searchParams.append(DOCUMENT_NAME_PARAM, "true");
+  }
+
+  return Astro.redirect(redirectUrl);
 }
 
 if (isUserDocument) {
