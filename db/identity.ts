@@ -66,10 +66,12 @@ export async function getUserIdentities(
 }
 
 export async function getUserIdentityList(userId: string) {
-  return await identityCollection
+  const identities = await identityCollection
     .find<Identity>({ userId })
     .sort({ name: 1 })
     .project({ _id: 1, name: 1, type: 1 });
+
+  return await identities.toArray();
 }
 
 export async function getUserIdentity(identityId: string, userId: string) {

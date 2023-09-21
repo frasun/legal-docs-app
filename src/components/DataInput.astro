@@ -36,7 +36,7 @@ if (userId && UUID.isValid(userId)) {
 ---
 
 {
-  identities && (
+  identities && identities.length ? (
     <identity-selector data-userid={userId}>
       <select>
         <option>Wybierz z zapisanych tożsamości</option>
@@ -47,6 +47,8 @@ if (userId && UUID.isValid(userId)) {
         ))}
       </select>
     </identity-selector>
+  ) : (
+    ``
   )
 }
 
