@@ -1,9 +1,15 @@
 import bcrypt from "bcryptjs";
 import { kv } from "@vercel/kv";
-import { pg } from "@db/pg";
 import errors from "@utils/errors";
+import mongodb from "@db/mongodb";
 
-const KEY = "user";
+interface User {
+  email: string;
+  password: string;
+  created?: Date;
+}
+
+const userCollection = mongodb.collection<User>("users");
 export const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegExp = /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$/;
 const getVerificationCode = () => Math.random().toString(16).substring(2, 8);
@@ -11,13 +17,7 @@ export const testString = (string: string, regexp: RegExp) =>
   regexp.test(string);
 
 export async function getUserByEmail(email: string) {
-  const user = await pg
-    .selectFrom(KEY)
-    .selectAll()
-    .where("email", "=", email)
-    .executeTakeFirst();
-
-  return user || null;
+  return await userCollection.findOne<User>({ email });
 }
 
 export async function createUser(email: string, password: string) {
@@ -30,15 +30,11 @@ export async function createUser(email: string, password: string) {
   }
 
   try {
-    await pg
-      .insertInto(KEY)
-      .values([
-        {
-          email,
-          password,
-        },
-      ])
-      .execute();
+    await userCollection.insertOne({
+      email,
+      password,
+      created: new Date(),
+    });
 
     await kv.del(`verify-${email}`);
   } catch (e) {

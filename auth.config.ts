@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import cookie from "cookie";
 import { getUserByEmail } from "@db/user";
 import { SESSION_COOKIE } from "@utils/cookies";
+import { UUID } from "mongodb";
 
 export default {
   secret: process.env.AUTH_SECRET as string,
@@ -53,12 +54,12 @@ export default {
       // console.log({ session, token });
       return {
         ...session,
-        user: { id: token.sub, email: token.email, ssid: token.ssid },
+        user: { id: token.id, email: token.email, ssid: token.ssid },
       };
     },
     // async signIn({ user, account, profile, email, credentials }) {
-    //   // console.log("signIn callback");
-    //   // console.log({ user, account, profile, email, credentials });
+    //   console.log("signIn callback");
+    //   console.log({ user, account, profile, email, credentials });
     //   return true;
     // },
     // async redirect({ url, baseUrl }) {
@@ -69,7 +70,7 @@ export default {
       // console.log("jwt callback");
       // console.log({ token, user, account, profile, isNewUser });
       if (user && user.ssid) {
-        return { ...token, ssid: user.ssid };
+        return { ...token, ssid: user.ssid, id: new UUID(user._id).toString() };
       }
       return token;
     },
@@ -79,6 +80,7 @@ export default {
 declare module "@auth/core/types" {
   interface User {
     ssid?: string;
+    _id?: UUID;
   }
 
   interface Session {

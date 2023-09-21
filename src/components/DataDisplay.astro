@@ -56,15 +56,11 @@ const data = [name, pin, street, postalCode, city].every((field) => field);
 {
   data ? (
     <>
-      <span>
-        {name} ({typeLabel})
-      </span>
+      {name} ({typeLabel})
       <br />
-      <span>{address}</span>
+      {address}
       <br />
-      <span>
-        {pinLabel}: {pin}
-      </span>
+      {pinLabel}: {pin}
     </>
   ) : (
     <div class="text-orangeDark flex gap-10 items-center">

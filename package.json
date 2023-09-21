@@ -1,7 +1,7 @@
 {
   "name": "prawniczek",
   "type": "module",
-  "version": "0.6.11",
+  "version": "0.6.12",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -21,8 +21,6 @@
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.9",
     "@vercel/kv": "^0.2.2",
-    "@vercel/postgres": "^0.2.1",
-    "@vercel/postgres-kysely": "^0.2.1",
     "amount-to-text": "^2.0.1",
     "astro": "^2.8.5",
     "astro-compress": "^1.1.46",
@@ -33,7 +31,6 @@
     "cookie": "^0.5.0",
     "cssnano": "^6.0.1",
     "fuse.js": "^6.6.2",
-    "kysely": "^0.24.2",
     "mongodb": "6.0",
     "mongodb-client-encryption": "^6.0.0",
     "n2words": "^1.16.4",
@@ -44,7 +41,7 @@
     "validate-polish": "^2.1.40"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.2",
+    "@types/bcryptjs": "^2.4.4",
     "@types/cookie": "^0.5.1",
     "svgo": "^2.8.0"
   }

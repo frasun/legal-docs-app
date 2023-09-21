@@ -7,7 +7,7 @@ import { emailRegExp, testString } from "@db/user";
 export interface Document {
   doc: string;
   answers: Answers;
-  userid: string;
+  userId: string;
   created: Date;
   modified: Date;
   title: string;
@@ -33,7 +33,7 @@ export async function getDocumentAnswers(
 
   try {
     return await documentCollection.findOne<UserDocument>(
-      { _id: new UUID(id).toBinary(), userid: userId },
+      { _id: new UUID(id).toBinary(), userId },
       {
         projection: {
           _id: 0,
@@ -57,8 +57,8 @@ export async function getUserDocument(docId: string, userId: string) {
 
   try {
     return await documentCollection.findOne<UserDocument>(
-      { _id: new UUID(docId).toBinary(), userid: userId },
-      { projection: { _id: 0, userid: 0 } }
+      { _id: new UUID(docId).toBinary(), userId },
+      { projection: { _id: 0, userId: 0 } }
     );
   } catch (e) {
     throw e;
@@ -70,7 +70,7 @@ export async function getDocumentSummary(docId: string, userId: string) {
 
   try {
     return await documentCollection.findOne<DocumentSummary>(
-      { _id: new UUID(docId).toBinary(), userid: userId },
+      { _id: new UUID(docId).toBinary(), userId },
       { projection: { _id: 1, answers: 1, doc: 1, title: 1, draft: 1 } }
     );
   } catch (e) {
@@ -83,7 +83,7 @@ export async function getDocumentId(id: string, userId: string) {
 
   try {
     const document = await documentCollection.findOne<TemplateId>(
-      { _id: new UUID(id).toBinary(), userid: userId },
+      { _id: new UUID(id).toBinary(), userId },
       { projection: { doc: 1, _id: 0 } }
     );
 
@@ -100,20 +100,20 @@ export async function getDocuments(
 ) {
   try {
     const userDocumentCount = await documentCollection.countDocuments({
-      userid: { $eq: userId },
+      userId: { $eq: userId },
     });
 
     const pages = Math.ceil(userDocumentCount / limit);
     const offset = page && page > 0 && page <= pages ? (page - 1) * limit : 0;
 
-    type Documents = Omit<Document, "answers" | "userid">;
+    type Documents = Omit<Document, "answers" | "userId">;
 
     const documents = await documentCollection
-      .find<Documents>({ userid: userId })
+      .find<Documents>({ userId })
       .sort({ modified: -1 })
       .skip(offset)
       .limit(limit)
-      .project({ answers: 0, userid: 0 });
+      .project({ answers: 0, userId: 0 });
 
     return {
       documents: await documents.toArray(),
@@ -176,7 +176,7 @@ export async function updateAnswers(
 export async function createDocument(
   doc: string,
   answers: Answers,
-  userid: string,
+  userId: string,
   draft = false
 ) {
   const template = await getEntry("documents", doc);
@@ -212,14 +212,14 @@ export async function createDocument(
       }
     }
 
-    const anonymousUser = testString(userid, emailRegExp);
+    const anonymousUser = testString(userId, emailRegExp);
     let documentTitle: string;
 
     if (anonymousUser) {
       documentTitle = title;
     } else {
       const userDocumentCount = await documentCollection.countDocuments({
-        userid: { $eq: userid },
+        userId: { $eq: userId },
       });
 
       documentTitle = `#${userDocumentCount + 1} ${title}`;
@@ -230,14 +230,14 @@ export async function createDocument(
       const result = await documentCollection.insertOne({
         doc,
         answers: validatedAnswers,
-        userid,
+        userId,
         draft,
         title: documentTitle,
         created,
         modified: created,
       });
 
-      return result.insertedId.toString();
+      return new UUID(result.insertedId.toString("hex"));
     } catch (e) {
       throw e;
     }

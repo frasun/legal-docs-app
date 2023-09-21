@@ -168,8 +168,6 @@ if (userId && UUID.isValid(userId)) {
         this.selector.addEventListener("change", () => {
           const activeTab = this.selector?.value;
 
-          console.log({ activeTab });
-
           if (activeTab) {
             Array.from(this.fieldsets).forEach((fieldset) => {
               if (fieldset.getAttribute("data-type") === activeTab) {
