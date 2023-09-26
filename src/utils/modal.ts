@@ -35,5 +35,7 @@ export default class Modal {
   hide() {
     backdrop.removeBackdrop();
     this.modal.classList.remove(this.MODAL_OPEN);
+
+    document.body.dispatchEvent(new CustomEvent("modalHidden"));
   }
 }

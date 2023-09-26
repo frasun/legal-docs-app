@@ -14,7 +14,6 @@ for (let [key, value] of Object.entries(localEnv)) {
   process.env[key] = value;
 }
 
-
 // https://astro.build/config
 export default defineConfig({
   integrations: [tailwind({

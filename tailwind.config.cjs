@@ -37,6 +37,8 @@ module.exports = {
 			orangeDark: '#EA271B',
 			yellow: 'rgba(255, 199, 90, 0.2)',
 			yellowDark: 'rgba(126, 90, 7, 0.9)',
+			purple: 'rgba(212, 156, 255, 0.55)',
+			purpleDark: 'rgba(73, 7, 126, 0.75)',
 			dark90: 'rgba(40, 39, 37, 0.9)',
 			dark75: 'rgba(40, 39, 37, 0.75)',
 			dark65: 'rgba(40, 39, 37, 0.65)',
@@ -51,6 +53,7 @@ module.exports = {
 			serif: ['Bitter', 'ui-serif', 'Georgia', '"Times New Roman"', 'Times', 'serif'],
 		},
 		fontSize: {
+			tiny: ['0.6875rem', { lineHeight: '1.1em' }], //11
 			xxs: ['0.8125rem', { lineHeight: '1.25em' }], //12
 			xs: ['0.875rem', { lineHeight: '1rem' }], //14
 			sm: ['0.9375rem', { lineHeight: '1.25rem' }], //15

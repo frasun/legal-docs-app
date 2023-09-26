@@ -1,6 +1,8 @@
 import { PDFDocument, rgb, PageSizes, PDFFont } from "@cantoo/pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 
+export const DEFAULT_TITLE = "dokument";
+
 export const CONTENT_TYPES = {
   TITLE: "title",
   PARAGRAPH: "paragraph",
@@ -22,12 +24,22 @@ const CHIVO_BOLD = "/chivo-v18-latin_latin-ext-700.ttf";
 
 export default async function (
   paragraphs: (string | null)[][],
-  documentTitle = "document"
+  documentTitle = DEFAULT_TITLE
 ) {
-  const FONT_REGULAR = await fetch(CHIVO_REGULAR).then((res) =>
+  const pdfBytes = await createPDF(paragraphs);
+  downloadFile(pdfBytes, documentTitle);
+}
+
+export async function createPDF(
+  paragraphs: (string | null)[][],
+  urlOrigin: string = ""
+) {
+  const FONT_REGULAR = await fetch(`${urlOrigin}${CHIVO_REGULAR}`).then((res) =>
     res.arrayBuffer()
   );
-  const FONT_BOLD = await fetch(CHIVO_BOLD).then((res) => res.arrayBuffer());
+  const FONT_BOLD = await fetch(`${urlOrigin}${CHIVO_BOLD}`).then((res) =>
+    res.arrayBuffer()
+  );
 
   const pdfDoc = await PDFDocument.create();
   pdfDoc.registerFontkit(fontkit);
@@ -123,9 +135,7 @@ export default async function (
     }
   }
 
-  const pdfBytes = await pdfDoc.save();
-
-  downloadFile(pdfBytes, documentTitle);
+  return await pdfDoc.save();
 }
 
 function splitIntoLines(
@@ -165,11 +175,59 @@ function downloadFile(bytes: Uint8Array, filename: string) {
   link.click();
 }
 
-function generateSafeFileName(inputString: string) {
+export function generateSafeFileName(inputString: string) {
   const invalidCharsRegex = /[\\/:"*?<>|]/g;
   const safeString = inputString.replace(invalidCharsRegex, "");
   const trimmedString = safeString.trim().substring(0, 100);
   const safeFileName = trimmedString.replace(/\s+/g, "_");
 
   return safeFileName.toLowerCase();
+}
+
+export function getContentArray(element: Element) {
+  let array = [];
+
+  for (let i = 0; i < element.children.length; i++) {
+    const el = element.children[i];
+
+    switch (el.tagName) {
+      case "H3":
+        array.push([CONTENT_TYPES.TITLE, el.textContent]);
+        break;
+      case "H4":
+        array.push([CONTENT_TYPES.PARAGRAPH, el.textContent]);
+        break;
+      case "OL":
+        array.push(...getLisItems(el));
+        break;
+    }
+  }
+
+  return array;
+}
+
+function getLisItems(list: Element) {
+  let array = [];
+  const lineBreakRegex = /<\s*br\s*\/?>/gi;
+
+  for (let i = 0; i < list.children.length; i++) {
+    const lines = list.children[i].innerHTML.split(lineBreakRegex);
+
+    for (const line of lines) {
+      if (line.startsWith("\n")) {
+        array.push([CONTENT_TYPES.LINE, cleanContent(line)]);
+      } else {
+        array.push([CONTENT_TYPES.POINT, cleanContent(line)]);
+      }
+    }
+  }
+
+  return array;
+}
+
+function cleanContent(line: string) {
+  return line
+    .replace("\n", "")
+    .trim()
+    .replace(/<[^>]+>/g, "");
 }

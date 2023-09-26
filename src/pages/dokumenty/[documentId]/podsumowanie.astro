@@ -215,9 +215,9 @@ const GENERATE = "Generuj dokument";
           session ? (
             <a href={`${Astro.url.origin}/zamowienie`}>{GENERATE}</a>
           ) : (
-            <show-payment-modal>
+            <show-modal data-modal="payment">
               <button>{GENERATE}</button>
-            </show-payment-modal>
+            </show-modal>
           )
         ) : (
           <h4>Aby wygenerować dokument wypełnij wszystkie wymagane pola</h4>
@@ -283,24 +283,5 @@ const GENERATE = "Generuj dokument";
 </style>
 
 <script>
-  class ShowPaymentModal extends HTMLElement {
-    button: HTMLButtonElement | null;
-    constructor() {
-      super();
-
-      this.button = this.querySelector("button");
-    }
-
-    connectedCallback() {
-      if (this.button) {
-        this.button.addEventListener("click", () => {
-          document.body.dispatchEvent(
-            new CustomEvent("showModal", { detail: { modalId: "payment" } })
-          );
-        });
-      }
-    }
-  }
-
-  customElements.define("show-payment-modal", ShowPaymentModal);
+  import "@wc/ShowModal";
 </script>

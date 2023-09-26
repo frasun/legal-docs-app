@@ -1,0 +1,85 @@
+---
+import InputGroup from "./InputGroup.astro";
+import Modal from "./Modal.astro";
+import Icon from "astro-icon";
+
+interface Props {
+  contentId: string;
+  documentId: string;
+}
+
+const { contentId, documentId } = Astro.props;
+---
+
+<Modal modalId="sharing" slot="footer">
+  <header>
+    <h3>Wyślij dokument przez e-mail</h3>
+    <p>Możesz wysłać dokument na 3 adresy email</p>
+  </header>
+  <send-via-email data-content-id={contentId} data-document-id={documentId}>
+    <form>
+      <fieldset>
+        <div>
+          <input id="sendToMe" type="checkbox" name="sendToMe" checked />
+          <label for="sendToMe">Wyślij na mój adres e-mail</label>
+        </div>
+        <InputGroup>
+          <label for="email1">Podaj adres e-mail</label>
+          <input type="email" name="email1" id="email1" />
+        </InputGroup>
+        <InputGroup>
+          <label for="email2">Podaj adres e-mail</label>
+          <input type="email" name="email2" id="email2" />
+        </InputGroup>
+        <footer>
+          <button type="submit">Wyślij</button>
+          <Icon name="loader" width={24} height={24} />
+        </footer>
+      </fieldset>
+    </form>
+  </send-via-email>
+</Modal>
+
+<style>
+  send-via-email {
+    @apply w-full;
+  }
+
+  send-via-email form {
+    @apply mt-20;
+  }
+
+  send-via-email,
+  send-via-email fieldset,
+  send-via-email form {
+    @apply flex flex-col gap-20;
+  }
+
+  send-via-email fieldset div:first-child {
+    @apply flex gap-15;
+  }
+
+  send-via-email fieldset footer {
+    @apply flex gap-15 items-center mt-15;
+  }
+
+  send-via-email fieldset footer svg {
+    @apply hidden;
+  }
+
+  send-via-email form input[type="email"] {
+    @apply w-full;
+  }
+
+  send-via-email button[type="submit"] {
+    @apply btn btn-default self-start;
+  }
+
+  :global(#sharing) {
+    @apply max-w-[500px];
+  }
+</style>
+
+<script>
+  import "@wc/SendPdfViaEmail";
+</script>

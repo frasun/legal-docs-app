@@ -1,10 +1,27 @@
-<span>
-    <slot />
+---
+export enum BadgeStyle {
+  default = "yellow",
+  purple = "purple",
+}
+
+interface Props {
+  style?: BadgeStyle;
+}
+
+const { style = BadgeStyle.default } = Astro.props;
+---
+
+<span data-style={style}>
+  <slot />
 </span>
 
 <style>
-    span {
-        @apply px-10 py-[5px] bg-yellow text-yellowDark rounded-xl;
-        @apply font-sans text-xxs font-bold uppercase not-italic tracking-wide;
-    }
+  span {
+    @apply px-10 py-[5px] bg-yellow text-yellowDark rounded-xl;
+    @apply font-sans text-tiny font-bold uppercase not-italic tracking-wide;
+  }
+
+  span[data-style="purple"] {
+    @apply bg-purple text-purpleDark;
+  }
 </style>

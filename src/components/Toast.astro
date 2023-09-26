@@ -1,11 +1,27 @@
 ---
 import { Icon } from "astro-icon";
 
-const { info } = Astro.props;
+export enum ToastStatus {
+  default = "default",
+  error = "error",
+}
+
+interface Props {
+  info: string;
+  status?: ToastStatus;
+}
+
+const { info, status = ToastStatus.default } = Astro.props;
 ---
 
-<toast-element>
-  <Icon name="tick" width={32} height={32} />
+<toast-element data-status={status}>
+  {
+    status === ToastStatus.error ? (
+      <Icon name="clear" width={32} height={32} />
+    ) : (
+      <Icon name="tick" width={32} height={32} />
+    )
+  }
   {info}
 </toast-element>
 
@@ -27,6 +43,10 @@ const { info } = Astro.props;
 
   toast-element svg {
     @apply text-light;
+  }
+
+  toast-element[data-status="error"] {
+    @apply bg-orange;
   }
 
   @keyframes showToast {

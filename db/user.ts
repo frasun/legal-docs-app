@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { kv } from "@vercel/kv";
 import errors from "@utils/errors";
 import mongodb from "@db/mongodb";
+import { emailRegExp, passwordRegExp, testString } from "@utils/dataValidation";
 
 interface User {
   email: string;
@@ -10,11 +11,7 @@ interface User {
 }
 
 const userCollection = mongodb.collection<User>("users");
-export const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const passwordRegExp = /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$/;
 const getVerificationCode = () => Math.random().toString(16).substring(2, 8);
-export const testString = (string: string, regexp: RegExp) =>
-  regexp.test(string);
 
 export async function getUserByEmail(email: string) {
   return await userCollection.findOne<User>({ email });

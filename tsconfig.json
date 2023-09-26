@@ -7,7 +7,8 @@
       "@content/*": ["src/content/*"],
       "@utils/*": ["src/utils/*"],
       "@type": ["src/types.ts"],
-      "@db/*": ["db/*"]
+      "@db/*": ["db/*"],
+      "@wc/*": ["src/webcomponents/*"]
     }
   }
 }

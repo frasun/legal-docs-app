@@ -5,7 +5,7 @@ import { formatDateTime, LOCALE } from "@utils/date";
 import { getEntry } from "astro:content";
 import { getSession } from "auth-astro/server";
 import { getDocuments } from "@db/document";
-import Badge from "@components/Badge.astro";
+import Badge, { BadgeStyle } from "@components/Badge.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
@@ -112,7 +112,7 @@ function getDateLabel(created: Date, modified: Date) {
             <>
               <h6>{monthYear}</h6>
               {groupedItems[monthYear].map(
-                ({ doc, _id, title, created, draft, modified }) => (
+                ({ doc, _id, title, created, draft, modified, shared }) => (
                   <div>
                     <header>
                       <a
@@ -122,6 +122,9 @@ function getDateLabel(created: Date, modified: Date) {
                       >
                         <span>{title}</span>
                         {draft && <Badge>Szkic</Badge>}
+                        {shared && (
+                          <Badge style={BadgeStyle.purple}>Wysłany</Badge>
+                        )}
                       </a>
                       <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
                         <Icon name="document" width={16} height={16} />

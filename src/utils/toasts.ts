@@ -9,3 +9,7 @@ export const IDENTITY_SAVED = "Nowa tożsamość została dodana";
 export const IDENTITY_SAVED_PARAM = "identity-saved";
 export const IDENTITY_REMOVED = "Tożsamość została usunięta";
 export const IDENTITY_REMOVED_PARAM = "identity-removed";
+export const DOCUMENT_SHARED_PARAM = "document-shared";
+export const DOCUMENT_SHARED =
+  "Dokument zostanie wysłany na podane adresy e-mail";
+export const ERROR = "Coś poszło nie tak, spróbuj ponownie później";

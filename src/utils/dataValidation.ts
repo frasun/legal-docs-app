@@ -85,3 +85,8 @@ export const stringEnum = (array: Readonly<string[]>) =>
     .string()
     .nonempty()
     .refine((val) => validateEnum(val, array));
+
+export const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const passwordRegExp = /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$/;
+export const testString = (string: string, regexp: RegExp) =>
+  regexp.test(string);

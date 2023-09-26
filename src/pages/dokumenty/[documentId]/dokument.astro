@@ -8,6 +8,9 @@ import { formatDateTime } from "@utils/date";
 import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
+import SharingModal from "@components/SharingModal.astro";
+import { DOCUMENT_SHARED, DOCUMENT_SHARED_PARAM, ERROR } from "@utils/toasts";
+import Toast, { ToastStatus } from "@components/Toast.astro";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -16,8 +19,6 @@ const urlParams = new URL(Astro.request.url).searchParams;
 const emailParam = urlParams.get(PARAMS.EMAIL);
 
 let data, title;
-
-Astro.cookies.delete(documentId);
 
 const userId = session
   ? session.user?.id
@@ -41,7 +42,7 @@ if (UUID.isValid(documentId)) {
   return Astro.redirect("/404");
 }
 
-const { answers, doc: docId, created, modified } = data;
+const { answers, doc: docId, created, modified, shared, sharedWith } = data;
 
 const document = await getEntry("documents", docId);
 
@@ -59,11 +60,27 @@ for (let key of Object.keys(answers)) {
 if (!title) title = docTitle;
 
 const firstTime = urlParams.get("success") === "true" ? true : false;
+let toast: string | null = null,
+  status: ToastStatus | undefined;
+
+if (urlParams.has(DOCUMENT_SHARED_PARAM)) {
+  if (Boolean(urlParams.get(DOCUMENT_SHARED_PARAM))) {
+    toast = DOCUMENT_SHARED;
+  } else {
+    toast = ERROR;
+    status = ToastStatus.error;
+  }
+}
 ---
 
 <Layout title={pageTitle(String(title))}>
   <span slot="topbar-title">{title}</span>
-  <article id="doc" class="prose prose-document" data-title={title}>
+  <article
+    id="doc"
+    class="prose prose-document"
+    data-title={title}
+    data-template={docTitle}
+  >
     <Content />
   </article>
   <aside>
@@ -86,23 +103,45 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
       firstTime ? (
         <h6>Wybierz co chcesz teraz zrobić</h6>
       ) : (
-        <h6>
-          Utworzony{" "}
-          <time>
-            {modified
-              ? formatDateTime(modified)
-              : formatDateTime(created as Date)}
-          </time>
-        </h6>
+        <>
+          <h6>
+            Utworzony:
+            <br />
+            <time>
+              {modified
+                ? formatDateTime(modified)
+                : formatDateTime(created as Date)}
+            </time>
+          </h6>
+          {shared && sharedWith && sharedWith.length && (
+            <h6>
+              Wysłany:
+              <br />
+              <time>{formatDateTime(shared)}</time> do
+              <br />
+              {sharedWith.join(", ")}
+            </h6>
+          )}
+        </>
       )
     }
     <div>
-      <download-pdf content-id="#doc">
+      <download-pdf data-content-id="#doc">
         <button>
           <Icon name="file-pdf" width={24} height={24} />
           Pobierz plik PDF
         </button>
       </download-pdf>
+      {
+        session && !shared && (
+          <show-modal data-modal="sharing">
+            <button>
+              <Icon name="email" width={24} height={24} />
+              Wyślij przez e-mail
+            </button>
+          </show-modal>
+        )
+      }
     </div>
     {
       !emailParam && (
@@ -114,6 +153,8 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
       )
     }
   </aside>
+  {session && <SharingModal contentId="#doc" documentId={documentId} />}
+  {toast && <Toast info={toast} status={status} />}
 </Layout>
 
 <style>
@@ -151,6 +192,10 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
     @apply w-[24px] h-[24px];
   }
 
+  aside > div {
+    @apply mt-10;
+  }
+
   aside button {
     @apply btn btn-default btn-big;
   }
@@ -168,79 +213,6 @@ const firstTime = urlParams.get("success") === "true" ? true : false;
   }
 </style>
 <script>
-  import exportPdf, { CONTENT_TYPES } from "@utils/exportPdf";
-
-  class DownloadPdf extends HTMLElement {
-    button: HTMLButtonElement;
-    contentId: string;
-
-    constructor() {
-      super();
-
-      this.button = this.querySelector("button") as HTMLButtonElement;
-      this.contentId = String(this.getAttribute("content-id"));
-    }
-
-    connectedCallback() {
-      this.button.addEventListener("click", () => {
-        const docContent = document.querySelector(this.contentId);
-
-        if (docContent) {
-          exportPdf(
-            this.getContentArray(docContent),
-            docContent.getAttribute("data-title") || ""
-          );
-        }
-      });
-    }
-
-    getContentArray(element: Element) {
-      let array = [];
-
-      for (let i = 0; i < element.children.length; i++) {
-        const el = element.children[i];
-
-        switch (el.tagName) {
-          case "H3":
-            array.push([CONTENT_TYPES.TITLE, el.textContent]);
-            break;
-          case "H4":
-            array.push([CONTENT_TYPES.PARAGRAPH, el.textContent]);
-            break;
-          case "OL":
-            array.push(...this.getLisItems(el));
-            break;
-        }
-      }
-
-      return array;
-    }
-
-    getLisItems(list: Element) {
-      let array = [];
-      const lineBreakRegex = /<\s*br\s*\/?>/gi;
-
-      for (let i = 0; i < list.children.length; i++) {
-        const lines = list.children[i].innerHTML.split(lineBreakRegex);
-
-        for (const line of lines) {
-          if (line.startsWith("\n")) {
-            array.push([CONTENT_TYPES.LINE, this.cleanContent(line)]);
-          } else {
-            array.push([CONTENT_TYPES.POINT, this.cleanContent(line)]);
-          }
-        }
-      }
-
-      return array;
-    }
-
-    cleanContent(line: string) {
-      return line
-        .replace("\n", "")
-        .trim()
-        .replace(/<[^>]+>/g, "");
-    }
-  }
-  customElements.define("download-pdf", DownloadPdf);
+  import "@wc/ShowModal";
+  import "@wc/DownloadPdf";
 </script>

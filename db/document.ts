@@ -2,7 +2,9 @@ import { UUID } from "mongodb";
 import mongo, { getDataKey, encryptField } from "@db/mongodb";
 import { getEntry } from "astro:content";
 import type { Answers } from "@type";
-import { emailRegExp, testString } from "@db/user";
+import { emailRegExp, testString } from "@utils/dataValidation";
+import { WRONG_EMAIL_FORMAT } from "@utils/response";
+import { sendFile } from "@utils/email";
 
 export interface Document {
   doc: string;
@@ -12,6 +14,8 @@ export interface Document {
   modified: Date;
   title: string;
   draft: boolean;
+  shared?: Date;
+  sharedWith?: string[];
 }
 
 const documentCollection = mongo.collection<Document>("documents");
@@ -52,7 +56,14 @@ export async function getDocumentAnswers(
 export async function getUserDocument(docId: string, userId: string) {
   type UserDocument = Pick<
     Document,
-    "answers" | "doc" | "title" | "draft" | "created" | "modified"
+    | "answers"
+    | "doc"
+    | "title"
+    | "draft"
+    | "created"
+    | "modified"
+    | "shared"
+    | "sharedWith"
   >;
 
   try {
@@ -106,14 +117,14 @@ export async function getDocuments(
     const pages = Math.ceil(userDocumentCount / limit);
     const offset = page && page > 0 && page <= pages ? (page - 1) * limit : 0;
 
-    type Documents = Omit<Document, "answers" | "userId">;
+    type Documents = Omit<Document, "answers" | "userId" | "sharedWith">;
 
     const documents = await documentCollection
       .find<Documents>({ userId })
       .sort({ modified: -1 })
       .skip(offset)
       .limit(limit)
-      .project({ answers: 0, userId: 0 });
+      .project({ answers: 0, userId: 0, sharedWith: 0 });
 
     return {
       documents: await documents.toArray(),
@@ -271,6 +282,53 @@ export async function changeDocumentName(id: string, title: string) {
       }
     );
   } catch (e: any) {
+    throw e;
+  }
+}
+
+export async function shareDocument(
+  pdf: string,
+  pdfTitle: string,
+  emailList: string[],
+  documentTemplate: string,
+  sender: string,
+  documentId: string,
+  userId: string
+) {
+  if (!emailList.length) {
+    throw new Error("empty email list");
+  }
+
+  for (let email of emailList) {
+    const isEmail = testString(email, emailRegExp);
+
+    if (!isEmail) {
+      throw new Error(`${WRONG_EMAIL_FORMAT}: ${email}`);
+    }
+  }
+
+  try {
+    const document = await documentCollection.findOne<Document>({
+      _id: new UUID(documentId).toBinary(),
+      userId,
+    });
+
+    if (document) {
+      for (let email of emailList) {
+        await sendFile(pdf, pdfTitle, email, sender, documentTemplate);
+      }
+
+      await documentCollection.updateOne(
+        { _id: new UUID(documentId).toBinary() },
+        {
+          $set: { sharedWith: emailList },
+          $currentDate: { shared: true },
+        }
+      );
+    } else {
+      throw new Error("missing document");
+    }
+  } catch (e) {
     throw e;
   }
 }
