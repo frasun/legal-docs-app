@@ -29,5 +29,8 @@ export default defineConfig({
     intentSelector: ['a[href$="/dokumenty"]', 'a[href*="/dokumenty?"]', 'a[href$="/podsumowanie"]', 'a[href$="/dokument"]'],
   })],
   output: 'server',
-  adapter: vercel()
+  adapter: vercel(),
+  vite: {
+    optimizeDeps: { exclude: ["auth:config"] },
+  }
 });

@@ -283,7 +283,7 @@ if (userId && UUID.isValid(userId)) {
         this.selector.addEventListener("change", async () => {
           if (this.selector?.value && this.userId) {
             try {
-              const id = await fetch("/api/identity.json", {
+              const id = await fetch("/api/identity", {
                 method: "POST",
                 credentials: "same-origin",
                 headers: {
