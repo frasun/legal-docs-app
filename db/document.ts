@@ -4,7 +4,7 @@ import { getEntry } from "astro:content";
 import type { Answers } from "@type";
 import { emailRegExp, testString } from "@utils/dataValidation";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
-import { sendFile } from "@utils/email";
+import { sendFile, sendFiles } from "@utils/email";
 
 export interface Document {
   doc: string;
@@ -314,9 +314,29 @@ export async function shareDocument(
     });
 
     if (document) {
+      let emails = [];
       for (let email of emailList) {
-        await sendFile(pdf, pdfTitle, email, sender, documentTemplate);
+        emails.push({
+          From: import.meta.env.POSTMARK_SENDER,
+          To: email,
+          TemplateAlias: "document-sharing",
+          TemplateModel: {
+            sender,
+            documentTemplate,
+          },
+          InlineCss: false,
+          Attachments: [
+            {
+              Name: `${pdfTitle}.pdf`,
+              Content: pdf,
+              ContentType: "application/octet-stream",
+              ContentID: "",
+            },
+          ],
+        });
       }
+
+      await sendFiles(emails);
 
       await documentCollection.updateOne(
         { _id: new UUID(documentId).toBinary() },

@@ -48,3 +48,11 @@ export async function sendFile(
     console.error(e);
   }
 }
+
+export async function sendFiles(emailData: postmark.Models.TemplatedMessage[]) {
+  try {
+    await client.sendEmailBatchWithTemplates(emailData);
+  } catch (e) {
+    console.error(e);
+  }
+}
