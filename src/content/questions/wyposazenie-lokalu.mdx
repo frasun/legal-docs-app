@@ -1,8 +1,8 @@
 ---
 question: Jakie wyposażenie jest na stanie lokalu?
-equipmentPlaceholder: "np. Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa"
 equipment: ""
+equipmentPlaceholder: "np. Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa"
 ---
 Podaj elementy wysposażenia po przecinku
 
-<textarea name="equipment" value={frontmatter.equipment} placeholder={frontmatter.equipmentPlaceholder}></textarea>
+<textarea name="equipment" placeholder={frontmatter.equipmentPlaceholder}>{frontmatter.equipment}</textarea>
