@@ -47,7 +47,10 @@ export default {
       },
     }),
   ],
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60,
+  },
   callbacks: {
     async session({ session, token }) {
       // console.log("session callback");

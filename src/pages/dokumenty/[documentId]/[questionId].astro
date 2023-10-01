@@ -88,6 +88,8 @@ if (isUserDocument) {
         }
       }
     } catch {}
+  } else {
+    return Astro.redirect('/zaloguj-sie')
   }
 } else {
   try {

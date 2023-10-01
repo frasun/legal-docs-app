@@ -73,7 +73,7 @@ if (isUserDocument) {
   const userId = session.user?.id;
 
   if (!session || !userId) {
-    return Astro.redirect("/");
+    return Astro.redirect("/zaloguj-sie");
   }
 
   const data = await getDocumentSummary(documentId, userId);
