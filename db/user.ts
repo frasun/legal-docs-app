@@ -4,10 +4,16 @@ import errors from "@utils/errors";
 import mongodb from "@db/mongodb";
 import { emailRegExp, passwordRegExp, testString } from "@utils/dataValidation";
 
+export enum UserRoles {
+  admin = "admin",
+  user = "user",
+}
+
 interface User {
   email: string;
   password: string;
   created?: Date;
+  role: UserRoles;
 }
 
 const userCollection = mongodb.collection<User>("users");
@@ -31,6 +37,7 @@ export async function createUser(email: string, password: string) {
       email,
       password,
       created: new Date(),
+      role: UserRoles.user,
     });
 
     await kv.del(`verify-${email}`);

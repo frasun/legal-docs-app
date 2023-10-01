@@ -9,14 +9,27 @@ import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
 import Stripe from "stripe";
+import { getSession } from "auth-astro/server";
+import { UserRoles } from "@db/user";
+
+const session = await getSession(Astro.request);
+const showDraft = session && session.user?.role === UserRoles.admin;
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get(PARAMS.CATEGORY);
 const search = url.searchParams.get(PARAMS.SEARCH);
 
 const categories = await getCollection("categories");
-const documents = await getCollection("documents", ({ data: { categories } }) =>
-  currentCat ? categories.find(({ id }) => id === currentCat) : true
+const documents = await getCollection(
+  "documents",
+  ({ data: { categories, draft } }) => {
+    const categoryMatch = categories.find(({ id }) =>
+      currentCat ? id === currentCat : true
+    );
+    const draftMatch = !showDraft ? draft === false : true;
+
+    return categoryMatch && draftMatch;
+  }
 );
 const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
   apiVersion: import.meta.env.STRIPE_API_V,
@@ -108,7 +121,7 @@ function getPrice(priceId: string) {
               ({
                 item: {
                   slug,
-                  data: { title, categories: cats, priceId },
+                  data: { title, categories: cats, priceId, draft },
                 },
               }) => (
                 <DocumentTile
@@ -117,6 +130,7 @@ function getPrice(priceId: string) {
                   docCategories={cats}
                   categories={categories}
                   price={getPrice(priceId)}
+                  draft={draft}
                 />
               )
             )}
@@ -127,13 +141,14 @@ function getPrice(priceId: string) {
       ) : (
         <section>
           {documents.map(
-            ({ slug, data: { title, categories: cats, priceId } }) => (
+            ({ slug, data: { title, categories: cats, priceId, draft } }) => (
               <DocumentTile
                 slug={slug}
                 title={title}
                 docCategories={cats}
                 categories={categories}
                 price={getPrice(priceId)}
+                draft={draft}
               />
             )
           )}

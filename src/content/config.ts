@@ -44,6 +44,7 @@ const documents = defineCollection({
     dates: z.array(z.string()).optional(),
     dataFields: z.array(z.string()).optional(),
     encryptedFields: z.array(z.string()).optional(),
+    draft: z.boolean(),
   }),
 });
 

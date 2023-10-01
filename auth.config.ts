@@ -2,7 +2,7 @@ import type { AuthConfig } from "@auth/core";
 import CredentialsProvider from "@auth/core/providers/credentials";
 import bcrypt from "bcryptjs";
 import cookie from "cookie";
-import { getUserByEmail } from "@db/user";
+import { UserRoles, getUserByEmail } from "@db/user";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { UUID } from "mongodb";
 
@@ -57,7 +57,12 @@ export default {
       // console.log({ session, token });
       return {
         ...session,
-        user: { id: token.id, email: token.email, ssid: token.ssid },
+        user: {
+          id: token.id,
+          email: token.email,
+          ssid: token.ssid,
+          role: token.role,
+        },
       };
     },
     // async signIn({ user, account, profile, email, credentials }) {
@@ -72,8 +77,13 @@ export default {
     async jwt({ token, user, account, profile, isNewUser }) {
       // console.log("jwt callback");
       // console.log({ token, user, account, profile, isNewUser });
-      if (user && user.ssid) {
-        return { ...token, ssid: user.ssid, id: new UUID(user._id).toString() };
+      if (user) {
+        return {
+          ...token,
+          ssid: user.ssid,
+          id: new UUID(user._id).toString(),
+          role: user.role,
+        };
       }
       return token;
     },
@@ -84,6 +94,7 @@ declare module "@auth/core/types" {
   interface User {
     ssid?: string;
     _id?: UUID;
+    role?: UserRoles;
   }
 
   interface Session {

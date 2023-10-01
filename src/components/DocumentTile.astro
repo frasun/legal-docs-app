@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon";
 import formatNumber from "@utils/number";
+import Badge from "./Badge.astro";
 
 interface Props {
   slug: string;
@@ -15,9 +16,10 @@ interface Props {
     };
   }[];
   price: number;
+  draft: boolean;
 }
 
-const { slug, title, docCategories, categories, price } = Astro.props;
+const { slug, title, docCategories, categories, price, draft } = Astro.props;
 
 const getCategoryName = (slug: string) => {
   const ct = categories.find(({ id }: { id: string }) => id === slug);
@@ -32,7 +34,10 @@ const categoryList = docCategories
 ---
 
 <a href={`${Astro.url.origin}/dokumenty/${slug}`} title={title}>
-  <header><h3>{title}</h3></header>
+  <header>
+    {draft && <Badge>Szkic dokumentu</Badge>}
+    <h3>{title}</h3>
+  </header>
   <strong>{price ? `${formatNumber(price)} zł` : "-"}</strong>
   <footer>
     {categoryList}
@@ -46,6 +51,10 @@ const categoryList = docCategories
   a {
     @apply grid grid-cols-[1fr_auto] grid-rows-[1fr_auto_auto] grid-flow-col gap-5;
     @apply p-15 pl-20 bg-white rounded-lg;
+  }
+
+  header {
+    @apply flex flex-col gap-10 items-start;
   }
 
   header h3 {
