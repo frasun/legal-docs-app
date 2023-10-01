@@ -83,12 +83,12 @@ class SendPdfViaEmail extends HTMLElement {
             });
 
             if (response.status === 200) {
-              redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "true");
+              redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "1");
             } else {
-              redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "false");
+              redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "0");
             }
           } catch {
-            redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "false");
+            redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "0");
           } finally {
             document.body.dispatchEvent(new CustomEvent("hideModal"));
 

@@ -64,7 +64,7 @@ let toast: string | null = null,
   status: ToastStatus | undefined;
 
 if (urlParams.has(DOCUMENT_SHARED_PARAM)) {
-  if (Boolean(urlParams.get(DOCUMENT_SHARED_PARAM))) {
+  if (Boolean(Number(urlParams.get(DOCUMENT_SHARED_PARAM)))) {
     toast = DOCUMENT_SHARED;
   } else {
     toast = ERROR;

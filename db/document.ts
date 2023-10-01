@@ -4,7 +4,7 @@ import { getEntry } from "astro:content";
 import type { Answers } from "@type";
 import { emailRegExp, testString } from "@utils/dataValidation";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
-import { sendFile, sendFiles } from "@utils/email";
+import { sendFiles } from "@utils/email";
 
 export interface Document {
   doc: string;
@@ -267,6 +267,18 @@ export async function publishDraft(id: string) {
         $currentDate: { modified: true },
       }
     );
+  } catch (e: any) {
+    throw e;
+  }
+}
+
+export async function deleteDraft(documentId: string, userId: string) {
+  try {
+    return await documentCollection.deleteOne({
+      _id: new UUID(documentId).toBinary(),
+      userId,
+      draft: true,
+    });
   } catch (e: any) {
     throw e;
   }

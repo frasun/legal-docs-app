@@ -13,3 +13,5 @@ export const DOCUMENT_SHARED_PARAM = "document-shared";
 export const DOCUMENT_SHARED =
   "Dokument zostanie wysłany na podane adresy e-mail";
 export const ERROR = "Coś poszło nie tak, spróbuj ponownie później";
+export const DRAFT_REMOVED_PARAM = "draft-removed";
+export const DRAFT_REMOVED = "Szkic został usunięty";

@@ -11,14 +11,18 @@ import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
 import { handleNameChange } from "@utils/document";
 import pageTitle from "@utils/pageTitle";
-import Toast from "@components/Toast.astro";
+import Toast, { ToastStatus } from "@components/Toast.astro";
 import {
   DOCUMENT_NAME_CHANGED,
   DRAFT_SAVED,
   DRAFT_SAVED_PARAM,
   DOCUMENT_NAME_PARAM,
+  DRAFT_REMOVED,
+  DRAFT_REMOVED_PARAM,
+  ERROR,
 } from "@utils/toasts";
 import * as PARAMS from "@utils/urlParams";
+import DeleteDraftButton from "@components/DeleteDraftButton.astro";
 
 const session = await getSession(Astro.request);
 
@@ -32,7 +36,8 @@ if (!userId) {
   return Astro.redirect("/zaloguj-sie");
 }
 
-let toast: string | null = null;
+let toast: string | null = null,
+  toastStatus;
 const urlParams = new URL(Astro.request.url).searchParams;
 
 if (urlParams.has(DRAFT_SAVED_PARAM)) {
@@ -41,6 +46,15 @@ if (urlParams.has(DRAFT_SAVED_PARAM)) {
 
 if (urlParams.has(DOCUMENT_NAME_PARAM)) {
   toast = DOCUMENT_NAME_CHANGED;
+}
+
+if (urlParams.has(DRAFT_REMOVED_PARAM)) {
+  if (Boolean(Number(urlParams.get(DRAFT_REMOVED_PARAM)))) {
+    toast = DRAFT_REMOVED;
+  } else {
+    toast = ERROR;
+    toastStatus = ToastStatus.error;
+  }
 }
 
 if (Astro.request.method === "POST") {
@@ -142,6 +156,7 @@ function getDateLabel(created: Date, modified: Date) {
                       <time>{formatDateTime(modified)}</time>
                     )}
                     <aside>
+                      {draft && <DeleteDraftButton id={_id} />}
                       <ChangeNameButton
                         id={_id}
                         title={title}
@@ -200,7 +215,7 @@ function getDateLabel(created: Date, modified: Date) {
     )
   }
   <ChangeNameModal />
-  {toast && <Toast info={toast} />}
+  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 
 <style>
@@ -241,7 +256,7 @@ function getDateLabel(created: Date, modified: Date) {
   }
 
   section > div > aside {
-    @apply flex gap-15 items-center justify-end;
+    @apply flex gap-15 items-center justify-end self-center;
   }
 
   section > div > aside a {
