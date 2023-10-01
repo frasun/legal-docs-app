@@ -1,6 +1,7 @@
 ---
 import { getEntry } from "astro:content";
 import formatDate from "@utils/date";
+import { EMPTY } from "@utils/constants";
 
 const { data, template, token, type } = Astro.props;
 
@@ -32,6 +33,10 @@ if (!template && token) {
     textContent = formatDate(value);
   } else {
     textContent = value;
+  }
+
+  if (value === "") {
+    textContent = EMPTY;
   }
 }
 ---

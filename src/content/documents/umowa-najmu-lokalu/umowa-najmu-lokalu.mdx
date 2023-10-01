@@ -134,7 +134,7 @@ import MdxCity from "@components/MdxCity.astro";
   1. Umowa dotyczy lokalu o powierzchni {formatNumber(frontmatter.area)} m<sup>2</sup>, znajdującego się pod adresem {frontmatter.postalCode} {frontmatter.city}, {frontmatter.street} / {frontmatter.apt}.
   1. W skład lokalu wchodzą następujące pomieszczenia: {getItems([[frontmatter.room, PLURALS.ROOM], [frontmatter.kitchen, PLURALS.KITCHEN, true], [frontmatter.hall, PLURALS.HALL], [frontmatter.bathroom, PLURALS.BATHROOM, true], [frontmatter.toilet, PLURALS.TOILET, true], [frontmatter.balcony, PLURALS.BALCONY], [frontmatter.wardrobe, PLURALS.WARDROBE, true], [frontmatter.garage, PLURALS.GARAGE]])}.  
       <MdxConditionalBullet value={frontmatter.equipment}>
-        <>Na stanie lokalu znajduje się wyposażenie {frontmatter.equipment}.</>
+        <>Na stanie lokalu znajduje się wyposażenie: {frontmatter.equipment}.</>
       </MdxConditionalBullet>
   1. W lokalu dostępne są instalacje: {frontmatter.systems}.
 
