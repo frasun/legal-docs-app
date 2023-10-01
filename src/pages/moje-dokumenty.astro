@@ -20,9 +20,12 @@ import {
   DRAFT_REMOVED,
   DRAFT_REMOVED_PARAM,
   ERROR,
+  COPY_DOCUMENT_PARAM,
+  COPY_DOCUMENT,
 } from "@utils/toasts";
 import * as PARAMS from "@utils/urlParams";
 import DeleteDraftButton from "@components/DeleteDraftButton.astro";
+import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 
 const session = await getSession(Astro.request);
 
@@ -51,6 +54,15 @@ if (urlParams.has(DOCUMENT_NAME_PARAM)) {
 if (urlParams.has(DRAFT_REMOVED_PARAM)) {
   if (Boolean(Number(urlParams.get(DRAFT_REMOVED_PARAM)))) {
     toast = DRAFT_REMOVED;
+  } else {
+    toast = ERROR;
+    toastStatus = ToastStatus.error;
+  }
+}
+
+if (urlParams.has(COPY_DOCUMENT_PARAM)) {
+  if (Boolean(Number(urlParams.get(COPY_DOCUMENT_PARAM)))) {
+    toast = COPY_DOCUMENT;
   } else {
     toast = ERROR;
     toastStatus = ToastStatus.error;
@@ -162,6 +174,7 @@ function getDateLabel(created: Date, modified: Date) {
                         title={title}
                         label="Zmień nazwę"
                       />
+                      <CopyDocumentButton id={_id} />
                     </aside>
                   </div>
                 )

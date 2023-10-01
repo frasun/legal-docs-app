@@ -364,3 +364,29 @@ export async function shareDocument(
     throw e;
   }
 }
+
+export async function copyDocument(documentId: string, userId: string) {
+  try {
+    const document = await documentCollection.findOne(
+      {
+        _id: new UUID(documentId).toBinary(),
+        userId,
+      },
+      { projection: { _id: 0, shared: 0, sharedWith: 0 } }
+    );
+
+    if (document) {
+      return await documentCollection.insertOne({
+        ...document,
+        created: new Date(),
+        modified: new Date(),
+        draft: true,
+        title: `(Kopia) ${document.title}`,
+      });
+    } else {
+      throw new Error("missing document");
+    }
+  } catch (e: any) {
+    throw e;
+  }
+}

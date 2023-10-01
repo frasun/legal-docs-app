@@ -1,0 +1,67 @@
+---
+import Icon from "astro-icon";
+
+const { id } = Astro.props;
+---
+
+<copy-document data-document-id={id}>
+  <button title="Utwórz kopię">
+    <Icon name="copy-document" width={24} height={24} />
+  </button>
+</copy-document>
+
+<style>
+  button {
+    @apply btn btn-alt;
+  }
+</style>
+
+<script>
+  import { COPY_DOCUMENT_PARAM } from "@utils/toasts";
+
+  class CopyDocument extends HTMLElement {
+    button: HTMLButtonElement | null;
+    documentId: string | undefined;
+
+    constructor() {
+      super();
+
+      this.button = this.querySelector("button");
+      this.documentId = this.dataset.documentId;
+    }
+
+    connectedCallback() {
+      if (this.button) {
+        this.button.addEventListener("click", async () => {
+          const redirectUrl = new URL(window.location.href);
+          redirectUrl.search = "";
+          const response = await fetch(`/api/documents/copy`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              documentId: this.documentId,
+            }),
+          });
+
+          try {
+            if (response.status === 200) {
+              redirectUrl.searchParams.set(COPY_DOCUMENT_PARAM, "1");
+            } else {
+              redirectUrl.searchParams.set(COPY_DOCUMENT_PARAM, "0");
+            }
+          } catch {
+            redirectUrl.searchParams.set(COPY_DOCUMENT_PARAM, "0");
+          } finally {
+            window.requestAnimationFrame(() => {
+              window.history.pushState({}, "", redirectUrl);
+              window.location.reload();
+            });
+          }
+        });
+      }
+    }
+  }
+  customElements.define("copy-document", CopyDocument);
+</script>
