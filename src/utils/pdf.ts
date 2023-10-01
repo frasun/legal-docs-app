@@ -3,8 +3,9 @@ import fontkit from "@pdf-lib/fontkit";
 
 export const DEFAULT_TITLE = "dokument";
 
-export const CONTENT_TYPES = {
+const CONTENT_TYPES = {
   TITLE: "title",
+  SECTION: "section",
   PARAGRAPH: "paragraph",
   POINT: "point",
   LINE: "line",
@@ -13,10 +14,10 @@ export const CONTENT_TYPES = {
 const FONT_SIZE = 11;
 const TITLE_FONT_SIZE = 14;
 const LINE_HEIGHT = 1.75;
-const PARAGRAPH_SPACING = 18;
+const SECTION_SPACING = 18;
 const POINT_SPACING = 8;
 const MARGIN = 50;
-const TEXT_INDENT = 20;
+const POINT_INDENT = 20;
 const PARGRAPH_PREFIX = "\u00A7";
 const COLOR = rgb(0, 0, 0);
 const CHIVO_REGULAR = "/chivo-v18-latin_latin-ext-regular.ttf";
@@ -58,25 +59,21 @@ export async function createPDF(
   for (let p = 0; p < paragraphs.length; p++) {
     const [contentType, content] = paragraphs[p];
     const isTitle = contentType === CONTENT_TYPES.TITLE;
-    const isParagraph = contentType === CONTENT_TYPES.PARAGRAPH;
+    const isSection = contentType === CONTENT_TYPES.SECTION;
     const isPoint = contentType === CONTENT_TYPES.POINT;
     const isLine = contentType === CONTENT_TYPES.LINE;
 
-    const font = isParagraph ? fontBold : fontRegular;
+    const font = isSection ? fontBold : fontRegular;
     const size = isTitle ? TITLE_FONT_SIZE : FONT_SIZE;
-    const indent = isTitle ? 0 : TEXT_INDENT;
+    const indent = isPoint || isSection ? POINT_INDENT : 0;
     const lineHeight = font.sizeAtHeight(size) * LINE_HEIGHT;
-    const prefix = isParagraph ? PARGRAPH_PREFIX : "";
-    const spacing = isLine
-      ? 0
-      : isParagraph
-      ? PARAGRAPH_SPACING
-      : POINT_SPACING;
+    const prefix = isSection ? PARGRAPH_PREFIX : "";
+    const spacing = isLine ? 0 : isSection ? SECTION_SPACING : POINT_SPACING;
     const color = COLOR;
 
     let index;
 
-    if (isParagraph) {
+    if (isSection) {
       index = paragraphIndex + 1;
       paragraphIndex++;
       pointIndex = 0;
@@ -195,10 +192,13 @@ export function getContentArray(element: Element) {
         array.push([CONTENT_TYPES.TITLE, el.textContent]);
         break;
       case "H4":
-        array.push([CONTENT_TYPES.PARAGRAPH, el.textContent]);
+        array.push([CONTENT_TYPES.SECTION, el.textContent]);
         break;
       case "OL":
-        array.push(...getLisItems(el));
+        array.push(...getListItems(el));
+        break;
+      case "P":
+        array.push(...getPargraph(el.innerHTML));
         break;
     }
   }
@@ -206,7 +206,7 @@ export function getContentArray(element: Element) {
   return array;
 }
 
-function getLisItems(list: Element) {
+function getListItems(list: Element) {
   let array = [];
   const lineBreakRegex = /<\s*br\s*\/?>/gi;
 
@@ -214,10 +214,25 @@ function getLisItems(list: Element) {
     const lines = list.children[i].innerHTML.split(lineBreakRegex);
 
     for (const line of lines) {
+      array.push([CONTENT_TYPES.POINT, cleanContent(line)]);
+    }
+  }
+
+  return array;
+}
+
+function getPargraph(paragraph: string | null) {
+  let array = [];
+  const lineBreakRegex = /<\s*br\s*\/?>/gi;
+
+  if (paragraph) {
+    const lines = paragraph.split(lineBreakRegex);
+
+    for (const line of lines) {
       if (line.startsWith("\n")) {
-        array.push([CONTENT_TYPES.LINE, cleanContent(line)]);
+        array.push([CONTENT_TYPES.PARAGRAPH, cleanContent(line)]);
       } else {
-        array.push([CONTENT_TYPES.POINT, cleanContent(line)]);
+        array.push([CONTENT_TYPES.LINE, cleanContent(line)]);
       }
     }
   }

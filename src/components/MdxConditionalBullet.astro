@@ -1,0 +1,11 @@
+---
+const { value } = Astro.props;
+---
+
+{
+  value && (
+    <li>
+      <slot />
+    </li>
+  )
+}

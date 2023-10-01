@@ -86,56 +86,57 @@ import formatDate from "@utils/date";
 import getAmount from '@utils/amount';
 import getItems from '@utils/itemlist';
 import PLURALS from "@utils/plurals";
-import DataDisplay from "@components/DataDisplay.astro";
+import MdxDataDisplay from "@components/MdxDataDisplay.astro";
+import MdxConditionalBullet from "@components/MdxConditionalBullet.astro";
+import MdxCity from "@components/MdxCity.astro";
 
 ### Umowa najmu lokalu
 
-#### Strony Umowy
+#### Data i miejsce zawarcia umowy
+[21.02.2023], <MdxCity type={frontmatter["landlordType"]} personCity={frontmatter["landlordPersonCity"]} companyCity={frontmatter["landlordCompanyCity"]} />
 
-1. Umowa zostaje zawarta pomiędzy Stronami:
-    <br /><br />
-    Najemca:
-    <br />
-    <DataDisplay
-      type={frontmatter["landlordType"]}
-      personName={frontmatter["landlordPersonName"]}
-      personPin={frontmatter["landlordPersonPin"]}
-      personStreet={frontmatter["landlordPersonStreet"]}
-      personApt={frontmatter["landlordPersonApt"]}
-      personPostalCode={frontmatter["landlordPersonPostalCode"]}
-      personCity={frontmatter["landlordPersonCity"]}
-      companyName={frontmatter["landlordCompanyName"]}
-      companyPin={frontmatter["landlordCompanyPin"]}
-      companyStreet={frontmatter["landlordCompanyStreet"]}
-      companyApt={frontmatter["landlordCompanyApt"]}
-      companyPostalCode={frontmatter["landlordCompanyPostalCode"]}
-      companyCity={frontmatter["landlordCompanyCity"]}
-    />
-    <br /><br />
-    Wynajmujący:
-    <br />
-    <DataDisplay
-      type={frontmatter["tenantType"]}
-      personName={frontmatter["tenantPersonName"]}
-      personPin={frontmatter["tenantPersonPin"]}
-      personStreet={frontmatter["tenantPersonStreet"]}
-      personApt={frontmatter["tenantPersonApt"]}
-      personPostalCode={frontmatter["tenantPersonPostalCode"]}
-      personCity={frontmatter["tenantPersonCity"]}
-      companyName={frontmatter["tenantCompanyName"]}
-      companyPin={frontmatter["tenantCompanyPin"]}
-      companyStreet={frontmatter["tenantCompanyStreet"]}
-      companyApt={frontmatter["tenantCompanyApt"]}
-      companyPostalCode={frontmatter["tenantCompanyPostalCode"]}
-      companyCity={frontmatter["tenantCompanyCity"]}
-    />
+#### Strony Umowy
+<MdxDataDisplay
+  label="Najemca"
+  type={frontmatter["landlordType"]}
+  personName={frontmatter["landlordPersonName"]}
+  personPin={frontmatter["landlordPersonPin"]}
+  personStreet={frontmatter["landlordPersonStreet"]}
+  personApt={frontmatter["landlordPersonApt"]}
+  personPostalCode={frontmatter["landlordPersonPostalCode"]}
+  personCity={frontmatter["landlordPersonCity"]}
+  companyName={frontmatter["landlordCompanyName"]}
+  companyPin={frontmatter["landlordCompanyPin"]}
+  companyStreet={frontmatter["landlordCompanyStreet"]}
+  companyApt={frontmatter["landlordCompanyApt"]}
+  companyPostalCode={frontmatter["landlordCompanyPostalCode"]}
+  companyCity={frontmatter["landlordCompanyCity"]}
+/>
+<MdxDataDisplay
+  label="Wynajmujący"
+  type={frontmatter["tenantType"]}
+  personName={frontmatter["tenantPersonName"]}
+  personPin={frontmatter["tenantPersonPin"]}
+  personStreet={frontmatter["tenantPersonStreet"]}
+  personApt={frontmatter["tenantPersonApt"]}
+  personPostalCode={frontmatter["tenantPersonPostalCode"]}
+  personCity={frontmatter["tenantPersonCity"]}
+  companyName={frontmatter["tenantCompanyName"]}
+  companyPin={frontmatter["tenantCompanyPin"]}
+  companyStreet={frontmatter["tenantCompanyStreet"]}
+  companyApt={frontmatter["tenantCompanyApt"]}
+  companyPostalCode={frontmatter["tenantCompanyPostalCode"]}
+  companyCity={frontmatter["tenantCompanyCity"]}
+/>
 
 #### Przedmiot Umowy
 
   1. Umowa dotyczy lokalu o powierzchni {formatNumber(frontmatter.area)} m<sup>2</sup>, znajdującego się pod adresem {frontmatter.postalCode} {frontmatter.city}, {frontmatter.street} / {frontmatter.apt}.
-  1. W skład lokalu wchodzą następujące pomieszczenia: {getItems([[frontmatter.room, PLURALS.ROOM], [frontmatter.kitchen, PLURALS.KITCHEN, true], [frontmatter.hall, PLURALS.HALL], [frontmatter.bathroom, PLURALS.BATHROOM, true], [frontmatter.toilet, PLURALS.TOILET, true], [frontmatter.balcony, PLURALS.BALCONY], [frontmatter.wardrobe, PLURALS.WARDROBE, true], [frontmatter.garage, PLURALS.GARAGE]])}.
+  1. W skład lokalu wchodzą następujące pomieszczenia: {getItems([[frontmatter.room, PLURALS.ROOM], [frontmatter.kitchen, PLURALS.KITCHEN, true], [frontmatter.hall, PLURALS.HALL], [frontmatter.bathroom, PLURALS.BATHROOM, true], [frontmatter.toilet, PLURALS.TOILET, true], [frontmatter.balcony, PLURALS.BALCONY], [frontmatter.wardrobe, PLURALS.WARDROBE, true], [frontmatter.garage, PLURALS.GARAGE]])}.  
+      <MdxConditionalBullet value={frontmatter.equipment}>
+        <>Na stanie lokalu znajduje się wyposażenie {frontmatter.equipment}.</>
+      </MdxConditionalBullet>
   1. W lokalu dostępne są instalacje: {frontmatter.systems}.
-  1. Na stanie lokalu znajduje się wyposażenie {frontmatter.equipment}.
 
 #### Przebieg umowy
    
