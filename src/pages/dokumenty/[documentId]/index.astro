@@ -9,9 +9,6 @@ import { UserRoles } from "@db/user";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
-
-Astro.cookies.delete(documentId, { path: `/dokumenty/${documentId}` });
-
 const info = await getEntry("info", documentId);
 const document = await getEntry("documents", documentId);
 
@@ -20,13 +17,18 @@ if (!info || !document) {
 }
 
 const { Content } = await info.render();
-const { title, index, priceId, draft } = document.data;
+const { title, index, priceId, draft, memberContent } = document.data;
+
+const session = await getSession(Astro.request);
 
 if (draft) {
-  const session = await getSession(Astro.request);
   if (!session || session.user?.role !== UserRoles.admin) {
     return Astro.redirect("/404");
   }
+}
+
+if (memberContent && !session) {
+  return Astro.redirect("/zaloguj-sie");
 }
 
 const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {

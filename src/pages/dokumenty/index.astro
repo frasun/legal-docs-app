@@ -22,13 +22,14 @@ const search = url.searchParams.get(PARAMS.SEARCH);
 const categories = await getCollection("categories");
 const documents = await getCollection(
   "documents",
-  ({ data: { categories, draft } }) => {
+  ({ data: { categories, draft, memberContent } }) => {
     const categoryMatch = categories.find(({ id }) =>
       currentCat ? id === currentCat : true
     );
     const draftMatch = !showDraft ? draft === false : true;
+    const memberContentMatch = session ? true : !memberContent;
 
-    return categoryMatch && draftMatch;
+    return categoryMatch && draftMatch && memberContentMatch;
   }
 );
 const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
