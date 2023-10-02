@@ -1,7 +1,6 @@
 export const TODAY = "TODAY";
 export const TIMEZONE = "Europe/Warsaw";
 export const LOCALE = "pl-PL";
-export const DATE_FORMAT = "dd.MM.yyyy";
 
 export default function (dateString?: string) {
   const dateObj = dateString ? new Date(dateString) : new Date();

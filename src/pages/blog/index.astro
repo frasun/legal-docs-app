@@ -1,0 +1,67 @@
+---
+import Layout from "../../layouts/App.astro";
+import pageTitle from "@utils/pageTitle";
+//@ts-ignore
+import { sanityClient } from "sanity:client";
+import type { ImageAsset, Slug } from "@sanity/types";
+import formatDate from "@utils/date";
+import imageUrl from "@utils/sanityImage";
+
+const PAGE_TITLE = "Blog";
+
+interface Post {
+  title: string;
+  publishedAt: string;
+  slug: Slug;
+  mainImage?: ImageAsset;
+  excerpt: string;
+}
+
+const posts: Post[] = await sanityClient.fetch(
+  `*[_type == "post"] | order(publishedAt desc) { 
+      title, 
+      publishedAt, 
+      slug, 
+      mainImage,
+      "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
+  }`
+);
+---
+
+<Layout title={pageTitle(PAGE_TITLE)}>
+  <span slot="topbar-title">{PAGE_TITLE}</span>
+  <section>
+    {
+      posts && (
+        <ul>
+          {posts.map(
+            ({
+              title,
+              slug: { current: url },
+              publishedAt,
+              mainImage,
+              excerpt,
+            }) => (
+              <li>
+                <a href={`${Astro.url.origin}/blog/${url}`}>
+                  {mainImage && (
+                    <img
+                      src={imageUrl(mainImage).url()}
+                      alt={url}
+                      loading="lazy"
+                    />
+                  )}
+                  <h3>{title}</h3>
+                  <time>{formatDate(publishedAt)}</time>
+                  {excerpt && <p>{excerpt}</p>}
+                </a>
+              </li>
+            )
+          )}
+        </ul>
+      )
+    }
+  </section>
+</Layout>
+
+<style></style>

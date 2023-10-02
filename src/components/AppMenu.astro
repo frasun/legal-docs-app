@@ -65,6 +65,17 @@ const { session } = Astro.props;
         </>
       )
     }
+    <a
+      href={`${Astro.url.origin}/blog`}
+      aria-label="Blog"
+      title="Blog"
+      class:list={{
+        active: `${Astro.url.pathname}` === `/blog`,
+      }}
+    >
+      <Icon name="article" width={24} height={24} />
+      <span>Blog</span>
+    </a>
   </div>
   <footer>
     {
