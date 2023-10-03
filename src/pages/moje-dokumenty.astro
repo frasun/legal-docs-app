@@ -26,6 +26,7 @@ import {
 import * as PARAMS from "@utils/urlParams";
 import DeleteDraftButton from "@components/DeleteDraftButton.astro";
 import CopyDocumentButton from "@components/CopyDocumentButton.astro";
+import Pagination from "@components/Pagination.astro";
 
 const session = await getSession(Astro.request);
 
@@ -181,40 +182,11 @@ function getDateLabel(created: Date, modified: Date) {
               )}
             </>
           ))}
-          {pages > 1 && (
-            <footer>
-              {currentPage > 1 ? (
-                <a
-                  href={`${Astro.url.origin}/moje-dokumenty?${PARAMS.PAGE}=${
-                    currentPage - 1
-                  }`}
-                  aria-label="Poprzednia strona"
-                  title="Poprzednia strona"
-                >
-                  <Icon name="arrow-left" width={24} height={24} />
-                </a>
-              ) : (
-                <span />
-              )}
-              <small>
-                Strona{" "}
-                <strong>
-                  {currentPage} z {pages}
-                </strong>
-              </small>
-              {currentPage < pages && (
-                <a
-                  href={`${Astro.url.origin}/moje-dokumenty?${PARAMS.PAGE}=${
-                    currentPage + 1
-                  }`}
-                  aria-label="Następna strona"
-                  title="Następna strona"
-                >
-                  <Icon name="arrow-right" width={24} height={24} />
-                </a>
-              )}
-            </footer>
-          )}
+          <Pagination
+            pages={pages}
+            currentPage={currentPage}
+            url={`${Astro.url.origin}/moje-dokumenty`}
+          />
         </section>
       </>
     ) : (
@@ -286,17 +258,5 @@ function getDateLabel(created: Date, modified: Date) {
 
   section > div :global(change-name span) {
     @apply hidden md:inline-block;
-  }
-
-  section > footer {
-    @apply grid grid-cols-[1fr_auto_1fr] gap-20 items-center w-full;
-  }
-
-  section > footer > small {
-    @apply justify-self-center;
-  }
-
-  section > footer > a:first-child {
-    @apply justify-self-end;
   }
 </style>

@@ -3,9 +3,11 @@ import "@components/GlobalStyles.astro";
 
 export interface Props {
   title: string;
+  keywords: string;
+  description: string;
 }
 
-const { title } = Astro.props;
+const { title, keywords, description } = Astro.props;
 
 const DESC =
   "Przystępne i precyzyjne dokumenty prawne z pomocą wirtualnego prawnika! Generuj, podpisuj i przechowuj dokumenty prawne.";
@@ -13,6 +15,9 @@ const KEYWORDS = "umowa, dokument prawny, generuj umowę, generuj dokument";
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.url.origin);
 const socialImageURL = new URL("/og.png", Astro.url);
+
+const metaDescription = description ?? DESC;
+const metaKeywords = keywords ?? KEYWORDS;
 ---
 
 <!DOCTYPE html>
@@ -52,20 +57,20 @@ const socialImageURL = new URL("/og.png", Astro.url);
     />
     <meta name="theme-color" content="#f5f3ee" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={DESC} />
-    <meta name="keywords" content={KEYWORDS} />
+    <meta name="description" content={metaDescription} />
+    <meta name="keywords" content={metaKeywords} />
     <meta property="og:site_name" content="Prawniczek" />
     <meta property="og:url" content={Astro.url} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={DESC} />
+    <meta property="og:description" content={metaDescription} />
     <meta property="og:image" content={socialImageURL} />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1024" />
     <meta property="og:image:height" content="706" />
     <meta property="twitter:image" content={socialImageURL} />
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:description" content={DESC} />
+    <meta property="twitter:description" content={metaDescription} />
     <meta property="twitter:title" content={title} />
     <title>{title}</title>
   </head>

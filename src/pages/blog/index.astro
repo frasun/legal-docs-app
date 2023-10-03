@@ -4,10 +4,31 @@ import pageTitle from "@utils/pageTitle";
 //@ts-ignore
 import { sanityClient } from "sanity:client";
 import type { ImageAsset, Slug } from "@sanity/types";
-import formatDate from "@utils/date";
-import imageUrl from "@utils/sanityImage";
+import { PAGE } from "@utils/urlParams";
+import Pagination from "@components/Pagination.astro";
+import EmptyScreen from "@components/EmptyScreen.astro";
+import { getSession } from "auth-astro/server";
+import { UserRoles } from "@db/user";
+import BlogPost from "@components/BlogPost.astro";
 
 const PAGE_TITLE = "Blog";
+
+const session = await getSession(Astro.request);
+const isAdmin = session?.user?.role === UserRoles.admin;
+const adminQuery = isAdmin
+  ? `_type == "post"`
+  : `_type == "post" && defined(publishedAt)`;
+const postQuery = session
+  ? adminQuery
+  : `${adminQuery} && (memberContent == false || !defined(memberContent))`;
+
+const LIMIT = 10;
+const postCount = await sanityClient.fetch(`count(*[${postQuery}])`);
+const pages = Math.ceil(postCount / LIMIT);
+const page = Number(new URL(Astro.request.url).searchParams.get(PAGE)) || 1;
+const currentPage = page <= pages ? page : 1;
+const startIndex = (currentPage - 1) * LIMIT;
+const endIndex = currentPage * LIMIT;
 
 interface Post {
   title: string;
@@ -18,22 +39,25 @@ interface Post {
 }
 
 const posts: Post[] = await sanityClient.fetch(
-  `*[_type == "post"] | order(publishedAt desc) { 
+  `*[${postQuery}] | order($queryOrder asc) [${startIndex}...${endIndex}] { 
       title, 
       publishedAt, 
       slug, 
       mainImage,
       "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
-  }`
+  }`,
+  {
+    queryOrder: isAdmin ? `updatedAt` : `publishedAt`,
+  }
 );
 ---
 
 <Layout title={pageTitle(PAGE_TITLE)}>
   <span slot="topbar-title">{PAGE_TITLE}</span>
-  <section>
-    {
-      posts && (
-        <ul>
+  {
+    posts.length ? (
+      <div>
+        <section>
           {posts.map(
             ({
               title,
@@ -42,26 +66,37 @@ const posts: Post[] = await sanityClient.fetch(
               mainImage,
               excerpt,
             }) => (
-              <li>
-                <a href={`${Astro.url.origin}/blog/${url}`}>
-                  {mainImage && (
-                    <img
-                      src={imageUrl(mainImage).url()}
-                      alt={url}
-                      loading="lazy"
-                    />
-                  )}
-                  <h3>{title}</h3>
-                  <time>{formatDate(publishedAt)}</time>
-                  {excerpt && <p>{excerpt}</p>}
-                </a>
-              </li>
+              <BlogPost
+                title={title}
+                url={url}
+                publishedAt={publishedAt}
+                mainImage={mainImage}
+                excerpt={excerpt}
+              />
             )
           )}
-        </ul>
-      )
-    }
-  </section>
+        </section>
+        {pages > 1 && (
+          <Pagination
+            pages={pages}
+            currentPage={currentPage}
+            url={`${Astro.url.origin}/blog`}
+          />
+        )}
+      </div>
+    ) : (
+      <EmptyScreen>Brak artykułów do wyświetlenia</EmptyScreen>
+    )
+  }
 </Layout>
 
-<style></style>
+<style>
+  div {
+    @apply flex flex-col gap-20;
+  }
+
+  section {
+    @apply grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-20 w-full;
+    @apply pt-10;
+  }
+</style>

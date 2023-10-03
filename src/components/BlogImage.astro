@@ -1,0 +1,7 @@
+---
+import imageUrl from "@utils/sanityImage";
+
+const { node } = Astro.props;
+---
+
+<img src={imageUrl(node.asset).url()} alt={node.alt} />

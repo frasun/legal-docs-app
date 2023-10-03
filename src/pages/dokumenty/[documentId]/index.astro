@@ -6,6 +6,10 @@ import formatNumber from "@utils/number";
 import Stripe from "stripe";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
+//@ts-ignore
+import { sanityClient } from "sanity:client";
+import type { ImageAsset, Slug } from "@sanity/types";
+import BlogPost from "@components/BlogPost.astro";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -20,9 +24,10 @@ const { Content } = await info.render();
 const { title, index, priceId, draft, memberContent } = document.data;
 
 const session = await getSession(Astro.request);
+const isAdmin = session?.user?.role === UserRoles.admin;
 
 if (draft) {
-  if (!session || session.user?.role !== UserRoles.admin) {
+  if (!session || isAdmin) {
     return Astro.redirect("/404");
   }
 }
@@ -43,11 +48,39 @@ if (!index) {
 }
 
 const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0].questions[0].id.slug}`;
+
+const adminQuery = isAdmin
+  ? `_type == "post" && "${documentId}" in documents`
+  : `_type == "post" && defined(publishedAt) && "${documentId}" in documents`;
+const postQuery = session
+  ? adminQuery
+  : `${adminQuery} && (memberContent == false || !defined(memberContent))`;
+
+interface Post {
+  title: string;
+  publishedAt: string;
+  slug: Slug;
+  mainImage?: ImageAsset;
+  excerpt: string;
+}
+
+const posts: Post[] = await sanityClient.fetch(
+  `*[${postQuery}] | order($queryOrder asc) [0...3] { 
+      title, 
+      publishedAt, 
+      slug, 
+      mainImage,
+      "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
+  }`,
+  {
+    queryOrder: isAdmin ? `updatedAt` : `publishedAt`,
+  }
+);
 ---
 
 <Layout title={pageTitle(title)}>
   <span slot="topbar-title">{title}</span>
-  <div>
+  <section>
     <header>
       <h1>{title}</h1>
       <span>
@@ -60,15 +93,45 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0]
     <article class="prose">
       <Content />
     </article>
+    {
+      posts.length && (
+        <>
+          <hr />
+          <aside>
+            <h4>Powiązane artykuły</h4>
+            <div>
+              {posts.map(
+                ({
+                  title,
+                  slug: { current: url },
+                  publishedAt,
+                  mainImage,
+                  excerpt,
+                }) => (
+                  <BlogPost
+                    title={title}
+                    url={url}
+                    publishedAt={publishedAt}
+                    mainImage={mainImage}
+                    excerpt={excerpt}
+                    size="small"
+                  />
+                )
+              )}
+            </div>
+          </aside>
+        </>
+      )
+    }
     <footer>
       <a href={firstQuestionUrl}>Stwórz dokument</a>
     </footer>
-  </div>
+  </section>
 </Layout>
 
 <style>
-  div {
-    @apply bg-white rounded-lg p-20 sm:p-40 my-20 flex flex-col gap-30;
+  section {
+    @apply bg-white rounded-lg p-20 sm:p-40 my-20 flex flex-col gap-30 max-w-[1000px];
   }
 
   header {
@@ -104,5 +167,10 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0]
 
   footer a {
     @apply btn-big;
+  }
+
+  aside > div {
+    @apply grid sm:grid-cols-2 lg:grid-cols-3 gap-20;
+    @apply pt-10;
   }
 </style>

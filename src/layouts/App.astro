@@ -6,13 +6,13 @@ import SignedInMenu from "@components/SignedInMenu.astro";
 import ShowMobileMenu from "@components/ShowMobileMenu.astro";
 import { Icon } from "astro-icon";
 
-const { title } = Astro.props;
+const { title, description, keywords } = Astro.props;
 const session = await getSession(Astro.request);
 
 const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
 ---
 
-<Layout title={title}>
+<Layout title={title} description={description} keywords={keywords}>
   <AppMenu session={session} />
   <main>
     <header>

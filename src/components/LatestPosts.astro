@@ -1,0 +1,72 @@
+---
+//@ts-ignore
+import { sanityClient } from "sanity:client";
+import type { ImageAsset, Slug } from "@sanity/types";
+import { getSession } from "auth-astro/server";
+import BlogPost from "./BlogPost.astro";
+
+const session = await getSession(Astro.request);
+const query = `_type == "post" && defined(publishedAt)`;
+const postQuery = session
+  ? query
+  : `${query} && (memberContent == false || !defined(memberContent))`;
+
+interface Post {
+  title: string;
+  publishedAt: string;
+  slug: Slug;
+  mainImage?: ImageAsset;
+  excerpt: string;
+}
+
+const posts: Post[] = await sanityClient.fetch(
+  `*[${postQuery}] | order(publishedAt asc) [0...4] { 
+      title, 
+      publishedAt, 
+      slug, 
+      mainImage,
+      "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
+  }`
+);
+---
+
+{
+  posts.length && (
+    <section>
+      <header>
+        <h2>Najnowsze wpisy na blogu</h2>
+      </header>
+      <div>
+        {posts.map(
+          ({
+            title,
+            slug: { current: url },
+            publishedAt,
+            mainImage,
+            excerpt,
+          }) => (
+            <BlogPost
+              title={title}
+              url={url}
+              publishedAt={publishedAt}
+              mainImage={mainImage}
+              excerpt={excerpt}
+              size="small"
+            />
+          )
+        )}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  section {
+    @apply pt-30 pb-10;
+  }
+
+  section div {
+    @apply grid sm:grid-cols-2 lg:grid-cols-4 gap-20;
+    @apply pt-20;
+  }
+</style>

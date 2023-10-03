@@ -1,0 +1,137 @@
+---
+import Layout from "../../layouts/App.astro";
+import pageTitle from "@utils/pageTitle";
+//@ts-ignore
+import { sanityClient } from "sanity:client";
+import type { ImageAsset, Slug } from "@sanity/types";
+import imageUrl from "@utils/sanityImage";
+import formatDate from "@utils/date";
+import { PortableText } from "astro-portabletext";
+import type { PortableTextBlock } from "@portabletext/types";
+import BlogImage from "@components/BlogImage.astro";
+import Badge from "@components/Badge.astro";
+import { getSession } from "auth-astro/server";
+import { UserRoles } from "@db/user";
+import screens from "@utils/screens";
+import trimWhitespace from "@utils/whitespace";
+
+const PAGE_TITLE = "Blog";
+
+const session = await getSession(Astro.request);
+const isAdmin = session?.user?.role === UserRoles.admin;
+const adminQuery = `_type == "post" && slug.current == $slug`;
+const postQuery = isAdmin
+  ? adminQuery
+  : `${adminQuery} && defined(publishedAt)`;
+const memberQuery = session
+  ? postQuery
+  : `${postQuery} && (memberContent == false || !defined(memberContent))`;
+
+interface Post {
+  publishedAt: string;
+  title?: string;
+  slug: Slug;
+  mainImage?: ImageAsset;
+  body: PortableTextBlock[];
+  excerpt: string;
+  keywords?: string;
+  description?: string;
+}
+
+const post: Post = await sanityClient.fetch(
+  `*[${memberQuery}] {
+    title, 
+    publishedAt, 
+    body, 
+    mainImage, 
+    "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "...",
+    keywords,
+    description
+  }[0]`,
+  {
+    slug: Astro.params.slug,
+  }
+);
+
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+const { title, publishedAt, mainImage, body, excerpt, keywords, description } =
+  post;
+
+const components = {
+  type: {
+    image: BlogImage,
+  },
+};
+---
+
+<Layout
+  title={pageTitle(`${title} - Blog`)}
+  description={description ?? trimWhitespace(excerpt)}
+  keywords={keywords}
+>
+  <span slot="topbar-title">{PAGE_TITLE}</span>
+  <div>
+    <header>
+      {
+        mainImage && (
+          <figure>
+            <picture>
+              <source
+                media={`(max-width:${screens.sm - 1}px)`}
+                srcset={`${imageUrl(mainImage, 600, 180).url()}`}
+              />
+              <source
+                media={`(min-width:${screens.sm}px)`}
+                srcset={`${imageUrl(mainImage, 1000, 400).url()}`}
+              />
+              <img
+                src={imageUrl(mainImage, 1000, 400).url()}
+                alt={title}
+                loading="lazy"
+                width="100%"
+              />
+            </picture>
+          </figure>
+        )
+      }
+      <div>
+        <h1>{title}</h1>
+        {
+          publishedAt ? (
+            <time>{formatDate(publishedAt)}</time>
+          ) : (
+            <Badge>Szkic artykułu</Badge>
+          )
+        }
+      </div>
+    </header>
+    <article class="prose">
+      <PortableText value={body} components={components} />
+    </article>
+  </div>
+</Layout>
+
+<style>
+  div {
+    @apply bg-white rounded-lg my-20 flex flex-col items-start w-full max-w-[1000px];
+  }
+
+  header > div {
+    @apply py-20 px-20 sm:px-40;
+  }
+
+  header h1 {
+    @apply text-dark90 mt-20 mb-20;
+  }
+
+  header figure {
+    @apply rounded-t overflow-hidden p-0;
+  }
+
+  article {
+    @apply px-20 sm:px-40 pb-40;
+  }
+</style>

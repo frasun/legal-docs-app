@@ -1,0 +1,59 @@
+---
+import Icon from "astro-icon";
+import { PAGE } from "@utils/urlParams";
+
+interface Props {
+  pages: number;
+  currentPage: number;
+  url: string;
+}
+
+const { pages, currentPage, url } = Astro.props;
+---
+
+{
+  pages > 1 && (
+    <footer>
+      {currentPage > 1 ? (
+        <a
+          href={`${url}?${PAGE}=${currentPage - 1}`}
+          aria-label="Poprzednia strona"
+          title="Poprzednia strona"
+        >
+          <Icon name="arrow-left" width={24} height={24} />
+        </a>
+      ) : (
+        <span />
+      )}
+      <small>
+        Strona{" "}
+        <strong>
+          {currentPage} z {pages}
+        </strong>
+      </small>
+      {currentPage < pages && (
+        <a
+          href={`${url}?${PAGE}=${currentPage + 1}`}
+          aria-label="Następna strona"
+          title="Następna strona"
+        >
+          <Icon name="arrow-right" width={24} height={24} />
+        </a>
+      )}
+    </footer>
+  )
+}
+
+<style>
+  footer {
+    @apply grid grid-cols-[1fr_auto_1fr] gap-20 items-center w-full;
+  }
+
+  footer > small {
+    @apply justify-self-center;
+  }
+
+  footer > a:first-child {
+    @apply justify-self-end;
+  }
+</style>

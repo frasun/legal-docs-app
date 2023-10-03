@@ -1,0 +1,91 @@
+---
+import imageUrl from "@utils/sanityImage";
+import Badge from "./Badge.astro";
+import formatDate from "@utils/date";
+import screens from "@utils/screens";
+
+export enum BlogPostSize {
+  default = "",
+  small = "small",
+}
+
+const {
+  title,
+  url,
+  publishedAt,
+  mainImage,
+  excerpt,
+  size = BlogPostSize.default,
+} = Astro.props;
+---
+
+<a href={`${Astro.url.origin}/blog/${url}`} title={title}>
+  {
+    mainImage && (
+      <figure>
+        <picture>
+          <source
+            media={`(max-width:${screens.sm - 1}px)`}
+            srcset={`${imageUrl(mainImage, 600, 180).url()}`}
+          />
+          <source
+            media={`(min-width:${screens.sm}px) and (max-width:${
+              screens.md - 1
+            }px)`}
+            srcset={`${imageUrl(mainImage, 400, 300).url()}`}
+          />
+          <source
+            media={`(min-width:${screens.md}px)`}
+            srcset={`${imageUrl(mainImage, 350, 200).url()}`}
+          />
+          <img
+            src={imageUrl(mainImage, 600, 300).url()}
+            alt={title}
+            loading="lazy"
+            width="100%"
+          />
+        </picture>
+      </figure>
+    )
+  }
+  <div>
+    {size === BlogPostSize.small ? <h4>{title}</h4> : <h3>{title}</h3>}
+    {
+      publishedAt ? (
+        <time>{formatDate(publishedAt)}</time>
+      ) : (
+        <Badge>Szkic artykułu</Badge>
+      )
+    }
+    {excerpt && size !== BlogPostSize.small && <p>{excerpt}</p>}
+  </div>
+</a>
+
+<style>
+  a {
+    @apply flex flex-col gap-10;
+    @apply bg-white rounded pb-20;
+  }
+
+  a:hover h3,
+  a:hover h4,
+  a:hover p {
+    @apply text-orangeDark;
+  }
+
+  a figure {
+    @apply rounded-t overflow-hidden;
+  }
+
+  a div {
+    @apply flex flex-col gap-10 px-15 items-start;
+  }
+
+  a time {
+    @apply text-xs;
+  }
+
+  a p {
+    @apply text-sm text-dark75 pb-15;
+  }
+</style>
