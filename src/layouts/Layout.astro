@@ -1,5 +1,6 @@
 ---
 import ChatWidget from "@components/ChatWidget.astro";
+import GA from "@components/GA.astro";
 import "@components/GlobalStyles.astro";
 
 export interface Props {
@@ -76,6 +77,7 @@ const metaKeywords = keywords ?? KEYWORDS;
     <title>{title}</title>
   </head>
   <body>
+    {import.meta.env.MODE === "production" && <GA />}
     <slot />
     {import.meta.env.MODE === "production" && <ChatWidget />}
   </body>
