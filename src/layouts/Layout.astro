@@ -2,11 +2,12 @@
 import ChatWidget from "@components/ChatWidget.astro";
 import GA from "@components/GA.astro";
 import "@components/GlobalStyles.astro";
+import Sentry from "@components/Sentry.astro";
 
 export interface Props {
   title: string;
-  keywords: string;
-  description: string;
+  keywords?: string;
+  description?: string;
 }
 
 const { title, keywords, description } = Astro.props;
@@ -75,6 +76,7 @@ const metaKeywords = keywords ?? KEYWORDS;
     <meta property="twitter:description" content={metaDescription} />
     <meta property="twitter:title" content={title} />
     <title>{title}</title>
+    {import.meta.env.MODE === "production" && <Sentry />}
   </head>
   <body>
     {import.meta.env.MODE === "production" && <GA />}
