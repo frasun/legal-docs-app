@@ -9,10 +9,6 @@ const categories = defineCollection({
   }),
 });
 
-const info = defineCollection({
-  type: "content",
-});
-
 const questionsIndex = z.array(
   z.object({
     id: reference("questions"),
@@ -65,7 +61,6 @@ const answers = defineCollection({
 
 export const collections = {
   categories,
-  info,
   documents,
   questions,
   answers,

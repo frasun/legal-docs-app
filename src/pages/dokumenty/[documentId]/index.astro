@@ -10,18 +10,40 @@ import { UserRoles } from "@db/user";
 import { sanityClient } from "sanity:client";
 import type { ImageAsset, Slug } from "@sanity/types";
 import BlogPost from "@components/BlogPost.astro";
+import { PortableText } from "astro-portabletext";
+import type { PortableTextBlock } from "@portabletext/types";
+
+interface Document {
+  title: string;
+  draft: string;
+  body: PortableTextBlock[];
+  memberContent: boolean;
+  keywords?: string;
+  description?: string;
+}
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
-const info = await getEntry("info", documentId);
+
+const info: Document = await sanityClient.fetch(
+  `*[_type == 'legalDocument' && slug.current == "${documentId}"] { 
+      title, 
+      "draft": !publishedAt, 
+      body,
+      memberContent,
+      keywords,
+      description
+  }[0]`
+);
+
 const document = await getEntry("documents", documentId);
 
 if (!info || !document) {
   return Astro.redirect("/404");
 }
 
-const { Content } = await info.render();
-const { title, index, priceId, draft, memberContent } = document.data;
+const { title, body, draft, memberContent, keywords, description } = info;
+const { index, priceId } = document.data;
 
 const session = await getSession(Astro.request);
 const isAdmin = session?.user?.role === UserRoles.admin;
@@ -78,7 +100,7 @@ const posts: Post[] = await sanityClient.fetch(
 );
 ---
 
-<Layout title={pageTitle(title)}>
+<Layout title={pageTitle(title)} keyword={keywords} description={description}>
   <span slot="topbar-title">{title}</span>
   <section>
     <header>
@@ -91,7 +113,7 @@ const posts: Post[] = await sanityClient.fetch(
     </header>
     <hr />
     <article class="prose">
-      <Content />
+      <PortableText value={body} />
     </article>
     {
       posts.length && (
