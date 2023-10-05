@@ -36,6 +36,10 @@ interface Post {
   excerpt: string;
   keywords?: string;
   description?: string;
+  documents: {
+    title: string;
+    slug: Slug;
+  }[];
 }
 
 const post: Post = await sanityClient.fetch(
@@ -46,7 +50,11 @@ const post: Post = await sanityClient.fetch(
     mainImage, 
     "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "...",
     keywords,
-    description
+    description,
+    "documents": documents[]->{
+      title, 
+      slug
+    }
   }[0]`,
   {
     slug: Astro.params.slug,
@@ -57,8 +65,16 @@ if (!post) {
   return Astro.redirect("/404");
 }
 
-const { title, publishedAt, mainImage, body, excerpt, keywords, description } =
-  post;
+const {
+  title,
+  publishedAt,
+  mainImage,
+  body,
+  excerpt,
+  keywords,
+  description,
+  documents,
+} = post;
 
 const components = {
   type: {
@@ -110,6 +126,21 @@ const components = {
     </header>
     <article class="prose">
       <PortableText value={body} components={components} />
+      {
+        documents.length && (
+          <>
+            <hr />
+            <h4>Powiązane dokumenty</h4>
+            <ul>
+              {documents.map(({ title, slug: { current: url } }) => (
+                <li>
+                  <a href={`${Astro.url.origin}/dokumenty/${url}`}>{title}</a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
     </article>
   </div>
 </Layout>

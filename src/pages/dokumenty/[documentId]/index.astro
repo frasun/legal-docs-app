@@ -13,6 +13,14 @@ import BlogPost from "@components/BlogPost.astro";
 import { PortableText } from "astro-portabletext";
 import type { PortableTextBlock } from "@portabletext/types";
 
+interface Post {
+  title: string;
+  publishedAt: string;
+  slug: Slug;
+  mainImage?: ImageAsset;
+  excerpt: string;
+}
+
 interface Document {
   title: string;
   draft: string;
@@ -20,10 +28,19 @@ interface Document {
   memberContent: boolean;
   keywords?: string;
   description?: string;
+  posts: Post[];
 }
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
+
+const session = await getSession(Astro.request);
+const isAdmin = session?.user?.role === UserRoles.admin;
+
+const allPostQuery = `_type=='post' && references(^._id) && defined(publishedAt)`;
+const postQuery = session
+  ? allPostQuery
+  : `${allPostQuery} && (memberContent == false || !defined(memberContent))`;
 
 const info: Document = await sanityClient.fetch(
   `*[_type == 'legalDocument' && slug.current == "${documentId}"] { 
@@ -32,7 +49,14 @@ const info: Document = await sanityClient.fetch(
       body,
       memberContent,
       keywords,
-      description
+      description,
+      "posts": *[${postQuery}] | order(publishedAt desc) [0..2] { 
+        title, 
+        mainImage, 
+        publishedAt,
+        slug,
+        "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
+      }
   }[0]`
 );
 
@@ -42,11 +66,9 @@ if (!info || !document) {
   return Astro.redirect("/404");
 }
 
-const { title, body, draft, memberContent, keywords, description } = info;
+const { title, body, draft, memberContent, keywords, description, posts } =
+  info;
 const { index, priceId } = document.data;
-
-const session = await getSession(Astro.request);
-const isAdmin = session?.user?.role === UserRoles.admin;
 
 if (draft) {
   if (!session || isAdmin) {
@@ -70,34 +92,6 @@ if (!index) {
 }
 
 const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0].questions[0].id.slug}`;
-
-const adminQuery = isAdmin
-  ? `_type == "post" && "${documentId}" in documents`
-  : `_type == "post" && defined(publishedAt) && "${documentId}" in documents`;
-const postQuery = session
-  ? adminQuery
-  : `${adminQuery} && (memberContent == false || !defined(memberContent))`;
-
-interface Post {
-  title: string;
-  publishedAt: string;
-  slug: Slug;
-  mainImage?: ImageAsset;
-  excerpt: string;
-}
-
-const posts: Post[] = await sanityClient.fetch(
-  `*[${postQuery}] | order($queryOrder asc) [0...3] { 
-      title, 
-      publishedAt, 
-      slug, 
-      mainImage,
-      "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
-  }`,
-  {
-    queryOrder: isAdmin ? `updatedAt` : `publishedAt`,
-  }
-);
 ---
 
 <Layout title={pageTitle(title)} keyword={keywords} description={description}>
