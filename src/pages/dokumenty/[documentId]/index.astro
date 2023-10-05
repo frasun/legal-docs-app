@@ -1,97 +1,41 @@
 ---
 import Layout from "../../../layouts/App.astro";
-import { getEntry } from "astro:content";
 import pageTitle from "@utils/pageTitle";
 import formatNumber from "@utils/number";
-import Stripe from "stripe";
-import { getSession } from "auth-astro/server";
-import { UserRoles } from "@db/user";
-//@ts-ignore
-import { sanityClient } from "sanity:client";
-import type { ImageAsset, Slug } from "@sanity/types";
 import BlogPost from "@components/BlogPost.astro";
 import { PortableText } from "astro-portabletext";
+import type { PostShort as Post } from "@type";
 import type { PortableTextBlock } from "@portabletext/types";
 
-interface Post {
-  title: string;
-  publishedAt: string;
-  slug: Slug;
-  mainImage?: ImageAsset;
-  excerpt: string;
-}
+let title: string | undefined,
+  keywords: string | undefined,
+  description: string | undefined,
+  body: PortableTextBlock | undefined,
+  posts: Post[] | undefined,
+  price: number | undefined,
+  firstQuestionUrl: string | undefined;
 
-interface Document {
-  title: string;
-  draft: string;
-  body: PortableTextBlock[];
-  memberContent: boolean;
-  keywords?: string;
-  description?: string;
-  posts: Post[];
-}
+try {
+  const response = await fetch(
+    `${Astro.url.origin}/api/documents/${Astro.params.documentId}`
+  );
 
-const { documentId: dId } = Astro.params;
-const documentId = String(dId);
+  if (!response.ok) {
+    throw new Error("", { cause: response.status });
+  }
 
-const session = await getSession(Astro.request);
-const isAdmin = session?.user?.role === UserRoles.admin;
-
-const allPostQuery = `_type=='post' && references(^._id) && defined(publishedAt)`;
-const postQuery = session
-  ? allPostQuery
-  : `${allPostQuery} && (memberContent == false || !defined(memberContent))`;
-
-const info: Document = await sanityClient.fetch(
-  `*[_type == 'legalDocument' && slug.current == "${documentId}"] { 
-      title, 
-      "draft": !publishedAt, 
-      body,
-      memberContent,
-      keywords,
-      description,
-      "posts": *[${postQuery}] | order(publishedAt desc) [0..2] { 
-        title, 
-        mainImage, 
-        publishedAt,
-        slug,
-        "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
-      }
-  }[0]`
-);
-
-const document = await getEntry("documents", documentId);
-
-if (!info || !document) {
-  return Astro.redirect("/404");
-}
-
-const { title, body, draft, memberContent, keywords, description, posts } =
-  info;
-const { index, priceId } = document.data;
-
-if (draft) {
-  if (!session || isAdmin) {
-    return Astro.redirect("/404");
+  ({ title, keywords, description, body, posts, price, firstQuestionUrl } =
+    await response.json());
+} catch (e) {
+  if (e instanceof Error) {
+    if (e.cause === 401) {
+      const url = new URL(Astro.request.url).pathname;
+      return Astro.redirect(`/zaloguj-sie?redirect=${url}`);
+    } else {
+      return Astro.redirect("/404");
+    }
   }
 }
-
-if (memberContent && !session) {
-  return Astro.redirect("/zaloguj-sie");
-}
-
-const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
-  apiVersion: import.meta.env.STRIPE_API_V,
-});
-
-const documentPrice = await stripe.prices.retrieve(priceId);
-const price = documentPrice.unit_amount ? documentPrice.unit_amount / 100 : 0;
-
-if (!index) {
-  return Astro.redirect("/404");
-}
-
-const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0].questions[0].id.slug}`;
 ---
 
 <Layout title={pageTitle(title)} keyword={keywords} description={description}>
@@ -101,16 +45,20 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0]
       <h1>{title}</h1>
       <span>
         <small>Cena za 1 dokument:</small>
-        <strong>{formatNumber(price)} zł</strong>
+        {price && <strong>{formatNumber(price)} zł</strong>}
       </span>
-      <a href={firstQuestionUrl}>Stwórz dokument</a>
+      <a href={`${Astro.url.origin}${firstQuestionUrl}`}>Stwórz dokument</a>
     </header>
     <hr />
-    <article class="prose">
-      <PortableText value={body} />
-    </article>
     {
-      posts.length && (
+      body && (
+        <article class="prose">
+          <PortableText value={body} />
+        </article>
+      )
+    }
+    {
+      posts && (
         <>
           <hr />
           <aside>
@@ -140,7 +88,7 @@ const firstQuestionUrl = `${Astro.url.origin}/dokumenty/${documentId}/${index[0]
       )
     }
     <footer>
-      <a href={firstQuestionUrl}>Stwórz dokument</a>
+      <a href={`${Astro.url.origin}${firstQuestionUrl}`}>Stwórz dokument</a>
     </footer>
   </section>
 </Layout>
