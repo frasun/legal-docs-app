@@ -6,13 +6,13 @@ import BlogPost from "@components/BlogPost.astro";
 import { PortableText } from "astro-portabletext";
 import type { PostShort as Post } from "@type";
 import type { PortableTextBlock } from "@portabletext/types";
-import headers from "@utils/apiHeaders";
+import apiHeaders from "@utils/apiHeaders";
 
 let title: string | undefined,
-  keywords: string | undefined,
-  description: string | undefined,
+  keywords: string | null | undefined,
+  description: string | null | undefined,
   body: PortableTextBlock | undefined,
-  posts: Post[] | undefined,
+  posts: Post[] | null | undefined,
   price: number | undefined,
   firstQuestionUrl: string | undefined;
 
@@ -20,7 +20,10 @@ try {
   const response = await fetch(
     `${Astro.url.origin}/api/documents/${Astro.params.documentId}`,
     {
-      headers,
+      headers: {
+        ...apiHeaders,
+        cookie: Astro.request.headers.get("cookie") as string,
+      },
     }
   );
 

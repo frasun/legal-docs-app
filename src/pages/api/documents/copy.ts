@@ -3,7 +3,7 @@ import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import { copyDocument } from "@db/document";
 
-export const all: APIRoute = async ({ params, request }) => {
+export const all: APIRoute = async ({ request }) => {
   const session = await getSession(request);
 
   if (!session) {

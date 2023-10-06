@@ -21,7 +21,7 @@ export const get: APIRoute = async ({ request, params }) => {
   const allPostQuery = `_type=='post' && references(^._id) && defined(publishedAt)`;
   const postQuery = session
     ? allPostQuery
-    : `${allPostQuery} && (memberContent == false || !defined(memberContent))`;
+    : `${allPostQuery} && memberContent == false`;
 
   const info: Document = await sanityClient.fetch(
     `*[_type == 'legalDocument' && slug.current == "${documentId}"] { 
@@ -51,7 +51,7 @@ export const get: APIRoute = async ({ request, params }) => {
     info;
 
   if (draft) {
-    if (!session || isAdmin) {
+    if (!session || !isAdmin) {
       return new Response(null, {
         status: 404,
       });

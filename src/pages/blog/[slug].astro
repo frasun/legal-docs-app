@@ -1,93 +1,75 @@
 ---
 import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
-//@ts-ignore
-import { sanityClient } from "sanity:client";
-import type { ImageAsset, Slug } from "@sanity/types";
 import imageUrl from "@utils/sanityImage";
 import formatDate from "@utils/date";
 import { PortableText } from "astro-portabletext";
-import type { PortableTextBlock } from "@portabletext/types";
 import BlogImage from "@components/BlogImage.astro";
 import Badge from "@components/Badge.astro";
-import { getSession } from "auth-astro/server";
-import { UserRoles } from "@db/user";
 import screens from "@utils/screens";
 import trimWhitespace from "@utils/whitespace";
+import apiHeaders from "@utils/apiHeaders";
+import type { Document } from "@type";
+import type { ImageAsset } from "@sanity/types";
+import type { PortableTextBlock } from "@portabletext/types";
 
 const PAGE_TITLE = "Blog";
 
-const session = await getSession(Astro.request);
-const isAdmin = session?.user?.role === UserRoles.admin;
-const adminQuery = `_type == "post" && slug.current == $slug`;
-const postQuery = isAdmin
-  ? adminQuery
-  : `${adminQuery} && defined(publishedAt)`;
-const memberQuery = session
-  ? postQuery
-  : `${postQuery} && (memberContent == false || !defined(memberContent))`;
-
-interface Post {
-  publishedAt: string;
-  title?: string;
-  slug: Slug;
-  mainImage?: ImageAsset;
-  body: PortableTextBlock[];
-  excerpt: string;
-  keywords?: string;
-  description?: string;
-  documents:
-    | {
-        title: string;
-        slug: Slug;
-      }[]
-    | null;
-}
-
-const post: Post = await sanityClient.fetch(
-  `*[${memberQuery}] {
-    title, 
-    publishedAt, 
-    body, 
-    mainImage, 
-    "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "...",
-    keywords,
-    description,
-    "documents": documents[]->{
-      title, 
-      slug
-    }
-  }[0]`,
-  {
-    slug: Astro.params.slug,
-  }
-);
-
-if (!post) {
-  return Astro.redirect("/404");
-}
-
-const {
-  title,
-  publishedAt,
-  mainImage,
-  body,
-  excerpt,
-  keywords,
-  description,
-  documents,
-} = post;
+let title: string | undefined,
+  publishedAt: string | undefined,
+  mainImage: ImageAsset | null | undefined,
+  body: PortableTextBlock[] | null | undefined,
+  excerpt: string | undefined,
+  keywords: string | null | undefined,
+  description: string | null | undefined,
+  documents: Document[] | null | undefined;
 
 const components = {
   type: {
     image: BlogImage,
   },
 };
+
+try {
+  const response = await fetch(
+    `${Astro.url.origin}/api/posts/${Astro.params.slug}`,
+    {
+      headers: {
+        ...apiHeaders,
+        cookie: Astro.request.headers.get("cookie") as string,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("", { cause: response.status });
+  }
+
+  ({
+    title,
+    publishedAt,
+    mainImage,
+    body,
+    excerpt,
+    keywords,
+    description,
+    documents,
+  } = await response.json());
+} catch (e) {
+  if (e instanceof Error) {
+    if (e.cause === 401) {
+      const url = new URL(Astro.request.url).pathname;
+      return Astro.redirect(`/zaloguj-sie?redirect=${url}`);
+    } else {
+      return Astro.redirect("/404");
+    }
+  }
+}
 ---
 
 <Layout
   title={pageTitle(`${title} - Blog`)}
-  description={description ?? trimWhitespace(excerpt)}
+  description={description ?? trimWhitespace(excerpt || "")}
   keywords={keywords}
 >
   <span slot="topbar-title">{PAGE_TITLE}</span>
@@ -127,7 +109,7 @@ const components = {
       </div>
     </header>
     <article class="prose">
-      <PortableText value={body} components={components} />
+      {body && <PortableText value={body} components={components} />}
       {
         documents && (
           <>

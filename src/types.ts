@@ -3,20 +3,31 @@ import type { PortableTextBlock } from "@portabletext/types";
 
 export type Answers = Record<string, any>;
 
-export interface PostShort {
+export interface Post {
   title: string;
-  publishedAt: string;
+  publishedAt?: string | null;
   slug: Slug;
-  mainImage?: ImageAsset;
-  excerpt: string;
+  mainImage?: ImageAsset | null;
+  body?: PortableTextBlock[];
+  excerpt?: string;
+  keywords?: string | null;
+  description?: string | null;
+  documents?: Document[] | null;
+  memberContent?: boolean;
 }
+
+export type PostShort = Pick<
+  Post,
+  "title" | "publishedAt" | "slug" | "mainImage" | "excerpt"
+>;
 
 export interface Document {
   title: string;
   draft: string;
-  body: PortableTextBlock[];
-  memberContent: boolean;
-  keywords?: string;
-  description?: string;
-  posts: PostShort[];
+  slug: Slug;
+  body?: PortableTextBlock[];
+  memberContent?: boolean;
+  keywords?: string | null;
+  description?: string | null;
+  posts?: PostShort[] | null;
 }
