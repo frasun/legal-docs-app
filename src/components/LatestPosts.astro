@@ -1,37 +1,34 @@
 ---
-//@ts-ignore
-import { sanityClient } from "sanity:client";
-import type { ImageAsset, Slug } from "@sanity/types";
-import { getSession } from "auth-astro/server";
+import { LIMIT } from "@utils/urlParams";
 import BlogPost from "./BlogPost.astro";
+import apiHeaders from "@utils/apiHeaders";
+import type { Post } from "@type";
 
-const session = await getSession(Astro.request);
-const query = `_type == "post" && defined(publishedAt)`;
-const postQuery = session
-  ? query
-  : `${query} && (memberContent == false || !defined(memberContent))`;
+let posts: Post[] | undefined;
 
-interface Post {
-  title: string;
-  publishedAt: string;
-  slug: Slug;
-  mainImage?: ImageAsset;
-  excerpt: string;
+try {
+  const response = await fetch(
+    `${Astro.url.origin}/api/posts?${LIMIT}=4&showPublished=false`,
+    {
+      headers: {
+        ...apiHeaders,
+        cookie: Astro.request.headers.get("cookie") as string,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("", { cause: response.status });
+  }
+
+  ({ posts } = await response.json());
+} catch (e) {
+  return Astro.redirect("/404");
 }
-
-const posts: Post[] = await sanityClient.fetch(
-  `*[${postQuery}] | order(publishedAt asc) [0...4] { 
-      title, 
-      publishedAt, 
-      slug, 
-      mainImage,
-      "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
-  }`
-);
 ---
 
 {
-  posts.length && (
+  posts && (
     <section>
       <header>
         <h2>Najnowsze wpisy na blogu</h2>

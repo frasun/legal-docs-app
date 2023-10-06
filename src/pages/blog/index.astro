@@ -1,61 +1,48 @@
 ---
 import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
-//@ts-ignore
-import { sanityClient } from "sanity:client";
-import type { ImageAsset, Slug } from "@sanity/types";
 import { PAGE } from "@utils/urlParams";
 import Pagination from "@components/Pagination.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
-import { getSession } from "auth-astro/server";
-import { UserRoles } from "@db/user";
 import BlogPost from "@components/BlogPost.astro";
+import apiHeaders from "@utils/apiHeaders";
+import type { Post } from "@type";
 
 const PAGE_TITLE = "Blog";
 
-const session = await getSession(Astro.request);
-const isAdmin = session?.user?.role === UserRoles.admin;
-const adminQuery = isAdmin
-  ? `_type == "post"`
-  : `_type == "post" && defined(publishedAt)`;
-const postQuery = session
-  ? adminQuery
-  : `${adminQuery} && (memberContent == false || !defined(memberContent))`;
+let posts: Post[] | undefined,
+  pages: number = 1,
+  currentPage: number = 1;
 
-const LIMIT = 10;
-const postCount = await sanityClient.fetch(`count(*[${postQuery}])`);
-const pages = Math.ceil(postCount / LIMIT);
 const page = Number(new URL(Astro.request.url).searchParams.get(PAGE)) || 1;
-const currentPage = page <= pages ? page : 1;
-const startIndex = (currentPage - 1) * LIMIT;
-const endIndex = currentPage * LIMIT;
 
-interface Post {
-  title: string;
-  publishedAt: string;
-  slug: Slug;
-  mainImage?: ImageAsset;
-  excerpt: string;
-}
+try {
+  const response = await fetch(
+    `${Astro.url.origin}/api/posts?${PAGE}=${page}`,
+    {
+      headers: {
+        ...apiHeaders,
+        cookie: Astro.request.headers.get("cookie") as string,
+      },
+    }
+  );
 
-const posts: Post[] = await sanityClient.fetch(
-  `*[${postQuery}] | order($queryOrder asc) [${startIndex}...${endIndex}] { 
-      title, 
-      publishedAt, 
-      slug, 
-      mainImage,
-      "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
-  }`,
-  {
-    queryOrder: isAdmin ? `updatedAt` : `publishedAt`,
+  if (!response.ok) {
+    throw new Error("", { cause: response.status });
   }
-);
+
+  ({ posts, pages } = await response.json());
+
+  currentPage = page <= pages ? page : 1;
+} catch (e) {
+  return Astro.redirect("/404");
+}
 ---
 
 <Layout title={pageTitle(PAGE_TITLE)}>
   <span slot="topbar-title">{PAGE_TITLE}</span>
   {
-    posts.length ? (
+    posts ? (
       <div>
         <section>
           {posts.map(
