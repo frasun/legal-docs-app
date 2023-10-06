@@ -6,6 +6,7 @@ import BlogPost from "@components/BlogPost.astro";
 import { PortableText } from "astro-portabletext";
 import type { PostShort as Post } from "@type";
 import type { PortableTextBlock } from "@portabletext/types";
+import headers from "@utils/apiHeaders";
 
 let title: string | undefined,
   keywords: string | undefined,
@@ -17,7 +18,10 @@ let title: string | undefined,
 
 try {
   const response = await fetch(
-    `${Astro.url.origin}/api/documents/${Astro.params.documentId}`
+    `${Astro.url.origin}/api/documents/${Astro.params.documentId}`,
+    {
+      headers,
+    }
   );
 
   if (!response.ok) {

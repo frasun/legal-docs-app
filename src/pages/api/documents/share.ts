@@ -7,13 +7,13 @@ import { shareDocument } from "@db/document";
 import { UUID } from "mongodb";
 
 export const post: APIRoute = async ({ request }) => {
+  const session = await getSession(request);
+
+  if (!session) {
+    return new Response(null, { status: 401, statusText: UNAUTHORIZED });
+  }
+
   if (request.headers.get("Content-Type") === "application/json") {
-    const session = await getSession(request);
-
-    if (!session) {
-      return new Response(null, { status: 401, statusText: UNAUTHORIZED });
-    }
-
     const { pdf, emails, sendToMe, documentId, title, template } =
       await request.json();
     const url = new URL(request.url);
@@ -62,7 +62,7 @@ export const post: APIRoute = async ({ request }) => {
     return new Response(null, {
       status: 200,
     });
-  } else {
-    return new Response(null, { status: 400 });
   }
+
+  return new Response(null, { status: 400 });
 };

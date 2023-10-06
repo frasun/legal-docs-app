@@ -10,6 +10,10 @@ import Stripe from "stripe";
 import type { Document } from "@type";
 
 export const get: APIRoute = async ({ request, params }) => {
+  if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
+    return new Response(null, { status: 401 });
+  }
+
   const { documentId } = params;
   const session = await getSession(request);
   const isAdmin = session?.user?.role === UserRoles.admin;
