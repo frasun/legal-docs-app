@@ -1,6 +1,7 @@
 ---
 import BlogImage from "./BlogImage.astro";
 import BlogLink from "./BlogLink.astro";
+import { PortableText } from "astro-portabletext";
 
 export const blogComponents = {
   type: {
@@ -10,4 +11,8 @@ export const blogComponents = {
     link: BlogLink,
   },
 };
+
+const { content } = Astro.props;
 ---
+
+<PortableText value={content} components={blogComponents} />

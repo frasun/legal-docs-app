@@ -31,3 +31,8 @@ export interface Document {
   description?: string | null;
   posts?: PostShort[] | null;
 }
+
+export interface Page {
+  title: string;
+  body?: PortableTextBlock[];
+}

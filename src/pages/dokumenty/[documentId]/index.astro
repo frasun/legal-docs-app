@@ -3,11 +3,10 @@ import Layout from "../../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import formatNumber from "@utils/number";
 import BlogPost from "@components/BlogPost.astro";
-import { PortableText } from "astro-portabletext";
 import type { PostShort as Post } from "@type";
-import type { PortableTextBlock } from "@portabletext/types";
 import apiHeaders from "@utils/apiHeaders";
-import { blogComponents } from "@components/BlogComponents.astro";
+import BlogContent from "@components/BlogContent.astro";
+import type { PortableTextBlock } from "@portabletext/types";
 
 let title: string | undefined,
   keywords: string | null | undefined,
@@ -61,7 +60,7 @@ try {
     {
       body && (
         <article class="prose">
-          <PortableText value={body} components={blogComponents} />
+          <BlogContent content={body} />
         </article>
       )
     }

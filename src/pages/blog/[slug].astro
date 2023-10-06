@@ -3,8 +3,6 @@ import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import imageUrl from "@utils/sanityImage";
 import formatDate from "@utils/date";
-import { PortableText } from "astro-portabletext";
-import BlogImage from "@components/BlogImage.astro";
 import Badge from "@components/Badge.astro";
 import screens from "@utils/screens";
 import trimWhitespace from "@utils/whitespace";
@@ -12,7 +10,7 @@ import apiHeaders from "@utils/apiHeaders";
 import type { Document } from "@type";
 import type { ImageAsset } from "@sanity/types";
 import type { PortableTextBlock } from "@portabletext/types";
-import { blogComponents } from "@components/BlogComponents.astro";
+import BlogContent from "@components/BlogContent.astro";
 
 const PAGE_TITLE = "Blog";
 
@@ -104,7 +102,7 @@ try {
       </div>
     </header>
     <article class="prose">
-      {body && <PortableText value={body} components={blogComponents} />}
+      {body && <BlogContent content={body} />}
       {
         documents && (
           <>
