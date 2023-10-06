@@ -36,10 +36,12 @@ interface Post {
   excerpt: string;
   keywords?: string;
   description?: string;
-  documents: {
-    title: string;
-    slug: Slug;
-  }[];
+  documents:
+    | {
+        title: string;
+        slug: Slug;
+      }[]
+    | null;
 }
 
 const post: Post = await sanityClient.fetch(
@@ -127,7 +129,7 @@ const components = {
     <article class="prose">
       <PortableText value={body} components={components} />
       {
-        documents.length && (
+        documents && (
           <>
             <hr />
             <h4>Powiązane dokumenty</h4>
