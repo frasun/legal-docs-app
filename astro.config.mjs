@@ -37,7 +37,7 @@ export default defineConfig({
     dataset: SANITY_DATASET,
     token: SANITY_TOKEN,
     apiVersion: '2023-10-02',
-    useCdn: false
+    useCdn: import.meta.env.MODE === 'production'
   })],
   output: 'server',
   adapter: vercel(),
