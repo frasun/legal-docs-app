@@ -12,6 +12,7 @@ import apiHeaders from "@utils/apiHeaders";
 import type { Document } from "@type";
 import type { ImageAsset } from "@sanity/types";
 import type { PortableTextBlock } from "@portabletext/types";
+import { blogComponents } from "@components/BlogComponents.astro";
 
 const PAGE_TITLE = "Blog";
 
@@ -23,12 +24,6 @@ let title: string | undefined,
   keywords: string | null | undefined,
   description: string | null | undefined,
   documents: Document[] | null | undefined;
-
-const components = {
-  type: {
-    image: BlogImage,
-  },
-};
 
 try {
   const response = await fetch(
@@ -109,7 +104,7 @@ try {
       </div>
     </header>
     <article class="prose">
-      {body && <PortableText value={body} components={components} />}
+      {body && <PortableText value={body} components={blogComponents} />}
       {
         documents && (
           <>

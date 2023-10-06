@@ -7,6 +7,7 @@ import { PortableText } from "astro-portabletext";
 import type { PostShort as Post } from "@type";
 import type { PortableTextBlock } from "@portabletext/types";
 import apiHeaders from "@utils/apiHeaders";
+import { blogComponents } from "@components/BlogComponents.astro";
 
 let title: string | undefined,
   keywords: string | null | undefined,
@@ -60,7 +61,7 @@ try {
     {
       body && (
         <article class="prose">
-          <PortableText value={body} />
+          <PortableText value={body} components={blogComponents} />
         </article>
       )
     }
