@@ -15,13 +15,13 @@ const FONT_SIZE = 11;
 const TITLE_FONT_SIZE = 14;
 const LINE_HEIGHT = 1.75;
 const SECTION_SPACING = 18;
-const POINT_SPACING = 8;
+const POINT_SPACING = 3;
 const MARGIN = 50;
-const POINT_INDENT = 20;
+const POINT_INDENT = 32;
 const PARGRAPH_PREFIX = "\u00A7";
 const COLOR = rgb(0, 0, 0);
-const CHIVO_REGULAR = "/chivo-v18-latin_latin-ext-regular.ttf";
-const CHIVO_BOLD = "/chivo-v18-latin_latin-ext-700.ttf";
+const CHIVO_REGULAR = "/Chivo-Regular.ttf";
+const CHIVO_BOLD = "/Chivo-Bold.ttf";
 
 export default async function (
   paragraphs: (string | null)[][],
@@ -57,17 +57,17 @@ export async function createPDF(
   let pointIndex = 0;
 
   for (let p = 0; p < paragraphs.length; p++) {
-    const [contentType, content] = paragraphs[p];
+    let [contentType, content] = paragraphs[p];
     const isTitle = contentType === CONTENT_TYPES.TITLE;
     const isSection = contentType === CONTENT_TYPES.SECTION;
     const isPoint = contentType === CONTENT_TYPES.POINT;
     const isLine = contentType === CONTENT_TYPES.LINE;
 
-    const font = isSection ? fontBold : fontRegular;
+    const font = isSection || isTitle ? fontBold : fontRegular;
     const size = isTitle ? TITLE_FONT_SIZE : FONT_SIZE;
-    const indent = isPoint || isSection ? POINT_INDENT : 0;
+    const indent = isPoint ? POINT_INDENT : 0;
     const lineHeight = font.sizeAtHeight(size) * LINE_HEIGHT;
-    const prefix = isSection ? PARGRAPH_PREFIX : "";
+    const prefix = isSection ? `${PARGRAPH_PREFIX} ` : "";
     const spacing = isLine ? 0 : isSection ? SECTION_SPACING : POINT_SPACING;
     const color = COLOR;
 
@@ -77,6 +77,7 @@ export async function createPDF(
       index = paragraphIndex + 1;
       paragraphIndex++;
       pointIndex = 0;
+      content = `${PARGRAPH_PREFIX}${paragraphIndex}. ${content}`;
     } else if (isPoint) {
       index = pointIndex + 1;
       pointIndex++;
@@ -101,10 +102,10 @@ export async function createPDF(
       const isFirstLine = i === 0;
 
       let linePrefix = "";
-      if (isFirstLine && index) {
+      if (isFirstLine && index && isPoint) {
         linePrefix = `${prefix}${index}. `;
         page.drawText(linePrefix, {
-          x: MARGIN,
+          x: MARGIN + 10,
           y: currentY,
           size,
           font,
