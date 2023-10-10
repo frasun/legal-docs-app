@@ -144,7 +144,7 @@ export async function updateAnswers(
 ) {
   try {
     const validatedAnswers: Answers = {};
-    const schema = await import(`../src/content/documents/${docId}/_schema.ts`);
+    const schema = await import(`../src/documentSchema/${docId}.ts`);
 
     if (!schema) {
       throw new Error("missing field schema");
@@ -191,9 +191,7 @@ export async function createDocument(
   draft = false
 ) {
   const template = await getEntry("documents", doc);
-  const { default: schema } = await import(
-    `../src/content/documents/${doc}/_schema.ts`
-  );
+  const { default: schema } = await import(`../src/documentSchema/${doc}.ts`);
 
   if (!template || !schema) {
     throw "No template found";

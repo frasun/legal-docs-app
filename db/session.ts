@@ -11,9 +11,7 @@ export async function storeAnswers(
 ) {
   try {
     const validatedAnswers: Answers = {};
-    const schema = await import(
-      `../src/content/documents/${documentId}/_schema.ts`
-    );
+    const schema = await import(`../src/documentSchema/${documentId}.ts`);
 
     if (!schema) {
       throw new Error("missing field schema");
