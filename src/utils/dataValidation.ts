@@ -75,6 +75,12 @@ export const days = z
   .transform((val) => parseInt(String(val)))
   .refine((val) => val > 1);
 
+export const date = z
+  .string()
+  .nonempty()
+  .transform((val) => new Date(val).toISOString())
+  .refine((val) => z.coerce.date().safeParse(val).success);
+
 function validateEnum(val: string, array: Readonly<string[]>) {
   const arr = val.split(", ");
   return arr.every((el) => array.includes(el));

@@ -48,11 +48,8 @@ export const depositMethod = z.enum(paymentMethodEnum);
 export const repairs = validators.positiveFloat;
 export const termination = validators.days;
 export const returnTime = validators.days;
-export const start = z
-  .string()
-  .nonempty()
-  .transform((val) => new Date(val).toISOString())
-  .refine((val) => z.coerce.date().safeParse(val).success);
+export const start = validators.date;
+export const contractDate = validators.date;
 export const landlordType = z.enum(entityEnum);
 export const landlordPersonName = validators.trimmedString;
 export const landlordPersonStreet = validators.trimmedString;
@@ -108,6 +105,7 @@ export default z.object({
   termination,
   returnTime,
   start,
+  contractDate,
   landlordType,
   landlordPersonName,
   landlordPersonStreet,

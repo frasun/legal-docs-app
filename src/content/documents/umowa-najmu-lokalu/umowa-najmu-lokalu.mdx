@@ -32,6 +32,7 @@ index: [
     title: Daty i okres trwania umowy,
     questions: [
       { id: daty, title: Data rozpoczęcia najmu, token: start, type: date },
+      { id: data-zawarcia, title: Data zawarcia umowy, token: contractDate, type: date },
     ]
   },
   {
@@ -43,7 +44,8 @@ index: [
   },
 ]
 dates: [
-  start
+  start,
+  contractDate
 ]
 dataFields: [
   landlord,
@@ -92,10 +94,9 @@ import MdxConditionalBullet from "@components/MdxConditionalBullet.astro";
 import MdxDataValue, { getDataValue } from "@components/MdxDataValue.astro";
 import MdxSignature from "@components/MdxSignature.astro";
 
-### Umowa najmu lokalu
+{formatDate(frontmatter.contractDate)}, <MdxDataValue type={frontmatter["landlordType"]} personValue={frontmatter["landlordPersonCity"]} companyValue={frontmatter["landlordCompanyCity"]} />
 
-#### Data i miejsce zawarcia umowy
-[21.02.2023], <MdxDataValue type={frontmatter["landlordType"]} personValue={frontmatter["landlordPersonCity"]} companyValue={frontmatter["landlordCompanyCity"]} />
+### Umowa najmu lokalu
 
 #### Strony Umowy
 <MdxDataDisplay

@@ -161,7 +161,6 @@ export async function createPDF(
       currentY -= signatureSpacing;
 
       for (const line of lines) {
-        console.log(line, MARGIN, currentY);
         printText(page, line, MARGIN, currentY, 9, fontRegular);
         currentY -= signatureLH;
       }
@@ -208,8 +207,10 @@ function getIndent(block: CONTENT_TYPES) {
 function getSpacing(block: CONTENT_TYPES) {
   switch (block) {
     case CONTENT_TYPES.POINT:
+    case CONTENT_TYPES.PARAGRAPH:
       return POINT_SPACING;
     case CONTENT_TYPES.SECTION:
+    case CONTENT_TYPES.TITLE:
       return SECTION_SPACING;
     default:
       return 0;
