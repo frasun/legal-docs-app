@@ -135,6 +135,7 @@ module.exports = {
 						'--tw-prose-headings': theme('colors.dark90'),
 						'--tw-prose-bullets': theme('colors.dark90'),
 						'--tw-prose-counters': theme('colors.dark90'),
+						'--tw-prose-hr': theme('colors.dark90'),
 						'h1, h2, h3, h4, h5, h6': {
 							fontFamily: theme('fontFamily.sans'),
 							fontWeight: theme('fontWeight.bold'),
@@ -145,6 +146,14 @@ module.exports = {
 						},
 						h4: {
 							fontSize: theme('fontSize.sm[0]')
+						},
+						hr: {
+							width: '33%',
+							marginTop: '5em',
+							marginBottom: 0
+						},
+						'hr + p': {
+							maxWidth: '33%'
 						}
 					}
 				}

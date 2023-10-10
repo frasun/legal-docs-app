@@ -1,0 +1,24 @@
+---
+import { entityEnum } from "@utils/constants";
+
+const { type, personValue, companyValue } = Astro.props;
+
+let value = getDataValue(type, personValue, companyValue);
+
+export function getDataValue(
+  type: string,
+  personValue: string,
+  companyValue: string
+): string {
+  switch (type) {
+    case entityEnum[0]:
+      return personValue;
+    case entityEnum[1]:
+      return companyValue;
+    default:
+      return "";
+  }
+}
+---
+
+{value}

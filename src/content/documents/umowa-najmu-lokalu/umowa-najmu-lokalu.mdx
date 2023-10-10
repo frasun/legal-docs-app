@@ -89,12 +89,13 @@ import getItems from '@utils/itemlist';
 import PLURALS from "@utils/plurals";
 import MdxDataDisplay from "@components/MdxDataDisplay.astro";
 import MdxConditionalBullet from "@components/MdxConditionalBullet.astro";
-import MdxCity from "@components/MdxCity.astro";
+import MdxDataValue, { getDataValue } from "@components/MdxDataValue.astro";
+import MdxSignature from "@components/MdxSignature.astro";
 
 ### Umowa najmu lokalu
 
 #### Data i miejsce zawarcia umowy
-[21.02.2023], <MdxCity type={frontmatter["landlordType"]} personCity={frontmatter["landlordPersonCity"]} companyCity={frontmatter["landlordCompanyCity"]} />
+[21.02.2023], <MdxDataValue type={frontmatter["landlordType"]} personValue={frontmatter["landlordPersonCity"]} companyValue={frontmatter["landlordCompanyCity"]} />
 
 #### Strony Umowy
 <MdxDataDisplay
@@ -157,3 +158,10 @@ import MdxCity from "@components/MdxCity.astro";
   1. Umowa wchodzi w życie z dniem {formatDate(frontmatter.start)}.
 
 #### Oświadczenia
+
+<MdxSignature>
+  Wynajmujący: {getDataValue(frontmatter["landlordType"], frontmatter["landlordPersonName"], frontmatter["landlordCompanyName"])}
+</MdxSignature>
+<MdxSignature>
+  Najemca: {getDataValue(frontmatter["tenantType"], frontmatter["tenantPersonName"], frontmatter["tenantCompanyName"])}
+</MdxSignature>
