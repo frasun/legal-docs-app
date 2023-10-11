@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
-import { UNAUTHORIZED, WRONG_EMAIL_FORMAT } from "@utils/response";
+import { WRONG_EMAIL_FORMAT } from "@utils/response";
 import { emailRegExp, testString } from "@utils/dataValidation";
 import { createPDF, generateSafeFileName } from "@utils/pdf";
 import { shareDocument } from "@db/document";
@@ -10,7 +10,7 @@ export const post: APIRoute = async ({ request }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401, statusText: UNAUTHORIZED });
+    return new Response(null, { status: 401 });
   }
 
   if (request.headers.get("Content-Type") === "application/json") {

@@ -3,25 +3,24 @@ import Layout from "../../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import formatNumber from "@utils/number";
 import BlogPost from "@components/BlogPost.astro";
-import type { PostShort as Post } from "@type";
-import apiHeaders from "@utils/apiHeaders";
 import BlogContent from "@components/BlogContent.astro";
-import type { PortableTextBlock } from "@portabletext/types";
+import type { Document } from "@type";
+import headers from "@utils/headers";
 
-let title: string | undefined,
-  keywords: string | null | undefined,
-  description: string | null | undefined,
-  body: PortableTextBlock | undefined,
-  posts: Post[] | null | undefined,
-  price: number | undefined,
-  firstQuestionUrl: string | undefined;
+let title: Document["title"] = "",
+  keywords: Document["keywords"],
+  description: Document["description"],
+  body: Document["body"],
+  posts: Document["posts"] = null,
+  price: Document["price"] = null,
+  firstQuestionUrl: Document["firstQuestionUrl"] = "";
 
-try {
+async function getDocument(documentId: string): Promise<Document> {
   const response = await fetch(
-    `${Astro.url.origin}/api/documents/${Astro.params.documentId}`,
+    `${Astro.url.origin}/api/documents/${documentId}`,
     {
       headers: {
-        ...apiHeaders,
+        ...headers,
         cookie: Astro.request.headers.get("cookie") as string,
       },
     }
@@ -31,13 +30,20 @@ try {
     throw new Error("", { cause: response.status });
   }
 
+  return response.json();
+}
+
+try {
+  const response = await getDocument(Astro.params.documentId as string);
+
   ({ title, keywords, description, body, posts, price, firstQuestionUrl } =
-    await response.json());
+    response);
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 401) {
-      const url = new URL(Astro.request.url).pathname;
-      return Astro.redirect(`/zaloguj-sie?redirect=${url}`);
+      return Astro.redirect(
+        `/zaloguj-sie?redirect=${new URL(Astro.request.url).pathname}`
+      );
     } else {
       return Astro.redirect("/404");
     }

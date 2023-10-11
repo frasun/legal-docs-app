@@ -21,15 +21,20 @@ export type PostShort = Pick<
   "title" | "publishedAt" | "slug" | "mainImage" | "excerpt"
 >;
 
-export interface Document {
+export interface SanityDocument {
   title: string;
   draft: string;
   slug: Slug;
   body?: PortableTextBlock[];
-  memberContent?: boolean;
+  memberContent: boolean;
   keywords?: string | null;
   description?: string | null;
-  posts?: PostShort[] | null;
+  posts: PostShort[] | null;
+}
+
+export interface Document extends SanityDocument {
+  price: number | null;
+  firstQuestionUrl: string;
 }
 
 export interface Page {

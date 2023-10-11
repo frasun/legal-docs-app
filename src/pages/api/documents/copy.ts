@@ -1,4 +1,3 @@
-import { UNAUTHORIZED } from "@utils/response";
 import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import { copyDocument } from "@db/document";
@@ -7,7 +6,7 @@ export const all: APIRoute = async ({ request }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401, statusText: UNAUTHORIZED });
+    return new Response(null, { status: 401 });
   }
 
   if (
