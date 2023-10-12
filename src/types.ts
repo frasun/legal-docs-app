@@ -37,7 +37,20 @@ export interface Document extends SanityDocument {
   firstQuestionUrl: string;
 }
 
+export interface DocumentShort {
+  title: string;
+  slug: string;
+  price: number;
+  categories: string[];
+  draft: boolean;
+}
+
 export interface Page {
   title: string;
   body?: PortableTextBlock[];
 }
+
+export type Category = {
+  id: string;
+  data: { name: string };
+};

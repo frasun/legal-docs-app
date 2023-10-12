@@ -1,10 +1,10 @@
 import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import { deleteDraft } from "@db/document";
-import { UserRoles } from "@db/user";
-import stripe from "@utils/stripe";
-import { getDocumentPosts } from "@utils/posts";
-import { getDocumentInfo } from "@utils/documents";
+import { getPrice } from "@utils/stripe";
+import { getDocumentPosts } from "src/api/helpers/posts";
+import { getDocumentInfo } from "src/api/helpers/documents";
+import { DRAFT, MEMBER_CONTENT } from "@utils/urlParams";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -19,12 +19,15 @@ export const get: APIRoute = async ({ request, params }) => {
     });
   }
 
-  const session = await getSession(request);
-  const isAdmin = session?.user?.role === UserRoles.admin;
+  const url = new URL(request.url);
+  const draft = url.searchParams.get(DRAFT);
+  const memberContent = url.searchParams.get(MEMBER_CONTENT);
+  const showDarft = draft === "true";
+  const showMemberContent = memberContent === "true";
 
   try {
     const [info, document] = await Promise.all([
-      getDocumentPosts(documentId, session),
+      getDocumentPosts(documentId, showMemberContent),
       getDocumentInfo(documentId),
     ]);
 
@@ -38,26 +41,24 @@ export const get: APIRoute = async ({ request, params }) => {
       info;
     const { index, priceId } = document.data;
 
-    if ((draft && (!session || !isAdmin)) || !index) {
+    if ((draft && !showDarft) || !index) {
       return new Response(null, {
         status: 404,
       });
     }
 
-    if (memberContent && !session) {
+    if (memberContent && !showMemberContent) {
       return new Response(null, {
         status: 401,
       });
     }
-
-    const { unit_amount } = await stripe.prices.retrieve(priceId);
 
     return new Response(
       JSON.stringify({
         title,
         keywords,
         description,
-        price: unit_amount ? unit_amount / 100 : null,
+        price: await getPrice(priceId),
         firstQuestionUrl: `/dokumenty/${documentId}/${index[0].questions[0].id.slug}`,
         body,
         posts,

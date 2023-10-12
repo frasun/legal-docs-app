@@ -1,70 +1,47 @@
 ---
 import Layout from "../../layouts/App.astro";
-import Fuse from "fuse.js";
 import { Icon } from "astro-icon";
 import { getCollection } from "astro:content";
 import DocumentTile from "@components/DocumentTile.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
-import * as PARAMS from "@utils/urlParams";
-import Stripe from "stripe";
+import { CATEGORY, SEARCH } from "@utils/urlParams";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
+import type { DocumentShort, Category } from "@type";
+import { getDocuments } from "@api/documents";
 
 const session = await getSession(Astro.request);
-const showDraft = session && session.user?.role === UserRoles.admin;
-
+const showDraft = session?.user?.role === UserRoles.admin;
 const url = new URL(Astro.request.url);
-const currentCat = url.searchParams.get(PARAMS.CATEGORY);
-const search = url.searchParams.get(PARAMS.SEARCH);
+const currentCat = url.searchParams.get(CATEGORY);
+const search = url.searchParams.get(SEARCH);
+const PAGE_TITLE = "Wszystkie dokumenty";
 
-const categories = await getCollection("categories");
-const documents = await getCollection(
-  "documents",
-  ({ data: { categories, draft, memberContent } }) => {
-    const categoryMatch = categories.find(({ id }) =>
-      currentCat ? id === currentCat : true
-    );
-    const draftMatch = !showDraft ? draft === false : true;
-    const memberContentMatch = session ? true : !memberContent;
-
-    return categoryMatch && draftMatch && memberContentMatch;
-  }
-);
-const stripe = new Stripe(import.meta.env.STRIPE_API_KEY, {
-  apiVersion: import.meta.env.STRIPE_API_V,
-});
-
-let prices: any[];
+let documents: DocumentShort[],
+  categories: Category[],
+  currentCategory: Category | undefined,
+  title: string;
 
 try {
-  const priceList = await stripe.prices.list({
-    limit: 100,
-  });
+  [documents, categories] = await Promise.all([
+    getDocuments(
+      Astro.url.origin,
+      showDraft,
+      Boolean(session),
+      currentCat ?? undefined,
+      search ?? undefined
+    ),
+    getCollection("categories"),
+  ]);
 
-  prices = priceList.data;
-} catch {}
-
-const fuse = new Fuse(documents, {
-  keys: ["data.title", "data.keywords"],
-  threshold: 0.5,
-});
-const filteredDocs = fuse.search(search ? trimWhitespace(search) : "");
-const currentCategory = categories.find(({ id }) => id === currentCat);
-
-const PAGE_TITLE = "Wszystkie dokumenty";
-const title = currentCategory
-  ? `Dokumenty w kategorii ${currentCategory.data.name.toLowerCase()}`
-  : PAGE_TITLE;
-
-function getPrice(priceId: string) {
-  if (!prices) {
-    return 0;
-  }
-
-  const priceObj = prices.find((price) => price.id === priceId);
-  return priceObj.unit_amount ? priceObj.unit_amount / 100 : 0;
+  currentCategory = categories.find(({ id }) => id === currentCat);
+  title = currentCategory
+    ? `Dokumenty w kategorii ${currentCategory.data.name.toLowerCase()}`
+    : PAGE_TITLE;
+} catch {
+  return Astro.redirect("/404");
 }
 ---
 
@@ -77,12 +54,12 @@ function getPrice(priceId: string) {
           type="search"
           placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
           spellcheck="false"
-          name={PARAMS.SEARCH}
+          name={SEARCH}
           value={search ? trimWhitespace(search) : ""}
         />
         {
           currentCat && (
-            <input type="hidden" name={PARAMS.CATEGORY} value={currentCat} />
+            <input type="hidden" name={CATEGORY} value={currentCat} />
           )
         }
         <Icon name="search" width={24} height={24} />
@@ -115,46 +92,18 @@ function getPrice(priceId: string) {
   </header>
   {
     documents.length ? (
-      search ? (
-        filteredDocs.length ? (
-          <section>
-            {filteredDocs.map(
-              ({
-                item: {
-                  slug,
-                  data: { title, categories: cats, priceId, draft },
-                },
-              }) => (
-                <DocumentTile
-                  slug={slug}
-                  title={title}
-                  docCategories={cats}
-                  categories={categories}
-                  price={getPrice(priceId)}
-                  draft={draft}
-                />
-              )
-            )}
-          </section>
-        ) : (
-          <EmptyScreen>Brak dokumentów do wyświetlenia</EmptyScreen>
-        )
-      ) : (
-        <section>
-          {documents.map(
-            ({ slug, data: { title, categories: cats, priceId, draft } }) => (
-              <DocumentTile
-                slug={slug}
-                title={title}
-                docCategories={cats}
-                categories={categories}
-                price={getPrice(priceId)}
-                draft={draft}
-              />
-            )
-          )}
-        </section>
-      )
+      <section>
+        {documents.map(({ title, slug, categories: cats, price, draft }) => (
+          <DocumentTile
+            slug={slug}
+            title={title}
+            docCategories={cats}
+            categories={categories}
+            price={price}
+            draft={draft}
+          />
+        ))}
+      </section>
     ) : (
       <EmptyScreen>Brak dokumentów do wyświetlenia</EmptyScreen>
     )
@@ -235,59 +184,6 @@ function getPrice(priceId: string) {
 </style>
 
 <script>
-  import * as PARAMS from "@utils/urlParams";
-
-  class CategorySelector extends HTMLElement {
-    select: HTMLSelectElement;
-
-    constructor() {
-      super();
-
-      this.select = this.querySelector("select") as HTMLSelectElement;
-    }
-
-    connectedCallback() {
-      this.select.addEventListener("change", (event) => {
-        const val = (event.target as HTMLInputElement).value;
-        const url = new URL(window.location.href);
-        const params = new URLSearchParams(url.search);
-
-        if (val.length) {
-          params.set(PARAMS.CATEGORY, val);
-        } else {
-          params.delete(PARAMS.CATEGORY);
-        }
-
-        url.search = params.toString();
-        document.location = url.toString();
-      });
-    }
-  }
-  customElements.define("category-selector", CategorySelector);
-
-  class SearchDocuments extends HTMLElement {
-    button: HTMLButtonElement | null;
-
-    constructor() {
-      super();
-
-      this.button = this.querySelector("button");
-    }
-
-    connectedCallback() {
-      if (this.button) {
-        this.button.addEventListener("click", (event) => {
-          event.preventDefault();
-          const url = new URL(window.location.href);
-          const params = new URLSearchParams(url.search);
-
-          params.delete(PARAMS.SEARCH);
-
-          url.search = params.toString();
-          document.location = url.toString();
-        });
-      }
-    }
-  }
-  customElements.define("search-documents", SearchDocuments);
+  import "@wc/CategorySelector";
+  import "@wc/SearchDocuments";
 </script>

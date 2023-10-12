@@ -1,14 +1,13 @@
 //@ts-ignore
 import { sanityClient } from "sanity:client";
 import type { SanityDocument } from "@type";
-import type { Session } from "@auth/core/types";
 
 export async function getDocumentPosts(
   documentId: string,
-  session: Session | null
+  showMemberContent: boolean
 ): Promise<SanityDocument> {
   const allPostQuery = `_type=='post' && references(^._id) && defined(publishedAt)`;
-  const postQuery = session
+  const postQuery = showMemberContent
     ? allPostQuery
     : `${allPostQuery} && memberContent == false`;
 

@@ -2,19 +2,13 @@
 import { Icon } from "astro-icon";
 import formatNumber from "@utils/number";
 import Badge from "./Badge.astro";
+import type { Category } from "@type";
 
 interface Props {
   slug: string;
   title: string;
-  docCategories: {
-    id: string;
-  }[];
-  categories: {
-    id: string;
-    data: {
-      name: string;
-    };
-  }[];
+  docCategories: string[];
+  categories: Category[];
   price: number;
   draft: boolean;
 }
@@ -28,8 +22,8 @@ const getCategoryName = (slug: string) => {
 };
 
 const categoryList = docCategories
-  .sort((a, b) => a.id.localeCompare(b.id))
-  .map(({ id }: { id: string }) => getCategoryName(id))
+  .sort((a, b) => a.localeCompare(b))
+  .map((id) => getCategoryName(id))
   .join(", ");
 ---
 
