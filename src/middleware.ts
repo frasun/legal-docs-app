@@ -10,19 +10,23 @@ const SESSION_TOKEN = `${
     : SESSION_TOKEN_DEV_PREFIX
 }.session-token`;
 
-export const onRequest = defineMiddleware(async ({ cookies }, next) => {
-  if (cookies.has(SESSION_TOKEN)) {
-    if (cookies.has(SESSION_COOKIE)) {
-      cookies.delete(SESSION_COOKIE);
+export const onRequest = defineMiddleware(
+  async ({ cookies, request }, next) => {
+    if (!request.url.includes("/api")) {
+      if (cookies.has(SESSION_TOKEN)) {
+        if (cookies.has(SESSION_COOKIE)) {
+          cookies.delete(SESSION_COOKIE);
+        }
+      } else if (!cookies.has(SESSION_COOKIE)) {
+        cookies.set(SESSION_COOKIE, nanoid(), {
+          httpOnly: true,
+          sameSite: "strict",
+          secure: import.meta.env.MODE === "production",
+          path: "/",
+        });
+      }
     }
-  } else if (!cookies.has(SESSION_COOKIE)) {
-    cookies.set(SESSION_COOKIE, nanoid(), {
-      httpOnly: true,
-      sameSite: "strict",
-      secure: import.meta.env.MODE === "production",
-      path: "/",
-    });
-  }
 
-  return next();
-});
+    return next();
+  }
+);
