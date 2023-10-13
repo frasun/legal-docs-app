@@ -1,25 +1,17 @@
 ---
-import headers from "@utils/headers";
 import Layout from "../layouts/Layout.astro";
 import pageTitle from "@utils/pageTitle";
 import type { PortableTextBlock } from "@portabletext/types";
 import BlogContent from "@components/BlogContent.astro";
+import { getPage } from "@api/pages";
 
+const pageId = `2041bad6-bf46-450d-a5c6-2dd2afa09501`;
 let title: string | undefined, body: PortableTextBlock[] | null | undefined;
 
 try {
-  const response = await fetch(
-    `${Astro.url.origin}/api/pages/2041bad6-bf46-450d-a5c6-2dd2afa09501`,
-    {
-      headers,
-    }
-  );
+  const response = await getPage(Astro.url.origin, pageId);
 
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  ({ title, body } = await response.json());
+  ({ title, body } = response);
 } catch (e) {
   if (e instanceof Error) {
     return Astro.redirect("/404");
