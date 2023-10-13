@@ -1,14 +1,13 @@
 import type { ImageAsset, Slug } from "@sanity/types";
 import type { PortableTextBlock } from "@portabletext/types";
 import type { entityEnum } from "@utils/constants";
-import type { UUID } from "mongodb";
 
 export type Answers = Record<string, any>;
 
 export interface Post {
   title: string;
   publishedAt?: string | null;
-  slug: Slug;
+  slug: string;
   mainImage?: ImageAsset | null;
   body?: PortableTextBlock[];
   excerpt?: string;
@@ -26,7 +25,7 @@ export type PostShort = Pick<
 export interface SanityDocument {
   title: string;
   draft: string;
-  slug: Slug;
+  slug: string;
   body?: PortableTextBlock[];
   memberContent: boolean;
   keywords?: string | null;

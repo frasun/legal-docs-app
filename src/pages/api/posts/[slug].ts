@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getPost } from "@api/helpers/posts";
 import { DRAFT, MEMBER_CONTENT } from "@utils/urlParams";
+import { responseHeaders as headers } from "@utils/headers";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -30,6 +31,7 @@ export const get: APIRoute = async ({ request, params }) => {
 
     return new Response(JSON.stringify(post), {
       status: 200,
+      headers,
     });
   } catch (e) {
     return new Response(e instanceof Error ? e.message : null, { status: 500 });

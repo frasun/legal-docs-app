@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { CATEGORY, SEARCH, DRAFT, MEMBER_CONTENT } from "@utils/urlParams";
 import { getPrices } from "@utils/stripe";
 import { getDocuments } from "src/api/helpers/documents";
+import { responseHeaders as headers } from "@utils/headers";
 
 export const get: APIRoute = async ({ request }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -41,7 +42,10 @@ export const get: APIRoute = async ({ request }) => {
       }
     });
 
-    return new Response(JSON.stringify(documentsWithPrices), { status: 200 });
+    return new Response(JSON.stringify(documentsWithPrices), {
+      status: 200,
+      headers,
+    });
   } catch (e) {
     return new Response(e instanceof Error ? e.message : null, { status: 500 });
   }

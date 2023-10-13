@@ -5,6 +5,7 @@ import { getPrice } from "@utils/stripe";
 import { getDocumentPosts } from "@api/helpers/posts";
 import { getDocumentInfo } from "@api/helpers/documents";
 import { DRAFT, MEMBER_CONTENT } from "@utils/urlParams";
+import { responseHeaders as headers } from "@utils/headers";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -65,6 +66,7 @@ export const get: APIRoute = async ({ request, params }) => {
       }),
       {
         status: 200,
+        headers,
       }
     );
   } catch (e) {

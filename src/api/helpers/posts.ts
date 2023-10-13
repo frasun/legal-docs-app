@@ -23,7 +23,7 @@ export async function getDocumentPosts(
         title, 
         mainImage, 
         publishedAt,
-        slug,
+        "slug": slug.current,
         "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
       }
   }[0]`
@@ -80,7 +80,7 @@ export async function getPosts(
     `*[${postQuery}] | order(${queryOrder} desc) [${startIndex}...${endIndex}] { 
           title, 
           publishedAt, 
-          slug, 
+          "slug": slug.current, 
           mainImage,
           "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
       }`

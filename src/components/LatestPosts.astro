@@ -31,24 +31,16 @@ try {
         <h2>Najnowsze wpisy na blogu</h2>
       </header>
       <div>
-        {posts.map(
-          ({
-            title,
-            slug: { current: url },
-            publishedAt,
-            mainImage,
-            excerpt,
-          }) => (
-            <BlogPost
-              title={title}
-              url={url}
-              publishedAt={publishedAt}
-              mainImage={mainImage}
-              excerpt={excerpt}
-              size="small"
-            />
-          )
-        )}
+        {posts.map(({ title, slug, publishedAt, mainImage, excerpt }) => (
+          <BlogPost
+            title={title}
+            url={slug}
+            publishedAt={publishedAt}
+            mainImage={mainImage}
+            excerpt={excerpt}
+            size="small"
+          />
+        ))}
       </div>
     </section>
   )

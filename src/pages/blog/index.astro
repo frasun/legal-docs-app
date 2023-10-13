@@ -42,23 +42,15 @@ try {
     posts ? (
       <div>
         <section>
-          {posts.map(
-            ({
-              title,
-              slug: { current: url },
-              publishedAt,
-              mainImage,
-              excerpt,
-            }) => (
-              <BlogPost
-                title={title}
-                url={url}
-                publishedAt={publishedAt}
-                mainImage={mainImage}
-                excerpt={excerpt}
-              />
-            )
-          )}
+          {posts.map(({ title, slug, publishedAt, mainImage, excerpt }) => (
+            <BlogPost
+              title={title}
+              url={slug}
+              publishedAt={publishedAt}
+              mainImage={mainImage}
+              excerpt={excerpt}
+            />
+          ))}
         </section>
         {pages > 1 && (
           <Pagination

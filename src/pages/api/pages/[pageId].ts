@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 //@ts-ignore
 import { sanityClient } from "sanity:client";
 import type { Page } from "@type";
+import { responseHeaders as headers } from "@utils/headers";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -25,6 +26,7 @@ export const get: APIRoute = async ({ request, params }) => {
 
     return new Response(JSON.stringify(page), {
       status: 200,
+      headers,
     });
   } catch {
     return new Response(null, {
