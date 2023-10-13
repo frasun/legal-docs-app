@@ -2,7 +2,7 @@
 import EmptyScreen from "@components/EmptyScreen.astro";
 import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
-import { getUserIdentities, deleteUserIdentity } from "@db/identity";
+import { deleteUserIdentity } from "@db/identity";
 import { getSession } from "auth-astro/server";
 import {
   IDENTITY_SAVED_PARAM,
@@ -14,35 +14,37 @@ import Toast from "@components/Toast.astro";
 import { entityEnum } from "@utils/constants";
 import { DATA_TYPE } from "@utils/urlParams";
 import { UUID } from "mongodb";
+import { getIdentities } from "@api/identities";
+import type { UserIdentities } from "@type";
 
 const PAGE_TITLE = "Tożsamości";
 
 const session = await getSession(Astro.request);
-
-if (!session) {
-  return Astro.redirect("/zaloguj-sie");
-}
-
-const userId = session.user?.id;
-
-if (!userId) {
-  return Astro.redirect("/zaloguj-sie");
-}
-
-let toast: string | null = null;
 const urlParams = new URL(Astro.request.url).searchParams;
-let dataTypeFilter = urlParams.has(DATA_TYPE)
-  ? decodeURIComponent(String(urlParams.get(DATA_TYPE)))
-  : undefined;
-let ids;
+const dataType = urlParams.get(DATA_TYPE) ?? undefined;
+const dataTypeFilter = dataType ? decodeURIComponent(dataType) : undefined;
 
-if (dataTypeFilter === entityEnum[0] || dataTypeFilter === entityEnum[1]) {
-  ids = await getUserIdentities(userId, dataTypeFilter);
-} else {
-  ids = await getUserIdentities(userId);
+let identities: UserIdentities["identities"] = [],
+  count: UserIdentities["count"] = 0,
+  toast: string | null = null;
+
+try {
+  const response = await getIdentities(
+    Astro.url.origin,
+    session?.user?.id,
+    dataTypeFilter
+  );
+
+  ({ identities, count } = response);
+} catch (e) {
+  if (e instanceof Error) {
+    if (e.cause === 401) {
+      return Astro.redirect(`/zaloguj-sie?redirect=${Astro.url.pathname}`);
+    } else {
+      return Astro.redirect("/404");
+    }
+  }
 }
-
-const { identities, count } = ids;
 
 if (urlParams.has(IDENTITY_SAVED_PARAM)) {
   toast = IDENTITY_SAVED;
@@ -55,8 +57,9 @@ if (urlParams.has(IDENTITY_REMOVED_PARAM)) {
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const id = formData.get("id");
+  const userId = session?.user?.id;
 
-  if (UUID.isValid(String(id))) {
+  if (UUID.isValid(String(id)) && userId) {
     try {
       await deleteUserIdentity(String(id), userId);
     } finally {
@@ -167,33 +170,5 @@ if (Astro.request.method === "POST") {
 </style>
 
 <script>
-  import { DATA_TYPE } from "@utils/urlParams";
-
-  class DataTypeSelector extends HTMLElement {
-    select: HTMLSelectElement;
-
-    constructor() {
-      super();
-
-      this.select = this.querySelector("select") as HTMLSelectElement;
-    }
-
-    connectedCallback() {
-      this.select.addEventListener("change", (event) => {
-        const val = (event.target as HTMLInputElement).value;
-        const url = new URL(window.location.href);
-        const params = new URLSearchParams(url.search);
-
-        if (val.length) {
-          params.set(DATA_TYPE, encodeURIComponent(val));
-        } else {
-          params.delete(DATA_TYPE);
-        }
-
-        url.search = params.toString();
-        document.location = url.toString();
-      });
-    }
-  }
-  customElements.define("data-type-selector", DataTypeSelector);
+  import "@wc/DataTypeSelector";
 </script>

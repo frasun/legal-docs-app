@@ -1,5 +1,7 @@
 import type { ImageAsset, Slug } from "@sanity/types";
 import type { PortableTextBlock } from "@portabletext/types";
+import type { entityEnum } from "@utils/constants";
+import type { UUID } from "mongodb";
 
 export type Answers = Record<string, any>;
 
@@ -61,4 +63,23 @@ export interface BlogPosts {
     "title" | "publishedAt" | "mainImage" | "excerpt" | "slug"
   >[];
   pages: number;
+}
+
+export interface Identity {
+  type: (typeof entityEnum)[number];
+  name: string;
+  pin: string;
+  street: string;
+  apt?: string;
+  postalCode: string;
+  city: string;
+}
+
+interface UserIdentity extends Identity {
+  _id: string;
+}
+
+export interface UserIdentities {
+  identities: UserIdentity[];
+  count: number;
 }

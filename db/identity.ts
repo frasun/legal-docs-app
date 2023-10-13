@@ -3,16 +3,7 @@ import { entityEnum } from "@utils/constants";
 import * as validators from "@utils/dataValidation";
 import { z } from "astro:content";
 import { UUID } from "mongodb";
-
-export interface Identity {
-  type: (typeof entityEnum)[number];
-  name: string;
-  pin: string;
-  street: string;
-  apt?: string;
-  postalCode: string;
-  city: string;
-}
+import type { Identity } from "@type";
 
 type UserIdentity = Identity & { userId: string };
 
@@ -50,28 +41,21 @@ export async function getUserIdentities(
     query = { userId };
   }
 
-  const userIdentitiesCount = await identityCollection.countDocuments({
-    userId: { $eq: userId },
-  });
-
   const identities = await identityCollection
     .find<Identity>(query)
-    .sort({ name: 1 })
-    .project({ userId: 0 });
-
-  return {
-    identities: await identities.toArray(),
-    count: userIdentitiesCount,
-  };
-}
-
-export async function getUserIdentityList(userId: string) {
-  const identities = await identityCollection
-    .find<Identity>({ userId })
-    .sort({ name: 1 })
     .project({ _id: 1, name: 1, type: 1 });
 
-  return await identities.toArray();
+  const identitiesArray = await identities.toArray();
+
+  return identitiesArray.sort(({ name }, { name: nextName }) =>
+    name.localeCompare(nextName, "pl")
+  );
+}
+
+export async function getUserIdentitiesCount(userId: string) {
+  return await identityCollection.countDocuments({
+    userId: { $eq: userId },
+  });
 }
 
 export async function getUserIdentity(identityId: string, userId: string) {

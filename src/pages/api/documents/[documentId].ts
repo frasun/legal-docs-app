@@ -2,8 +2,8 @@ import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import { deleteDraft } from "@db/document";
 import { getPrice } from "@utils/stripe";
-import { getDocumentPosts } from "src/api/helpers/posts";
-import { getDocumentInfo } from "src/api/helpers/documents";
+import { getDocumentPosts } from "@api/helpers/posts";
+import { getDocumentInfo } from "@api/helpers/documents";
 import { DRAFT, MEMBER_CONTENT } from "@utils/urlParams";
 
 export const get: APIRoute = async ({ request, params }) => {

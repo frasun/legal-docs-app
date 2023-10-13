@@ -3,7 +3,7 @@ import { entityEnum } from "@utils/constants";
 import InputGroup, { InputSize } from "@components/InputGroup.astro";
 import Address from "./Address.astro";
 import { UUID } from "mongodb";
-import { getUserIdentityList } from "@db/identity";
+import { getIdentities } from "@api/identities";
 
 const {
   name,
@@ -28,7 +28,9 @@ let identities;
 
 if (userId && UUID.isValid(userId)) {
   try {
-    identities = await getUserIdentityList(userId);
+    const response = await getIdentities(Astro.url.origin, userId);
+
+    ({ identities } = response);
   } catch {
     return Astro.redirect("/404");
   }
