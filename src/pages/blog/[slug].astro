@@ -6,37 +6,31 @@ import formatDate from "@utils/date";
 import Badge from "@components/Badge.astro";
 import screens from "@utils/screens";
 import trimWhitespace from "@utils/whitespace";
-import apiHeaders from "@utils/headers";
-import type { Document } from "@type";
-import type { ImageAsset } from "@sanity/types";
-import type { PortableTextBlock } from "@portabletext/types";
+import type { Post } from "@type";
 import BlogContent from "@components/BlogContent.astro";
+import { getPost } from "@api/posts";
+import { getSession } from "auth-astro/server";
+import { UserRoles } from "@db/user";
 
+const session = await getSession(Astro.request);
+const showDraft = session?.user?.role === UserRoles.admin;
 const PAGE_TITLE = "Blog";
 
-let title: string | undefined,
-  publishedAt: string | undefined,
-  mainImage: ImageAsset | null | undefined,
-  body: PortableTextBlock[] | null | undefined,
-  excerpt: string | undefined,
-  keywords: string | null | undefined,
-  description: string | null | undefined,
-  documents: Document[] | null | undefined;
+let title: Post["title"] | undefined,
+  publishedAt: Post["publishedAt"],
+  mainImage: Post["mainImage"],
+  body: Post["body"],
+  excerpt: Post["excerpt"],
+  keywords: Post["keywords"],
+  description: Post["description"],
+  documents: Post["documents"];
 
 try {
-  const response = await fetch(
-    `${Astro.url.origin}/api/posts/${Astro.params.slug}`,
-    {
-      headers: {
-        ...apiHeaders,
-        cookie: Astro.request.headers.get("cookie") as string,
-      },
-    }
+  const response = await getPost(
+    Astro.url.origin,
+    Astro.params.slug as string,
+    showDraft
   );
-
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
 
   ({
     title,
@@ -47,7 +41,7 @@ try {
     keywords,
     description,
     documents,
-  } = await response.json());
+  } = response);
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 401) {

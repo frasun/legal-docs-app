@@ -12,7 +12,7 @@ export interface Post {
   excerpt?: string;
   keywords?: string | null;
   description?: string | null;
-  documents?: Document[] | null;
+  documents?: Pick<Document, "title" | "slug">[] | null;
   memberContent?: boolean;
 }
 

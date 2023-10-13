@@ -1,6 +1,6 @@
 //@ts-ignore
 import { sanityClient } from "sanity:client";
-import type { SanityDocument } from "@type";
+import type { Post, SanityDocument } from "@type";
 
 export async function getDocumentPosts(
   documentId: string,
@@ -27,5 +27,32 @@ export async function getDocumentPosts(
         "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
       }
   }[0]`
+  );
+}
+
+export async function getPost(slug: string, showDraft: boolean): Promise<Post> {
+  const postQuery = `_type == "post" && slug.current == $slug`;
+  const adminQuery = showDraft
+    ? postQuery
+    : `${postQuery} && defined(publishedAt)`;
+
+  return await sanityClient.fetch(
+    `*[${adminQuery}] {
+        title, 
+        publishedAt, 
+        body, 
+        mainImage, 
+        "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "...",
+        keywords,
+        description,
+        memberContent,
+        "documents": documents[]->{
+          title, 
+          slug
+        }
+      }[0]`,
+    {
+      slug,
+    }
   );
 }

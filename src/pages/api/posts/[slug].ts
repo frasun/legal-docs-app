@@ -1,56 +1,37 @@
 import type { APIRoute } from "astro";
-import { getSession } from "auth-astro/server";
-import { UserRoles } from "@db/user";
-//@ts-ignore
-import { sanityClient } from "sanity:client";
-import type { Post } from "@type";
+import { getPost } from "@api/helpers/posts";
+import { DRAFT, MEMBER_CONTENT } from "@utils/urlParams";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
     return new Response(null, { status: 401 });
   }
 
-  const session = await getSession(request);
-  const isAdmin = session?.user?.role === UserRoles.admin;
+  const urlParams = new URL(request.url).searchParams;
+  const draft = urlParams.get(DRAFT);
+  const showDraft = draft === "true";
+  const session = urlParams.get(MEMBER_CONTENT);
+  const showMemberContent = session === "true";
 
-  const postQuery = `_type == "post" && slug.current == $slug`;
-  const adminQuery = isAdmin
-    ? postQuery
-    : `${postQuery} && defined(publishedAt)`;
+  try {
+    const post = await getPost(params.slug as string, showDraft);
 
-  const post: Post = await sanityClient.fetch(
-    `*[${adminQuery}] {
-        title, 
-        publishedAt, 
-        body, 
-        mainImage, 
-        "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "...",
-        keywords,
-        description,
-        memberContent,
-        "documents": documents[]->{
-          title, 
-          slug
-        }
-      }[0]`,
-    {
-      slug: params.slug,
+    if (!post) {
+      return new Response(null, { status: 404 });
     }
-  );
 
-  if (!post) {
-    return new Response(null, { status: 404 });
-  }
+    const { memberContent } = post;
 
-  const { memberContent } = post;
+    if (memberContent && !showMemberContent) {
+      return new Response(null, {
+        status: 401,
+      });
+    }
 
-  if (!session && memberContent) {
-    return new Response(null, {
-      status: 401,
+    return new Response(JSON.stringify(post), {
+      status: 200,
     });
+  } catch (e) {
+    return new Response(e instanceof Error ? e.message : null, { status: 500 });
   }
-
-  return new Response(JSON.stringify(post), {
-    status: 200,
-  });
 };
