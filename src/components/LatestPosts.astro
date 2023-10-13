@@ -1,27 +1,24 @@
 ---
-import { LIMIT } from "@utils/urlParams";
 import BlogPost from "./BlogPost.astro";
-import apiHeaders from "@utils/headers";
-import type { Post } from "@type";
+import type { BlogPosts } from "@type";
+import { getPosts } from "@api/posts";
+import { getSession } from "auth-astro/server";
 
-let posts: Post[] | undefined;
+const limit = 4;
+const session = await getSession(Astro.request);
+
+let posts: BlogPosts["posts"];
 
 try {
-  const response = await fetch(
-    `${Astro.url.origin}/api/posts?${LIMIT}=4&showPublished=false`,
-    {
-      headers: {
-        ...apiHeaders,
-        cookie: Astro.request.headers.get("cookie") as string,
-      },
-    }
+  const response = await getPosts(
+    Astro.request.url,
+    limit,
+    1,
+    undefined,
+    Boolean(session)
   );
 
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  ({ posts } = await response.json());
+  ({ posts } = response);
 } catch (e) {
   return Astro.redirect("/404");
 }
