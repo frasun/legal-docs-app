@@ -54,3 +54,11 @@ export type Category = {
   id: string;
   data: { name: string };
 };
+
+export interface BlogPosts {
+  posts: Pick<
+    Post,
+    "title" | "publishedAt" | "mainImage" | "excerpt" | "slug"
+  >[];
+  pages: number;
+}

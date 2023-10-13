@@ -8,11 +8,11 @@ export const get: APIRoute = async ({ request }) => {
     return new Response(null, { status: 401 });
   }
 
-  const url = new URL(request.url);
-  const category = url.searchParams.get(CATEGORY);
-  const search = url.searchParams.get(SEARCH);
-  const draft = url.searchParams.get(DRAFT);
-  const memberContent = url.searchParams.get(MEMBER_CONTENT);
+  const urlParams = new URL(request.url).searchParams;
+  const category = urlParams.get(CATEGORY);
+  const search = urlParams.get(SEARCH);
+  const draft = urlParams.get(DRAFT);
+  const memberContent = urlParams.get(MEMBER_CONTENT);
 
   const showDarft = draft === "true";
   const showMemberContent = memberContent === "true";

@@ -19,9 +19,9 @@ export const get: APIRoute = async ({ request, params }) => {
     });
   }
 
-  const url = new URL(request.url);
-  const draft = url.searchParams.get(DRAFT);
-  const memberContent = url.searchParams.get(MEMBER_CONTENT);
+  const urlParams = new URL(request.url).searchParams;
+  const draft = urlParams.get(DRAFT);
+  const memberContent = urlParams.get(MEMBER_CONTENT);
   const showDarft = draft === "true";
   const showMemberContent = memberContent === "true";
 
