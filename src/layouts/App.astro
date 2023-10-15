@@ -5,11 +5,13 @@ import { getSession } from "auth-astro/server";
 import SignedInMenu from "@components/SignedInMenu.astro";
 import ShowMobileMenu from "@components/ShowMobileMenu.astro";
 import { Icon } from "astro-icon";
+import { REDIRECT } from "@utils/urlParams";
+import routes from "@utils/routes";
 
 const { title, description, keywords } = Astro.props;
 const session = await getSession(Astro.request);
 
-const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
+const redirectUrl = `${Astro.url.pathname}${Astro.url.search}`;
 ---
 
 <Layout title={title} description={description} keywords={keywords}>
@@ -33,14 +35,10 @@ const redirectUrl = String(Astro.url).replace(Astro.url.origin, "").slice(1);
               <SignedInMenu email={session.user?.email} />
             ) : (
               <>
-                <a
-                  href={`${Astro.url.origin}/zaloz-konto?redirect=${redirectUrl}`}
-                >
+                <a href={`${routes.SIGN_UP}?${REDIRECT}=${redirectUrl}`}>
                   Załóż konto
                 </a>
-                <a
-                  href={`${Astro.url.origin}/zaloguj-sie?redirect=${redirectUrl}`}
-                >
+                <a href={`${routes.SIGN_IN}?${REDIRECT}=${redirectUrl}`}>
                   Zaloguj się
                 </a>
               </>

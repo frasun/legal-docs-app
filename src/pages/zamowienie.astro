@@ -27,12 +27,12 @@ if (Astro.request.method === "POST") {
   anonymousEmail = String(formData.get("email"));
 
   if (!anonymousEmail || !testString(anonymousEmail, emailRegExp)) {
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 }
 
 if (!refererUrl) {
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 documentId = urlParams.get(PARAMS.DOCUMENT);
@@ -40,7 +40,7 @@ documentId = urlParams.get(PARAMS.DOCUMENT);
 if (!documentId) {
   const urlSegments = refererUrl.split("/");
   if (urlSegments[urlSegments.length - 1] !== SUMMARY) {
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   documentName = urlSegments[urlSegments.length - 2];
@@ -56,14 +56,14 @@ if (!documentId) {
 
 if (!documentId) {
   console.log("no document name or document id");
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 const document = await getEntry("documents", documentId);
 
 if (!document) {
   console.log("no document");
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 const { priceId } = document.data;
@@ -74,7 +74,7 @@ const ssid = session
 
 if (!ssid) {
   console.log("no ssid");
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 const pid = nanoid();
@@ -119,7 +119,7 @@ const stripeSession = await stripe.checkout.sessions.create({
 if (stripeSession.url) {
   return Astro.redirect(stripeSession.url);
 } else {
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 ---
 

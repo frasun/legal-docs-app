@@ -12,10 +12,11 @@ import {
 } from "@utils/toasts";
 import Toast from "@components/Toast.astro";
 import { entityEnum } from "@utils/constants";
-import { DATA_TYPE } from "@utils/urlParams";
+import { DATA_TYPE, REDIRECT } from "@utils/urlParams";
 import { UUID } from "mongodb";
 import { getIdentities } from "@api/identities";
 import type { UserIdentities } from "@type";
+import routes from "@utils/routes";
 
 const PAGE_TITLE = "Tożsamości";
 
@@ -39,9 +40,11 @@ try {
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 401) {
-      return Astro.redirect(`/zaloguj-sie?redirect=${Astro.url.pathname}`);
+      return Astro.redirect(
+        `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+      );
     } else {
-      return Astro.redirect("/404");
+      return Astro.redirect(routes.NOT_FOUND);
     }
   }
 }

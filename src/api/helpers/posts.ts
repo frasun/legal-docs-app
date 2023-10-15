@@ -48,7 +48,7 @@ export async function getPost(slug: string, showDraft: boolean): Promise<Post> {
         memberContent,
         "documents": documents[]->{
           title, 
-          slug
+          "slug": slug.current
         }
       }[0]`,
     {

@@ -2,6 +2,7 @@
 import { SignOut } from "auth-astro/components";
 import { Icon } from "astro-icon";
 import screens from "@utils/screens";
+import routes from "@utils/routes";
 
 const { session } = Astro.props;
 ---
@@ -27,7 +28,7 @@ const { session } = Astro.props;
   </header>
   <div>
     <a
-      href=`${Astro.url.origin}/dokumenty`
+      href={routes.DOCUMENTS}
       aria-label="Nowy dokument"
       title="Nowy dokument"
       class:list={{
@@ -41,7 +42,7 @@ const { session } = Astro.props;
       session && (
         <>
           <a
-            href={`${Astro.url.origin}/moje-dokumenty`}
+            href={routes.MY_DOCUMENTS}
             aria-label="Moje dokumenty"
             title="Moje dokumenty"
             class:list={{
@@ -52,7 +53,7 @@ const { session } = Astro.props;
             <span>Moje dokumenty</span>
           </a>
           <a
-            href={`${Astro.url.origin}/tozsamosci`}
+            href={routes.IDENTITIES}
             aria-label="Tożsamości"
             title="Tożsamości"
             class:list={{
@@ -66,7 +67,7 @@ const { session } = Astro.props;
       )
     }
     <a
-      href={`${Astro.url.origin}/blog`}
+      href={routes.BLOG}
       aria-label="Blog"
       title="Blog"
       class:list={{
@@ -97,11 +98,11 @@ const { session } = Astro.props;
         </>
       ) : (
         <>
-          <a href={`${Astro.url.origin}/zaloguj-sie`} title="Zaloguj się">
+          <a href={routes.SIGN_IN} title="Zaloguj się">
             <Icon name="signin" width={24} height={24} />
             <span>Zaloguj się</span>
           </a>
-          <a href={`${Astro.url.origin}/zaloz-konto`} title="Załóż konto">
+          <a href={routes.SIGN_UP} title="Załóż konto">
             <Icon name="account" width={24} height={24} />
             <span>Załóż konto</span>
           </a>
@@ -109,11 +110,7 @@ const { session } = Astro.props;
       )
     }
     <aside>
-      <a
-        href={`${Astro.url.origin}/regulamin`}
-        target="_blank"
-        title="Regulamin"
-      >
+      <a href={routes.TOS} target="_blank" title="Regulamin">
         <Icon name="checklist" width={18} height={18} />
         <span>Regulamin</span>
       </a>

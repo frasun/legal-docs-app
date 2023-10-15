@@ -8,6 +8,8 @@ import type { Document } from "@type";
 import { getDocument } from "@api/documents";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
+import { REDIRECT } from "@utils/urlParams";
+import routes from "@utils/routes";
 
 const session = await getSession(Astro.request);
 const showDraft = session?.user?.role === UserRoles.admin;
@@ -34,10 +36,10 @@ try {
   if (e instanceof Error) {
     if (e.cause === 401) {
       return Astro.redirect(
-        `/zaloguj-sie?redirect=${new URL(Astro.request.url).pathname}`
+        `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
       );
     } else {
-      return Astro.redirect("/404");
+      return Astro.redirect(routes.NOT_FOUND);
     }
   }
 }

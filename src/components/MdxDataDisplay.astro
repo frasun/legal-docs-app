@@ -1,5 +1,6 @@
 ---
 import { entityEnum } from "@utils/constants";
+import routes from "@utils/routes";
 
 const {
   type,
@@ -44,7 +45,7 @@ switch (type) {
     pinLabel = "NIP";
     break;
   default:
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
 }
 
 let streetAddr = `${street}${apt.length ? ` / ${apt}` : ``}`;

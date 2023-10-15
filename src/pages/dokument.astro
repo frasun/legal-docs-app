@@ -14,6 +14,7 @@ import {
 import getQuesitons from "@utils/questions";
 import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
+import routes from "@utils/routes";
 
 const urlParams = new URL(Astro.request.url).searchParams;
 const draftParam = String(urlParams.get(PARAMS.DRAFT)) === "true";
@@ -31,7 +32,7 @@ if (draftParam) {
 
     if (!session) {
       return Astro.redirect(
-        `/zaloguj-sie?${PARAMS.REDIRECT}=dokument&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`
+        `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${routes.DOKUMENT}}&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`
       );
     }
 
@@ -42,7 +43,7 @@ if (draftParam) {
 
     if (!paymentSession) {
       console.log("missing payment Session");
-      return Astro.redirect("/404");
+      return Astro.redirect(routes.NOT_FOUND);
     }
 
     documentId = paymentSession.documentId as string;
@@ -50,7 +51,7 @@ if (draftParam) {
 
     if (!session) {
       console.log("anonymous draft param error");
-      return Astro.redirect("/404");
+      return Astro.redirect(routes.NOT_FOUND);
     }
 
     userId = session.user?.id as string;
@@ -58,17 +59,17 @@ if (draftParam) {
 
   if (!documentId) {
     console.log("missing documentId");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   if (!ssid) {
     console.log("missing ssid");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   if (!userId) {
     console.log("missing userId");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   const document = await createDoc(documentId, userId, ssid, true);
@@ -80,14 +81,14 @@ if (draftParam) {
 
     return Astro.redirect(redirectUrl);
   } else {
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 } else {
   const paymentId = urlParams.get(PARAMS.PAYMENT);
 
   if (!paymentId) {
     console.log("missing paymentId");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   const emailParam = urlParams.get(PARAMS.EMAIL);
@@ -101,7 +102,7 @@ if (draftParam) {
 
   if (!paymentSession) {
     console.log("missing payment Session");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   const ssid = paymentSession.ssid as string;
@@ -109,17 +110,17 @@ if (draftParam) {
 
   if (!ssid) {
     console.log("missing ssid");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   if (!documentId) {
     console.log("missing documentId");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   if (!userId) {
     console.log("missing userId");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   if (UUID.isValid(documentId)) {
@@ -130,7 +131,7 @@ if (draftParam) {
       return Astro.redirect(`/dokumenty/${documentId}/dokument?success=true`);
     } catch {
       console.log("publish draft error");
-      return Astro.redirect("/404");
+      return Astro.redirect(routes.NOT_FOUND);
     }
   } else {
     try {
@@ -186,7 +187,7 @@ async function prepareAnswers(documentId: string, ssid: string) {
 
   if (!template) {
     console.log("missing template");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   const {
@@ -195,7 +196,7 @@ async function prepareAnswers(documentId: string, ssid: string) {
 
   if (!index) {
     console.log("missing index");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   const { questionEntries: questions } = await getQuesitons(index);
@@ -216,7 +217,7 @@ async function prepareAnswers(documentId: string, ssid: string) {
     }
   } catch {
     console.log("missing documentId");
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   if (Object.keys(answers).length !== Object.keys(qData).length) {

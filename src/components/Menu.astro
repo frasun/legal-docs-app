@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon";
 import { getSession } from "auth-astro/server";
 import SignedInMenu from "@components/SignedInMenu.astro";
+import routes from "@utils/routes";
 
 const session = await getSession(Astro.request);
 
@@ -30,8 +31,8 @@ const menuItems = [
           </>
         ) : (
           <>
-            <a href={`${Astro.url.origin}/zaloz-konto`}>Załóż konto</a>
-            <a href={`${Astro.url.origin}/zaloguj-sie`}>Zaloguj się</a>
+            <a href={routes.SIGN_UP}>Załóż konto</a>
+            <a href={routes.SIGN_IN}>Zaloguj się</a>
           </>
         )
       }

@@ -11,6 +11,8 @@ import BlogContent from "@components/BlogContent.astro";
 import { getPost } from "@api/posts";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
+import { REDIRECT } from "@utils/urlParams";
+import routes from "@utils/routes";
 
 const session = await getSession(Astro.request);
 const showDraft = session?.user?.role === UserRoles.admin;
@@ -29,7 +31,8 @@ try {
   const response = await getPost(
     Astro.url.origin,
     Astro.params.slug as string,
-    showDraft
+    showDraft,
+    Boolean(session)
   );
 
   ({
@@ -45,10 +48,11 @@ try {
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 401) {
-      const url = new URL(Astro.request.url).pathname;
-      return Astro.redirect(`/zaloguj-sie?redirect=${url}`);
+      return Astro.redirect(
+        `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+      );
     } else {
-      return Astro.redirect("/404");
+      return Astro.redirect(routes.NOT_FOUND);
     }
   }
 }
@@ -103,9 +107,9 @@ try {
             <hr />
             <h4>Powiązane dokumenty</h4>
             <ul>
-              {documents.map(({ title, slug: { current: url } }) => (
+              {documents.map(({ title, slug }) => (
                 <li>
-                  <a href={`${Astro.url.origin}/dokumenty/${url}`}>{title}</a>
+                  <a href={`${Astro.url.origin}/dokumenty/${slug}`}>{title}</a>
                 </li>
               ))}
             </ul>

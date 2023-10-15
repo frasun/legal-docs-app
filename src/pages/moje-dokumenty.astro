@@ -27,17 +27,22 @@ import * as PARAMS from "@utils/urlParams";
 import DeleteDraftButton from "@components/DeleteDraftButton.astro";
 import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 import Pagination from "@components/Pagination.astro";
+import routes from "@utils/routes";
 
 const session = await getSession(Astro.request);
 
 if (!session) {
-  return Astro.redirect("/zaloguj-sie");
+  return Astro.redirect(
+    `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
+  );
 }
 
 const userId = session.user?.id;
 
 if (!userId) {
-  return Astro.redirect("/zaloguj-sie");
+  return Astro.redirect(
+    `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
+  );
 }
 
 let toast: string | null = null,

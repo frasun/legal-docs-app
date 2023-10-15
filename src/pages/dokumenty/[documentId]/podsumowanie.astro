@@ -21,6 +21,7 @@ import * as PARAMS from "@utils/urlParams";
 import { entityEnum } from "@utils/constants";
 import { UUID } from "mongodb";
 import { UserRoles } from "@db/user";
+import routes from "@utils/routes";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -33,7 +34,7 @@ const ssid = session
   : Astro.cookies.get(SESSION_COOKIE).value;
 
 if (!ssid) {
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 if (!userDocumentId) {
@@ -74,7 +75,9 @@ if (isUserDocument) {
   const userId = session.user?.id;
 
   if (!session || !userId) {
-    return Astro.redirect("/zaloguj-sie");
+    return Astro.redirect(
+      `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
+    );
   }
 
   const data = await getDocumentSummary(documentId, userId);
@@ -82,18 +85,18 @@ if (isUserDocument) {
   if (data) {
     ({ doc: docId, answers, draft, title } = data);
   } else {
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   if (!draft) {
-    return Astro.redirect(`/dokumenty/${documentId}/dokument`);
+    return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
   }
 }
 
 const document = await getEntry("documents", docId);
 
 if (!document) {
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 const {
@@ -109,16 +112,18 @@ const {
 
 if (draftTemplate) {
   if (!session || session.user?.role !== UserRoles.admin) {
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 }
 
 if (memberContent && !session) {
-  return Astro.redirect("/zaloguj-sie");
+  return Astro.redirect(
+    `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
+  );
 }
 
 if (!index) {
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 const { questionEntries: questions } = await getQuesitons(index);

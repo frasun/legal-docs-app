@@ -10,19 +10,20 @@ import error from "@utils/errors";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import * as PARAMS from "@utils/urlParams";
+import routes from "@utils/routes";
 
 const url = new URL(Astro.request.url);
 const emailParam = url.searchParams.get(PARAMS.EMAIL);
 const userEmail = emailParam ? decodeURIComponent(emailParam) : null;
 
 if (!userEmail) {
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 const verificationInitialiased = await verificationInProgress(userEmail);
 
 if (!verificationInitialiased) {
-  return Astro.redirect("/404");
+  return Astro.redirect(routes.NOT_FOUND);
 }
 
 const redirectParam = url.searchParams.get(PARAMS.REDIRECT);
@@ -52,7 +53,7 @@ if (Astro.request.method === "POST") {
   const verificationData = await getVerificationData(userEmail);
 
   if (!verificationData) {
-    return Astro.redirect("/404");
+    return Astro.redirect(routes.NOT_FOUND);
   }
 
   const { code, password, rateLimit } = verificationData;
@@ -97,37 +98,5 @@ if (Astro.request.method === "POST") {
 </Layout>
 
 <script>
-  import { signIn } from "auth-astro/client";
-
-  class AutoLogin extends HTMLElement {
-    redirect?: string;
-    email?: string;
-    password?: string;
-
-    constructor() {
-      super();
-
-      this.redirect = this.getAttribute("redirect") || undefined;
-      this.email = this.getAttribute("email") || undefined;
-      this.password = this.getAttribute("password") || undefined;
-    }
-
-    async connectedCallback() {
-      const response = await signIn("credentials", {
-        redirect: false,
-        email: this.email,
-        password: this.password,
-        callbackUrl: `${
-          this.redirect
-            ? this.redirect
-            : `${document.location.origin}/moje-dokumenty`
-        }`,
-      });
-
-      if (response) {
-        document.location.href = "/zaloguj-sie";
-      }
-    }
-  }
-  customElements.define("auto-login", AutoLogin);
+  import "@wc/AutoLogin";
 </script>
