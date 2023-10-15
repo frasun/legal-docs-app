@@ -1,4 +1,4 @@
-import type { UserIdentities } from "@type";
+import type { Identity, UserIdentities } from "@type";
 import headers from "@utils/headers";
 import { DATA_TYPE } from "@utils/urlParams";
 
@@ -14,6 +14,28 @@ export async function getIdentities(
   }
 
   const response = await fetch(requestUrl, { headers });
+
+  if (!response.ok) {
+    throw new Error("", { cause: response.status });
+  }
+
+  return response.json();
+}
+
+export async function getIdentity(
+  url: string,
+  cookie: string,
+  userId?: string,
+  identityId?: string
+): Promise<Identity> {
+  const response = await fetch(
+    `${url}/api/identities/${userId}/${identityId}`,
+    {
+      headers: {
+        cookie,
+      },
+    }
+  );
 
   if (!response.ok) {
     throw new Error("", { cause: response.status });

@@ -69,6 +69,8 @@ const redirectUrl = `${Astro.url.pathname}${Astro.url.search}`;
   }
 </style>
 <script>
+  import "@wc/ToastElement";
+
   function setAppHeight() {
     document.documentElement.style.setProperty(
       "--app-height",

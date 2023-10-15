@@ -9,8 +9,13 @@ import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
 import SharingModal from "@components/SharingModal.astro";
-import { DOCUMENT_SHARED, DOCUMENT_SHARED_PARAM, ERROR } from "@utils/toasts";
-import Toast, { ToastStatus } from "@components/Toast.astro";
+import {
+  DOCUMENT_SHARED,
+  DOCUMENT_SHARED_PARAM,
+  ERROR,
+  ToastStatus,
+} from "@utils/toasts";
+import Toast from "@components/Toast.astro";
 import routes from "@utils/routes";
 
 const { documentId: dId } = Astro.params;

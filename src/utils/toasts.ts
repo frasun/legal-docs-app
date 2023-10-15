@@ -17,3 +17,16 @@ export const DRAFT_REMOVED_PARAM = "draft-removed";
 export const DRAFT_REMOVED = "Szkic został usunięty";
 export const COPY_DOCUMENT_PARAM = "copy-document";
 export const COPY_DOCUMENT = "Kopia dokumentu została utworzona";
+
+export enum ToastStatus {
+  default = "default",
+  error = "error",
+}
+
+export function displayGenericError() {
+  const toast = document.createElement("toast-element");
+  toast.dataset.content = ERROR;
+  toast.dataset.status = ToastStatus.error;
+
+  document.body.appendChild(toast);
+}

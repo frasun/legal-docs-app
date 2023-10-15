@@ -1,10 +1,6 @@
 ---
 import { Icon } from "astro-icon";
-
-export enum ToastStatus {
-  default = "default",
-  error = "error",
-}
+import { ToastStatus } from "@utils/toasts";
 
 interface Props {
   info: string;
@@ -12,79 +8,10 @@ interface Props {
 }
 
 const { info, status = ToastStatus.default } = Astro.props;
+const toastIcon = status === ToastStatus.error ? "clear" : "tick";
 ---
 
 <toast-element data-status={status}>
-  {
-    status === ToastStatus.error ? (
-      <Icon name="clear" width={32} height={32} />
-    ) : (
-      <Icon name="tick" width={32} height={32} />
-    )
-  }
+  <Icon name={toastIcon} width={32} height={32} />
   {info}
 </toast-element>
-
-<style>
-  toast-element {
-    @apply py-15 px-20 bg-dark90 text-light rounded z-max;
-    @apply fixed top-15 right-15;
-    @apply opacity-0 translate-x-[calc(100%_+_15px)];
-    @apply w-[260px];
-    @apply leading-tight;
-    @apply flex gap-15 items-center;
-
-    animation-name: showToast;
-    animation-duration: 5s;
-    animation-timing-function: linear;
-    animation-delay: 0.2s;
-    animation-iteration-count: 1;
-  }
-
-  toast-element svg {
-    @apply text-light;
-  }
-
-  toast-element[data-status="error"] {
-    @apply bg-orange;
-  }
-
-  @keyframes showToast {
-    0% {
-      @apply translate-x-0;
-    }
-
-    5% {
-      @apply opacity-100;
-      @apply translate-x-0;
-    }
-
-    90% {
-      @apply opacity-100;
-      @apply translate-x-0;
-    }
-
-    95% {
-      @apply opacity-0;
-      @apply translate-x-0;
-    }
-
-    100% {
-      @apply translate-x-[calc(100%_+_15px)];
-      @apply opacity-0;
-    }
-  }
-</style>
-
-<script>
-  class ToastElement extends HTMLElement {
-    constructor() {
-      super();
-    }
-
-    connectedCallback() {
-      this.addEventListener("animationend", () => this.remove());
-    }
-  }
-  customElements.define("toast-element", ToastElement);
-</script>

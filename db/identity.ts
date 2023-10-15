@@ -61,7 +61,7 @@ export async function getUserIdentitiesCount(userId: string) {
 export async function getUserIdentity(identityId: string, userId: string) {
   return await identityCollection.findOne<Identity>(
     { _id: new UUID(identityId).toBinary(), userId },
-    { projection: { userId: 0 } }
+    { projection: { userId: 0, _id: 0 } }
   );
 }
 
