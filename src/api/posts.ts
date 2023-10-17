@@ -1,35 +1,28 @@
 import headers from "@utils/headers";
 import { DRAFT, LIMIT, MEMBER_CONTENT, PAGE } from "@utils/urlParams";
 import type { BlogPosts, Post } from "@type";
+import { API_URL, apiRequest } from "./helpers/request";
 
 export async function getPost(
-  url: string,
   slug: string,
   showDraft = false,
   showMemberContent = false
 ): Promise<Post> {
-  const requestUrl = new URL(`/api/posts/${slug}`, url);
+  const requestUrl = new URL(`/api/posts/${slug}`, API_URL);
 
   requestUrl.searchParams.append(DRAFT, String(showDraft));
   requestUrl.searchParams.append(MEMBER_CONTENT, String(showMemberContent));
 
-  const response = await fetch(requestUrl, { headers });
-
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  return response.json();
+  return apiRequest(requestUrl, headers);
 }
 
 export async function getPosts(
-  url: string,
   limit?: number,
   page?: number,
   showDraft = false,
   showMemberContent = false
 ): Promise<BlogPosts> {
-  const requestUrl = new URL(`/api/posts`, url);
+  const requestUrl = new URL(`/api/posts`, API_URL);
 
   requestUrl.searchParams.append(DRAFT, String(showDraft));
   requestUrl.searchParams.append(MEMBER_CONTENT, String(showMemberContent));
@@ -42,11 +35,5 @@ export async function getPosts(
     requestUrl.searchParams.append(PAGE, String(page));
   }
 
-  const response = await fetch(requestUrl, { headers });
-
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  return response.json();
+  return await apiRequest(requestUrl, headers);
 }

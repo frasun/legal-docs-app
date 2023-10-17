@@ -28,7 +28,6 @@ let documents: DocumentShort[],
 try {
   [documents, categories] = await Promise.all([
     getDocuments(
-      Astro.url.origin,
       showDraft,
       Boolean(session),
       currentCat ?? undefined,

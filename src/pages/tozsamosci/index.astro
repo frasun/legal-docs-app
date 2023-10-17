@@ -30,11 +30,7 @@ let identities: UserIdentities["identities"] = [],
   toast: string | null = null;
 
 try {
-  const response = await getIdentities(
-    Astro.url.origin,
-    session?.user?.id,
-    dataTypeFilter
-  );
+  const response = await getIdentities(session?.user?.id, dataTypeFilter);
 
   ({ identities, count } = response);
 } catch (e) {

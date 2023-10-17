@@ -1,14 +1,9 @@
 import headers from "@utils/headers";
 import type { Page } from "@type";
+import { API_URL, apiRequest } from "./helpers/request";
 
-export async function getPage(url: string, pageId: string): Promise<Page> {
-  const response = await fetch(`${url}/api/pages/${pageId}`, {
-    headers,
-  });
+export async function getPage(pageId: string): Promise<Page> {
+  const requestUrl = new URL(`/api/pages/${pageId}`, API_URL);
 
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  return response.json();
+  return await apiRequest(requestUrl, headers);
 }

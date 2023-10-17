@@ -10,7 +10,7 @@ const pageId = `2041bad6-bf46-450d-a5c6-2dd2afa09501`;
 let title: Page["title"] | undefined, body: Page["body"];
 
 try {
-  const response = await getPage(Astro.url.origin, pageId);
+  const response = await getPage(pageId);
 
   ({ title, body } = response);
 } catch (e) {

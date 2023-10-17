@@ -11,13 +11,7 @@ const session = await getSession(Astro.request);
 let posts: BlogPosts["posts"];
 
 try {
-  const response = await getPosts(
-    Astro.request.url,
-    limit,
-    1,
-    undefined,
-    Boolean(session)
-  );
+  const response = await getPosts(limit, 1, undefined, Boolean(session));
 
   ({ posts } = response);
 } catch (e) {

@@ -21,13 +21,7 @@ let posts: BlogPosts["posts"],
   currentPage: number = 1;
 
 try {
-  const response = await getPosts(
-    Astro.request.url,
-    undefined,
-    page,
-    showDraft,
-    Boolean(session)
-  );
+  const response = await getPosts(undefined, page, showDraft, Boolean(session));
 
   ({ posts, pages } = response);
 

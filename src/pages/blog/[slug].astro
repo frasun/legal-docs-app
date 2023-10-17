@@ -29,7 +29,6 @@ let title: Post["title"] | undefined,
 
 try {
   const response = await getPost(
-    Astro.url.origin,
     Astro.params.slug as string,
     showDraft,
     Boolean(session)

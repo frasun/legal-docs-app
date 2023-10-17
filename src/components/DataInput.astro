@@ -29,7 +29,7 @@ let identities;
 
 if (userId && UUID.isValid(userId)) {
   try {
-    const response = await getIdentities(Astro.url.origin, userId);
+    const response = await getIdentities(userId);
 
     ({ identities } = response);
   } catch {

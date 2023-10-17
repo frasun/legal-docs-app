@@ -20,7 +20,6 @@ class IdentitySelector extends HTMLElement {
         if (this.selector?.value && this.userId) {
           try {
             const detail = await getIdentity(
-              window.location.origin,
               document.cookie,
               this.userId,
               this.selector?.value

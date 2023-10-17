@@ -24,7 +24,6 @@ let title: Document["title"] = "",
 
 try {
   const response = await getDocument(
-    Astro.url.origin,
     Astro.params.documentId as string,
     Boolean(session),
     showDraft

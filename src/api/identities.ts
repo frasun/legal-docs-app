@@ -1,45 +1,29 @@
 import type { Identity, UserIdentities } from "@type";
-import headers from "@utils/headers";
 import { DATA_TYPE } from "@utils/urlParams";
+import { API_URL, apiRequest, headers } from "@api/helpers/request";
 
 export async function getIdentities(
-  url: string,
   userId?: string,
   type?: string
 ): Promise<UserIdentities> {
-  const requestUrl = new URL(`/api/identities/${userId}`, url);
+  const requestUrl = new URL(`/api/identities/${userId}`, API_URL);
 
   if (type) {
     requestUrl.searchParams.append(DATA_TYPE, type);
   }
 
-  const response = await fetch(requestUrl, { headers });
-
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  return response.json();
+  return await apiRequest(requestUrl, headers);
 }
 
 export async function getIdentity(
-  url: string,
   cookie: string,
   userId?: string,
   identityId?: string
 ): Promise<Identity> {
-  const response = await fetch(
-    `${url}/api/identities/${userId}/${identityId}`,
-    {
-      headers: {
-        cookie,
-      },
-    }
+  const requestUrl = new URL(
+    `/api/identities/${userId}/${identityId}`,
+    API_URL
   );
 
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  return response.json();
+  return await apiRequest(requestUrl, { cookie });
 }

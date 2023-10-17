@@ -1,15 +1,14 @@
-import headers from "@utils/headers";
 import type { Document, DocumentShort } from "@type";
 import { CATEGORY, DRAFT, MEMBER_CONTENT, SEARCH } from "@utils/urlParams";
+import { API_URL, apiRequest, headers } from "@api/helpers/request";
 
 export async function getDocuments(
-  url: string,
   showDraft: boolean,
   showMemberContent: boolean,
   category?: string,
   search?: string
 ): Promise<DocumentShort[]> {
-  const requestUrl = new URL("/api/documents", url);
+  const requestUrl = new URL("/api/documents", API_URL);
 
   if (showDraft) {
     requestUrl.searchParams.append(DRAFT, String(showDraft));
@@ -27,22 +26,15 @@ export async function getDocuments(
     requestUrl.searchParams.append(SEARCH, search);
   }
 
-  const response = await fetch(requestUrl, { headers });
-
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  return response.json();
+  return await apiRequest(requestUrl, headers);
 }
 
 export async function getDocument(
-  url: string,
   documentId: string,
   showMemberContent = false,
   showDarft = false
 ): Promise<Document> {
-  const requestUrl = new URL(`/api/documents/${documentId}`, url);
+  const requestUrl = new URL(`/api/documents/${documentId}`, API_URL);
 
   if (showDarft) {
     requestUrl.searchParams.append(DRAFT, String(showDarft));
@@ -52,11 +44,5 @@ export async function getDocument(
     requestUrl.searchParams.append(MEMBER_CONTENT, String(showMemberContent));
   }
 
-  const response = await fetch(requestUrl, { headers });
-
-  if (!response.ok) {
-    throw new Error("", { cause: response.status });
-  }
-
-  return response.json();
+  return apiRequest(requestUrl, headers);
 }
