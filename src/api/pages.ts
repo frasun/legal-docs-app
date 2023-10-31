@@ -1,6 +1,7 @@
 import headers from "@utils/headers";
 import type { Page } from "@type";
-import { API_URL, apiRequest } from "./helpers/request";
+import { apiRequest } from "./helpers/request";
+import { API_URL } from "@api/helpers/url";
 
 export async function getPage(pageId: string): Promise<Page> {
   const requestUrl = new URL(`/api/pages/${pageId}`, API_URL);

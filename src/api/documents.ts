@@ -1,6 +1,7 @@
 import type { Document, DocumentShort } from "@type";
 import { CATEGORY, DRAFT, MEMBER_CONTENT, SEARCH } from "@utils/urlParams";
-import { API_URL, apiRequest, headers } from "@api/helpers/request";
+import { apiRequest, headers } from "@api/helpers/request";
+import { API_URL } from "@api/helpers/url";
 
 export async function getDocuments(
   showDraft: boolean,

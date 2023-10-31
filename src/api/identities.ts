@@ -1,6 +1,7 @@
 import type { Identity, UserIdentities } from "@type";
 import { DATA_TYPE } from "@utils/urlParams";
-import { API_URL, apiRequest, headers } from "@api/helpers/request";
+import { apiRequest, headers } from "@api/helpers/request";
+import { API_URL } from "@api/helpers/url";
 
 export async function getIdentities(
   userId?: string,

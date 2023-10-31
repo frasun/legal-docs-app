@@ -1,7 +1,8 @@
 import headers from "@utils/headers";
 import { DRAFT, LIMIT, MEMBER_CONTENT, PAGE } from "@utils/urlParams";
 import type { BlogPosts, Post } from "@type";
-import { API_URL, apiRequest } from "./helpers/request";
+import { apiRequest } from "./helpers/request";
+import { API_URL } from "@api/helpers/url";
 
 export async function getPost(
   slug: string,
