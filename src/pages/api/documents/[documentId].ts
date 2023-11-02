@@ -4,7 +4,7 @@ import { deleteDraft } from "@db/document";
 import { getPrice } from "@utils/stripe";
 import { getDocumentPosts } from "@api/helpers/posts";
 import { getDocumentInfo } from "@api/helpers/documents";
-import { responseHeaders as headers } from "@utils/headers";
+import { responseHeaders as headers } from "@api/helpers/response";
 import { UserRoles } from "@db/user";
 
 export const get: APIRoute = async ({ request, params }) => {

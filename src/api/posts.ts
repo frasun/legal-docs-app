@@ -1,7 +1,6 @@
-import headers from "@utils/headers";
 import { DRAFT, LIMIT, PAGE } from "@utils/urlParams";
 import type { BlogPosts, Post } from "@type";
-import { apiRequest } from "./helpers/request";
+import { apiRequest, headers } from "./helpers/request";
 import { API_URL } from "@api/helpers/url";
 
 export async function getPost(cookie: string, slug: string): Promise<Post> {

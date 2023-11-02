@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { getPost } from "@api/helpers/posts";
-import { responseHeaders as headers } from "@utils/headers";
+import { responseHeaders as headers } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
 

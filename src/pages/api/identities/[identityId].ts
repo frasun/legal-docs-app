@@ -2,7 +2,7 @@ import { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import { getUserIdentity } from "@db/identity";
 import { UUID } from "mongodb";
-import { responseHeaders as headers } from "@utils/headers";
+import { responseHeaders as headers } from "@api/helpers/response";
 
 export const get: APIRoute = async ({ request, params }) => {
   const session = await getSession(request);

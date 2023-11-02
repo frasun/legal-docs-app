@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
 import { getPrices } from "@utils/stripe";
 import { getDocuments } from "src/api/helpers/documents";
-import { responseHeaders as headers } from "@utils/headers";
+import { responseHeaders as headers } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
 

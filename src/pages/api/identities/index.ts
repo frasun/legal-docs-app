@@ -3,7 +3,7 @@ import { entityEnum } from "@utils/constants";
 import { DATA_TYPE } from "@utils/urlParams";
 import type { APIRoute } from "astro";
 import { UUID } from "mongodb";
-import { responseHeaders as headers } from "@utils/headers";
+import { responseHeaders as headers } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 
 export const get: APIRoute = async ({ request }) => {

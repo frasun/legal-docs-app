@@ -1,6 +1,5 @@
-import headers from "@utils/headers";
 import type { Page } from "@type";
-import { apiRequest } from "./helpers/request";
+import { apiRequest, headers } from "./helpers/request";
 import { API_URL } from "@api/helpers/url";
 
 export async function getPage(pageId: string): Promise<Page> {
