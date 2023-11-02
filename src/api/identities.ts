@@ -4,27 +4,23 @@ import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
 
 export async function getIdentities(
-  userId?: string,
+  cookie: string,
   type?: string
 ): Promise<UserIdentities> {
-  const requestUrl = new URL(`/api/identities/${userId}`, API_URL);
+  const requestUrl = new URL(`/api/identities`, API_URL);
 
   if (type) {
     requestUrl.searchParams.append(DATA_TYPE, type);
   }
 
-  return await apiRequest(requestUrl, headers);
+  return await apiRequest(requestUrl, { ...headers, cookie });
 }
 
 export async function getIdentity(
   cookie: string,
-  userId?: string,
-  identityId?: string
+  identityId: string
 ): Promise<Identity> {
-  const requestUrl = new URL(
-    `/api/identities/${userId}/${identityId}`,
-    API_URL
-  );
+  const requestUrl = new URL(`/api/identities/${identityId}`, API_URL);
 
   return await apiRequest(requestUrl, { cookie });
 }

@@ -9,13 +9,9 @@ import trimWhitespace from "@utils/whitespace";
 import type { Post } from "@type";
 import BlogContent from "@components/BlogContent.astro";
 import { getPost } from "@api/posts";
-import { getSession } from "auth-astro/server";
-import { UserRoles } from "@db/user";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
 
-const session = await getSession(Astro.request);
-const showDraft = session?.user?.role === UserRoles.admin;
 const PAGE_TITLE = "Blog";
 
 let title: Post["title"] | undefined,
@@ -29,9 +25,8 @@ let title: Post["title"] | undefined,
 
 try {
   const response = await getPost(
-    Astro.params.slug as string,
-    showDraft,
-    Boolean(session)
+    `${Astro.request.headers.get("cookie")}`,
+    Astro.params.slug as string
   );
 
   ({
@@ -46,7 +41,7 @@ try {
   } = response);
 } catch (e) {
   if (e instanceof Error) {
-    if (e.cause === 401) {
+    if (e.cause === 403) {
       return Astro.redirect(
         `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
       );

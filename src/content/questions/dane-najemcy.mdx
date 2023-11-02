@@ -14,7 +14,7 @@ landlordCompanyCity: ""
 landlordCompanyPin: ""
 question: Podaj dane Najemcy
 info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
-userId: ""
+_isLoggedIn: false
 ---
 
 import DataInput from "@components/DataInput.astro";
@@ -34,5 +34,5 @@ import DataInput from "@components/DataInput.astro";
   companyPostalCode={frontmatter["landlordCompanyPostalCode"]}
   companyCity={frontmatter["landlordCompanyCity"]}
   companyPin={frontmatter["landlordCompanyPin"]}
-  userId={frontmatter["userId"]}
+  showIdentitySelector={frontmatter["_isLoggedIn"]}
 />

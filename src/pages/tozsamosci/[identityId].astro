@@ -4,62 +4,52 @@ import pageTitle from "@utils/pageTitle";
 import DataInput from "@components/DataInput.astro";
 import { entityEnum } from "@utils/constants";
 import ErrorList from "@components/ErrorList.astro";
-import { getUserIdentity, updateUserIdentity } from "@db/identity";
+import { updateUserIdentity } from "@db/identity";
 import { getSession } from "auth-astro/server";
 import { z } from "astro:content";
-import { UUID } from "mongodb";
 import { IDENTITY_UPDATED } from "@utils/toasts";
 import Toast from "@components/Toast.astro";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
-
-const session = await getSession(Astro.request);
-if (!session) {
-  return Astro.redirect(`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`);
-}
-
-const userId = session.user?.id;
-if (!userId) {
-  return Astro.redirect(`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`);
-}
+import { getIdentity } from "@api/identities";
+import { Identity } from "@type";
 
 const { identityId: iId } = Astro.params;
 const identityId = String(iId);
 
-if (!UUID.isValid(String(identityId))) {
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
 const PAGE_TITLE = "Edytuj tożsamość";
 let errors: string[] = [],
-  type: (typeof entityEnum)[number],
-  name: string,
-  pin: string,
-  street: string,
-  apt: string | undefined,
-  postalCode: string,
-  city: string,
+  type: Identity["type"],
+  name: Identity["name"],
+  pin: Identity["pin"],
+  street: Identity["street"],
+  apt: Identity["apt"],
+  postalCode: Identity["postalCode"],
+  city: Identity["city"],
   personName = "",
   personStreet = "",
-  personApt: string | undefined = "",
+  personApt: Identity["apt"] = "",
   personPostalCode = "",
   personCity = "",
   personPin = "",
   companyName = "",
   companyStreet = "",
-  companyApt: string | undefined = "",
+  companyApt: Identity["apt"] = "",
   companyPostalCode = "",
   companyCity = "",
   companyPin = "",
   toast: string | null = null;
 
-const identity = await getUserIdentity(String(identityId), userId);
+try {
+  const response = await getIdentity(
+    `${Astro.request.headers.get("cookie")}`,
+    identityId
+  );
 
-if (!identity) {
+  ({ type, name, pin, street, apt, postalCode, city } = response);
+} catch {
   return Astro.redirect(routes.NOT_FOUND);
 }
-
-({ type, name, pin, street, apt, postalCode, city } = identity);
 
 switch (type) {
   case entityEnum[0]:
@@ -83,6 +73,9 @@ switch (type) {
 }
 
 if (Astro.request.method === "POST") {
+  const session = await getSession(Astro.request);
+  const userId = session?.user?.id;
+
   const formData = await Astro.request.formData();
   const type = formData.get("Type");
 

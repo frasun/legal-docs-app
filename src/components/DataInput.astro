@@ -2,7 +2,6 @@
 import { entityEnum } from "@utils/constants";
 import InputGroup, { InputSize } from "@components/InputGroup.astro";
 import Address from "./Address.astro";
-import { UUID } from "mongodb";
 import { getIdentities } from "@api/identities";
 import routes from "@utils/routes";
 
@@ -21,15 +20,17 @@ const {
   companyPostalCode,
   companyCity,
   companyPin,
-  userId,
+  showIdentitySelector,
 } = Astro.props;
 
 let prefix = name || "";
 let identities;
 
-if (userId && UUID.isValid(userId)) {
+if (showIdentitySelector) {
   try {
-    const response = await getIdentities(userId);
+    const response = await getIdentities(
+      `${Astro.request.headers.get("cookie")}`
+    );
 
     ({ identities } = response);
   } catch {
@@ -40,7 +41,7 @@ if (userId && UUID.isValid(userId)) {
 
 {
   identities && identities.length ? (
-    <identity-selector data-userid={userId}>
+    <identity-selector>
       <select>
         <option>Wybierz z zapisanych tożsamości</option>
         {identities.map(({ name, type, _id }) => (

@@ -2,16 +2,19 @@
 import BlogPost from "./BlogPost.astro";
 import type { BlogPosts } from "@type";
 import { getPosts } from "@api/posts";
-import { getSession } from "auth-astro/server";
 import routes from "@utils/routes";
 
 const limit = 4;
-const session = await getSession(Astro.request);
 
 let posts: BlogPosts["posts"];
 
 try {
-  const response = await getPosts(limit, 1, undefined, Boolean(session));
+  const response = await getPosts(
+    `${Astro.request.headers.get("cookie")}`,
+    1,
+    limit,
+    false
+  );
 
   ({ posts } = response);
 } catch (e) {

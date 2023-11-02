@@ -20,7 +20,6 @@ import routes from "@utils/routes";
 
 const PAGE_TITLE = "Tożsamości";
 
-const session = await getSession(Astro.request);
 const urlParams = new URL(Astro.request.url).searchParams;
 const dataType = urlParams.get(DATA_TYPE) ?? undefined;
 const dataTypeFilter = dataType ? decodeURIComponent(dataType) : undefined;
@@ -30,7 +29,10 @@ let identities: UserIdentities["identities"] = [],
   toast: string | null = null;
 
 try {
-  const response = await getIdentities(session?.user?.id, dataTypeFilter);
+  const response = await getIdentities(
+    `${Astro.request.headers.get("cookie")}`,
+    dataTypeFilter
+  );
 
   ({ identities, count } = response);
 } catch (e) {
@@ -56,6 +58,7 @@ if (urlParams.has(IDENTITY_REMOVED_PARAM)) {
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const id = formData.get("id");
+  const session = await getSession(Astro.request);
   const userId = session?.user?.id;
 
   if (UUID.isValid(String(id)) && userId) {

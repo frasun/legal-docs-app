@@ -11,20 +11,20 @@ export const get: APIRoute = async ({ request, params }) => {
     return new Response(null, { status: 401 });
   }
 
-  const { userId, identityId } = params;
+  const { identityId } = params;
 
-  if (!UUID.isValid(userId as string) || !UUID.isValid(identityId as string)) {
-    return new Response(null, { status: 400 });
+  if (!UUID.isValid(identityId as string)) {
+    return new Response(null, { status: 404 });
   }
 
   try {
     const identity = await getUserIdentity(
       identityId as string,
-      userId as string
+      session.user?.id as string
     );
 
     if (!identity) {
-      return new Response(null, { status: 404 });
+      return new Response(null, { status: 403 });
     }
 
     return new Response(JSON.stringify(identity), { status: 200, headers });

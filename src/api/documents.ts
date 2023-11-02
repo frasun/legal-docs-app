@@ -1,23 +1,14 @@
 import type { Document, DocumentShort } from "@type";
-import { CATEGORY, DRAFT, MEMBER_CONTENT, SEARCH } from "@utils/urlParams";
+import { CATEGORY, SEARCH } from "@utils/urlParams";
 import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
 
 export async function getDocuments(
-  showDraft: boolean,
-  showMemberContent: boolean,
+  cookie: string,
   category?: string,
   search?: string
 ): Promise<DocumentShort[]> {
   const requestUrl = new URL("/api/documents", API_URL);
-
-  if (showDraft) {
-    requestUrl.searchParams.append(DRAFT, String(showDraft));
-  }
-
-  if (showMemberContent) {
-    requestUrl.searchParams.append(MEMBER_CONTENT, String(showMemberContent));
-  }
 
   if (category) {
     requestUrl.searchParams.append(CATEGORY, category);
@@ -27,23 +18,14 @@ export async function getDocuments(
     requestUrl.searchParams.append(SEARCH, search);
   }
 
-  return await apiRequest(requestUrl, headers);
+  return await apiRequest(requestUrl, { ...headers, cookie });
 }
 
 export async function getDocument(
-  documentId: string,
-  showMemberContent = false,
-  showDarft = false
+  cookie: string,
+  documentId: string
 ): Promise<Document> {
   const requestUrl = new URL(`/api/documents/${documentId}`, API_URL);
 
-  if (showDarft) {
-    requestUrl.searchParams.append(DRAFT, String(showDarft));
-  }
-
-  if (showMemberContent) {
-    requestUrl.searchParams.append(MEMBER_CONTENT, String(showMemberContent));
-  }
-
-  return apiRequest(requestUrl, headers);
+  return apiRequest(requestUrl, { ...headers, cookie });
 }

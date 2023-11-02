@@ -1,32 +1,22 @@
 import headers from "@utils/headers";
-import { DRAFT, LIMIT, MEMBER_CONTENT, PAGE } from "@utils/urlParams";
+import { DRAFT, LIMIT, PAGE } from "@utils/urlParams";
 import type { BlogPosts, Post } from "@type";
 import { apiRequest } from "./helpers/request";
 import { API_URL } from "@api/helpers/url";
 
-export async function getPost(
-  slug: string,
-  showDraft = false,
-  showMemberContent = false
-): Promise<Post> {
+export async function getPost(cookie: string, slug: string): Promise<Post> {
   const requestUrl = new URL(`/api/posts/${slug}`, API_URL);
 
-  requestUrl.searchParams.append(DRAFT, String(showDraft));
-  requestUrl.searchParams.append(MEMBER_CONTENT, String(showMemberContent));
-
-  return apiRequest(requestUrl, headers);
+  return apiRequest(requestUrl, { ...headers, cookie });
 }
 
 export async function getPosts(
+  cookie: string,
+  page?: number | string,
   limit?: number,
-  page?: number,
-  showDraft = false,
-  showMemberContent = false
+  includeDraft = true
 ): Promise<BlogPosts> {
   const requestUrl = new URL(`/api/posts`, API_URL);
-
-  requestUrl.searchParams.append(DRAFT, String(showDraft));
-  requestUrl.searchParams.append(MEMBER_CONTENT, String(showMemberContent));
 
   if (limit) {
     requestUrl.searchParams.append(LIMIT, String(limit));
@@ -36,5 +26,9 @@ export async function getPosts(
     requestUrl.searchParams.append(PAGE, String(page));
   }
 
-  return await apiRequest(requestUrl, headers);
+  if (!includeDraft) {
+    requestUrl.searchParams.append(DRAFT, "false");
+  }
+
+  return await apiRequest(requestUrl, { ...headers, cookie });
 }

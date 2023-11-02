@@ -7,21 +7,20 @@ import EmptyScreen from "@components/EmptyScreen.astro";
 import BlogPost from "@components/BlogPost.astro";
 import type { BlogPosts } from "@type";
 import { getPosts } from "@api/posts";
-import { getSession } from "auth-astro/server";
-import { UserRoles } from "@db/user";
 import routes from "@utils/routes";
 
 const PAGE_TITLE = "Blog";
 const page = Number(new URL(Astro.request.url).searchParams.get(PAGE)) || 1;
-const session = await getSession(Astro.request);
-const showDraft = session?.user?.role === UserRoles.admin;
 
 let posts: BlogPosts["posts"],
   pages: BlogPosts["pages"],
   currentPage: number = 1;
 
 try {
-  const response = await getPosts(undefined, page, showDraft, Boolean(session));
+  const response = await getPosts(
+    `${Astro.request.headers.get("cookie")}`,
+    page
+  );
 
   ({ posts, pages } = response);
 

@@ -1,12 +1,16 @@
 import type { APIRoute } from "astro";
-import { PAGE, LIMIT, DRAFT, MEMBER_CONTENT } from "@utils/urlParams";
+import { PAGE, LIMIT, DRAFT } from "@utils/urlParams";
 import { getPosts } from "@api/helpers/posts";
 import { responseHeaders as headers } from "@utils/headers";
+import { getSession } from "auth-astro/server";
+import { UserRoles } from "@db/user";
 
 export const get: APIRoute = async ({ request }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
     return new Response(null, { status: 401 });
   }
+
+  const session = await getSession(request);
 
   try {
     const urlParams = new URL(request.url).searchParams;
@@ -14,12 +18,12 @@ export const get: APIRoute = async ({ request }) => {
     const limit = urlParams.get(LIMIT)
       ? Number(urlParams.get(LIMIT))
       : undefined;
-    const draft = urlParams.get(DRAFT);
-    const showDarft = draft === "true";
-    const memberContent = urlParams.get(MEMBER_CONTENT);
-    const showMemberContent = memberContent === "true";
+    const showDarft = urlParams.get(DRAFT)
+      ? urlParams.get(DRAFT) === "true"
+      : session?.user?.role === UserRoles.admin;
+    const showMemberContent = Boolean(session);
 
-    const posts = await getPosts(showDarft, showMemberContent, limit, page);
+    const posts = await getPosts(showDarft, showMemberContent, page, limit);
 
     return new Response(JSON.stringify(posts), {
       status: 200,

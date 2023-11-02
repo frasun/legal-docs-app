@@ -60,8 +60,8 @@ export async function getPost(slug: string, showDraft: boolean): Promise<Post> {
 export async function getPosts(
   showDraft = false,
   showMemberContent = false,
-  limit = 10,
-  page = 1
+  page = 1,
+  limit = 10
 ): Promise<BlogPosts> {
   const adminQuery = showDraft
     ? `_type == "post"`

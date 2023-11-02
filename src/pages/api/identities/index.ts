@@ -4,13 +4,15 @@ import { DATA_TYPE } from "@utils/urlParams";
 import type { APIRoute } from "astro";
 import { UUID } from "mongodb";
 import { responseHeaders as headers } from "@utils/headers";
+import { getSession } from "auth-astro/server";
 
-export const get: APIRoute = async ({ request, params }) => {
+export const get: APIRoute = async ({ request }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
     return new Response(null, { status: 401 });
   }
 
-  const { userId } = params;
+  const session = await getSession(request);
+  const userId = session?.user?.id;
 
   if (!userId || !UUID.isValid(userId)) {
     return new Response(null, { status: 401 });

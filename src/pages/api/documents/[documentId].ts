@@ -4,8 +4,8 @@ import { deleteDraft } from "@db/document";
 import { getPrice } from "@utils/stripe";
 import { getDocumentPosts } from "@api/helpers/posts";
 import { getDocumentInfo } from "@api/helpers/documents";
-import { DRAFT, MEMBER_CONTENT } from "@utils/urlParams";
 import { responseHeaders as headers } from "@utils/headers";
+import { UserRoles } from "@db/user";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -13,23 +13,14 @@ export const get: APIRoute = async ({ request, params }) => {
   }
 
   const { documentId } = params;
-
-  if (!documentId) {
-    return new Response(null, {
-      status: 400,
-    });
-  }
-
-  const urlParams = new URL(request.url).searchParams;
-  const draft = urlParams.get(DRAFT);
-  const memberContent = urlParams.get(MEMBER_CONTENT);
-  const showDarft = draft === "true";
-  const showMemberContent = memberContent === "true";
+  const session = await getSession(request);
+  const showMemberContent = Boolean(session);
+  const showDarft = session?.user?.role === UserRoles.admin;
 
   try {
     const [info, document] = await Promise.all([
-      getDocumentPosts(documentId, showMemberContent),
-      getDocumentInfo(documentId),
+      getDocumentPosts(documentId as string, showMemberContent),
+      getDocumentInfo(documentId as string),
     ]);
 
     if (!info || !document) {
@@ -50,7 +41,7 @@ export const get: APIRoute = async ({ request, params }) => {
 
     if (memberContent && !showMemberContent) {
       return new Response(null, {
-        status: 401,
+        status: 403,
       });
     }
 

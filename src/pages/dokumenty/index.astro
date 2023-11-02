@@ -7,13 +7,9 @@ import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
-import { getSession } from "auth-astro/server";
-import { UserRoles } from "@db/user";
 import type { DocumentShort, Category } from "@type";
 import { getDocuments } from "@api/documents";
 
-const session = await getSession(Astro.request);
-const showDraft = session?.user?.role === UserRoles.admin;
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get(CATEGORY);
 const search = url.searchParams.get(SEARCH);
@@ -28,8 +24,7 @@ let documents: DocumentShort[],
 try {
   [documents, categories] = await Promise.all([
     getDocuments(
-      showDraft,
-      Boolean(session),
+      `${Astro.request.headers.get("cookie")}`,
       currentCat ?? undefined,
       search ?? undefined
     ),

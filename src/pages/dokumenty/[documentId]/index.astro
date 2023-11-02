@@ -6,13 +6,8 @@ import BlogPost from "@components/BlogPost.astro";
 import BlogContent from "@components/BlogContent.astro";
 import type { Document } from "@type";
 import { getDocument } from "@api/documents";
-import { getSession } from "auth-astro/server";
-import { UserRoles } from "@db/user";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
-
-const session = await getSession(Astro.request);
-const showDraft = session?.user?.role === UserRoles.admin;
 
 let title: Document["title"] = "",
   keywords: Document["keywords"],
@@ -24,16 +19,15 @@ let title: Document["title"] = "",
 
 try {
   const response = await getDocument(
-    Astro.params.documentId as string,
-    Boolean(session),
-    showDraft
+    `${Astro.request.headers.get("cookie")}`,
+    Astro.params.documentId as string
   );
 
   ({ title, keywords, description, body, posts, price, firstQuestionUrl } =
     response);
 } catch (e) {
   if (e instanceof Error) {
-    if (e.cause === 401) {
+    if (e.cause === 403) {
       return Astro.redirect(
         `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
       );
