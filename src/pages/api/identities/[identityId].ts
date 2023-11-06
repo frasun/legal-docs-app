@@ -1,8 +1,13 @@
 import { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
-import { deleteUserIdentity, getUserIdentity } from "@db/identity";
+import {
+  deleteUserIdentity,
+  getUserIdentity,
+  updateUserIdentity,
+} from "@db/identity";
 import { UUID } from "mongodb";
 import { responseHeaders as headers } from "@api/helpers/response";
+import { z } from "astro:content";
 
 export const get: APIRoute = async ({ request, params }) => {
   const session = await getSession(request);
@@ -34,16 +39,16 @@ export const get: APIRoute = async ({ request, params }) => {
 };
 
 export const all: APIRoute = async ({ request, params }) => {
+  const session = await getSession(request);
+
+  if (!session) {
+    return new Response(null, { status: 401 });
+  }
+
+  const { identityId } = params;
+  const userId = session.user?.id;
+
   if (request.method === "DELETE") {
-    const session = await getSession(request);
-
-    if (!session) {
-      return new Response(null, { status: 401 });
-    }
-
-    const { identityId } = params;
-    const userId = session.user?.id;
-
     try {
       const response = await deleteUserIdentity(
         identityId as string,
@@ -59,6 +64,35 @@ export const all: APIRoute = async ({ request, params }) => {
       return new Response(e instanceof Error ? e.message : null, {
         status: 500,
       });
+    }
+  }
+
+  if (request.method === "PUT") {
+    try {
+      const identity = await request.json();
+      const response = await updateUserIdentity(
+        identityId as string,
+        userId as string,
+        identity
+      );
+
+      if (response.modifiedCount !== 1) {
+        return new Response(null, { status: 404 });
+      }
+
+      return new Response(JSON.stringify(null), { status: 200, headers });
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        const errors: string[] = [];
+
+        e.errors.map(({ message }) => errors.push(message));
+
+        return new Response(JSON.stringify(errors), { status: 400, headers });
+      } else {
+        return new Response(e instanceof Error ? e.message : null, {
+          status: 500,
+        });
+      }
     }
   }
 

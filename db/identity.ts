@@ -67,6 +67,7 @@ export async function getUserIdentity(identityId: string, userId: string) {
 
 export async function updateUserIdentity(
   identityId: string,
+  userId: string,
   identity: Identity
 ) {
   const personalData = identity.type === entityEnum[0];
@@ -77,7 +78,7 @@ export async function updateUserIdentity(
     const encryptedIdentity = await getEncryptedIdentity(validatedIdentity);
 
     return await identityCollection.updateOne(
-      { _id: new UUID(identityId).toBinary() },
+      { _id: new UUID(identityId).toBinary(), userId },
       {
         $set: { ...encryptedIdentity },
       }

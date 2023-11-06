@@ -41,3 +41,18 @@ export async function deleteIdentity(cookie: string, identityId: string) {
 
   return await apiRequest(requestUrl, { cookie }, "DELETE");
 }
+
+export async function updateIdentity(
+  cookie: string,
+  identityId: string,
+  identity: Identity
+) {
+  const requestUrl = new URL(`/api/identities/${identityId}`, API_URL);
+
+  return await apiRequest(
+    requestUrl,
+    { cookie },
+    "PUT",
+    JSON.stringify(identity)
+  );
+}

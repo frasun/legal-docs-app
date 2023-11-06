@@ -4,14 +4,11 @@ import pageTitle from "@utils/pageTitle";
 import DataInput from "@components/DataInput.astro";
 import { entityEnum } from "@utils/constants";
 import ErrorList from "@components/ErrorList.astro";
-import { updateUserIdentity } from "@db/identity";
-import { getSession } from "auth-astro/server";
-import { z } from "astro:content";
-import { IDENTITY_UPDATED } from "@utils/toasts";
+import { IDENTITY_UPDATED, ERROR, ToastStatus } from "@utils/toasts";
 import Toast from "@components/Toast.astro";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
-import { getIdentity } from "@api/identities";
+import { getIdentity, updateIdentity } from "@api/identities";
 import { Identity } from "@type";
 
 const { identityId: iId } = Astro.params;
@@ -38,7 +35,8 @@ let errors: string[] = [],
   companyPostalCode = "",
   companyCity = "",
   companyPin = "",
-  toast: string | null = null;
+  toast: string | null = null,
+  toastStatus: ToastStatus = ToastStatus.default;
 
 try {
   const response = await getIdentity(
@@ -73,9 +71,6 @@ switch (type) {
 }
 
 if (Astro.request.method === "POST") {
-  const session = await getSession(Astro.request);
-  const userId = session?.user?.id;
-
   const formData = await Astro.request.formData();
   const type = formData.get("Type");
 
@@ -101,7 +96,6 @@ if (Astro.request.method === "POST") {
   }
 
   const identity = {
-    userId,
     type,
     name,
     pin,
@@ -112,11 +106,20 @@ if (Astro.request.method === "POST") {
   };
 
   try {
-    await updateUserIdentity(identityId, identity);
+    await updateIdentity(
+      `${Astro.request.headers.get("cookie")}`,
+      identityId,
+      identity
+    );
     toast = IDENTITY_UPDATED;
   } catch (e) {
-    if (e instanceof z.ZodError) {
-      e.errors.map(({ message }) => errors.push(message));
+    if (e instanceof Error) {
+      if (e.cause === 400) {
+        e.message.split(",").map((message: string) => errors.push(message));
+      } else {
+        toast = ERROR;
+        toastStatus = ToastStatus.error;
+      }
     }
   } finally {
     switch (type) {
@@ -180,7 +183,7 @@ if (Astro.request.method === "POST") {
       <button type="submit">Zapisz</button>
     </footer>
   </form>
-  {toast && <Toast info={toast} />}
+  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 
 <style>
