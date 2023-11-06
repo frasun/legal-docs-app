@@ -17,49 +17,5 @@ const { id } = Astro.props;
 </style>
 
 <script>
-  import { COPY_DOCUMENT_PARAM } from "@utils/toasts";
-
-  class CopyDocument extends HTMLElement {
-    button: HTMLButtonElement | null;
-    documentId: string | undefined;
-
-    constructor() {
-      super();
-
-      this.button = this.querySelector("button");
-      this.documentId = this.dataset.documentId;
-    }
-
-    connectedCallback() {
-      if (this.button) {
-        this.button.addEventListener("click", async () => {
-          const redirectUrl = new URL(window.location.href);
-          redirectUrl.search = "";
-
-          const response = await fetch(
-            `/api/documents/${this.documentId}/copy`,
-            {
-              method: "POST",
-            }
-          );
-
-          try {
-            if (response.status === 200) {
-              redirectUrl.searchParams.set(COPY_DOCUMENT_PARAM, "1");
-            } else {
-              redirectUrl.searchParams.set(COPY_DOCUMENT_PARAM, "0");
-            }
-          } catch {
-            redirectUrl.searchParams.set(COPY_DOCUMENT_PARAM, "0");
-          } finally {
-            window.requestAnimationFrame(() => {
-              window.history.pushState({}, "", redirectUrl);
-              window.location.reload();
-            });
-          }
-        });
-      }
-    }
-  }
-  customElements.define("copy-document", CopyDocument);
+  import "@wc/CopyDocument";
 </script>

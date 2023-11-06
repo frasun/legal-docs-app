@@ -51,7 +51,7 @@ export const post: APIRoute = async ({ request, params }) => {
           return new Response(null, { status: 404 });
         }
 
-        return new Response(null, { status: 200, headers });
+        return new Response(JSON.stringify(null), { status: 200, headers });
       } catch (e) {
         return new Response(e instanceof Error ? e.message : null, {
           status: 500,

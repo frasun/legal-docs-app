@@ -18,6 +18,7 @@ const { id } = Astro.props;
 
 <script>
   import { DRAFT_REMOVED_PARAM } from "@utils/toasts";
+  import { deleteDraft } from "@api/documents";
 
   class DeleteDraft extends HTMLElement {
     button: HTMLButtonElement | null;
@@ -35,23 +36,20 @@ const { id } = Astro.props;
         this.button.addEventListener("click", async () => {
           const redirectUrl = new URL(window.location.href);
           redirectUrl.search = "";
-          const response = await fetch(`/api/documents/${this.documentId}`, {
-            method: "DELETE",
-          });
 
-          try {
-            if (response.status === 200) {
+          if (this.documentId) {
+            try {
+              await deleteDraft(document.cookie, this.documentId);
+
               redirectUrl.searchParams.set(DRAFT_REMOVED_PARAM, "1");
-            } else {
+            } catch {
               redirectUrl.searchParams.set(DRAFT_REMOVED_PARAM, "0");
+            } finally {
+              window.requestAnimationFrame(() => {
+                window.history.pushState({}, "", redirectUrl);
+                window.location.reload();
+              });
             }
-          } catch {
-            redirectUrl.searchParams.set(DRAFT_REMOVED_PARAM, "0");
-          } finally {
-            window.requestAnimationFrame(() => {
-              window.history.pushState({}, "", redirectUrl);
-              window.location.reload();
-            });
           }
         });
       }

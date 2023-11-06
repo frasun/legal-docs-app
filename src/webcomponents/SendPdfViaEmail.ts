@@ -3,6 +3,7 @@ import { getContentArray } from "@utils/pdf";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
 import { DOCUMENT_SHARED_PARAM } from "@utils/toasts";
 import trimWhiteSpace from "@utils/whitespace";
+import { shareDocument } from "@api/documents";
 
 class SendPdfViaEmail extends HTMLElement {
   form: HTMLFormElement | null;
@@ -66,38 +67,29 @@ class SendPdfViaEmail extends HTMLElement {
           const redirectUrl = new URL(window.location.href);
           redirectUrl.search = "";
 
-          try {
-            const response = await fetch(
-              `/api/documents/${this.documentId}/share`,
-              {
-                method: "POST",
-                body: JSON.stringify({
-                  pdf: getContentArray(docContent),
-                  emails,
-                  sendToMe,
-                  title,
-                  template,
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
+          if (this.documentId) {
+            try {
+              const data = {
+                pdf: getContentArray(docContent),
+                emails,
+                sendToMe,
+                title,
+                template,
+              };
 
-            if (response.status === 200) {
+              await shareDocument(document.cookie, this.documentId, data);
+
               redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "1");
-            } else {
+            } catch {
               redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "0");
-            }
-          } catch {
-            redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "0");
-          } finally {
-            document.body.dispatchEvent(new CustomEvent("hideModal"));
+            } finally {
+              document.body.dispatchEvent(new CustomEvent("hideModal"));
 
-            window.requestAnimationFrame(() => {
-              window.history.pushState({}, "", redirectUrl);
-              window.location.reload();
-            });
+              window.requestAnimationFrame(() => {
+                window.history.pushState({}, "", redirectUrl);
+                window.location.reload();
+              });
+            }
           }
         }
 

@@ -85,7 +85,7 @@ export const all: APIRoute = async ({ params, request }) => {
       );
 
       if (response.deletedCount === 1) {
-        return new Response(null, { status: 200, headers });
+        return new Response(JSON.stringify(null), { status: 200, headers });
       }
 
       return new Response(null, { status: 404 });
