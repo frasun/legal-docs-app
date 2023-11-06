@@ -374,17 +374,19 @@ export async function copyDocument(documentId: string, userId: string) {
     );
 
     if (document) {
-      return await documentCollection.insertOne({
+      const newDocument = await documentCollection.insertOne({
         ...document,
         created: new Date(),
         modified: new Date(),
         draft: true,
         title: `(Kopia) ${document.title}`,
       });
+
+      return newDocument.insertedId;
     } else {
-      throw new Error("missing document");
+      return null;
     }
-  } catch (e: any) {
+  } catch (e) {
     throw e;
   }
 }

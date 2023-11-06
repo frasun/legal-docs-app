@@ -35,15 +35,13 @@ const { id } = Astro.props;
         this.button.addEventListener("click", async () => {
           const redirectUrl = new URL(window.location.href);
           redirectUrl.search = "";
-          const response = await fetch(`/api/documents/copy`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              documentId: this.documentId,
-            }),
-          });
+
+          const response = await fetch(
+            `/api/documents/${this.documentId}/copy`,
+            {
+              method: "POST",
+            }
+          );
 
           try {
             if (response.status === 200) {
