@@ -67,20 +67,22 @@ class SendPdfViaEmail extends HTMLElement {
           redirectUrl.search = "";
 
           try {
-            const response = await fetch("/api/documents/share", {
-              method: "POST",
-              body: JSON.stringify({
-                pdf: getContentArray(docContent),
-                emails,
-                sendToMe,
-                title,
-                template,
-                documentId: this.documentId,
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
+            const response = await fetch(
+              `/api/documents/${this.documentId}/share`,
+              {
+                method: "POST",
+                body: JSON.stringify({
+                  pdf: getContentArray(docContent),
+                  emails,
+                  sendToMe,
+                  title,
+                  template,
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
 
             if (response.status === 200) {
               redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "1");

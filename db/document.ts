@@ -348,15 +348,17 @@ export async function shareDocument(
 
       await sendFiles(emails);
 
-      await documentCollection.updateOne(
+      const response = await documentCollection.updateOne(
         { _id: new UUID(documentId).toBinary() },
         {
           $set: { sharedWith: emailList },
           $currentDate: { shared: true },
         }
       );
+
+      return response.acknowledged;
     } else {
-      throw new Error("missing document");
+      return null;
     }
   } catch (e) {
     throw e;

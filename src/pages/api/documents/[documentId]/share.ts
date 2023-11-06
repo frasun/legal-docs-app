@@ -4,9 +4,9 @@ import { WRONG_EMAIL_FORMAT } from "@utils/response";
 import { emailRegExp, testString } from "@utils/dataValidation";
 import { createPDF, generateSafeFileName } from "@utils/pdf";
 import { shareDocument } from "@db/document";
-import { UUID } from "mongodb";
+import { responseHeaders as headers } from "@api/helpers/response";
 
-export const post: APIRoute = async ({ request }) => {
+export const post: APIRoute = async ({ request, params }) => {
   const session = await getSession(request);
 
   if (!session) {
@@ -14,13 +14,9 @@ export const post: APIRoute = async ({ request }) => {
   }
 
   if (request.headers.get("Content-Type") === "application/json") {
-    const { pdf, emails, sendToMe, documentId, title, template } =
-      await request.json();
+    const { pdf, emails, sendToMe, title, template } = await request.json();
+    const { documentId } = params;
     const url = new URL(request.url);
-
-    if (!UUID.isValid(documentId)) {
-      return new Response(null, { status: 400 });
-    }
 
     let emailList: string[] = emails;
 
@@ -41,15 +37,21 @@ export const post: APIRoute = async ({ request }) => {
         const pdfDoc = await createPDF(pdf, url.origin);
         const pdfBase64 = Buffer.from(pdfDoc).toString("base64");
 
-        await shareDocument(
+        const response = await shareDocument(
           pdfBase64,
           generateSafeFileName(title),
           emailList,
           template,
           session.user?.email as string,
-          documentId,
+          documentId as string,
           session.user?.id as string
         );
+
+        if (response === null) {
+          return new Response(null, { status: 404 });
+        }
+
+        return new Response(null, { status: 200, headers });
       } catch (e) {
         return new Response(e instanceof Error ? e.message : null, {
           status: 500,
@@ -58,11 +60,7 @@ export const post: APIRoute = async ({ request }) => {
     } else {
       return new Response(null, { status: 400 });
     }
-
-    return new Response(null, {
-      status: 200,
-    });
+  } else {
+    return new Response(null, { status: 400 });
   }
-
-  return new Response(null, { status: 400 });
 };
