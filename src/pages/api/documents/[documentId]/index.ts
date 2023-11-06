@@ -68,22 +68,27 @@ export const get: APIRoute = async ({ request, params }) => {
 };
 
 export const all: APIRoute = async ({ params, request }) => {
-  const session = await getSession(request);
-
-  if (!session) {
-    return new Response(null, { status: 401 });
-  }
-
   if (request.method === "DELETE") {
+    const session = await getSession(request);
+
+    if (!session) {
+      return new Response(null, { status: 401 });
+    }
+
     const { documentId } = params;
     const userId = session.user?.id;
 
     try {
-      await deleteDraft(documentId as string, userId as string);
+      const response = await deleteDraft(
+        documentId as string,
+        userId as string
+      );
 
-      return new Response(null, {
-        status: 200,
-      });
+      if (response.deletedCount === 1) {
+        return new Response(null, { status: 200, headers });
+      }
+
+      return new Response(null, { status: 404 });
     } catch (e) {
       return new Response(e instanceof Error ? e.message : null, {
         status: 500,
