@@ -8,10 +8,15 @@ import { Icon } from "astro-icon";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
 import Badge from "@components/Badge.astro";
-import { handleNameChange } from "@utils/document";
 import pageTitle from "@utils/pageTitle";
 import Toast from "@components/Toast.astro";
-import { DOCUMENT_NAME_CHANGED, DOCUMENT_NAME_PARAM } from "@utils/toasts";
+import {
+  DOCUMENT_NAME_CHANGED,
+  DOCUMENT_NAME_PARAM,
+  ERROR,
+  ERROR_PARAM,
+  ToastStatus,
+} from "@utils/toasts";
 import type { Answers } from "@type";
 import { deleteSessionDocument, getAllAnswers } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
@@ -22,6 +27,7 @@ import { entityEnum } from "@utils/constants";
 import { UUID } from "mongodb";
 import { UserRoles } from "@db/user";
 import routes from "@utils/routes";
+import { changeDocumentName } from "@api/documents";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
@@ -50,25 +56,40 @@ let docId = documentId,
   answers: Answers = {},
   title,
   canGenerate = true,
-  toast: string | null = null;
+  toast: string | null = null,
+  toastStatus: ToastStatus = ToastStatus.default;
 
 const urlParams = new URL(Astro.request.url).searchParams;
 
 if (urlParams.has(DOCUMENT_NAME_PARAM)) {
   toast = DOCUMENT_NAME_CHANGED;
+  toastStatus = ToastStatus.default;
+}
+
+if (urlParams.has(ERROR_PARAM)) {
+  toast = ERROR;
+  toastStatus = ToastStatus.error;
 }
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  await handleNameChange(formData);
-
+  const title = String(formData.get("title"));
+  const docId = String(formData.get("template"));
   const redirectUrl = new URL(Astro.request.url);
 
-  if (!redirectUrl.searchParams.has(DOCUMENT_NAME_PARAM)) {
-    redirectUrl.searchParams.append(DOCUMENT_NAME_PARAM, "true");
-  }
+  try {
+    await changeDocumentName(
+      `${Astro.request.headers.get("cookie")}`,
+      docId,
+      title
+    );
 
-  return Astro.redirect(redirectUrl);
+    redirectUrl.searchParams.set(DOCUMENT_NAME_PARAM, "true");
+  } catch {
+    redirectUrl.searchParams.set(ERROR_PARAM, "true");
+  } finally {
+    return Astro.redirect(redirectUrl);
+  }
 }
 
 if (isUserDocument) {
@@ -260,7 +281,7 @@ const GENERATE = "Generuj dokument";
   </section>
   <ChangeNameModal />
   <PaymentModal documentId={documentId} />
-  {toast && <Toast info={toast} />}
+  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 <style>
   section {

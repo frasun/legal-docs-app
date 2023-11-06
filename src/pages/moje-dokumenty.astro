@@ -9,10 +9,9 @@ import Badge, { BadgeStyle } from "@components/Badge.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
-import { handleNameChange } from "@utils/document";
 import pageTitle from "@utils/pageTitle";
 import Toast from "@components/Toast.astro";
-import { ToastStatus } from "@utils/toasts";
+import { ERROR_PARAM, ToastStatus } from "@utils/toasts";
 import {
   DOCUMENT_NAME_CHANGED,
   DRAFT_SAVED,
@@ -29,6 +28,7 @@ import DeleteDraftButton from "@components/DeleteDraftButton.astro";
 import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 import Pagination from "@components/Pagination.astro";
 import routes from "@utils/routes";
+import { changeDocumentName } from "@api/documents";
 
 const session = await getSession(Astro.request);
 
@@ -76,20 +76,30 @@ if (urlParams.has(COPY_DOCUMENT_PARAM)) {
   }
 }
 
+if (urlParams.has(ERROR_PARAM)) {
+  toast = ERROR;
+  toastStatus = ToastStatus.error;
+}
+
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
+  const title = String(formData.get("title"));
+  const docId = String(formData.get("template"));
+  const redirectUrl = new URL(Astro.request.url);
 
   try {
-    await handleNameChange(formData);
+    await changeDocumentName(
+      `${Astro.request.headers.get("cookie")}`,
+      docId,
+      title
+    );
 
-    const redirectUrl = new URL(Astro.request.url);
-
-    if (!redirectUrl.searchParams.has(DOCUMENT_NAME_PARAM)) {
-      redirectUrl.searchParams.append(DOCUMENT_NAME_PARAM, "true");
-    }
-
+    redirectUrl.searchParams.set(DOCUMENT_NAME_PARAM, "true");
+  } catch {
+    redirectUrl.searchParams.set(ERROR_PARAM, "true");
+  } finally {
     return Astro.redirect(redirectUrl);
-  } catch {}
+  }
 }
 
 const page =

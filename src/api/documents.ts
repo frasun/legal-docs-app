@@ -2,6 +2,7 @@ import type { Document, DocumentShort } from "@type";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
 import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
+import trimWhitespace from "@utils/whitespace";
 
 export async function getDocuments(
   cookie: string,
@@ -55,4 +56,14 @@ export async function deleteDraft(cookie: string, documentId: string) {
   const requestUrl = new URL(`/api/documents/${documentId}`, API_URL);
 
   return apiRequest(requestUrl, { cookie }, "DELETE");
+}
+
+export async function changeDocumentName(
+  cookie: string,
+  documentId: string,
+  name: string
+) {
+  const requestUrl = new URL(`/api/documents/${documentId}`, API_URL);
+
+  return apiRequest(requestUrl, { cookie }, "PATCH", trimWhitespace(name));
 }

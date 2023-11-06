@@ -282,16 +282,20 @@ export async function deleteDraft(documentId: string, userId: string) {
   }
 }
 
-export async function changeDocumentName(id: string, title: string) {
+export async function changeDocumentName(
+  id: string,
+  userId: string,
+  title: string
+) {
   try {
     return await documentCollection.updateOne(
-      { _id: new UUID(id).toBinary() },
+      { _id: new UUID(id).toBinary(), userId },
       {
         $set: { title },
         $currentDate: { modified: true },
       }
     );
-  } catch (e: any) {
+  } catch (e) {
     throw e;
   }
 }

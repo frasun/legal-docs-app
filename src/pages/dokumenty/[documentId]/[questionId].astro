@@ -7,7 +7,6 @@ import { getSession } from "auth-astro/server";
 import QuestionIndex from "@components/QuestionIndex.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
-import { handleNameChange } from "@utils/document";
 import Badge from "@components/Badge.astro";
 import pageTitle from "@utils/pageTitle";
 import QuestionAction from "@components/QuestionAction.astro";
@@ -17,6 +16,9 @@ import {
   ANSWER_UPDATED,
   DOCUMENT_NAME_PARAM,
   ANSWER_UPDATED_PARAM,
+  ERROR_PARAM,
+  ToastStatus,
+  ERROR,
 } from "@utils/toasts";
 import type { Answers } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
@@ -27,6 +29,7 @@ import { UUID } from "mongodb";
 import { UserRoles } from "@db/user";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
+import { changeDocumentName } from "@api/documents";
 
 const { documentId: dId, questionId } = Astro.params;
 const documentId = String(dId);
@@ -59,6 +62,7 @@ let answers: Answers = {},
   draft = false,
   title: string | undefined,
   toast: string | null = null,
+  toastStatus: ToastStatus = ToastStatus.default,
   errors: string[] = [];
 
 const questionEntry = await getEntry("questions", String(questionId));
@@ -178,10 +182,17 @@ const urlParams = new URL(Astro.request.url).searchParams;
 
 if (urlParams.has(DOCUMENT_NAME_PARAM)) {
   toast = DOCUMENT_NAME_CHANGED;
+  toastStatus = ToastStatus.default;
 }
 
 if (urlParams.has(ANSWER_UPDATED_PARAM)) {
   toast = ANSWER_UPDATED;
+  toastStatus = ToastStatus.default;
+}
+
+if (urlParams.has(ERROR_PARAM)) {
+  toast = ERROR;
+  toastStatus = ToastStatus.error;
 }
 
 if (Astro.request.method === "POST") {
@@ -189,19 +200,23 @@ if (Astro.request.method === "POST") {
   const newTitle = formData.get("title");
 
   if (newTitle && isUserDocument) {
-    try {
-      await handleNameChange(formData);
+    const docId = String(formData.get("template"));
+    const redirectUrl = new URL(Astro.request.url);
 
-      const redirectUrl = new URL(Astro.request.url);
+    try {
+      await changeDocumentName(
+        `${Astro.request.headers.get("cookie")}`,
+        docId,
+        newTitle as string
+      );
 
       redirectUrl.searchParams.delete(ANSWER_UPDATED_PARAM);
-
-      if (!redirectUrl.searchParams.has(DOCUMENT_NAME_PARAM)) {
-        redirectUrl.searchParams.append(DOCUMENT_NAME_PARAM, "true");
-      }
-
+      redirectUrl.searchParams.set(DOCUMENT_NAME_PARAM, "true");
+    } catch {
+      redirectUrl.searchParams.set(ERROR_PARAM, "true");
+    } finally {
       return Astro.redirect(redirectUrl);
-    } catch {}
+    }
   }
 
   if (formData && !newTitle) {
@@ -366,7 +381,7 @@ if ("_isLoggedIn" in fields) {
     )
   }
   {draft && <ChangeNameModal />}
-  {toast && <Toast info={toast} />}
+  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 
 <style>
