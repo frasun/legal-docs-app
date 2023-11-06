@@ -61,6 +61,7 @@ if (urlParams.has(DOCUMENT_NAME_PARAM)) {
 if (urlParams.has(DRAFT_REMOVED_PARAM)) {
   if (Boolean(Number(urlParams.get(DRAFT_REMOVED_PARAM)))) {
     toast = DRAFT_REMOVED;
+    toastStatus = ToastStatus.default;
   } else {
     toast = ERROR;
     toastStatus = ToastStatus.error;
@@ -70,6 +71,7 @@ if (urlParams.has(DRAFT_REMOVED_PARAM)) {
 if (urlParams.has(COPY_DOCUMENT_PARAM)) {
   if (Boolean(Number(urlParams.get(COPY_DOCUMENT_PARAM)))) {
     toast = COPY_DOCUMENT;
+    toastStatus = ToastStatus.default;
   } else {
     toast = ERROR;
     toastStatus = ToastStatus.error;

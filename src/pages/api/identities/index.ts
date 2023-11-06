@@ -6,22 +6,18 @@ import {
 import { entityEnum } from "@utils/constants";
 import { DATA_TYPE } from "@utils/urlParams";
 import type { APIRoute } from "astro";
-import { UUID } from "mongodb";
 import { responseHeaders as headers } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 import { z } from "astro:content";
 
 export const get: APIRoute = async ({ request }) => {
-  if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-    return new Response(null, { status: 401 });
-  }
-
   const session = await getSession(request);
-  const userId = session?.user?.id;
 
-  if (!userId || !UUID.isValid(userId)) {
+  if (!session) {
     return new Response(null, { status: 401 });
   }
+
+  const userId = session?.user?.id;
 
   const urlParams = new URL(request.url).searchParams;
   const dataType = urlParams.get(DATA_TYPE) ?? undefined;
@@ -33,8 +29,11 @@ export const get: APIRoute = async ({ request }) => {
 
   try {
     const [identities, count] = await Promise.all([
-      getUserIdentities(userId, dataTypeFilter as (typeof entityEnum)[number]),
-      getUserIdentitiesCount(userId),
+      getUserIdentities(
+        userId as string,
+        dataTypeFilter as (typeof entityEnum)[number]
+      ),
+      getUserIdentitiesCount(userId as string),
     ]);
 
     return new Response(

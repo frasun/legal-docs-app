@@ -1,6 +1,6 @@
 import type { Identity, UserIdentities } from "@type";
 import { DATA_TYPE } from "@utils/urlParams";
-import { apiRequest, headers } from "@api/helpers/request";
+import { apiRequest } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
 
 export async function getIdentities(
@@ -13,7 +13,7 @@ export async function getIdentities(
     requestUrl.searchParams.append(DATA_TYPE, type);
   }
 
-  return await apiRequest(requestUrl, { ...headers, cookie });
+  return await apiRequest(requestUrl, { cookie });
 }
 
 export async function getIdentity(
