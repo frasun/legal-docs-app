@@ -1,10 +1,15 @@
-import { getUserIdentities, getUserIdentitiesCount } from "@db/identity";
+import {
+  createUserIdentity,
+  getUserIdentities,
+  getUserIdentitiesCount,
+} from "@db/identity";
 import { entityEnum } from "@utils/constants";
 import { DATA_TYPE } from "@utils/urlParams";
 import type { APIRoute } from "astro";
 import { UUID } from "mongodb";
 import { responseHeaders as headers } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
+import { z } from "astro:content";
 
 export const get: APIRoute = async ({ request }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -44,5 +49,32 @@ export const get: APIRoute = async ({ request }) => {
     );
   } catch (e) {
     return new Response(e instanceof Error ? e.message : null, { status: 500 });
+  }
+};
+
+export const post: APIRoute = async ({ request }) => {
+  const session = await getSession(request);
+
+  if (!session) {
+    return new Response(null, { status: 401 });
+  }
+
+  const userId = session.user?.id;
+
+  try {
+    const identity = await request.json();
+    await createUserIdentity({ ...identity, userId });
+
+    return new Response(JSON.stringify(null), { status: 200, headers });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      const errors: string[] = [];
+
+      e.errors.map(({ message }) => errors.push(message));
+
+      return new Response(JSON.stringify(errors), { status: 400, headers });
+    } else {
+      return new Response(null, { status: 400 });
+    }
   }
 };

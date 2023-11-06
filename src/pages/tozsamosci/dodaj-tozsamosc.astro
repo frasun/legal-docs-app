@@ -4,33 +4,28 @@ import pageTitle from "@utils/pageTitle";
 import DataInput from "@components/DataInput.astro";
 import { entityEnum } from "@utils/constants";
 import ErrorList from "@components/ErrorList.astro";
-import { createUserIdentity } from "@db/identity";
 import { getSession } from "auth-astro/server";
-import { z } from "astro:content";
 //@ts-ignore
 import { IDENTITY_SAVED_PARAM } from "@utils/toasts";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
+import { postIdentity } from "@api/identities";
+import { Identity } from "@type";
 
 const session = await getSession(Astro.request);
 if (!session) {
   return Astro.redirect(`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`);
 }
 
-const userId = session.user?.id;
-if (!userId) {
-  return Astro.redirect(`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`);
-}
-
 const PAGE_TITLE = "Dodaj tożsamość";
 let errors: string[] = [],
-  name: string,
-  pin: string,
-  street: string,
-  apt: string,
-  postalCode: string,
-  city: string,
-  type: (typeof entityEnum)[number] = entityEnum[0],
+  name: Identity["name"],
+  pin: Identity["pin"],
+  street: Identity["street"],
+  apt: Identity["apt"],
+  postalCode: Identity["postalCode"],
+  city: Identity["city"],
+  type: Identity["type"] = entityEnum[0],
   personName = "",
   personStreet = "",
   personApt = "",
@@ -70,7 +65,6 @@ if (Astro.request.method === "POST") {
   }
 
   const identity = {
-    userId,
     type: dataType,
     name,
     pin,
@@ -81,37 +75,41 @@ if (Astro.request.method === "POST") {
   };
 
   try {
-    await createUserIdentity(identity);
+    await postIdentity(`${Astro.request.headers.get("cookie")}`, identity);
 
     return Astro.redirect(
-      `${Astro.url.origin}/tozsamosci?${IDENTITY_SAVED_PARAM}`
+      `${Astro.url.origin}/${routes.IDENTITIES}?${IDENTITY_SAVED_PARAM}`
     );
   } catch (e) {
-    if (e instanceof z.ZodError) {
-      e.errors.map(({ message }) => errors.push(message));
+    if (e instanceof Error) {
+      if (e.cause === 400) {
+        e.message.split(",").map((message: string) => errors.push(message));
 
-      type = dataType;
+        type = dataType;
 
-      switch (dataType) {
-        case entityEnum[0]:
-          personName = name;
-          personPin = pin;
-          personStreet = street;
-          personApt = apt;
-          personPostalCode = postalCode;
-          personCity = city;
-          break;
-        case entityEnum[1]:
-          companyName = name;
-          companyPin = pin;
-          companyStreet = street;
-          companyApt = apt;
-          companyPostalCode = postalCode;
-          companyCity = city;
-          break;
-        default:
-          return Astro.redirect(routes.NOT_FOUND);
+        switch (dataType) {
+          case entityEnum[0]:
+            personName = name;
+            personPin = pin;
+            personStreet = street;
+            personApt = apt;
+            personPostalCode = postalCode;
+            personCity = city;
+            break;
+          case entityEnum[1]:
+            companyName = name;
+            companyPin = pin;
+            companyStreet = street;
+            companyApt = apt;
+            companyPostalCode = postalCode;
+            companyCity = city;
+            break;
+          default:
+            return Astro.redirect(routes.NOT_FOUND);
+        }
       }
+    } else {
+      return Astro.redirect(routes.NOT_FOUND);
     }
   }
 }

@@ -24,3 +24,14 @@ export async function getIdentity(
 
   return await apiRequest(requestUrl, { cookie });
 }
+
+export async function postIdentity(cookie: string, identity: Identity) {
+  const requestUrl = new URL(`/api/identities`, API_URL);
+
+  return await apiRequest(
+    requestUrl,
+    { cookie, "Content-Type": "application/json" },
+    "POST",
+    JSON.stringify(identity)
+  );
+}
