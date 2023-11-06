@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
 import { getPrices } from "@utils/stripe";
-import { getDocuments } from "src/api/helpers/documents";
+import { getTemplates } from "@api/helpers/templates";
 import { responseHeaders as headers } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
@@ -20,7 +20,7 @@ export const get: APIRoute = async ({ request }) => {
 
   try {
     const [documents, prices] = await Promise.all([
-      getDocuments(showDarft, showMemberContent, category, search),
+      getTemplates(showDarft, showMemberContent, category, search),
       getPrices(),
     ]);
 

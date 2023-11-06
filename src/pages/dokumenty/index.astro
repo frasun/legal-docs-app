@@ -8,7 +8,7 @@ import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
 import type { DocumentShort, Category } from "@type";
-import { getDocuments } from "@api/documents";
+import { getTemplates } from "@api/templates";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get(CATEGORY);
@@ -23,7 +23,7 @@ let documents: DocumentShort[],
 
 try {
   [documents, categories] = await Promise.all([
-    getDocuments(
+    getTemplates(
       `${Astro.request.headers.get("cookie")}`,
       currentCat ?? undefined,
       search ?? undefined

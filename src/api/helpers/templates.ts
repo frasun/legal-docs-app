@@ -2,11 +2,11 @@ import { getCollection, getEntry } from "astro:content";
 import Fuse from "fuse.js";
 import trimWhitespace from "@utils/whitespace";
 
-export async function getDocumentInfo(documentId: string) {
+export async function getTemplateInfo(documentId: string) {
   return await getEntry("documents", documentId as string);
 }
 
-export async function getDocuments(
+export async function getTemplates(
   showDarft = false,
   showMemberContent = false,
   category?: string | null,

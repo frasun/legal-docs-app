@@ -5,7 +5,7 @@ import formatNumber from "@utils/number";
 import BlogPost from "@components/BlogPost.astro";
 import BlogContent from "@components/BlogContent.astro";
 import type { Document } from "@type";
-import { getDocument } from "@api/documents";
+import { getTemplate } from "@api/templates";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
 
@@ -18,7 +18,7 @@ let title: Document["title"] = "",
   firstQuestionUrl: Document["firstQuestionUrl"] = "";
 
 try {
-  const response = await getDocument(
+  const response = await getTemplate(
     `${Astro.request.headers.get("cookie")}`,
     Astro.params.documentId as string
   );
