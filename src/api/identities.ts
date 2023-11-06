@@ -35,3 +35,9 @@ export async function postIdentity(cookie: string, identity: Identity) {
     JSON.stringify(identity)
   );
 }
+
+export async function deleteIdentity(cookie: string, identityId: string) {
+  const requestUrl = new URL(`/api/identities/${identityId}`, API_URL);
+
+  return await apiRequest(requestUrl, { cookie }, "DELETE");
+}

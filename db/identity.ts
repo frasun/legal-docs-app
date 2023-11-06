@@ -88,10 +88,14 @@ export async function updateUserIdentity(
 }
 
 export async function deleteUserIdentity(identityId: string, userId: string) {
-  return await identityCollection.deleteOne({
-    _id: new UUID(identityId).toBinary(),
-    userId,
-  });
+  try {
+    return await identityCollection.deleteOne({
+      _id: new UUID(identityId).toBinary(),
+      userId,
+    });
+  } catch (e) {
+    throw e;
+  }
 }
 
 function getIdentitySchema(personalData: boolean) {

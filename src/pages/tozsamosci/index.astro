@@ -2,21 +2,21 @@
 import EmptyScreen from "@components/EmptyScreen.astro";
 import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
-import { deleteUserIdentity } from "@db/identity";
-import { getSession } from "auth-astro/server";
 import {
   IDENTITY_SAVED_PARAM,
   IDENTITY_SAVED,
   IDENTITY_REMOVED,
   IDENTITY_REMOVED_PARAM,
+  ERROR_PARAM,
+  ERROR,
 } from "@utils/toasts";
 import Toast from "@components/Toast.astro";
 import { entityEnum } from "@utils/constants";
 import { DATA_TYPE, REDIRECT } from "@utils/urlParams";
-import { UUID } from "mongodb";
-import { getIdentities } from "@api/identities";
+import { deleteIdentity, getIdentities } from "@api/identities";
 import type { UserIdentities } from "@type";
 import routes from "@utils/routes";
+import { ToastStatus } from "@utils/toasts";
 
 const PAGE_TITLE = "Tożsamości";
 
@@ -26,7 +26,8 @@ const dataTypeFilter = dataType ? decodeURIComponent(dataType) : undefined;
 
 let identities: UserIdentities["identities"] = [],
   count: UserIdentities["count"] = 0,
-  toast: string | null = null;
+  toast: string | null = null,
+  toastStatus: ToastStatus = ToastStatus.default;
 
 try {
   const response = await getIdentities(
@@ -55,20 +56,25 @@ if (urlParams.has(IDENTITY_REMOVED_PARAM)) {
   toast = IDENTITY_REMOVED;
 }
 
+if (urlParams.has(ERROR_PARAM)) {
+  toast = ERROR;
+  toastStatus = ToastStatus.error;
+}
+
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const id = formData.get("id");
-  const session = await getSession(Astro.request);
-  const userId = session?.user?.id;
 
-  if (UUID.isValid(String(id)) && userId) {
-    try {
-      await deleteUserIdentity(String(id), userId);
-    } finally {
-      return Astro.redirect(
-        `${Astro.url.origin}/tozsamosci?${IDENTITY_REMOVED_PARAM}`
-      );
-    }
+  try {
+    await deleteIdentity(`${Astro.request.headers.get("cookie")}`, String(id));
+
+    return Astro.redirect(
+      `${Astro.url.origin}/${routes.IDENTITIES}?${IDENTITY_REMOVED_PARAM}`
+    );
+  } catch {
+    return Astro.redirect(
+      `${Astro.url.origin}/${routes.IDENTITIES}?${ERROR_PARAM}`
+    );
   }
 }
 ---
@@ -126,7 +132,7 @@ if (Astro.request.method === "POST") {
       </EmptyScreen>
     )
   }
-  {toast && <Toast info={toast} />}
+  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 
 <style>

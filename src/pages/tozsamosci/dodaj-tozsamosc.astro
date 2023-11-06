@@ -107,9 +107,9 @@ if (Astro.request.method === "POST") {
           default:
             return Astro.redirect(routes.NOT_FOUND);
         }
+      } else {
+        return Astro.redirect(routes.NOT_FOUND);
       }
-    } else {
-      return Astro.redirect(routes.NOT_FOUND);
     }
   }
 }
