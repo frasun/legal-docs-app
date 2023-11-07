@@ -1,4 +1,4 @@
-import type { Document, DocumentShort } from "@type";
+import type { Template, TemplateShort } from "@type";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
 import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
@@ -7,7 +7,7 @@ export async function getTemplates(
   cookie: string,
   category?: string,
   search?: string
-): Promise<DocumentShort[]> {
+): Promise<TemplateShort[]> {
   const requestUrl = new URL("/api/templates", API_URL);
 
   if (category) {
@@ -24,7 +24,7 @@ export async function getTemplates(
 export async function getTemplate(
   cookie: string,
   documentId: string
-): Promise<Document> {
+): Promise<Template> {
   const requestUrl = new URL(`/api/templates/${documentId}`, API_URL);
 
   return apiRequest(requestUrl, { ...headers, cookie });

@@ -6,7 +6,7 @@ import { responseHeaders as headers } from "@api/helpers/response";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   try {
@@ -21,7 +21,7 @@ export const get: APIRoute = async ({ request, params }) => {
     );
 
     if (!page) {
-      return new Response(null, { status: 404 });
+      return new Response(JSON.stringify(null), { status: 404, headers });
     }
 
     return new Response(JSON.stringify(page), {
@@ -29,8 +29,9 @@ export const get: APIRoute = async ({ request, params }) => {
       headers,
     });
   } catch {
-    return new Response(null, {
+    return new Response(JSON.stringify(null), {
       status: 500,
+      headers,
     });
   }
 };

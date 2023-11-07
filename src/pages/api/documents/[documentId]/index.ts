@@ -7,7 +7,7 @@ export const all: APIRoute = async ({ params, request }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   const { documentId } = params;
@@ -24,11 +24,15 @@ export const all: APIRoute = async ({ params, request }) => {
         return new Response(JSON.stringify(null), { status: 200, headers });
       }
 
-      return new Response(null, { status: 404 });
+      return new Response(JSON.stringify(null), { status: 404, headers });
     } catch (e) {
-      return new Response(e instanceof Error ? e.message : null, {
-        status: 500,
-      });
+      return new Response(
+        JSON.stringify(e instanceof Error ? e.message : null),
+        {
+          status: 500,
+          headers,
+        }
+      );
     }
   }
 
@@ -43,18 +47,23 @@ export const all: APIRoute = async ({ params, request }) => {
       );
 
       if (response.modifiedCount === 0) {
-        return new Response(null, { status: 404 });
+        return new Response(JSON.stringify(null), { status: 404, headers });
       }
 
       return new Response(JSON.stringify(null), { status: 200, headers });
     } catch (e) {
-      return new Response(e instanceof Error ? e.message : null, {
-        status: 400,
-      });
+      return new Response(
+        JSON.stringify(e instanceof Error ? e.message : null),
+        {
+          status: 400,
+          headers,
+        }
+      );
     }
   }
 
-  return new Response(null, {
+  return new Response(JSON.stringify(null), {
     status: 400,
+    headers,
   });
 };

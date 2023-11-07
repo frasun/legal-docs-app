@@ -7,7 +7,7 @@ import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
-import type { DocumentShort, Category } from "@type";
+import type { TemplateShort, Category } from "@type";
 import { getTemplates } from "@api/templates";
 
 const url = new URL(Astro.request.url);
@@ -16,7 +16,7 @@ const search = url.searchParams.get(SEARCH);
 const PAGE_TITLE = "Wszystkie dokumenty";
 import routes from "@utils/routes";
 
-let documents: DocumentShort[],
+let documents: TemplateShort[],
   categories: Category[],
   currentCategory: Category | undefined,
   title: string;

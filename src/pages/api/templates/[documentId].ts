@@ -8,7 +8,7 @@ import { UserRoles } from "@db/user";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   const { documentId } = params;
@@ -23,8 +23,9 @@ export const get: APIRoute = async ({ request, params }) => {
     ]);
 
     if (!info || !document) {
-      return new Response(null, {
+      return new Response(JSON.stringify(null), {
         status: 404,
+        headers,
       });
     }
 
@@ -33,14 +34,16 @@ export const get: APIRoute = async ({ request, params }) => {
     const { index, priceId } = document.data;
 
     if ((draft && !showDarft) || !index) {
-      return new Response(null, {
+      return new Response(JSON.stringify(null), {
         status: 404,
+        headers,
       });
     }
 
     if (memberContent && !showMemberContent) {
-      return new Response(null, {
+      return new Response(JSON.stringify(null), {
         status: 403,
+        headers,
       });
     }
 
@@ -60,8 +63,9 @@ export const get: APIRoute = async ({ request, params }) => {
       }
     );
   } catch (e) {
-    return new Response(e instanceof Error ? e.message : null, {
+    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
       status: 500,
+      headers,
     });
   }
 };

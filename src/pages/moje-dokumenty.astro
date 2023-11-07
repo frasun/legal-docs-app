@@ -1,10 +1,7 @@
 ---
 import Layout from "../layouts/App.astro";
 import { Icon } from "astro-icon";
-import { formatDateTime, LOCALE } from "@utils/date";
-import { getEntry } from "astro:content";
-import { getSession } from "auth-astro/server";
-import { getDocuments } from "@db/document";
+import { formatDateTime } from "@utils/date";
 import Badge, { BadgeStyle } from "@components/Badge.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
@@ -29,26 +26,35 @@ import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 import Pagination from "@components/Pagination.astro";
 import routes from "@utils/routes";
 import { changeDocumentName } from "@api/documents";
+import { getDocuments } from "@api/documents";
+import { UserDocuments } from "@type";
 
-const session = await getSession(Astro.request);
-
-if (!session) {
-  return Astro.redirect(
-    `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
-  );
-}
-
-const userId = session.user?.id;
-
-if (!userId) {
-  return Astro.redirect(
-    `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
-  );
-}
-
-let toast: string | null = null,
-  toastStatus;
 const urlParams = new URL(Astro.request.url).searchParams;
+const PAGE_TITLE = "Moje dokumenty";
+const page = urlParams.get(PARAMS.PAGE) || undefined;
+
+let documents: UserDocuments["documents"],
+  pages: UserDocuments["pages"],
+  currentPage: UserDocuments["currentPage"],
+  toast: string | null = null,
+  toastStatus;
+
+try {
+  const userDocuments = await getDocuments(
+    `${Astro.request.headers.get("cookie")}`,
+    page
+  );
+
+  ({ documents, pages, currentPage } = userDocuments);
+} catch (e) {
+  if (e instanceof Error && e.cause === 401) {
+    return Astro.redirect(
+      `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
+    );
+  } else {
+    return Astro.redirect(routes.NOT_FOUND);
+  }
+}
 
 if (urlParams.has(DRAFT_SAVED_PARAM)) {
   toast = DRAFT_SAVED;
@@ -104,44 +110,6 @@ if (Astro.request.method === "POST") {
   }
 }
 
-const page =
-  Number(new URL(Astro.request.url).searchParams.get(PARAMS.PAGE)) || undefined;
-const { documents, pages, currentPage } = await getDocuments(userId, page);
-const groupedItems: Record<string, typeof documents> = {};
-
-documents.forEach((item) => {
-  const date = item.modified || item.created;
-
-  if (date) {
-    const monthYear = date.toLocaleString(LOCALE, {
-      month: "long",
-      year: "numeric",
-    });
-
-    if (!groupedItems[monthYear]) {
-      groupedItems[monthYear] = [];
-    }
-
-    groupedItems[monthYear].push(item);
-  }
-});
-
-const PAGE_TITLE = "Moje dokumenty";
-
-async function getDocTitle(docId: string) {
-  const docEntry = await getEntry("documents", docId);
-  let docTitle = "";
-
-  if (docEntry) {
-    const {
-      data: { title },
-    } = docEntry;
-    docTitle = title;
-  }
-
-  return docTitle;
-}
-
 function getDateLabel(created: Date, modified: Date) {
   return modified > created ? "Ostatnia zmiana" : "Utworzony";
 }
@@ -150,14 +118,23 @@ function getDateLabel(created: Date, modified: Date) {
 <Layout title={pageTitle(PAGE_TITLE)}>
   <span slot="topbar-title">{PAGE_TITLE}</span>
   {
-    documents.length ? (
+    Object.keys(documents).length ? (
       <>
         <section>
-          {Object.keys(groupedItems).map((monthYear) => (
+          {Object.keys(documents).map((monthYear) => (
             <>
               <h6>{monthYear}</h6>
-              {groupedItems[monthYear].map(
-                ({ doc, _id, title, created, draft, modified, shared }) => (
+              {documents[monthYear].map(
+                ({
+                  doc,
+                  _id,
+                  title,
+                  created,
+                  draft,
+                  modified,
+                  shared,
+                  template,
+                }) => (
                   <div>
                     <header>
                       <a
@@ -173,7 +150,7 @@ function getDateLabel(created: Date, modified: Date) {
                       </a>
                       <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
                         <Icon name="document" width={16} height={16} />
-                        {getDocTitle(String(doc))}
+                        {template}
                       </a>
                     </header>
                     {draft ? (

@@ -14,7 +14,7 @@ export const get: APIRoute = async ({ request }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   const userId = session?.user?.id;
@@ -47,7 +47,10 @@ export const get: APIRoute = async ({ request }) => {
       }
     );
   } catch (e) {
-    return new Response(e instanceof Error ? e.message : null, { status: 500 });
+    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
+      status: 500,
+      headers,
+    });
   }
 };
 
@@ -55,7 +58,7 @@ export const post: APIRoute = async ({ request }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   const userId = session.user?.id;
@@ -71,9 +74,12 @@ export const post: APIRoute = async ({ request }) => {
 
       e.errors.map(({ message }) => errors.push(message));
 
-      return new Response(JSON.stringify(errors), { status: 400, headers });
+      return new Response(JSON.stringify(errors), {
+        status: 400,
+        headers,
+      });
     } else {
-      return new Response(null, { status: 400 });
+      return new Response(JSON.stringify(null), { status: 400, headers });
     }
   }
 };

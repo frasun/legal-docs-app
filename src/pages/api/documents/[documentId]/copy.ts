@@ -7,7 +7,7 @@ export const post: APIRoute = async ({ request, params }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   const { documentId } = params;
@@ -17,13 +17,14 @@ export const post: APIRoute = async ({ request, params }) => {
     const response = await copyDocument(documentId as string, userId as string);
 
     if (!response) {
-      return new Response(null, { status: 404 });
+      return new Response(JSON.stringify(null), { status: 404, headers });
     }
 
     return new Response(JSON.stringify(null), { status: 200, headers });
   } catch (e) {
-    return new Response(e instanceof Error ? e.message : null, {
+    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
       status: 400,
+      headers,
     });
   }
 };

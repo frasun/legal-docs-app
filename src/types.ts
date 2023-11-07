@@ -1,6 +1,7 @@
-import type { ImageAsset, Slug } from "@sanity/types";
+import type { ImageAsset } from "@sanity/types";
 import type { PortableTextBlock } from "@portabletext/types";
 import type { entityEnum } from "@utils/constants";
+import type { MyDocument } from "@db/document";
 
 export type Answers = Record<string, any>;
 
@@ -13,7 +14,7 @@ export interface Post {
   excerpt?: string;
   keywords?: string | null;
   description?: string | null;
-  documents?: Pick<Document, "title" | "slug">[] | null;
+  documents?: Pick<Template, "title" | "slug">[] | null;
   memberContent?: boolean;
 }
 
@@ -33,12 +34,12 @@ export interface SanityDocument {
   posts: PostShort[] | null;
 }
 
-export interface Document extends SanityDocument {
+export interface Template extends SanityDocument {
   price: number | null;
   firstQuestionUrl: string;
 }
 
-export interface DocumentShort {
+export interface TemplateShort {
   title: string;
   slug: string;
   price: number;
@@ -81,4 +82,14 @@ interface UserIdentity extends Identity {
 export interface UserIdentities {
   identities: UserIdentity[];
   count: number;
+}
+
+export interface UserDocument extends MyDocument {
+  template: string;
+}
+
+export interface UserDocuments {
+  documents: Record<string, UserDocument[]>;
+  pages: number;
+  currentPage: number;
 }

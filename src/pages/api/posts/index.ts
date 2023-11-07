@@ -7,7 +7,7 @@ import { UserRoles } from "@db/user";
 
 export const get: APIRoute = async ({ request }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   const session = await getSession(request);
@@ -30,6 +30,9 @@ export const get: APIRoute = async ({ request }) => {
       headers,
     });
   } catch (e) {
-    return new Response(e instanceof Error ? e.message : null, { status: 500 });
+    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
+      status: 500,
+      headers,
+    });
   }
 };

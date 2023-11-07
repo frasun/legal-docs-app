@@ -18,6 +18,9 @@ export interface Document {
   sharedWith?: string[];
 }
 
+type UserDocument = Omit<Document, "answers" | "userId" | "sharedWith">;
+export type MyDocument = UserDocument & { _id: UUID };
+
 const documentCollection = mongo.collection<Document>("documents");
 
 const LIMIT = 10;
@@ -117,17 +120,16 @@ export async function getDocuments(
     const pages = Math.ceil(userDocumentCount / limit);
     const offset = page && page > 0 && page <= pages ? (page - 1) * limit : 0;
 
-    type Documents = Omit<Document, "answers" | "userId" | "sharedWith">;
-
-    const documents = await documentCollection
-      .find<Documents>({ userId })
+    const documents = (await documentCollection
+      .find({ userId })
       .sort({ modified: -1 })
       .skip(offset)
       .limit(limit)
-      .project({ answers: 0, userId: 0, sharedWith: 0 });
+      .project({ answers: 0, userId: 0, sharedWith: 0 })
+      .toArray()) as MyDocument[];
 
     return {
-      documents: await documents.toArray(),
+      documents,
       pages,
       currentPage: offset / limit + 1,
     };

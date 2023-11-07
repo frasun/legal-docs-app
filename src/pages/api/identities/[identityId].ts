@@ -13,13 +13,13 @@ export const get: APIRoute = async ({ request, params }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   const { identityId } = params;
 
   if (!UUID.isValid(identityId as string)) {
-    return new Response(null, { status: 404 });
+    return new Response(JSON.stringify(null), { status: 404, headers });
   }
 
   try {
@@ -29,12 +29,15 @@ export const get: APIRoute = async ({ request, params }) => {
     );
 
     if (!identity) {
-      return new Response(null, { status: 403 });
+      return new Response(JSON.stringify(null), { status: 403, headers });
     }
 
     return new Response(JSON.stringify(identity), { status: 200, headers });
   } catch (e) {
-    return new Response(e instanceof Error ? e.message : null, { status: 500 });
+    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
+      status: 500,
+      headers,
+    });
   }
 };
 
@@ -42,7 +45,7 @@ export const all: APIRoute = async ({ request, params }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   const { identityId } = params;
@@ -58,12 +61,16 @@ export const all: APIRoute = async ({ request, params }) => {
       if (response.deletedCount === 1) {
         return new Response(JSON.stringify(null), { status: 200, headers });
       } else {
-        return new Response(null, { status: 404 });
+        return new Response(JSON.stringify(null), { status: 404, headers });
       }
     } catch (e) {
-      return new Response(e instanceof Error ? e.message : null, {
-        status: 500,
-      });
+      return new Response(
+        JSON.stringify(e instanceof Error ? e.message : null),
+        {
+          status: 500,
+          headers,
+        }
+      );
     }
   }
 
@@ -77,7 +84,7 @@ export const all: APIRoute = async ({ request, params }) => {
       );
 
       if (response.modifiedCount !== 1) {
-        return new Response(null, { status: 404 });
+        return new Response(JSON.stringify(null), { status: 404, headers });
       }
 
       return new Response(JSON.stringify(null), { status: 200, headers });
@@ -87,14 +94,21 @@ export const all: APIRoute = async ({ request, params }) => {
 
         e.errors.map(({ message }) => errors.push(message));
 
-        return new Response(JSON.stringify(errors), { status: 400, headers });
-      } else {
-        return new Response(e instanceof Error ? e.message : null, {
-          status: 500,
+        return new Response(JSON.stringify(errors), {
+          status: 400,
+          headers,
         });
+      } else {
+        return new Response(
+          JSON.stringify(e instanceof Error ? e.message : null),
+          {
+            status: 500,
+            headers,
+          }
+        );
       }
     }
   }
 
-  return new Response(null, { status: 400 });
+  return new Response(JSON.stringify(null), { status: 400, headers });
 };

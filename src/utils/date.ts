@@ -14,13 +14,15 @@ export default function (dateString?: string) {
 }
 
 export function formatDateTime(datetime: Date) {
-  const date = datetime.toLocaleDateString(LOCALE, {
+  const dateString = new Date(datetime);
+
+  const date = dateString.toLocaleDateString(LOCALE, {
     timeZone: TIMEZONE,
     day: "numeric",
     month: "long",
   });
 
-  const time = datetime.toLocaleTimeString(LOCALE, {
+  const time = dateString.toLocaleTimeString(LOCALE, {
     timeZone: TIMEZONE,
     hour: "numeric",
     minute: "numeric",

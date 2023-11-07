@@ -10,7 +10,7 @@ export const post: APIRoute = async ({ request, params }) => {
   const session = await getSession(request);
 
   if (!session) {
-    return new Response(null, { status: 401 });
+    return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
   if (request.headers.get("Content-Type") === "application/json") {
@@ -28,7 +28,10 @@ export const post: APIRoute = async ({ request, params }) => {
       const isEmail = testString(email, emailRegExp);
 
       if (!isEmail) {
-        return new Response(`${WRONG_EMAIL_FORMAT}: ${email}`, { status: 400 });
+        return new Response(`${WRONG_EMAIL_FORMAT}: ${email}`, {
+          status: 400,
+          headers,
+        });
       }
     }
 
@@ -48,19 +51,23 @@ export const post: APIRoute = async ({ request, params }) => {
         );
 
         if (response === null) {
-          return new Response(null, { status: 404 });
+          return new Response(JSON.stringify(null), { status: 404, headers });
         }
 
         return new Response(JSON.stringify(null), { status: 200, headers });
       } catch (e) {
-        return new Response(e instanceof Error ? e.message : null, {
-          status: 500,
-        });
+        return new Response(
+          JSON.stringify(e instanceof Error ? e.message : null),
+          {
+            status: 500,
+            headers,
+          }
+        );
       }
     } else {
-      return new Response(null, { status: 400 });
+      return new Response(JSON.stringify(null), { status: 400, headers });
     }
   } else {
-    return new Response(null, { status: 400 });
+    return new Response(JSON.stringify(null), { status: 400, headers });
   }
 };
