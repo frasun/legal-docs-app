@@ -1,34 +1,6 @@
 //@ts-ignore
 import { sanityClient } from "sanity:client";
-import type { BlogPosts, Post, SanityDocument } from "@type";
-
-export async function getDocumentPosts(
-  documentId: string,
-  showMemberContent: boolean
-): Promise<SanityDocument> {
-  const allPostQuery = `_type=='post' && references(^._id) && defined(publishedAt)`;
-  const postQuery = showMemberContent
-    ? allPostQuery
-    : `${allPostQuery} && memberContent == false`;
-
-  return await sanityClient.fetch(
-    `*[_type == 'legalDocument' && slug.current == "${documentId}"] { 
-      title, 
-      "draft": !publishedAt, 
-      body,
-      memberContent,
-      keywords,
-      description,
-      "posts": *[${postQuery}] | order(publishedAt desc) [0..2] { 
-        title, 
-        mainImage, 
-        publishedAt,
-        "slug": slug.current,
-        "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
-      }
-  }[0]`
-  );
-}
+import type { BlogPosts, Post, DocumentInfo } from "@type";
 
 export async function getPost(slug: string, showDraft: boolean): Promise<Post> {
   const postQuery = `_type == "post" && slug.current == $slug`;

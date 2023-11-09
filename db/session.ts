@@ -38,7 +38,28 @@ export async function getAnswers(
   fields: string[]
 ) {
   try {
-    return await kv.hmget(`document-${ssid}-${documentId}`, ...fields);
+    let sessionAnswers: Answers | null = null;
+
+    if (fields.length) {
+      sessionAnswers = await kv.hmget(
+        `document-${ssid}-${documentId}`,
+        ...fields
+      );
+    } else {
+      sessionAnswers = await kv.hgetall(`document-${ssid}-${documentId}`);
+    }
+
+    let answers: Answers = {};
+
+    if (sessionAnswers) {
+      for (let [key, value] of Object.entries(sessionAnswers)) {
+        if (value !== null) {
+          answers[key] = value;
+        }
+      }
+    }
+
+    return answers;
   } catch (e) {
     console.log(e);
     throw e;

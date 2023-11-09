@@ -14,7 +14,7 @@ export interface Post {
   excerpt?: string;
   keywords?: string | null;
   description?: string | null;
-  documents?: Pick<Template, "title" | "slug">[] | null;
+  documents?: Pick<TemplateInfo, "title" | "slug">[] | null;
   memberContent?: boolean;
 }
 
@@ -23,9 +23,9 @@ export type PostShort = Pick<
   "title" | "publishedAt" | "slug" | "mainImage" | "excerpt"
 >;
 
-export interface SanityDocument {
+export interface DocumentInfo {
   title: string;
-  draft: string;
+  draft: boolean;
   slug: string;
   body?: PortableTextBlock[];
   memberContent: boolean;
@@ -34,17 +34,29 @@ export interface SanityDocument {
   posts: PostShort[] | null;
 }
 
-export interface Template extends SanityDocument {
+export interface TemplateInfo extends DocumentInfo {
   price: number | null;
   firstQuestionUrl: string;
 }
 
 export interface TemplateShort {
-  title: string;
-  slug: string;
+  title: DocumentInfo["title"];
+  slug: DocumentInfo["slug"];
   price: number;
   categories: string[];
-  draft: boolean;
+  draft: DocumentInfo["draft"];
+}
+
+export interface Template {
+  title: DocumentInfo["title"];
+  index: {
+    title: string;
+    questions: {
+      title: string;
+      slug: string;
+    }[];
+  }[];
+  encryptedFields: string[];
 }
 
 export interface Page {
@@ -92,4 +104,18 @@ export interface UserDocuments {
   documents: Record<string, UserDocument[]>;
   pages: number;
   currentPage: number;
+}
+
+export interface Question {
+  question: string;
+  questionShort?: string;
+  info?: string;
+  answers: Answers;
+  nextId: string;
+  prevId: string | null;
+  currentQuestionIndex: number;
+  documentTitle: Template["title"];
+  draft: boolean;
+  index: Template["index"];
+  questionIndex: number;
 }

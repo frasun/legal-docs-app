@@ -30,7 +30,7 @@ export async function getDocumentAnswers(
   userId: string,
   fields: string[]
 ) {
-  type UserDocument = Pick<Document, "answers" | "doc" | "title" | "draft">;
+  type UserDocument = Pick<Document, "answers">;
 
   const selectedAnswers: Record<string, number> = {};
 
@@ -39,18 +39,17 @@ export async function getDocumentAnswers(
   });
 
   try {
-    return await documentCollection.findOne<UserDocument>(
+    const response = await documentCollection.findOne<UserDocument>(
       { _id: new UUID(id).toBinary(), userId },
       {
         projection: {
           _id: 0,
-          doc: 1,
-          title: 1,
-          draft: 1,
           ...selectedAnswers,
         },
       }
     );
+
+    return response ? response.answers : null;
   } catch (e) {
     throw e;
   }
@@ -93,15 +92,13 @@ export async function getDocumentSummary(docId: string, userId: string) {
 }
 
 export async function getDocumentId(id: string, userId: string) {
-  type TemplateId = Pick<Document, "doc">;
+  type TemplateId = Pick<Document, "doc" | "title" | "draft">;
 
   try {
-    const document = await documentCollection.findOne<TemplateId>(
+    return await documentCollection.findOne<TemplateId>(
       { _id: new UUID(id).toBinary(), userId },
-      { projection: { doc: 1, _id: 0 } }
+      { projection: { doc: 1, _id: 0, title: 1, draft: 1 } }
     );
-
-    return document ? document.doc : null;
   } catch (e) {
     throw e;
   }

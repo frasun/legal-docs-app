@@ -5,9 +5,7 @@ interface Props {
   index: {
     title: string;
     questions: {
-      id: {
-        slug: string;
-      };
+      slug: string;
       title: string;
     }[];
   }[];
@@ -31,7 +29,7 @@ const { index, current, documentId, documentTitle } = Astro.props;
       index.map(({ title, questions }) => (
         <section>
           <h5>{title}</h5>
-          {questions.map(({ id: { slug }, title }) => {
+          {questions.map(({ slug, title }) => {
             if (slug === current) {
               return <span>{title}</span>;
             } else {

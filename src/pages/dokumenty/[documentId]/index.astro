@@ -4,27 +4,25 @@ import pageTitle from "@utils/pageTitle";
 import formatNumber from "@utils/number";
 import BlogPost from "@components/BlogPost.astro";
 import BlogContent from "@components/BlogContent.astro";
-import type { Template } from "@type";
-import { getTemplate } from "@api/templates";
+import type { TemplateInfo } from "@type";
+import { getTemplateInfo } from "@api/templates";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
 
-let title: Template["title"] = "",
-  keywords: Template["keywords"],
-  description: Template["description"],
-  body: Template["body"],
-  posts: Template["posts"] = null,
-  price: Template["price"] = null,
-  firstQuestionUrl: Template["firstQuestionUrl"] = "";
+let title: TemplateInfo["title"] = "",
+  keywords: TemplateInfo["keywords"],
+  description: TemplateInfo["description"],
+  body: TemplateInfo["body"],
+  posts: TemplateInfo["posts"] = null,
+  price: TemplateInfo["price"] = null,
+  firstQuestionUrl: TemplateInfo["firstQuestionUrl"] = "";
 
 try {
-  const response = await getTemplate(
-    `${Astro.request.headers.get("cookie")}`,
-    Astro.params.documentId as string
-  );
-
   ({ title, keywords, description, body, posts, price, firstQuestionUrl } =
-    response);
+    await getTemplateInfo(
+      `${Astro.request.headers.get("cookie")}`,
+      Astro.params.documentId as string
+    ));
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 403) {

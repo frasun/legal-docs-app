@@ -1,6 +1,7 @@
 import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
-import { UserDocuments } from "@type";
+import { Document } from "@db/document";
+import { Answers, DocumentInfo, Template, UserDocuments } from "@type";
 import { PAGE } from "@utils/urlParams";
 import trimWhitespace from "@utils/whitespace";
 
@@ -52,4 +53,36 @@ export async function changeDocumentName(
   const requestUrl = new URL(`/api/documents/${documentId}`, API_URL);
 
   return apiRequest(requestUrl, { cookie }, "PATCH", trimWhitespace(name));
+}
+
+export async function getDocumentTemplate(
+  cookie: string | null,
+  documentId: string
+): Promise<Document> {
+  if (!cookie) {
+    throw new Error();
+  }
+
+  const requestUrl = new URL(`/api/documents/${documentId}/template`, API_URL);
+
+  return apiRequest(requestUrl, { cookie });
+}
+
+export async function getAnswers(
+  cookie: string | null,
+  documentId: string,
+  fields?: string[]
+): Promise<Answers> {
+  if (!cookie) {
+    throw new Error();
+  }
+
+  const requestUrl = new URL(`/api/documents/${documentId}/answers`, API_URL);
+
+  return apiRequest(
+    requestUrl,
+    { cookie, "Content-Type": "application/json" },
+    "POST",
+    JSON.stringify(fields)
+  );
 }

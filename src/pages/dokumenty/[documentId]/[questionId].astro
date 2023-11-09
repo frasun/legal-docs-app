@@ -2,7 +2,7 @@
 import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
 import { getEntry, z } from "astro:content";
-import { getDocumentAnswers, updateAnswers } from "@db/document";
+import { updateAnswers } from "@db/document";
 import { getSession } from "auth-astro/server";
 import QuestionIndex from "@components/QuestionIndex.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
@@ -20,32 +20,60 @@ import {
   ToastStatus,
   ERROR,
 } from "@utils/toasts";
-import type { Answers } from "@type";
+import type { Answers, Question, Template } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
-import { storeAnswers, getAnswers, deleteSessionDocument } from "@db/session";
-import getQuesitons from "@utils/questions";
+import {
+  storeAnswers,
+  getAnswers as getSessionAnswers,
+  deleteSessionDocument,
+} from "@db/session";
 import ErrorList from "@components/ErrorList.astro";
 import { UUID } from "mongodb";
-import { UserRoles } from "@db/user";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
-import { changeDocumentName } from "@api/documents";
+import { changeDocumentName, getDocumentTemplate } from "@api/documents";
+import { getQuestion, getTemplate } from "@api/templates";
 
-const { documentId: dId, questionId } = Astro.params;
-const documentId = String(dId);
-const isUserDocumentId = UUID.isValid(documentId);
+const { documentId, questionId } = Astro.params as {
+  documentId: string;
+  questionId: string;
+};
+
+let answers: Answers = {},
+  sessionAnswers: Answers = {},
+  qData: Answers = {},
+  Content,
+  docId = documentId as string,
+  draft: Question["draft"] = false,
+  question: Question["question"] = "",
+  info: Question["info"],
+  documentTitle: Question["documentTitle"] = "",
+  index: Question["index"] = [],
+  prevId: Question["prevId"],
+  nextId: Question["nextId"] = "podsumowanie",
+  currentQuestionIndex: Question["currentQuestionIndex"] = 0,
+  questionShort: Question["questionShort"],
+  questionIndex: Question["questionIndex"] = 0,
+  prevUrl: string | null = null,
+  nextUrl: string | null = null,
+  toast: string | null = null,
+  toastStatus: ToastStatus = ToastStatus.default,
+  errors: string[] = [];
+
+// Check for user session
 const session = await getSession(Astro.request);
-const isUserDocument = isUserDocumentId && session;
 const ssid = session
   ? session.user?.ssid
   : Astro.cookies.get(SESSION_COOKIE).value;
 
 if (!ssid) {
-  console.log("missing ssid");
   return Astro.redirect(routes.NOT_FOUND);
 }
 
-if (!isUserDocumentId) {
+// Delete template user session when user navigated outside template
+const isUserDocument = UUID.isValid(documentId);
+
+if (!isUserDocument) {
   const refererUrl = Astro.request.headers.get("referer");
 
   if (
@@ -57,127 +85,84 @@ if (!isUserDocumentId) {
   }
 }
 
-let answers: Answers = {},
-  docId = documentId,
-  draft = false,
-  title: string | undefined,
-  toast: string | null = null,
-  toastStatus: ToastStatus = ToastStatus.default,
-  errors: string[] = [];
+// get data
+try {
+  const cookie = `${Astro.request.headers.get("cookie")}`;
 
-const questionEntry = await getEntry("questions", String(questionId));
+  // get question data
+  ({
+    documentTitle,
+    draft,
+    index,
+    prevId,
+    nextId,
+    question,
+    questionShort,
+    info,
+    answers,
+    currentQuestionIndex,
+    questionIndex,
+  } = await getQuestion(cookie, documentId, questionId));
 
-if (!questionEntry) {
-  console.log("missing question entry");
-  return Astro.redirect(routes.NOT_FOUND);
-}
+  const questionEntry = await getEntry("questions", questionId as string);
 
-const {
-  data: { question: questionContent, info: qinfo, ...fields },
-} = questionEntry;
-
-if (isUserDocument) {
-  const userId = session.user?.id;
-
-  if (userId) {
-    try {
-      const document = await getDocumentAnswers(
-        documentId,
-        userId,
-        Object.keys(fields)
-      );
-
-      if (document) {
-        ({ doc: docId, answers, title, draft } = document);
-
-        if (!draft) {
-          return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
-        }
-      }
-    } catch {}
-  } else {
-    return Astro.redirect(
-      `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
-    );
+  if (!questionEntry) {
+    throw new Error(undefined, { cause: 500 });
   }
-} else {
-  try {
-    const sessionAnswers = await getAnswers(
+
+  ({ remarkPluginFrontmatter: qData, Content } = await questionEntry.render());
+
+  // get document/session data
+  const isUserDocument = UUID.isValid(documentId);
+
+  if (isUserDocument) {
+    ({ doc: docId } = await getDocumentTemplate(cookie, documentId));
+  } else {
+    // get answers
+    sessionAnswers = await getSessionAnswers(
       ssid,
       documentId,
-      Object.keys(fields)
+      Object.keys(answers)
     );
 
-    if (sessionAnswers) {
-      answers = sessionAnswers;
+    answers = { ...answers, ...sessionAnswers };
+  }
+
+  // replace default answers in mdx
+  for (let key of Object.keys(qData)) {
+    qData[key] = answers[key];
+
+    if (key === "_isLoggedIn") {
+      qData["_isLoggedIn"] = Boolean(session);
     }
-  } catch {}
-}
+  }
 
-if (!Object.keys(answers).length) {
-  answers = fields;
-}
+  // // get next/prev links
+  prevUrl = prevId
+    ? `${Astro.url.origin}/dokumenty/${documentId}/${prevId}`
+    : null;
 
-const document = await getEntry("documents", docId);
-
-if (!document) {
-  console.log("missing document");
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
-const {
-  data: {
-    index,
-    title: docuemntTitle,
-    encryptedFields,
-    draft: draftTemplate,
-    memberContent,
-  },
-} = document;
-
-if (draftTemplate) {
-  if (!session || session.user?.role !== UserRoles.admin) {
-    return Astro.redirect(routes.NOT_FOUND);
+  nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
+    nextId ?? `podsumowanie`
+  }`;
+} catch (e) {
+  if (e instanceof Error) {
+    switch (e.cause) {
+      case 403:
+        return Astro.redirect(
+          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+        );
+      case 303:
+        return Astro.redirect(
+          `${routes.DOCUMENTS}/${documentId}/${routes.DOCUMENT}`
+        );
+      default:
+        return Astro.redirect(routes.NOT_FOUND);
+    }
   }
 }
 
-if (memberContent && !session) {
-  return Astro.redirect(`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`);
-}
-
-if (!title) title = docuemntTitle;
-
-if (!index) {
-  console.log("missing index");
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
-const { questionIndex, questionEntries } = await getQuesitons(index);
-const q = questionEntries.find(({ slug }) => slug === questionId);
-
-if (!q) {
-  console.log("missing question");
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
-const currentQuestionIndex = questionIndex.findIndex(
-  ({ id: { slug } }) => slug === questionId
-);
-
-const qTitle = questionIndex[currentQuestionIndex].title;
-
-const prevUrl =
-  currentQuestionIndex > 0
-    ? `${Astro.url.origin}/dokumenty/${documentId}/${
-        questionIndex[currentQuestionIndex - 1].id.slug
-      }`
-    : null;
-const nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
-  currentQuestionIndex < questionIndex.length - 1
-    ? `${questionIndex[currentQuestionIndex + 1].id.slug}`
-    : `podsumowanie`
-}`;
-
+// show toast
 const urlParams = new URL(Astro.request.url).searchParams;
 
 if (urlParams.has(DOCUMENT_NAME_PARAM)) {
@@ -195,6 +180,7 @@ if (urlParams.has(ERROR_PARAM)) {
   toastStatus = ToastStatus.error;
 }
 
+// post answers
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
   const newTitle = formData.get("title");
@@ -220,87 +206,61 @@ if (Astro.request.method === "POST") {
   }
 
   if (formData && !newTitle) {
-    try {
-      let newAnswers: Answers = {};
+    let newAnswers: Answers = {};
 
-      for (let [key, value] of formData.entries()) {
-        if (key in answers && value !== String(answers[key])) {
-          Object.assign(newAnswers, { [key]: value });
-        }
+    for (let [key, value] of formData.entries()) {
+      if (key in answers && value && value !== String(answers[key])) {
+        Object.assign(newAnswers, { [key]: value });
       }
-
-      if (isUserDocumentId) {
-        if (Object.keys(newAnswers).length) {
-          try {
-            await updateAnswers(documentId, newAnswers, docId, encryptedFields);
-
-            const redirectUrl = new URL(Astro.request.url);
-
-            redirectUrl.searchParams.delete(DOCUMENT_NAME_PARAM);
-
-            if (!redirectUrl.searchParams.has(ANSWER_UPDATED_PARAM)) {
-              redirectUrl.searchParams.append(ANSWER_UPDATED_PARAM, "true");
-            }
-
-            return Astro.redirect(redirectUrl);
-          } catch (e) {
-            if (e instanceof z.ZodError) {
-              e.errors.map(({ message }) => errors.push(message));
-            }
-          } finally {
-            answers = { ...answers, ...newAnswers };
-          }
-        }
-      } else {
-        try {
-          if (Object.keys(newAnswers).length) {
-            await storeAnswers(ssid, documentId, newAnswers);
-          }
-          return Astro.redirect(nextUrl);
-        } catch (e) {
-          // console.log(e);
-          if (e instanceof z.ZodError) {
-            e.errors.map(({ message }) => errors.push(message));
-          }
-        } finally {
-          answers = { ...answers, ...newAnswers };
-        }
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-      return Astro.redirect(routes.NOT_FOUND);
     }
-  }
-}
 
-const { remarkPluginFrontmatter: qData, Content } = await q.render();
+    if (Object.keys(newAnswers).length) {
+      try {
+        if (isUserDocument) {
+          const { encryptedFields } = await getTemplate(
+            `${Astro.request.headers.get("cookie")}`,
+            docId
+          );
+          await updateAnswers(documentId, newAnswers, docId, encryptedFields);
 
-for (let key of Object.keys(qData)) {
-  if (key in fields) {
-    if (answers[key]) {
-      qData[key] = answers[key];
+          const redirectUrl = new URL(Astro.request.url);
+
+          redirectUrl.searchParams.delete(DOCUMENT_NAME_PARAM);
+
+          if (!redirectUrl.searchParams.has(ANSWER_UPDATED_PARAM)) {
+            redirectUrl.searchParams.append(ANSWER_UPDATED_PARAM, "true");
+          }
+
+          return Astro.redirect(redirectUrl);
+        } else {
+          await storeAnswers(ssid, documentId, newAnswers);
+        }
+        return Astro.redirect(nextUrl);
+      } catch (e) {
+        if (e instanceof z.ZodError) {
+          e.errors.map(({ message }) => errors.push(message));
+        } else {
+          return Astro.redirect(routes.NOT_FOUND);
+        }
+      } finally {
+        answers = { ...answers, ...newAnswers };
+      }
     } else {
-      qData[key] = fields[key];
+      return Astro.redirect(nextUrl);
     }
   }
-}
-
-if ("_isLoggedIn" in fields) {
-  qData["_isLoggedIn"] = Boolean(session);
 }
 ---
 
-<Layout title={pageTitle(`${qTitle} - ${title}`)}>
+<Layout title={pageTitle(`${questionShort} - ${documentTitle}`)}>
   <span slot="topbar-title"
-    ><span>{title}</span>{draft && <Badge>Szkic</Badge>}</span
+    ><span>{documentTitle}</span>{draft && <Badge>Szkic</Badge>}</span
   >
   {
     draft && (
       <ChangeNameButton
         id={documentId}
-        title={title}
+        title={documentTitle}
         slot="topbar-after-title"
       />
     )
@@ -308,19 +268,19 @@ if ("_isLoggedIn" in fields) {
   <QuestionAction
     slot="topbar-aside"
     current={currentQuestionIndex + 1}
-    steps={questionIndex.length}
+    steps={questionIndex}
     docId={docId}
     draft={draft}
   />
   <question-form>
     <form method="POST">
       <header>
-        <h2>{questionContent}</h2>
+        <h2>{question}</h2>
         {
-          qinfo && (
+          info && (
             <p>
               <Icon name="bulb" width={24} height={24} />
-              {qinfo}
+              {info}
             </p>
           )
         }
@@ -336,15 +296,15 @@ if ("_isLoggedIn" in fields) {
           ``
         )
       }
-      <Content />
+      {Content && <Content />}
       <footer>
         <div>
           <span>§{currentQuestionIndex + 1}</span>
-          <span>{qTitle}</span>
+          {questionShort && <span>{questionShort}</span>}
         </div>
         <nav>
           {
-            draft ? (
+            isUserDocument ? (
               <>
                 <a
                   href={`${Astro.url.origin}/dokumenty/${documentId}/podsumowanie`}
@@ -359,7 +319,7 @@ if ("_isLoggedIn" in fields) {
               <>
                 {prevUrl && <a href={prevUrl}>Poprzednie</a>}
                 <button type="submit">
-                  {currentQuestionIndex >= questionIndex.length - 1
+                  {currentQuestionIndex >= questionIndex - 1
                     ? "Podsumowanie"
                     : "Następne"}
                 </button>
@@ -376,7 +336,7 @@ if ("_isLoggedIn" in fields) {
         index={index}
         current={questionId}
         documentId={documentId}
-        documentTitle={docuemntTitle}
+        documentTitle={documentTitle}
       />
     )
   }

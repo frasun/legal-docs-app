@@ -1,9 +1,48 @@
 import { getCollection, getEntry } from "astro:content";
 import Fuse from "fuse.js";
 import trimWhitespace from "@utils/whitespace";
+//@ts-ignore
+import { sanityClient } from "sanity:client";
+import type { DocumentInfo } from "@type";
 
-export async function getTemplateInfo(documentId: string) {
-  return await getEntry("documents", documentId as string);
+type SanityTemplate = Pick<DocumentInfo, "title" | "draft" | "memberContent">;
+
+export async function getTemplate(templateId: string): Promise<SanityTemplate> {
+  return await sanityClient.fetch(
+    `*[_type == 'legalDocument' && slug.current == "${templateId}"] { 
+      title, 
+      "draft": !defined(publishedAt), 
+      memberContent,
+  }[0]`
+  );
+}
+
+export async function getDocumentInfo(
+  documentId: string,
+  showMemberContent: boolean
+): Promise<DocumentInfo> {
+  const allPostQuery = `_type=='post' && references(^._id) && defined(publishedAt)`;
+  const postQuery = showMemberContent
+    ? allPostQuery
+    : `${allPostQuery} && memberContent == false`;
+
+  return await sanityClient.fetch(
+    `*[_type == 'legalDocument' && slug.current == "${documentId}"] { 
+      title, 
+      "draft": !defined(publishedAt), 
+      body,
+      memberContent,
+      keywords,
+      description,
+      "posts": *[${postQuery}] | order(publishedAt desc) [0..2] { 
+        title, 
+        mainImage, 
+        publishedAt,
+        "slug": slug.current,
+        "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
+      }
+  }[0]`
+  );
 }
 
 export async function getTemplates(
