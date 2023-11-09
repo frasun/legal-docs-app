@@ -32,7 +32,7 @@ if (draftParam) {
 
     if (!session) {
       return Astro.redirect(
-        `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${routes.DOKUMENT}}&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`
+        `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${routes.DOCUMENT}}&${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`
       );
     }
 
