@@ -11,13 +11,13 @@ export const get: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify(null), { status: 401, headers });
   }
 
-  const userId = session.user?.id;
+  const userId = session.user?.id as string;
   const url = new URL(request.url);
   const pageParam = url.searchParams.get(PAGE);
   const page = pageParam ? Number(pageParam) : 1;
 
   try {
-    const documents = await getUserDocuments(userId as string, page);
+    const documents = await getUserDocuments(userId, page);
 
     return new Response(JSON.stringify(documents), { status: 200, headers });
   } catch (e) {

@@ -49,7 +49,8 @@ export default {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60,
+    maxAge:
+      process.env.NODE_ENV === "production" ? 24 * 60 * 60 : 365 * 24 * 60 * 60,
   },
   callbacks: {
     async session({ session, token }) {
