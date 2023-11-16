@@ -86,3 +86,22 @@ export async function getAnswers(
     JSON.stringify(fields)
   );
 }
+
+export async function postAnswers(
+  cookie: string | null,
+  documentId: string,
+  answers: Answers
+) {
+  if (!cookie) {
+    throw new Error();
+  }
+
+  const requestUrl = new URL(`/api/documents/${documentId}`, API_URL);
+
+  return apiRequest(
+    requestUrl,
+    { ...headers, cookie, "Content-Type": "application/json" },
+    "POST",
+    JSON.stringify(answers)
+  );
+}

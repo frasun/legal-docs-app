@@ -2,7 +2,6 @@
 import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
 import { getEntry, z } from "astro:content";
-import { updateAnswers } from "@db/document";
 import { getSession } from "auth-astro/server";
 import QuestionIndex from "@components/QuestionIndex.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
@@ -20,7 +19,7 @@ import {
   ToastStatus,
   ERROR,
 } from "@utils/toasts";
-import type { Answers, Question, Template } from "@type";
+import type { Answers, Question } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import {
   storeAnswers,
@@ -31,8 +30,12 @@ import ErrorList from "@components/ErrorList.astro";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
-import { changeDocumentName, getDocumentTemplate } from "@api/documents";
-import { getQuestion, getTemplate } from "@api/templates";
+import {
+  changeDocumentName,
+  getDocumentTemplate,
+  postAnswers,
+} from "@api/documents";
+import { getQuestion } from "@api/templates";
 
 const { documentId, questionId } = Astro.params as {
   documentId: string;
@@ -59,6 +62,8 @@ let answers: Answers = {},
   toast: string | null = null,
   toastStatus: ToastStatus = ToastStatus.default,
   errors: string[] = [];
+
+const cookie = `${Astro.request.headers.get("cookie")}`;
 
 // Check for user session
 const session = await getSession(Astro.request);
@@ -87,8 +92,6 @@ if (!isUserDocument) {
 
 // get data
 try {
-  const cookie = `${Astro.request.headers.get("cookie")}`;
-
   // get question data
   ({
     documentTitle,
@@ -217,11 +220,7 @@ if (Astro.request.method === "POST") {
     if (Object.keys(newAnswers).length) {
       try {
         if (isUserDocument) {
-          const { encryptedFields } = await getTemplate(
-            `${Astro.request.headers.get("cookie")}`,
-            docId
-          );
-          await updateAnswers(documentId, newAnswers, docId, encryptedFields);
+          await postAnswers(cookie, documentId, newAnswers);
 
           const redirectUrl = new URL(Astro.request.url);
 
@@ -235,6 +234,7 @@ if (Astro.request.method === "POST") {
         } else {
           await storeAnswers(ssid, documentId, newAnswers);
         }
+
         return Astro.redirect(nextUrl);
       } catch (e) {
         if (e instanceof z.ZodError) {

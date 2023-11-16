@@ -137,6 +137,7 @@ export async function getDocuments(
 
 export async function updateAnswers(
   documentId: string,
+  userId: string,
   answers: Answers,
   docId: string,
   encryptedFields?: string[]
@@ -171,14 +172,13 @@ export async function updateAnswers(
     }
 
     return await documentCollection.updateOne(
-      { _id: new UUID(documentId).toBinary() },
+      { _id: new UUID(documentId).toBinary(), userId },
       {
         $set: { ...validatedAnswers },
         $currentDate: { modified: true },
       }
     );
   } catch (errors) {
-    console.log(errors);
     throw errors;
   }
 }
