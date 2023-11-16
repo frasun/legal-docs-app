@@ -4,6 +4,7 @@ import type {
   Template,
   TemplateInfo,
   TemplateShort,
+  TemplateSummary,
 } from "@type";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
 import { apiRequest, headers } from "@api/helpers/request";
@@ -85,4 +86,17 @@ export async function getSessionAnswers(
   }
 
   return answers;
+}
+
+export async function getTemplateSummary(
+  cookie: string | null,
+  templateId: string
+): Promise<TemplateSummary> {
+  if (!cookie) {
+    throw new Error();
+  }
+
+  const requestUrl = new URL(`/api/templates/${templateId}/summary`, API_URL);
+
+  return apiRequest(requestUrl, { ...headers, cookie });
 }

@@ -82,10 +82,16 @@ export async function getDocumentSummary(docId: string, userId: string) {
   type DocumentSummary = Pick<Document, "answers" | "doc" | "title" | "draft">;
 
   try {
-    return await documentCollection.findOne<DocumentSummary>(
+    const document = await documentCollection.findOne<DocumentSummary>(
       { _id: new UUID(docId).toBinary(), userId },
       { projection: { _id: 1, answers: 1, doc: 1, title: 1, draft: 1 } }
     );
+
+    if (!document) {
+      throw new Error("", { cause: 404 });
+    }
+
+    return document;
   } catch (e) {
     throw e;
   }

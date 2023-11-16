@@ -54,9 +54,21 @@ export interface Template {
     questions: {
       title: string;
       slug: string;
+      token?: string;
+      answer?: string;
+      type?: string;
     }[];
   }[];
-  encryptedFields: string[];
+  encryptedFields?: string[];
+  dateFields?: string[];
+  dataFields?: string[];
+}
+
+export interface TemplateSummary {
+  title: Template["title"];
+  index: Template["index"];
+  answers: Answers;
+  canGenerate: boolean;
 }
 
 export interface Page {

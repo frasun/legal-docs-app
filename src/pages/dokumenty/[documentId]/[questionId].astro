@@ -134,10 +134,6 @@ try {
   // replace default answers in mdx
   for (let key of Object.keys(qData)) {
     qData[key] = answers[key];
-
-    if (key === "_isLoggedIn") {
-      qData["_isLoggedIn"] = Boolean(session);
-    }
   }
 
   // // get next/prev links
@@ -253,11 +249,11 @@ if (Astro.request.method === "POST") {
 ---
 
 <Layout title={pageTitle(`${questionShort} - ${documentTitle}`)}>
-  <span slot="topbar-title"
-    ><span>{documentTitle}</span>{draft && <Badge>Szkic</Badge>}</span
-  >
+  <span slot="topbar-title">
+    <span>{documentTitle}</span><Badge>Szkic</Badge>
+  </span>
   {
-    draft && (
+    isUserDocument && (
       <ChangeNameButton
         id={documentId}
         title={documentTitle}

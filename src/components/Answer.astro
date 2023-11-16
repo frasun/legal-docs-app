@@ -13,7 +13,7 @@ let CompiledContent;
 let textContent;
 
 if (template) {
-  const answer = await getEntry("answers", template.slug);
+  const answer = await getEntry("answers", template);
 
   if (!answer) return;
 

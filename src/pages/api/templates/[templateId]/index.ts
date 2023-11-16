@@ -44,7 +44,7 @@ export const get: APIRoute = async ({ request, params }) => {
       });
     }
 
-    const { index, encryptedFields } = document.data;
+    const { index, encryptedFields, dates, dataFields } = document.data;
 
     if (!index) {
       return new Response(JSON.stringify(null), {
@@ -58,12 +58,19 @@ export const get: APIRoute = async ({ request, params }) => {
         title,
         index: index.map(({ title, questions }) => ({
           title,
-          questions: questions.map(({ id: { slug }, title }) => ({
-            title,
-            slug,
-          })),
+          questions: questions.map(
+            ({ id: { slug }, title, token, answer, type }) => ({
+              title,
+              slug,
+              token,
+              answer: answer ? answer.slug : answer,
+              type,
+            })
+          ),
         })),
         encryptedFields,
+        dateFields: dates,
+        dataFields,
       }),
       {
         status: 200,

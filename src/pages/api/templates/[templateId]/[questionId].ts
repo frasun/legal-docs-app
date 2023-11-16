@@ -5,6 +5,7 @@ import { Answers, Template } from "@type";
 import { UUID } from "mongodb";
 import { getAnswers, getDocumentTemplate } from "@api/documents";
 import { getEntry } from "astro:content";
+import { getSession } from "auth-astro/server";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -62,6 +63,11 @@ export const get: APIRoute = async ({ request, params }) => {
 
     // merge user and default answers
     answers = { ...fields, ...answers };
+
+    const session = await getSession(request);
+    if ("_isLoggedIn" in answers) {
+      answers["_isLoggedIn"] = Boolean(session);
+    }
 
     // get question data
     ({ title: documentTitle, index } = await getTemplate(cookie, docId));

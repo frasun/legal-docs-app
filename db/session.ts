@@ -35,12 +35,12 @@ export async function storeAnswers(
 export async function getAnswers(
   ssid: string,
   documentId: string,
-  fields: string[]
+  fields?: string[]
 ) {
   try {
     let sessionAnswers: Answers | null = null;
 
-    if (fields.length) {
+    if (fields && fields.length) {
       sessionAnswers = await kv.hmget(
         `document-${ssid}-${documentId}`,
         ...fields

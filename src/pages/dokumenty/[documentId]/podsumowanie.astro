@@ -1,8 +1,6 @@
 ---
 import Layout from "../../../layouts/App.astro";
-import { getEntry } from "astro:content";
 import Answer from "@components/Answer.astro";
-import { getDocumentSummary } from "@db/document";
 import { getSession } from "auth-astro/server";
 import { Icon } from "astro-icon";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
@@ -17,20 +15,17 @@ import {
   ERROR_PARAM,
   ToastStatus,
 } from "@utils/toasts";
-import type { Answers } from "@type";
-import { deleteSessionDocument, getAllAnswers } from "@db/session";
+import type { TemplateSummary } from "@type";
+import { deleteSessionDocument, getAnswers } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
-import getQuesitons from "@utils/questions";
 import PaymentModal from "@components/PaymentModal.astro";
 import * as PARAMS from "@utils/urlParams";
-import { entityEnum } from "@utils/constants";
 import { UUID } from "mongodb";
-import { UserRoles } from "@db/user";
 import routes from "@utils/routes";
 import { changeDocumentName } from "@api/documents";
+import { getTemplateSummary } from "@api/templates";
 
-const { documentId: dId } = Astro.params;
-const documentId = String(dId);
+const { documentId } = Astro.params as { documentId: string };
 const userDocumentId = UUID.isValid(documentId);
 const session = await getSession(Astro.request);
 const isUserDocument = session && userDocumentId;
@@ -51,11 +46,10 @@ if (!userDocumentId) {
   }
 }
 
-let docId = documentId,
-  draft = false,
-  answers: Answers = {},
-  title,
-  canGenerate = true,
+let answers: TemplateSummary["answers"] = {},
+  index: TemplateSummary["index"] = [],
+  title: TemplateSummary["title"] = "",
+  canGenerate: TemplateSummary["canGenerate"] = true,
   toast: string | null = null,
   toastStatus: ToastStatus = ToastStatus.default;
 
@@ -92,135 +86,36 @@ if (Astro.request.method === "POST") {
   }
 }
 
-if (isUserDocument) {
-  const userId = session.user?.id;
-
-  if (!session || !userId) {
-    return Astro.redirect(
-      `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
-    );
-  }
-
-  const data = await getDocumentSummary(documentId, userId);
-
-  if (data) {
-    ({ doc: docId, answers, draft, title } = data);
-  } else {
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  if (!draft) {
-    return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
-  }
-}
-
-const document = await getEntry("documents", docId);
-
-if (!document) {
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
-const {
-  data: {
-    index,
-    title: docTitle,
-    dates,
-    dataFields,
-    draft: draftTemplate,
-    memberContent,
-  },
-} = document;
-
-if (draftTemplate) {
-  if (!session || session.user?.role !== UserRoles.admin) {
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-}
-
-if (memberContent && !session) {
-  return Astro.redirect(
-    `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
-  );
-}
-
-if (!index) {
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
-const { questionEntries: questions } = await getQuesitons(index);
-
-if (!Object.keys(answers).length) {
-  const qData: Answers = {};
-  for (let { data } of questions) {
-    const { question, info, ...fields } = data;
-    Object.assign(qData, { ...fields });
-  }
-
-  try {
-    const sessionAnswers = await getAllAnswers(ssid, documentId);
-
-    if (sessionAnswers) {
-      answers = sessionAnswers;
-    }
-  } catch {}
-
-  if (Object.keys(answers).length !== Object.keys(qData).length) {
-    for (let field of Object.keys(qData)) {
-      if (!(field in answers)) {
-        if (dates && dates.includes(field)) {
-          answers[field] = new Date();
-        } else {
-          answers[field] = qData[field];
-        }
-      }
-    }
-  }
-}
-
-if (dataFields) {
-  const required: string[] = [];
-
-  dataFields.map((field) => {
-    const dataType = answers[`${field}Type`];
-
-    switch (dataType) {
-      case entityEnum[0]:
-        required.push(
-          `${field}PersonName`,
-          `${field}PersonStreet`,
-          `${field}PersonPostalCode`,
-          `${field}PersonCity`,
-          `${field}PersonPin`
-        );
-        break;
-      case entityEnum[1]:
-        required.push(
-          `${field}CompanyName`,
-          `${field}CompanyStreet`,
-          `${field}CompanyPostalCode`,
-          `${field}CompanyCity`,
-          `${field}CompanyPin`
-        );
-        break;
-    }
-  });
-
-  canGenerate = required.every(
-    (field) => answers[field] !== undefined && answers[field] !== ""
-  );
-}
-
-if (!title) title = docTitle;
-
 const GENERATE = "Generuj dokument";
+
+try {
+  ({ title, answers, index, canGenerate } = await getTemplateSummary(
+    `${Astro.request.headers.get("cookie")}`,
+    documentId
+  ));
+
+  if (!isUserDocument) {
+    const sessionAnswers = await getAnswers(ssid, documentId);
+
+    answers = { ...answers, ...sessionAnswers };
+  }
+} catch (e) {
+  if (e instanceof Error) {
+    if (e.cause === 403) {
+      return Astro.redirect(
+        `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+      );
+    } else {
+      return Astro.redirect(routes.NOT_FOUND);
+    }
+  }
+}
 ---
 
 <Layout title={pageTitle(`Podsumowanie - ${title}`)}>
-  <span slot="topbar-title"
-    ><span>{title}</span>{draft && <Badge>Szkic</Badge>}</span
-  >
+  <span slot="topbar-title"><span>{title}</span><Badge>Szkic</Badge></span>
   {
-    draft && (
+    isUserDocument && (
       <ChangeNameButton
         id={documentId}
         title={title}
@@ -234,13 +129,13 @@ const GENERATE = "Generuj dokument";
       index.map(({ title, questions }) => (
         <>
           <h5>{title}</h5>
-          {questions.map(({ title, token, answer, type, id: { slug } }) => (
+          {questions.map(({ title, slug, answer, token, type }) => (
             <div>
               <div>
                 <h6>{title}</h6>
                 <Answer
-                  data={answers}
                   template={answer}
+                  data={answers}
                   token={token}
                   type={type}
                 />
