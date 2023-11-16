@@ -40,12 +40,10 @@ let documents: UserDocuments["documents"],
   toastStatus;
 
 try {
-  const userDocuments = await getDocuments(
+  ({ documents, pages, currentPage } = await getDocuments(
     `${Astro.request.headers.get("cookie")}`,
     page
-  );
-
-  ({ documents, pages, currentPage } = userDocuments);
+  ));
 } catch (e) {
   if (e instanceof Error && e.cause === 401) {
     return Astro.redirect(

@@ -39,12 +39,10 @@ let errors: string[] = [],
   toastStatus: ToastStatus = ToastStatus.default;
 
 try {
-  const response = await getIdentity(
+  ({ type, name, pin, street, apt, postalCode, city } = await getIdentity(
     `${Astro.request.headers.get("cookie")}`,
     identityId
-  );
-
-  ({ type, name, pin, street, apt, postalCode, city } = response);
+  ));
 } catch {
   return Astro.redirect(routes.NOT_FOUND);
 }

@@ -24,11 +24,6 @@ let title: Post["title"] | undefined,
   documents: Post["documents"];
 
 try {
-  const response = await getPost(
-    `${Astro.request.headers.get("cookie")}`,
-    Astro.params.slug as string
-  );
-
   ({
     title,
     publishedAt,
@@ -38,7 +33,10 @@ try {
     keywords,
     description,
     documents,
-  } = response);
+  } = await getPost(
+    `${Astro.request.headers.get("cookie")}`,
+    Astro.params.slug as string
+  ));
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 403) {

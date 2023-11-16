@@ -3,7 +3,7 @@ import { entityEnum } from "@utils/constants";
 import * as validators from "@utils/dataValidation";
 import { z } from "astro:content";
 import { UUID } from "mongodb";
-import type { Identity } from "@type";
+import type { Identity, UserIdentity as UIdentity } from "@type";
 
 type UserIdentity = Identity & { userId: string };
 
@@ -45,7 +45,7 @@ export async function getUserIdentities(
     .find<Identity>(query)
     .project({ _id: 1, name: 1, type: 1 });
 
-  const identitiesArray = await identities.toArray();
+  const identitiesArray = (await identities.toArray()) as UIdentity[];
 
   return identitiesArray.sort(({ name }, { name: nextName }) =>
     name.localeCompare(nextName, "pl")

@@ -30,12 +30,10 @@ let identities: UserIdentities["identities"] = [],
   toastStatus: ToastStatus = ToastStatus.default;
 
 try {
-  const response = await getIdentities(
+  ({ identities, count } = await getIdentities(
     `${Astro.request.headers.get("cookie")}`,
     dataTypeFilter
-  );
-
-  ({ identities, count } = response);
+  ));
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 401) {

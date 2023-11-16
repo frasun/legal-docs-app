@@ -17,12 +17,10 @@ let posts: BlogPosts["posts"],
   currentPage: number = 1;
 
 try {
-  const response = await getPosts(
+  ({ posts, pages } = await getPosts(
     `${Astro.request.headers.get("cookie")}`,
     page
-  );
-
-  ({ posts, pages } = response);
+  ));
 
   currentPage = page <= pages ? page : 1;
 } catch (e) {

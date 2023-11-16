@@ -87,7 +87,7 @@ export interface Identity {
   city: string;
 }
 
-interface UserIdentity extends Identity {
+export interface UserIdentity extends Identity {
   _id: string;
 }
 
