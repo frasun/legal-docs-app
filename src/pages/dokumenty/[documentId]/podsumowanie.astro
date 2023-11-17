@@ -16,7 +16,7 @@ import {
   ToastStatus,
 } from "@utils/toasts";
 import type { TemplateSummary } from "@type";
-import { deleteSessionDocument, getAnswers } from "@db/session";
+import { deleteSessionDocument } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
 import PaymentModal from "@components/PaymentModal.astro";
 import * as PARAMS from "@utils/urlParams";
@@ -26,9 +26,8 @@ import { changeDocumentName } from "@api/documents";
 import { getTemplateSummary } from "@api/templates";
 
 const { documentId } = Astro.params as { documentId: string };
-const userDocumentId = UUID.isValid(documentId);
 const session = await getSession(Astro.request);
-const isUserDocument = session && userDocumentId;
+const isUserDocument = UUID.isValid(documentId);
 
 const ssid = session
   ? session.user?.ssid
@@ -38,7 +37,7 @@ if (!ssid) {
   return Astro.redirect(routes.NOT_FOUND);
 }
 
-if (!userDocumentId) {
+if (!isUserDocument) {
   const refererUrl = Astro.request.headers.get("referer");
 
   if (!refererUrl || !refererUrl.includes(documentId)) {
@@ -93,12 +92,6 @@ try {
     `${Astro.request.headers.get("cookie")}`,
     documentId
   ));
-
-  if (!isUserDocument) {
-    const sessionAnswers = await getAnswers(ssid, documentId);
-
-    answers = { ...answers, ...sessionAnswers };
-  }
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 403) {

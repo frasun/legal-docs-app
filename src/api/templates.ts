@@ -42,7 +42,7 @@ export async function getTemplate(
   cookie: string | null,
   templateId: string
 ): Promise<Template> {
-  if (!cookie) {
+  if (!cookie || !cookie.length) {
     throw new Error();
   }
 
@@ -92,7 +92,7 @@ export async function getTemplateSummary(
   cookie: string | null,
   templateId: string
 ): Promise<TemplateSummary> {
-  if (!cookie) {
+  if (!cookie || !cookie.length) {
     throw new Error();
   }
 

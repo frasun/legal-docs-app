@@ -59,7 +59,7 @@ export async function getDocumentTemplate(
   cookie: string | null,
   documentId: string
 ): Promise<Document> {
-  if (!cookie) {
+  if (!cookie || !cookie.length) {
     throw new Error();
   }
 
@@ -73,7 +73,7 @@ export async function getAnswers(
   documentId: string,
   fields?: string[]
 ): Promise<Answers> {
-  if (!cookie) {
+  if (!cookie || !cookie.length) {
     throw new Error();
   }
 
@@ -92,7 +92,7 @@ export async function postAnswers(
   documentId: string,
   answers: Answers
 ) {
-  if (!cookie) {
+  if (!cookie || !cookie.length) {
     throw new Error();
   }
 

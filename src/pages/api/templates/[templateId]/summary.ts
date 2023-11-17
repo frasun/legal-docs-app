@@ -8,6 +8,9 @@ import { getTemplate } from "@api/templates";
 import { Template } from "@type";
 import { getEntry } from "astro:content";
 import { entityEnum } from "@utils/constants";
+import { getAnswers } from "@db/session";
+import CookieUtil from "cookie";
+import { SESSION_COOKIE } from "@utils/cookies";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -26,7 +29,6 @@ export const get: APIRoute = async ({ request, params }) => {
     draft: UserDocument["draft"],
     title: UserDocument["title"] | undefined,
     templateTitle: UserDocument["title"] = "",
-    questionIndex: Template["index"][0]["questions"] = [],
     dateFields: Template["dateFields"],
     dataFields: Template["dataFields"],
     canGenerate: boolean = false;
@@ -59,7 +61,9 @@ export const get: APIRoute = async ({ request, params }) => {
     } = await getTemplate(cookie, doc));
 
     if (!isUserDocument) {
-      // get index
+      // get default answers
+      const questionIndex: Template["index"][0]["questions"] = [];
+
       for (let { questions } of index) {
         questionIndex.push(...questions);
       }
@@ -78,6 +82,17 @@ export const get: APIRoute = async ({ request, params }) => {
         answers = { ...defaultAnswers, ...answers };
       }
 
+      // get session answers
+      const cookies = CookieUtil.parse(cookie || "");
+      const ssid = session ? session.user?.ssid : cookies[SESSION_COOKIE];
+
+      if (ssid) {
+        const sessionAnswers = await getAnswers(ssid, templateId);
+
+        answers = { ...answers, ...sessionAnswers };
+      }
+
+      // fill in current date
       if (dateFields) {
         for (let field of dateFields) {
           answers[field] = answers[field] || new Date();
@@ -85,10 +100,12 @@ export const get: APIRoute = async ({ request, params }) => {
       }
     }
 
+    // add auth state if needed
     if ("_isLoggedIn" in answers) {
       answers["_isLoggedIn"] = Boolean(session);
     }
 
+    // validate required fields
     if (dataFields) {
       const required: Template["dataFields"] = [];
 
