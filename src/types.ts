@@ -127,6 +127,7 @@ export interface Question {
   prevId: string | null;
   currentQuestionIndex: number;
   documentTitle: Template["title"];
+  templateId: string;
   draft: boolean;
   index: Template["index"];
   questionIndex: number;

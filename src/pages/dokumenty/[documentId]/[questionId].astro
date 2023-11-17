@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/App.astro";
 import { Icon } from "astro-icon";
-import { getEntry, z } from "astro:content";
+import { getEntry } from "astro:content";
 import { getSession } from "auth-astro/server";
 import QuestionIndex from "@components/QuestionIndex.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
@@ -21,20 +21,12 @@ import {
 } from "@utils/toasts";
 import type { Answers, Question } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
-import {
-  storeAnswers,
-  getAnswers as getSessionAnswers,
-  deleteSessionDocument,
-} from "@db/session";
+import { deleteSessionDocument } from "@db/session";
 import ErrorList from "@components/ErrorList.astro";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
-import {
-  changeDocumentName,
-  getDocumentTemplate,
-  postAnswers,
-} from "@api/documents";
+import { changeDocumentName, postAnswers } from "@api/documents";
 import { getQuestion } from "@api/templates";
 
 const { documentId, questionId } = Astro.params as {
@@ -43,10 +35,9 @@ const { documentId, questionId } = Astro.params as {
 };
 
 let answers: Answers = {},
-  sessionAnswers: Answers = {},
   qData: Answers = {},
   Content,
-  docId = documentId as string,
+  templateId = documentId as string,
   draft: Question["draft"] = false,
   question: Question["question"] = "",
   info: Question["info"],
@@ -95,6 +86,7 @@ try {
   // get question data
   ({
     documentTitle,
+    templateId,
     draft,
     index,
     prevId,
@@ -114,22 +106,6 @@ try {
   }
 
   ({ remarkPluginFrontmatter: qData, Content } = await questionEntry.render());
-
-  // get document/session data
-  const isUserDocument = UUID.isValid(documentId);
-
-  if (isUserDocument) {
-    ({ doc: docId } = await getDocumentTemplate(cookie, documentId));
-  } else {
-    // get answers
-    sessionAnswers = await getSessionAnswers(
-      ssid,
-      documentId,
-      Object.keys(answers)
-    );
-
-    answers = { ...answers, ...sessionAnswers };
-  }
 
   // replace default answers in mdx
   for (let key of Object.keys(qData)) {
@@ -215,9 +191,9 @@ if (Astro.request.method === "POST") {
 
     if (Object.keys(newAnswers).length) {
       try {
-        if (isUserDocument) {
-          await postAnswers(cookie, documentId, newAnswers);
+        await postAnswers(cookie, documentId, newAnswers);
 
+        if (isUserDocument) {
           const redirectUrl = new URL(Astro.request.url);
 
           redirectUrl.searchParams.delete(DOCUMENT_NAME_PARAM);
@@ -227,8 +203,6 @@ if (Astro.request.method === "POST") {
           }
 
           return Astro.redirect(redirectUrl);
-        } else {
-          await storeAnswers(ssid, documentId, newAnswers);
         }
 
         return Astro.redirect(nextUrl);
@@ -237,10 +211,6 @@ if (Astro.request.method === "POST") {
           if (e.cause === 400) {
             e.message.split(",").forEach((error) => errors.push(error));
           }
-        }
-
-        if (e instanceof z.ZodError) {
-          e.issues.map(({ message }) => errors.push(message));
         }
       } finally {
         answers = { ...answers, ...newAnswers };
@@ -273,7 +243,7 @@ if (Astro.request.method === "POST") {
     slot="topbar-aside"
     current={currentQuestionIndex + 1}
     steps={questionIndex}
-    docId={docId}
+    docId={templateId}
     draft={draft}
   />
   <question-form>

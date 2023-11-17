@@ -5,6 +5,10 @@ import { responseHeaders as headers } from "@api/helpers/response";
 import { getDocumentTemplate } from "@api/documents";
 import { getTemplate } from "@api/templates";
 import { z } from "astro:content";
+import { UUID } from "mongodb";
+import { storeAnswers } from "@db/session";
+import CookieUtil from "cookie";
+import { SESSION_COOKIE } from "@utils/cookies";
 
 export const all: APIRoute = async ({ params, request }) => {
   const session = await getSession(request);
@@ -88,27 +92,43 @@ export const post: APIRoute = async ({ request, params }) => {
 
   const cookie = request.headers.get("cookie");
   const userId = session.user?.id as string;
+  const isUserDocument = UUID.isValid(documentId);
 
   try {
     const answers = await request.json();
 
-    const { doc: docId } = await getDocumentTemplate(cookie, documentId);
-    const { encryptedFields } = await getTemplate(cookie, docId);
+    if (isUserDocument) {
+      const { doc: docId } = await getDocumentTemplate(cookie, documentId);
+      const { encryptedFields } = await getTemplate(cookie, docId);
 
-    const response = await updateAnswers(
-      documentId,
-      userId,
-      answers,
-      docId,
-      encryptedFields
-    );
+      const response = await updateAnswers(
+        documentId,
+        userId,
+        answers,
+        docId,
+        encryptedFields
+      );
 
-    if (response.modifiedCount > 0) {
-      return new Response(JSON.stringify(null), {
-        status: 200,
-        headers,
-      });
-    } else return new Response(JSON.stringify(null), { status: 400, headers });
+      if (response.modifiedCount > 0) {
+        return new Response(JSON.stringify(null), {
+          status: 200,
+          headers,
+        });
+      } else
+        return new Response(JSON.stringify(null), { status: 400, headers });
+    }
+
+    const cookies = CookieUtil.parse(cookie || "");
+    const ssid = session ? session.user?.ssid : cookies[SESSION_COOKIE];
+
+    if (ssid) {
+      await storeAnswers(ssid, documentId, answers);
+    }
+
+    return new Response(JSON.stringify(null), {
+      status: 200,
+      headers,
+    });
   } catch (e) {
     if (e instanceof z.ZodError) {
       const errors = e.errors.map(({ message }) => message);

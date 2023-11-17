@@ -1,11 +1,14 @@
 import type { APIRoute } from "astro";
 import { responseHeaders as headers } from "@api/helpers/response";
 import { getTemplate } from "@api/templates";
+import { getAnswers as getSessionAnswers } from "@db/session";
 import { Answers, Template } from "@type";
 import { UUID } from "mongodb";
 import { getAnswers, getDocumentTemplate } from "@api/documents";
 import { getEntry } from "astro:content";
 import { getSession } from "auth-astro/server";
+import CookieUtil from "cookie";
+import { SESSION_COOKIE } from "@utils/cookies";
 
 export const get: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
@@ -65,6 +68,22 @@ export const get: APIRoute = async ({ request, params }) => {
     answers = { ...fields, ...answers };
 
     const session = await getSession(request);
+    if (!isUserDocument) {
+      // get session answers
+      const cookies = CookieUtil.parse(cookie || "");
+      const ssid = session ? session.user?.ssid : cookies[SESSION_COOKIE];
+
+      if (ssid) {
+        const sessionAnswers = await getSessionAnswers(
+          ssid,
+          templateId,
+          Object.keys(answers)
+        );
+
+        answers = { ...answers, ...sessionAnswers };
+      }
+    }
+
     if ("_isLoggedIn" in answers) {
       answers["_isLoggedIn"] = Boolean(session);
     }
@@ -105,6 +124,7 @@ export const get: APIRoute = async ({ request, params }) => {
         prevId,
         currentQuestionIndex,
         documentTitle: title,
+        templateId: docId,
         draft,
         index,
         questionIndex: questionIndex.length,
@@ -116,7 +136,7 @@ export const get: APIRoute = async ({ request, params }) => {
     );
   } catch (e) {
     return new Response(e instanceof Error ? e.message : null, {
-      status: e instanceof Error ? Number(e.cause) : 500,
+      status: 500,
       headers,
     });
   }

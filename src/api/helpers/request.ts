@@ -5,16 +5,13 @@ export async function apiRequest(
   body?: string
 ) {
   const response = await fetch(url, { headers, method, body });
+  const message = await response.json();
 
   if (!response.ok) {
-    const message = await response.json();
-
-    throw new Error(message, {
-      cause: response.status,
-    });
+    throw new Error(message, { cause: response.status });
   }
 
-  return response.json();
+  return message;
 }
 
 export const headers = {

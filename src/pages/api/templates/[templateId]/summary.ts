@@ -153,7 +153,7 @@ export const get: APIRoute = async ({ request, params }) => {
     );
   } catch (e) {
     return new Response(e instanceof Error ? e.message : null, {
-      status: e instanceof Error ? Number(e.cause) : 500,
+      status: 500,
       headers,
     });
   }
