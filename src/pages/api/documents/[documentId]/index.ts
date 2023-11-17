@@ -4,6 +4,7 @@ import { deleteDraft, changeDocumentName, updateAnswers } from "@db/document";
 import { responseHeaders as headers } from "@api/helpers/response";
 import { getDocumentTemplate } from "@api/documents";
 import { getTemplate } from "@api/templates";
+import { z } from "astro:content";
 
 export const all: APIRoute = async ({ params, request }) => {
   const session = await getSession(request);
@@ -109,8 +110,17 @@ export const post: APIRoute = async ({ request, params }) => {
       });
     } else return new Response(JSON.stringify(null), { status: 400, headers });
   } catch (e) {
-    return new Response(e instanceof Error ? e.message : null, {
-      status: e instanceof Error ? Number(e.cause) : 500,
+    if (e instanceof z.ZodError) {
+      const errors = e.errors.map(({ message }) => message);
+
+      return new Response(JSON.stringify(errors), {
+        status: 400,
+        headers,
+      });
+    }
+
+    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
+      status: 500,
       headers,
     });
   }

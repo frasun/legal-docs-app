@@ -233,13 +233,21 @@ if (Astro.request.method === "POST") {
 
         return Astro.redirect(nextUrl);
       } catch (e) {
+        if (e instanceof Error) {
+          if (e.cause === 400) {
+            e.message.split(",").forEach((error) => errors.push(error));
+          }
+        }
+
         if (e instanceof z.ZodError) {
-          e.errors.map(({ message }) => errors.push(message));
-        } else {
-          return Astro.redirect(routes.NOT_FOUND);
+          e.issues.map(({ message }) => errors.push(message));
         }
       } finally {
         answers = { ...answers, ...newAnswers };
+
+        for (let key of Object.keys(qData)) {
+          qData[key] = answers[key];
+        }
       }
     } else {
       return Astro.redirect(nextUrl);

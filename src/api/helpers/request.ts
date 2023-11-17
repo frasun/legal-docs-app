@@ -7,7 +7,9 @@ export async function apiRequest(
   const response = await fetch(url, { headers, method, body });
 
   if (!response.ok) {
-    throw new Error(await response.json(), {
+    const message = await response.json();
+
+    throw new Error(message, {
       cause: response.status,
     });
   }
