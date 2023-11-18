@@ -82,25 +82,24 @@ export const post: APIRoute = async ({ request, params }) => {
 
   const session = await getSession(request);
 
-  if (!session) {
-    return new Response(JSON.stringify(null), { status: 403, headers });
-  }
-
   const { documentId } = params as {
     documentId: string;
   };
 
   const cookie = request.headers.get("cookie");
-  const userId = session.user?.id as string;
   const isUserDocument = UUID.isValid(documentId);
 
   try {
     const answers = await request.json();
 
     if (isUserDocument) {
+      if (!session) {
+        return new Response(JSON.stringify(null), { status: 403, headers });
+      }
+
       const { doc: docId } = await getDocumentTemplate(cookie, documentId);
       const { encryptedFields } = await getTemplate(cookie, docId);
-
+      const userId = session.user?.id as string;
       const response = await updateAnswers(
         documentId,
         userId,
