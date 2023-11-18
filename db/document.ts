@@ -101,10 +101,16 @@ export async function getDocumentId(id: string, userId: string) {
   type TemplateId = Pick<Document, "doc" | "title" | "draft">;
 
   try {
-    return await documentCollection.findOne<TemplateId>(
+    const response = await documentCollection.findOne<TemplateId>(
       { _id: new UUID(id).toBinary(), userId },
       { projection: { doc: 1, _id: 0, title: 1, draft: 1 } }
     );
+
+    if (!response) {
+      throw new Error(undefined, { cause: 404 });
+    }
+
+    return response;
   } catch (e) {
     throw e;
   }
@@ -159,6 +165,8 @@ export async function updateAnswers(
     for (const [field, answer] of Object.entries(answers)) {
       const fieldSchema = schema[field];
       let parsedAnswer = fieldSchema.parse(answer);
+
+      console.log(field, answer);
 
       if (
         encryptedFields &&
@@ -239,37 +247,38 @@ export async function createDocument(
       documentTitle = `#${userDocumentCount + 1} ${title}`;
     }
 
-    try {
-      const created = new Date();
-      const result = await documentCollection.insertOne({
-        doc,
-        answers: validatedAnswers,
-        userId,
-        draft,
-        title: documentTitle,
-        created,
-        modified: created,
-      });
+    const created = new Date();
+    const result = await documentCollection.insertOne({
+      doc,
+      answers: validatedAnswers,
+      userId,
+      draft,
+      title: documentTitle,
+      created,
+      modified: created,
+    });
 
-      return new UUID(result.insertedId.toString("hex"));
-    } catch (e) {
-      throw e;
-    }
+    return new UUID(result.insertedId.toString("hex"));
   } catch (errors) {
-    console.log(errors);
     throw errors;
   }
 }
 
-export async function publishDraft(id: string) {
+export async function publishDraft(id: string, userId: string) {
   try {
-    return await documentCollection.updateOne(
-      { _id: new UUID(id).toBinary() },
+    const response = await documentCollection.updateOne(
+      { _id: new UUID(id).toBinary(), userId, draft: true },
       {
         $set: { draft: false },
         $currentDate: { modified: true },
       }
     );
+
+    if (response.modifiedCount !== 1) {
+      throw new Error(id, { cause: 303 });
+    }
+
+    return new UUID(id);
   } catch (e: any) {
     throw e;
   }

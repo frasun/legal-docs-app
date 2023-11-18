@@ -132,3 +132,8 @@ export interface Question {
   index: Template["index"];
   questionIndex: number;
 }
+
+export interface UserSession {
+  documentId: string;
+  ssid: string;
+}

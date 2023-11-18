@@ -23,7 +23,7 @@ export const post: APIRoute = async ({ request, params }) => {
       );
 
       if (!response) {
-        return new Response(JSON.stringify({}), { status: 404, headers });
+        return new Response(JSON.stringify(null), { status: 404, headers });
       }
 
       return new Response(JSON.stringify(response), { status: 200, headers });

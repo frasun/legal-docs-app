@@ -47,9 +47,10 @@ if (!documentId) {
   documentName = urlSegments[urlSegments.length - 2];
 
   if (UUID.isValid(documentName) && session) {
-    documentId = String(
-      await getDocumentId(documentName, session.user?.id as string)
-    );
+    ({ doc: documentId } = await getDocumentId(
+      documentName,
+      session.user?.id as string
+    ));
   } else {
     documentId = urlSegments[urlSegments.length - 2];
   }

@@ -4,6 +4,7 @@ import { Document } from "@db/document";
 import { Answers, DocumentInfo, Template, UserDocuments } from "@type";
 import { PAGE } from "@utils/urlParams";
 import trimWhitespace from "@utils/whitespace";
+import { UUID } from "mongodb";
 
 export async function getDocuments(
   cookie: string,
@@ -101,7 +102,31 @@ export async function postAnswers(
   return apiRequest(
     requestUrl,
     { ...headers, cookie, "Content-Type": "application/json" },
-    "POST",
+    "PUT",
     JSON.stringify(answers)
+  );
+}
+
+export async function postDocument(
+  cookie: string | null,
+  documentId: string,
+  draft?: boolean,
+  userEmail?: string
+): Promise<UUID> {
+  if (!cookie || !cookie.length) {
+    throw new Error();
+  }
+
+  const requestUrl = new URL(`/api/documents`, API_URL);
+
+  return apiRequest(
+    requestUrl,
+    { ...headers, cookie, "Content-Type": "application/json" },
+    "POST",
+    JSON.stringify({
+      documentId,
+      draft,
+      userEmail,
+    })
   );
 }

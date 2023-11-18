@@ -1,4 +1,4 @@
-import type { Answers } from "@type";
+import type { Answers, UserSession } from "@type";
 import { kv } from "@vercel/kv";
 
 const DOCUMENT_EXPIRATION_TIME = 3600;
@@ -99,11 +99,21 @@ export async function createPaymentSession(
   }
 }
 
-export async function getPaymentSession(pid: string) {
+export async function getPaymentSession(
+  pid: string
+): Promise<UserSession | null> {
   try {
-    return await kv.hgetall(`payment-${pid}`);
+    const session = (await kv.hgetall(`payment-${pid}`)) as {
+      documentId: string;
+      ssid: string;
+    };
+
+    if (!session) {
+      throw new Error(undefined, { cause: 404 });
+    }
+
+    return session;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }

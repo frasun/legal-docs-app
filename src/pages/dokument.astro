@@ -1,237 +1,90 @@
 ---
-import { getSession } from "auth-astro/server";
-import { createDocument, publishDraft } from "@db/document";
-import { getEntry } from "astro:content";
-//@ts-ignore
-import { DRAFT_SAVED_PARAM } from "@utils/toasts";
-import type { Answers } from "@type";
+import { DRAFT_SAVED_PARAM, SUCCESS_PARAM } from "@utils/toasts";
+import type { UserSession } from "@type";
 import {
   deletePaymentSession,
   deleteSessionDocument,
-  getAllAnswers,
   getPaymentSession,
 } from "@db/session";
-import getQuesitons from "@utils/questions";
 import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
+import { postDocument } from "@api/documents";
+import { SESSION_COOKIE } from "@utils/cookies";
 
 const urlParams = new URL(Astro.request.url).searchParams;
-const draftParam = String(urlParams.get(PARAMS.DRAFT)) === "true";
-const session = await getSession(Astro.request);
+const draft = String(urlParams.get(PARAMS.DRAFT)) === "true";
+const email = urlParams.get(PARAMS.EMAIL) || undefined;
+const paymentId = urlParams.get(PARAMS.PAYMENT);
 
-let documentId;
+let documentId = urlParams.get(PARAMS.DOCUMENT),
+  ssid: UserSession["ssid"] | undefined = undefined,
+  modifiedId: UUID | null = null;
 
-if (draftParam) {
-  const documentIdParam = urlParams.get(PARAMS.DOCUMENT);
-  const paymentId = urlParams.get(PARAMS.PAYMENT);
-  let ssid, userId;
+let cookie = Astro.request.headers.get("cookie");
 
-  if (documentIdParam) {
-    documentId = documentIdParam;
+try {
+  if (paymentId) {
+    const userSession = await getPaymentSession(paymentId);
 
-    if (!session) {
-      return Astro.redirect(
-        `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${routes.DOCUMENT}?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`
-      );
+    if (userSession) {
+      ({ documentId, ssid } = userSession);
+
+      cookie = `${cookie}; ${SESSION_COOKIE}=${ssid}`;
     }
-
-    ssid = session.user?.ssid as string;
-    userId = session.user?.id as string;
-  } else if (paymentId) {
-    const paymentSession = await getPaymentSession(paymentId);
-
-    if (!paymentSession) {
-      console.log("missing payment Session");
-      return Astro.redirect(routes.NOT_FOUND);
-    }
-
-    documentId = paymentSession.documentId as string;
-    ssid = paymentSession.ssid as string;
-
-    if (!session) {
-      console.log("anonymous draft param error");
-      return Astro.redirect(routes.NOT_FOUND);
-    }
-
-    userId = session.user?.id as string;
   }
 
-  if (!documentId) {
-    console.log("missing documentId");
-    return Astro.redirect(routes.NOT_FOUND);
+  if (documentId) {
+    modifiedId = await postDocument(cookie, documentId, draft, email);
   }
 
-  if (!ssid) {
-    console.log("missing ssid");
-    return Astro.redirect(routes.NOT_FOUND);
+  if (ssid && documentId) {
+    await deleteSessionDocument(ssid, documentId);
   }
 
-  if (!userId) {
-    console.log("missing userId");
-    return Astro.redirect(routes.NOT_FOUND);
+  if (paymentId) {
+    await deletePaymentSession(paymentId);
   }
 
-  const document = await createDoc(documentId, userId, ssid, true);
+  let redirectUrl: URL;
 
-  if (document) {
-    const redirectUrl = new URL(`${Astro.url.origin}/moje-dokumenty`);
-
+  if (draft) {
+    redirectUrl = new URL(routes.MY_DOCUMENTS, Astro.url.origin);
     redirectUrl.searchParams.append(DRAFT_SAVED_PARAM, "true");
-
-    return Astro.redirect(redirectUrl);
   } else {
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-} else {
-  const paymentId = urlParams.get(PARAMS.PAYMENT);
-
-  if (!paymentId) {
-    console.log("missing paymentId");
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  const emailParam = urlParams.get(PARAMS.EMAIL);
-  const userId = session
-    ? session.user?.id
-    : emailParam
-    ? decodeURIComponent(emailParam)
-    : undefined;
-
-  const paymentSession = await getPaymentSession(paymentId);
-
-  if (!paymentSession) {
-    console.log("missing payment Session");
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  const ssid = paymentSession.ssid as string;
-  documentId = paymentSession.documentId as string;
-
-  if (!ssid) {
-    console.log("missing ssid");
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  if (!documentId) {
-    console.log("missing documentId");
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  if (!userId) {
-    console.log("missing userId");
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  if (UUID.isValid(documentId)) {
-    try {
-      await publishDraft(documentId);
-      await deletePaymentSession(paymentId);
-
-      return Astro.redirect(`/dokumenty/${documentId}/dokument?success=true`);
-    } catch {
-      console.log("publish draft error");
-      return Astro.redirect(routes.NOT_FOUND);
-    }
-  } else {
-    try {
-      const document = await createDoc(documentId, userId, ssid, false);
-
-      if (document) {
-        try {
-          await deletePaymentSession(paymentId);
-        } catch {}
-
-        if (session) {
-          return Astro.redirect(
-            `${Astro.url.origin}/dokumenty/${document}/dokument?success=true`
-          );
-        } else {
-          return Astro.redirect(
-            `${Astro.url.origin}/dokumenty/${document}/dokument?${
-              PARAMS.EMAIL
-            }=${encodeURIComponent(userId)}&success=true`
-          );
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
-}
-
-async function createDoc(
-  documentId: string,
-  userId: string,
-  ssid: string,
-  draft: boolean
-) {
-  try {
-    const answers = await prepareAnswers(documentId, ssid);
-    const document = await createDocument(documentId, answers, userId, draft);
-
-    if (document) {
-      try {
-        await deleteSessionDocument(ssid, documentId);
-      } catch {}
-
-      return document;
-    }
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-async function prepareAnswers(documentId: string, ssid: string) {
-  const template = await getEntry("documents", documentId);
-
-  if (!template) {
-    console.log("missing template");
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  const {
-    data: { index, dates },
-  } = template;
-
-  if (!index) {
-    console.log("missing index");
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  const { questionEntries: questions } = await getQuesitons(index);
-
-  const qData: Answers = {};
-  for (let { data } of questions) {
-    const { question, info, userId, ...fields } = data;
-    Object.assign(qData, { ...fields });
-  }
-
-  let answers: Answers = {};
-
-  try {
-    const sessionAnswers = await getAllAnswers(ssid, documentId);
-
-    if (sessionAnswers) {
-      answers = sessionAnswers;
-    }
-  } catch {
-    console.log("missing documentId");
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  if (Object.keys(answers).length !== Object.keys(qData).length) {
-    for (let field of Object.keys(qData)) {
-      if (!answers[field]) {
-        if (dates && dates.includes(field)) {
-          answers[field] = String(new Date());
-        } else {
-          answers[field] = qData[field];
-        }
-      }
+    const upsertedId = modifiedId || documentId;
+    redirectUrl = new URL(
+      `${routes.DOCUMENTS}/${upsertedId}/${routes.DOCUMENT}`,
+      Astro.url.origin
+    );
+    redirectUrl.searchParams.append(SUCCESS_PARAM, "true");
+    if (email) {
+      redirectUrl.searchParams.append(PARAMS.EMAIL, encodeURIComponent(email));
     }
   }
 
-  return answers;
+  return Astro.redirect(redirectUrl);
+} catch (e) {
+  console.log(e);
+
+  if (e instanceof Error) {
+    if (e.cause === 303) {
+      return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
+    }
+
+    if (e.cause === 401) {
+      const redirectUrl = new URL(`${routes.SIGN_IN}`, Astro.url.origin);
+
+      redirectUrl.searchParams.append(PARAMS.REDIRECT, routes.DOCUMENT);
+      redirectUrl.searchParams.append(PARAMS.DOCUMENT, documentId as string);
+      redirectUrl.searchParams.append(PARAMS.DRAFT, "true");
+
+      console.log(redirectUrl);
+
+      return Astro.redirect(redirectUrl);
+    }
+  }
+
+  // return Astro.redirect(routes.NOT_FOUND);
 }
 ---

@@ -75,7 +75,7 @@ export const all: APIRoute = async ({ params, request }) => {
   });
 };
 
-export const post: APIRoute = async ({ request, params }) => {
+export const put: APIRoute = async ({ request, params }) => {
   if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
     return new Response(JSON.stringify(null), { status: 401, headers });
   }

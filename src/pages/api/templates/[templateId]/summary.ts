@@ -49,7 +49,10 @@ export const get: APIRoute = async ({ request, params }) => {
       ));
 
       if (!draft) {
-        return new Response(JSON.stringify(null), { status: 303, headers });
+        return new Response(JSON.stringify(templateId), {
+          status: 303,
+          headers,
+        });
       }
     }
 

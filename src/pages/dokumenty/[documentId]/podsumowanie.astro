@@ -98,9 +98,13 @@ try {
       return Astro.redirect(
         `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
       );
-    } else {
-      return Astro.redirect(routes.NOT_FOUND);
     }
+
+    if (e.cause === 303) {
+      return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
+    }
+
+    return Astro.redirect(routes.NOT_FOUND);
   }
 }
 ---

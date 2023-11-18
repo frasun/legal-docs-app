@@ -18,6 +18,7 @@ export const DRAFT_REMOVED_PARAM = "draft-removed";
 export const DRAFT_REMOVED = "Szkic został usunięty";
 export const COPY_DOCUMENT_PARAM = "copy-document";
 export const COPY_DOCUMENT = "Kopia dokumentu została utworzona";
+export const SUCCESS_PARAM = "success";
 
 export enum ToastStatus {
   default = "default",
