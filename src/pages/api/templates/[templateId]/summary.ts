@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { responseHeaders as headers } from "@api/helpers/response";
+import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { UUID } from "mongodb";
 import { getDocumentSummary } from "@db/document";
 import type { Document as UserDocument } from "@db/document";
@@ -13,32 +13,31 @@ import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
 
 export const get: APIRoute = async ({ request, params }) => {
-  if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
-
-  const { templateId } = params as {
-    templateId: string;
-  };
-  const cookie = request.headers.get("cookie");
-  const isUserDocument = UUID.isValid(templateId);
-
-  let doc: UserDocument["doc"] = templateId,
-    answers: UserDocument["answers"] = {},
-    index: Template["index"],
-    draft: UserDocument["draft"],
-    title: UserDocument["title"] | undefined,
-    templateTitle: UserDocument["title"] = "",
-    dateFields: Template["dateFields"],
-    dataFields: Template["dataFields"],
-    canGenerate: boolean = false;
-
   try {
+    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
+      throw new Error(undefined, { cause: 401 });
+    }
+
+    const { templateId } = params as {
+      templateId: string;
+    };
+    const cookie = request.headers.get("cookie");
+    const isUserDocument = UUID.isValid(templateId);
+
+    let doc: UserDocument["doc"] = templateId,
+      answers: UserDocument["answers"] = {},
+      index: Template["index"],
+      draft: UserDocument["draft"],
+      title: UserDocument["title"] | undefined,
+      templateTitle: UserDocument["title"] = "",
+      dateFields: Template["dateFields"],
+      dataFields: Template["dataFields"],
+      canGenerate: boolean = false;
     const session = await getSession(request);
 
     if (isUserDocument) {
       if (!session) {
-        return new Response(JSON.stringify(null), { status: 403, headers });
+        throw new Error(undefined, { cause: 403 });
       }
 
       const userId = session?.user?.id as string;
@@ -49,10 +48,7 @@ export const get: APIRoute = async ({ request, params }) => {
       ));
 
       if (!draft) {
-        return new Response(JSON.stringify(templateId), {
-          status: 303,
-          headers,
-        });
+        throw new Error(undefined, { cause: 303 });
       }
     }
 
@@ -75,7 +71,7 @@ export const get: APIRoute = async ({ request, params }) => {
         const questionEntry = await getEntry("questions", slug);
 
         if (!questionEntry) {
-          return new Response(JSON.stringify(null), { status: 400, headers });
+          throw new Error(undefined, { cause: 400 });
         }
 
         const {
@@ -155,8 +151,9 @@ export const get: APIRoute = async ({ request, params }) => {
       }
     );
   } catch (e) {
-    return new Response(e instanceof Error ? e.message : null, {
-      status: 500,
+    const { message, status } = parseError(e);
+    return new Response(JSON.stringify(message), {
+      status,
       headers,
     });
   }

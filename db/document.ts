@@ -402,7 +402,7 @@ export async function copyDocument(documentId: string, userId: string) {
         title: `(Kopia) ${document.title}`,
       });
 
-      return newDocument.insertedId;
+      return newDocument.acknowledged;
     } else {
       return null;
     }

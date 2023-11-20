@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import { deleteDraft, changeDocumentName, updateAnswers } from "@db/document";
-import { responseHeaders as headers } from "@api/helpers/response";
+import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getDocumentTemplate } from "@api/documents";
 import { getTemplate } from "@api/templates";
 import { z } from "astro:content";
@@ -11,40 +11,30 @@ import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
 
 export const all: APIRoute = async ({ params, request }) => {
-  const session = await getSession(request);
+  try {
+    const { documentId } = params as { documentId: string };
+    const session = await getSession(request);
 
-  if (!session) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
+    if (!session) {
+      throw new Error(undefined, { cause: 401 });
+    }
 
-  const { documentId } = params;
-  const userId = session.user?.id;
+    const userId = session.user?.id;
 
-  if (request.method === "DELETE") {
-    try {
+    if (request.method === "DELETE") {
       const response = await deleteDraft(
         documentId as string,
         userId as string
       );
 
-      if (response.deletedCount === 1) {
-        return new Response(JSON.stringify(null), { status: 200, headers });
+      if (!response.deletedCount) {
+        throw new Error(undefined, { cause: 404 });
       }
 
-      return new Response(JSON.stringify(null), { status: 404, headers });
-    } catch (e) {
-      return new Response(
-        JSON.stringify(e instanceof Error ? e.message : null),
-        {
-          status: 500,
-          headers,
-        }
-      );
+      return new Response(JSON.stringify(null), { status: 200, headers });
     }
-  }
 
-  if (request.method === "PATCH") {
-    try {
+    if (request.method === "PATCH") {
       const name = await request.text();
 
       const response = await changeDocumentName(
@@ -53,48 +43,43 @@ export const all: APIRoute = async ({ params, request }) => {
         name
       );
 
-      if (response.modifiedCount === 0) {
-        return new Response(JSON.stringify(null), { status: 404, headers });
+      if (!response.modifiedCount) {
+        throw new Error(undefined, { cause: 404 });
       }
 
       return new Response(JSON.stringify(null), { status: 200, headers });
-    } catch (e) {
-      return new Response(
-        JSON.stringify(e instanceof Error ? e.message : null),
-        {
-          status: 400,
-          headers,
-        }
-      );
     }
-  }
 
-  return new Response(JSON.stringify(null), {
-    status: 400,
-    headers,
-  });
+    throw new Error(undefined, { cause: 400 });
+  } catch (e) {
+    const { message, status } = parseError(e);
+
+    return new Response(JSON.stringify(message), {
+      status,
+      headers,
+    });
+  }
 };
 
 export const put: APIRoute = async ({ request, params }) => {
-  if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
-
-  const session = await getSession(request);
-
-  const { documentId } = params as {
-    documentId: string;
-  };
-
-  const cookie = request.headers.get("cookie");
-  const isUserDocument = UUID.isValid(documentId);
-
   try {
+    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
+      throw new Error(undefined, { cause: 401 });
+    }
+
+    const session = await getSession(request);
+
+    const { documentId } = params as {
+      documentId: string;
+    };
+
+    const cookie = request.headers.get("cookie");
+    const isUserDocument = UUID.isValid(documentId);
     const answers = await request.json();
 
     if (isUserDocument) {
       if (!session) {
-        return new Response(JSON.stringify(null), { status: 403, headers });
+        throw new Error(undefined, { cause: 403 });
       }
 
       const { doc: docId } = await getDocumentTemplate(cookie, documentId);
@@ -113,8 +98,7 @@ export const put: APIRoute = async ({ request, params }) => {
           status: 200,
           headers,
         });
-      } else
-        return new Response(JSON.stringify(null), { status: 400, headers });
+      } else throw new Error(undefined, { cause: 400 });
     }
 
     const cookies = CookieUtil.parse(cookie || "");
@@ -138,8 +122,10 @@ export const put: APIRoute = async ({ request, params }) => {
       });
     }
 
-    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
-      status: 500,
+    const { message, status } = parseError(e);
+
+    return new Response(JSON.stringify(message), {
+      status,
       headers,
     });
   }

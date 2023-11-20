@@ -6,28 +6,27 @@ import {
 import { entityEnum } from "@utils/constants";
 import { DATA_TYPE } from "@utils/urlParams";
 import type { APIRoute } from "astro";
-import { responseHeaders as headers } from "@api/helpers/response";
+import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 import { z } from "astro:content";
 
 export const get: APIRoute = async ({ request }) => {
-  const session = await getSession(request);
-
-  if (!session) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
-
-  const userId = session?.user?.id;
-
-  const urlParams = new URL(request.url).searchParams;
-  const dataType = urlParams.get(DATA_TYPE) ?? undefined;
-  const dataTypeFilter = entityEnum.includes(
-    dataType as (typeof entityEnum)[number]
-  )
-    ? dataType
-    : undefined;
-
   try {
+    const session = await getSession(request);
+
+    if (!session) {
+      throw new Error(undefined, { cause: 401 });
+    }
+
+    const userId = session?.user?.id;
+
+    const urlParams = new URL(request.url).searchParams;
+    const dataType = urlParams.get(DATA_TYPE) ?? undefined;
+    const dataTypeFilter = entityEnum.includes(
+      dataType as (typeof entityEnum)[number]
+    )
+      ? dataType
+      : undefined;
     const [identities, count] = await Promise.all([
       getUserIdentities(
         userId as string,
@@ -47,23 +46,23 @@ export const get: APIRoute = async ({ request }) => {
       }
     );
   } catch (e) {
-    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
-      status: 500,
+    const { message, status } = parseError(e);
+    return new Response(JSON.stringify(message), {
+      status,
       headers,
     });
   }
 };
 
 export const post: APIRoute = async ({ request }) => {
-  const session = await getSession(request);
-
-  if (!session) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
-
-  const userId = session.user?.id;
-
   try {
+    const session = await getSession(request);
+
+    if (!session) {
+      throw new Error(undefined, { cause: 401 });
+    }
+
+    const userId = session.user?.id;
     const identity = await request.json();
     await createUserIdentity({ ...identity, userId });
 
@@ -78,8 +77,12 @@ export const post: APIRoute = async ({ request }) => {
         status: 400,
         headers,
       });
-    } else {
-      return new Response(JSON.stringify(null), { status: 400, headers });
     }
+
+    const { message, status } = parseError(e);
+    return new Response(JSON.stringify(message), {
+      status,
+      headers,
+    });
   }
 };

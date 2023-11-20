@@ -7,26 +7,28 @@ import { createDocument, publishDraft } from "@db/document";
 import { UUID } from "mongodb";
 import { z } from "astro:content";
 import { getTemplateSummary } from "@api/templates";
+import { parseError } from "@api/helpers/response";
 
 export const get: APIRoute = async ({ request }) => {
-  const session = await getSession(request);
-
-  if (!session) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
-
-  const userId = session.user?.id as string;
-  const url = new URL(request.url);
-  const pageParam = url.searchParams.get(PAGE);
-  const page = pageParam ? Number(pageParam) : 1;
-
   try {
+    const session = await getSession(request);
+
+    if (!session) {
+      throw new Error(undefined, { cause: 401 });
+    }
+
+    const userId = session.user?.id as string;
+    const url = new URL(request.url);
+    const pageParam = url.searchParams.get(PAGE);
+    const page = pageParam ? Number(pageParam) : 1;
     const documents = await getUserDocuments(userId, page);
 
     return new Response(JSON.stringify(documents), { status: 200, headers });
   } catch (e) {
-    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
-      status: 500,
+    const { message, status } = parseError(e);
+
+    return new Response(JSON.stringify(message), {
+      status,
       headers,
     });
   }
@@ -99,21 +101,9 @@ export const post: APIRoute = async ({ request }) => {
       });
     }
 
-    if (e instanceof Error) {
-      const status =
-        e.cause &&
-        Number(e.cause) &&
-        Number(e.cause) > 200 &&
-        Number(e.cause) < 599;
-
-      return new Response(JSON.stringify(e.message || null), {
-        status: status ? Number(e.cause) : 500,
-        headers,
-      });
-    }
-
-    return new Response(JSON.stringify(null), {
-      status: 500,
+    const { message, status } = parseError(e);
+    return new Response(JSON.stringify(message), {
+      status,
       headers,
     });
   }

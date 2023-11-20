@@ -6,76 +6,67 @@ import {
   updateUserIdentity,
 } from "@db/identity";
 import { UUID } from "mongodb";
-import { responseHeaders as headers } from "@api/helpers/response";
+import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { z } from "astro:content";
 
 export const get: APIRoute = async ({ request, params }) => {
-  const session = await getSession(request);
-
-  if (!session) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
-
-  const { identityId } = params;
-
-  if (!UUID.isValid(identityId as string)) {
-    return new Response(JSON.stringify(null), { status: 404, headers });
-  }
-
   try {
+    const session = await getSession(request);
+
+    if (!session) {
+      throw new Error(undefined, { cause: 401 });
+    }
+
+    const { identityId } = params;
+
+    if (!UUID.isValid(identityId as string)) {
+      throw new Error(undefined, { cause: 404 });
+    }
+
     const identity = await getUserIdentity(
       identityId as string,
       session.user?.id as string
     );
 
     if (!identity) {
-      return new Response(JSON.stringify(null), { status: 403, headers });
+      throw new Error(undefined, { cause: 403 });
     }
 
     return new Response(JSON.stringify(identity), { status: 200, headers });
   } catch (e) {
-    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
-      status: 500,
+    const { message, status } = parseError(e);
+    return new Response(JSON.stringify(message), {
+      status,
       headers,
     });
   }
 };
 
 export const all: APIRoute = async ({ request, params }) => {
-  const session = await getSession(request);
+  try {
+    const session = await getSession(request);
 
-  if (!session) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
+    if (!session) {
+      throw new Error(undefined, { cause: 401 });
+    }
 
-  const { identityId } = params;
-  const userId = session.user?.id;
+    const { identityId } = params;
+    const userId = session.user?.id;
 
-  if (request.method === "DELETE") {
-    try {
+    if (request.method === "DELETE") {
       const response = await deleteUserIdentity(
         identityId as string,
         userId as string
       );
 
-      if (response.deletedCount === 1) {
-        return new Response(JSON.stringify(null), { status: 200, headers });
-      } else {
-        return new Response(JSON.stringify(null), { status: 404, headers });
+      if (!response.deletedCount) {
+        throw new Error(undefined, { cause: 404 });
       }
-    } catch (e) {
-      return new Response(
-        JSON.stringify(e instanceof Error ? e.message : null),
-        {
-          status: 500,
-          headers,
-        }
-      );
-    }
-  }
 
-  if (request.method === "PUT") {
-    try {
+      return new Response(JSON.stringify(null), { status: 200, headers });
+    }
+
+    if (request.method === "PUT") {
       const identity = await request.json();
       const response = await updateUserIdentity(
         identityId as string,
@@ -83,32 +74,30 @@ export const all: APIRoute = async ({ request, params }) => {
         identity
       );
 
-      if (response.modifiedCount !== 1) {
-        return new Response(JSON.stringify(null), { status: 404, headers });
+      if (!response.modifiedCount) {
+        throw new Error(undefined, { cause: 404 });
       }
 
       return new Response(JSON.stringify(null), { status: 200, headers });
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        const errors: string[] = [];
-
-        e.errors.map(({ message }) => errors.push(message));
-
-        return new Response(JSON.stringify(errors), {
-          status: 400,
-          headers,
-        });
-      } else {
-        return new Response(
-          JSON.stringify(e instanceof Error ? e.message : null),
-          {
-            status: 500,
-            headers,
-          }
-        );
-      }
     }
-  }
 
-  return new Response(JSON.stringify(null), { status: 400, headers });
+    throw new Error(undefined, { cause: 400 });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      const errors: string[] = [];
+
+      e.errors.map(({ message }) => errors.push(message));
+
+      return new Response(JSON.stringify(errors), {
+        status: 400,
+        headers,
+      });
+    }
+
+    const { message, status } = parseError(e);
+    return new Response(JSON.stringify(message), {
+      status,
+      headers,
+    });
+  }
 };

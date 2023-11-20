@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { responseHeaders as headers } from "@api/helpers/response";
+import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getTemplate } from "@api/templates";
 import { getAnswers as getSessionAnswers } from "@db/session";
 import { Answers, Template } from "@type";
@@ -11,38 +11,38 @@ import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
 
 export const get: APIRoute = async ({ request, params }) => {
-  if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
-
-  const { templateId, questionId } = params as {
-    templateId: string;
-    questionId: string;
-  };
-
-  const cookie = request.headers.get("cookie");
-
-  let answers: Answers = {},
-    docId = templateId,
-    draft = false,
-    title: string | undefined,
-    documentTitle: Template["title"] = "",
-    index: Template["index"] = [],
-    questionIndex: Template["index"][0]["questions"] = [],
-    fields: Answers = {},
-    info: string | undefined,
-    currentQuestionIndex: number = 0,
-    nextId: string | null,
-    prevId: string | null,
-    question: string | null = null,
-    qTitle: string | null = null;
-
   try {
+    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
+      throw new Error(undefined, { cause: 401 });
+    }
+
+    const { templateId, questionId } = params as {
+      templateId: string;
+      questionId: string;
+    };
+
+    const cookie = request.headers.get("cookie");
+
+    let answers: Answers = {},
+      docId = templateId,
+      draft = false,
+      title: string | undefined,
+      documentTitle: Template["title"] = "",
+      index: Template["index"] = [],
+      questionIndex: Template["index"][0]["questions"] = [],
+      fields: Answers = {},
+      info: string | undefined,
+      currentQuestionIndex: number = 0,
+      nextId: string | null,
+      prevId: string | null,
+      question: string | null = null,
+      qTitle: string | null = null;
+
     // get question data
     const questionEntry = await getEntry("questions", questionId as string);
 
     if (!questionEntry) {
-      return new Response(JSON.stringify(null), { status: 500, headers });
+      throw new Error();
     }
 
     ({
@@ -58,7 +58,7 @@ export const get: APIRoute = async ({ request, params }) => {
       } = await getDocumentTemplate(cookie, templateId));
 
       if (!draft) {
-        return new Response(JSON.stringify(null), { status: 303, headers });
+        throw new Error(undefined, { cause: 303 });
       }
 
       answers = await getAnswers(cookie, templateId, Object.keys(fields));
@@ -135,8 +135,9 @@ export const get: APIRoute = async ({ request, params }) => {
       }
     );
   } catch (e) {
-    return new Response(e instanceof Error ? e.message : null, {
-      status: 500,
+    const { message, status } = parseError(e);
+    return new Response(JSON.stringify(message), {
+      status,
       headers,
     });
   }

@@ -1,32 +1,28 @@
 import type { APIRoute } from "astro";
 import { getPost } from "@api/helpers/posts";
-import { responseHeaders as headers } from "@api/helpers/response";
+import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
 
 export const get: APIRoute = async ({ request, params }) => {
-  if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-    return new Response(JSON.stringify(null), { status: 401, headers });
-  }
-
-  const session = await getSession(request);
-  const showMemberContent = Boolean(session);
-  const showDraft = session?.user?.role === UserRoles.admin;
-
   try {
+    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
+      throw new Error(undefined, { cause: 401 });
+    }
+
+    const session = await getSession(request);
+    const showMemberContent = Boolean(session);
+    const showDraft = session?.user?.role === UserRoles.admin;
     const post = await getPost(params.slug as string, showDraft);
 
     if (!post) {
-      return new Response(JSON.stringify(null), { status: 404, headers });
+      throw new Error(undefined, { cause: 404 });
     }
 
     const { memberContent } = post;
 
     if (memberContent && !showMemberContent) {
-      return new Response(JSON.stringify(null), {
-        status: 403,
-        headers,
-      });
+      throw new Error(undefined, { cause: 403 });
     }
 
     return new Response(JSON.stringify(post), {
@@ -34,8 +30,9 @@ export const get: APIRoute = async ({ request, params }) => {
       headers,
     });
   } catch (e) {
-    return new Response(JSON.stringify(e instanceof Error ? e.message : null), {
-      status: 500,
+    const { message, status } = parseError(e);
+    return new Response(JSON.stringify(message), {
+      status,
       headers,
     });
   }
