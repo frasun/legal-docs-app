@@ -1,19 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import {
-  getUserByEmail,
-  initAccountVerify,
-  verificationInProgress,
-} from "@db/user";
-import sendEmail from "@utils/email";
-import error from "@utils/errors";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import InputGroup, { InputType } from "@components/InputGroup.astro";
 import * as PARAMS from "@utils/urlParams";
 import routes from "@utils/routes";
+import { signUp } from "@api/users";
+import { getSession } from "auth-astro/server";
 
-let errors = [],
+const session = await getSession(Astro.request);
+
+if (session) {
+  return Astro.redirect(routes.MY_DOCUMENTS);
+}
+
+let errors: string[] = [],
   userEmail,
   userPassword;
 
@@ -28,32 +29,18 @@ if (Astro.request.method === "POST") {
   userEmail = email;
   userPassword = password;
 
-  if (tos !== "on") {
-    errors.push(error.ACCEPT_TERMS);
-  } else {
-    const user = await getUserByEmail(email);
-
-    if (user) {
-      errors.push(error.EMAIL_TAKEN);
-    } else {
+  try {
+    await signUp(tos, email, password);
+  } catch (e) {
+    if (e instanceof Error) {
+      errors.push(e.message);
+    }
+  } finally {
+    if (!errors.length) {
+      const redirectUrl = new URL(routes.VERIFY, Astro.url.origin);
       const redirectParam = url.searchParams.get(PARAMS.REDIRECT);
       const docParam = url.searchParams.get(PARAMS.DOCUMENT);
       const draftParam = url.searchParams.get(PARAMS.DRAFT);
-      const redirectUrl = new URL(routes.VERIFY, Astro.url.origin);
-      const alreadyInitialised = await verificationInProgress(email);
-
-      if (alreadyInitialised) {
-        errors.push(error.EMAIL_TAKEN);
-      } else {
-        try {
-          const code = await initAccountVerify(email, password);
-          await sendEmail(email, code);
-        } catch (e) {
-          if (e instanceof Error) {
-            errors.push(e.message);
-          }
-        }
-      }
 
       redirectUrl.searchParams.append(PARAMS.EMAIL, decodeURIComponent(email));
 
@@ -69,9 +56,7 @@ if (Astro.request.method === "POST") {
         }
       }
 
-      if (!errors.length) {
-        return Astro.redirect(redirectUrl);
-      }
+      return Astro.redirect(redirectUrl);
     }
   }
 }

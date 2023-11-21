@@ -32,8 +32,7 @@ export default {
             password === user.password
           )
         ) {
-          // throw new Error("Invalid username or password");
-          return null;
+          throw new Error("Invalid username or password");
         }
 
         const cookies = cookie.parse(req.headers.get("cookie") || "");

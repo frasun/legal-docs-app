@@ -34,7 +34,9 @@ class LoginForm extends HTMLElement {
           }`,
         });
 
-        response && this.showError();
+        if (response) {
+          this.showError();
+        }
       });
     }
   }

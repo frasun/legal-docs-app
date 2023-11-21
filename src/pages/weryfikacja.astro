@@ -1,34 +1,26 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import {
-  getVerificationData,
-  createUser,
-  verificationInProgress,
-  wrongVerificationCode,
-} from "@db/user";
-import error from "@utils/errors";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import * as PARAMS from "@utils/urlParams";
 import routes from "@utils/routes";
+import { verifyCode, getVerificationInProgress } from "@api/users";
 
 const url = new URL(Astro.request.url);
 const emailParam = url.searchParams.get(PARAMS.EMAIL);
 const userEmail = emailParam ? decodeURIComponent(emailParam) : null;
-
-if (!userEmail) {
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
-const verificationInitialiased = await verificationInProgress(userEmail);
-
-if (!verificationInitialiased) {
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
 const redirectParam = url.searchParams.get(PARAMS.REDIRECT);
 const docParam = url.searchParams.get(PARAMS.DOCUMENT);
 const draftParam = url.searchParams.get(PARAMS.DRAFT);
+
+let errors = [];
+let userPassword;
+
+try {
+  await getVerificationInProgress(userEmail);
+} catch {
+  return Astro.redirect(routes.NOT_FOUND);
+}
 
 const redirectUrl = redirectParam
   ? new URL(redirectParam, Astro.url.origin)
@@ -44,32 +36,16 @@ if (redirectUrl) {
   }
 }
 
-let errors = [];
-let userPassword;
-
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  const postedCode = formData.get("code");
-  const verificationData = await getVerificationData(userEmail);
+  const postedCode = formData.get("code") as string;
 
-  if (!verificationData) {
-    return Astro.redirect(routes.NOT_FOUND);
-  }
-
-  const { code, password, rateLimit } = verificationData;
-
-  if (String(code) === postedCode) {
-    await createUser(userEmail, password as string);
-
-    userPassword = password;
-  } else {
-    if ((rateLimit as number) === 2) {
-      errors.push(error.VERIFICATION_CODE_EXPIRED);
-    } else {
-      errors.push(error.WRONG_VERIFICATION_CODE);
+  try {
+    userPassword = await verifyCode(postedCode, userEmail as string);
+  } catch (e) {
+    if (e instanceof Error) {
+      errors.push(e.message);
     }
-
-    await wrongVerificationCode(userEmail, (rateLimit as number) + 1);
   }
 }
 ---

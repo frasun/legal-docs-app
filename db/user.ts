@@ -25,11 +25,11 @@ export async function getUserByEmail(email: string) {
 
 export async function createUser(email: string, password: string) {
   if (!testString(email, emailRegExp)) {
-    throw new Error(errors.WRONG_EMAIL);
+    throw new Error(errors.WRONG_EMAIL, { cause: 400 });
   }
 
   if (!testString(password, passwordRegExp)) {
-    throw new Error(errors.UNSAFE_PASSWORD);
+    throw new Error(errors.UNSAFE_PASSWORD, { cause: 400 });
   }
 
   try {
@@ -48,11 +48,11 @@ export async function createUser(email: string, password: string) {
 
 export async function initAccountVerify(email: string, password: string) {
   if (!testString(email, emailRegExp)) {
-    throw new Error(errors.WRONG_EMAIL);
+    throw new Error(errors.WRONG_EMAIL, { cause: 400 });
   }
 
   if (!testString(password, passwordRegExp)) {
-    throw new Error(errors.UNSAFE_PASSWORD);
+    throw new Error(errors.UNSAFE_PASSWORD, { cause: 400 });
   }
 
   const code = getVerificationCode();
