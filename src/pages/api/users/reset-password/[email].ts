@@ -28,7 +28,7 @@ export const get: APIRoute = async ({ request, params }) => {
     const user = await getUserByEmail(email);
 
     if (!user) {
-      throw new Error("Podany użytkownik nie istnieje", { cause: 400 });
+      throw new Error(errors.WRONG_EMAIL, { cause: 400 });
     }
 
     const code = await initPasswordReset(email);

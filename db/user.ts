@@ -3,6 +3,7 @@ import { kv } from "@vercel/kv";
 import errors from "@utils/errors";
 import mongodb from "@db/mongodb";
 import { emailRegExp, passwordRegExp, testString } from "@utils/dataValidation";
+import { UUID } from "mongodb";
 
 export enum UserRoles {
   admin = "admin",
@@ -15,13 +16,17 @@ interface User {
   created?: Date;
   modified?: Date;
   role: UserRoles;
+  deleted?: boolean;
 }
 
 const userCollection = mongodb.collection<User>("users");
 const getVerificationCode = () => Math.random().toString(16).substring(2, 8);
 
 export async function getUserByEmail(email: string) {
-  return await userCollection.findOne<User>({ email });
+  return await userCollection.findOne<User>({
+    email,
+    deleted: undefined,
+  });
 }
 
 export async function createUser(email: string, password: string) {
@@ -184,6 +189,22 @@ export async function wrongPasswordCode(email: string, rateLimit: number) {
     } else {
       await kv.hset(`reset-${email}`, { rateLimit });
     }
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function deleteUserAccount(userId: string): Promise<number> {
+  try {
+    const updated = await userCollection.updateOne(
+      { _id: new UUID(userId).toBinary() },
+      {
+        $set: { deleted: true },
+        $currentDate: { modified: true },
+      }
+    );
+
+    return updated.modifiedCount;
   } catch (e) {
     throw e;
   }
