@@ -1,0 +1,101 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import pageTitle from "@utils/pageTitle";
+import AuthForm from "@components/AuthForm.astro";
+import * as PARAMS from "@utils/urlParams";
+import InputGroup from "@components/InputGroup.astro";
+import routes from "@utils/routes";
+import { passwordResetInProgress } from "@db/user";
+import error from "@utils/errors";
+import { setNewPassword } from "@api/users";
+
+let errors: string[] = [],
+  verificationCode,
+  password;
+
+const url = new URL(Astro.request.url);
+const userEmail = url.searchParams.get(PARAMS.EMAIL);
+const PAGE_TITLE = "Ustawianie nowego hasła";
+
+try {
+  const resetInProgress = await passwordResetInProgress(userEmail);
+
+  if (!resetInProgress) {
+    throw new Error();
+  }
+} catch {
+  return Astro.redirect(routes.NOT_FOUND);
+}
+
+if (Astro.request.method === "POST") {
+  try {
+    const formData = await Astro.request.formData();
+    verificationCode = formData.get("code") as string;
+    password = formData.get("password") as string;
+    const passwordConfirm = formData.get("password-confirm") as string;
+
+    if (password !== passwordConfirm) {
+      throw new Error(error.DIFFERENT_PASSWORDS, { cause: 400 });
+    }
+
+    await setNewPassword(verificationCode, userEmail as string, password);
+
+    console.log("ok");
+  } catch (e) {
+    if (e instanceof Error) {
+      if (e.cause === 400) {
+        errors.push(e.message);
+      } else {
+        return Astro.redirect(routes.NOT_FOUND);
+      }
+    }
+  }
+}
+---
+
+<Layout title={pageTitle("Ustawianie nowego hasła")}>
+  <AuthForm>
+    <h1 slot="form-header">{PAGE_TITLE}</h1>
+    <h5 slot="form-header">
+      Wysłaliśmy kod potwierdzający na adres <strong>{userEmail}</strong>
+    </h5>
+    <InputGroup>
+      <label for="email">Podaj kod weryfikacyjny</label>
+      <input
+        id="code"
+        type="text"
+        name="code"
+        required
+        value={verificationCode}
+      />
+    </InputGroup>
+    <br />
+    <InputGroup>
+      <label for="password">Podaj nowe hasło</label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        value={password}
+        required
+        pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
+      />
+    </InputGroup>
+    <InputGroup>
+      <label for="password-confirm">Potwierdź nowe hasło</label>
+      <input
+        id="password-confirm"
+        type="password"
+        name="password-confirm"
+        required
+        pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
+      />
+    </InputGroup>
+    <button type="submit">Wyślij</button>
+    {
+      errors.length
+        ? errors.map((error) => <p slot="after-submit">{error}</p>)
+        : null
+    }
+  </AuthForm>
+</Layout>

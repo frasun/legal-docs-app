@@ -38,10 +38,10 @@ if (redirectUrl) {
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
-  const postedCode = formData.get("code") as string;
+  const code = formData.get("code") as string;
 
   try {
-    userPassword = await verifyCode(postedCode, userEmail as string);
+    userPassword = await verifyCode(code, userEmail as string);
   } catch (e) {
     if (e instanceof Error) {
       errors.push(e.message);

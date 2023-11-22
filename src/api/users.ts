@@ -21,18 +21,17 @@ export async function signUp(
 }
 
 export async function verifyCode(
-  postedCode: string,
+  code: string,
   userEmail: string
 ): Promise<string> {
-  const requestUrl = new URL(`/api/users/verify`, API_URL);
+  const requestUrl = new URL(`/api/users/verify/${userEmail}`, API_URL);
 
   return apiRequest(
     requestUrl,
     { ...headers, "Content-Type": "application/json" },
     "POST",
     JSON.stringify({
-      postedCode,
-      userEmail,
+      code,
     })
   );
 }
@@ -43,4 +42,30 @@ export async function getVerificationInProgress(
   const requestUrl = new URL(`/api/users/verify/${userEmail}`, API_URL);
 
   return apiRequest(requestUrl, { ...headers });
+}
+
+export async function sendResetCode(userEmail: string): Promise<void> {
+  const requestUrl = new URL(`/api/users/reset-password/${userEmail}`, API_URL);
+
+  return apiRequest(requestUrl, {
+    ...headers,
+  });
+}
+
+export async function setNewPassword(
+  code: string,
+  email: string,
+  password: string
+): Promise<void> {
+  const requestUrl = new URL(`/api/users/reset-password/${email}`, API_URL);
+
+  return apiRequest(
+    requestUrl,
+    { ...headers, "Content-Type": "application/json" },
+    "POST",
+    JSON.stringify({
+      code,
+      password,
+    })
+  );
 }

@@ -10,4 +10,6 @@ export default {
   BLOG: "/blog",
   ORDER: "/zamowienie",
   DOCUMENT: "/dokument",
+  RESET_PASSWORD: "/reset-hasla",
+  SET_PASSWORD: "/reset-hasla/nowe-haslo",
 };

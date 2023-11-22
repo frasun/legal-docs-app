@@ -7,7 +7,6 @@ import {
   initAccountVerify,
   verificationInProgress,
 } from "@db/user";
-import * as PARAMS from "@utils/urlParams";
 import sendEmail from "@utils/email";
 
 export const post: APIRoute = async ({ request }) => {

@@ -44,13 +44,12 @@ if (redirectUrl) {
       <InputGroup>
         <label for="password">Hasło</label>
         <input id="password" type="password" name="password" required />
+        <a href={routes.RESET_PASSWORD}>Zapomniałeś hasła?</a>
       </InputGroup>
       <button type="submit">Zaloguj się</button>
       <footer slot="form-footer">
         Nie masz jeszcze konta?
-        <a href={`${Astro.url.origin}/zaloz-konto${url.search}`}>
-          Załóż konto
-        </a>
+        <a href={`${routes.SIGN_UP}${url.search}`}> Załóż konto</a>
       </footer>
     </AuthForm>
   </login-form>

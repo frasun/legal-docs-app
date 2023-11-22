@@ -2,19 +2,23 @@ import postmark from "postmark";
 
 const client = new postmark.ServerClient(import.meta.env.POSTMARK_SECRET);
 
-export default async function (To: string, code: string) {
+export default async function (
+  To: string,
+  code: string,
+  TemplateAlias = "verification-code"
+) {
   try {
     await client.sendEmailWithTemplate({
       From: import.meta.env.POSTMARK_SENDER,
       To,
-      TemplateAlias: "verification-code",
+      TemplateAlias,
       TemplateModel: {
         code,
       },
       InlineCss: false,
     });
   } catch (e) {
-    console.error(e);
+    throw new Error(e instanceof Error ? e.message : undefined, { cause: 500 });
   }
 }
 

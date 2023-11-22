@@ -1,13 +1,15 @@
 import type { APIRoute } from "astro";
 import { responseHeaders as headers } from "@api/helpers/response";
 import { parseError } from "@api/helpers/response";
-import { verificationInProgress } from "@db/user";
-import error from "@utils/errors";
 import {
-  createUser,
-  getVerificationData,
-  wrongVerificationCode,
+  changePassword,
+  getUserByEmail,
+  getpasswordResetCode,
+  initPasswordReset,
+  wrongPasswordCode,
 } from "@db/user";
+import sendResetCode from "@utils/email";
+import errors from "@utils/errors";
 
 export const get: APIRoute = async ({ request, params }) => {
   try {
@@ -23,11 +25,14 @@ export const get: APIRoute = async ({ request, params }) => {
       throw new Error(undefined, { cause: 404 });
     }
 
-    const verificationInitialiased = await verificationInProgress(email);
+    const user = await getUserByEmail(email);
 
-    if (!verificationInitialiased) {
-      throw new Error(undefined, { cause: 404 });
+    if (!user) {
+      throw new Error("Podany użytkownik nie istnieje", { cause: 400 });
     }
+
+    const code = await initPasswordReset(email);
+    await sendResetCode(email, code, "reset-password");
 
     return new Response(JSON.stringify(null), { status: 200, headers });
   } catch (e) {
@@ -49,35 +54,36 @@ export const post: APIRoute = async ({ request, params }) => {
       throw new Error(undefined, { cause: 400 });
     }
 
+    const { code, password } = (await request.json()) as {
+      code: string;
+      password: string;
+    };
+
     const { email } = params as {
       email: string;
     };
 
-    if (!email) {
+    const user = await getUserByEmail(email);
+
+    if (!email || !code || !password || !user) {
       throw new Error(undefined, { cause: 404 });
     }
 
-    const { code: postedCode } = (await request.json()) as {
-      code: string;
-    };
+    const { code: sessionCode, rateLimit } = await getpasswordResetCode(email);
 
-    const verificationData = await getVerificationData(email);
+    if (code === sessionCode) {
+      const passwordChanged = await changePassword(email, password);
 
-    if (!verificationData) {
-      throw new Error(undefined, { cause: 404 });
-    }
-
-    const { code, password, rateLimit } = verificationData;
-
-    if (String(code) === postedCode) {
-      await createUser(email, password as string);
+      if (!passwordChanged) {
+        throw new Error(undefined, { cause: 500 });
+      }
     } else {
-      await wrongVerificationCode(email, (rateLimit as number) + 1);
+      await wrongPasswordCode(email, (rateLimit as number) + 1);
 
       if ((rateLimit as number) === 2) {
-        throw new Error(error.VERIFICATION_CODE_EXPIRED, { cause: 400 });
+        throw new Error(errors.VERIFICATION_CODE_EXPIRED, { cause: 400 });
       } else {
-        throw new Error(error.WRONG_VERIFICATION_CODE, { cause: 400 });
+        throw new Error(errors.WRONG_VERIFICATION_CODE, { cause: 400 });
       }
     }
 

@@ -1,0 +1,51 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import pageTitle from "@utils/pageTitle";
+import AuthForm from "@components/AuthForm.astro";
+import * as PARAMS from "@utils/urlParams";
+import InputGroup from "@components/InputGroup.astro";
+import routes from "@utils/routes";
+import { sendResetCode } from "@api/users";
+
+let errors: string[] = [],
+  userEmail;
+
+const PAGE_TITLE = "Resetowanie hasła";
+
+if (Astro.request.method === "POST") {
+  try {
+    const formData = await Astro.request.formData();
+    userEmail = formData.get("email") as string;
+
+    await sendResetCode(userEmail);
+
+    return Astro.redirect(
+      `${routes.SET_PASSWORD}?${PARAMS.EMAIL}=${decodeURIComponent(userEmail)}`
+    );
+  } catch (e) {
+    if (e instanceof Error) {
+      if (e.cause === 400) {
+        errors.push(e.message);
+      } else {
+        return Astro.redirect(routes.NOT_FOUND);
+      }
+    }
+  }
+}
+---
+
+<Layout title={pageTitle(PAGE_TITLE)}>
+  <AuthForm>
+    <h1 slot="form-header">{PAGE_TITLE}</h1>
+    <InputGroup>
+      <label for="email">Podaj adres e-mail konta</label>
+      <input id="email" type="email" name="email" required value={userEmail} />
+    </InputGroup>
+    <button type="submit">Wyślij</button>
+    {
+      errors.length
+        ? errors.map((error) => <p slot="after-submit">{error}</p>)
+        : null
+    }
+  </AuthForm>
+</Layout>
