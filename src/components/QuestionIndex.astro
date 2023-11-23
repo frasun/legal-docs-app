@@ -1,4 +1,5 @@
 ---
+import routes from "@utils/routes";
 import { Icon } from "astro-icon";
 
 interface Props {
@@ -43,7 +44,9 @@ const { index, current, documentId, documentTitle } = Astro.props;
         </section>
       ))
     }
-    <a href={`${Astro.url.origin}/dokumenty/${documentId}/podsumowanie`}>
+    <a
+      href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.SUMMARY}`}
+    >
       Podsumowanie
     </a>
   </div>

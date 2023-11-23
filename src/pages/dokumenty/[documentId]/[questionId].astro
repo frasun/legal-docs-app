@@ -44,7 +44,7 @@ let answers: Answers = {},
   documentTitle: Question["documentTitle"] = "",
   index: Question["index"] = [],
   prevId: Question["prevId"],
-  nextId: Question["nextId"] = "podsumowanie",
+  nextId: Question["nextId"] = routes.SUMMARY,
   currentQuestionIndex: Question["currentQuestionIndex"] = 0,
   questionShort: Question["questionShort"],
   questionIndex: Question["questionIndex"] = 0,
@@ -114,11 +114,11 @@ try {
 
   // // get next/prev links
   prevUrl = prevId
-    ? `${Astro.url.origin}/dokumenty/${documentId}/${prevId}`
+    ? `${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${prevId}`
     : null;
 
-  nextUrl = `${Astro.url.origin}/dokumenty/${documentId}/${
-    nextId ?? `podsumowanie`
+  nextUrl = `${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${
+    nextId ?? routes.SUMMARY
   }`;
 } catch (e) {
   if (e instanceof Error) {
@@ -281,7 +281,7 @@ if (Astro.request.method === "POST") {
             isUserDocument ? (
               <>
                 <a
-                  href={`${Astro.url.origin}/dokumenty/${documentId}/podsumowanie`}
+                  href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.SUMMARY}`}
                 >
                   Wróć do podsumowania
                 </a>

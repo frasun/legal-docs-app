@@ -130,3 +130,24 @@ export async function postDocument(
     })
   );
 }
+
+export async function initDocumentOrder(
+  cookie: string | null,
+  documentId: string,
+  anonymousEmail?: string
+): Promise<URL> {
+  if (!cookie || !cookie.length) {
+    throw new Error();
+  }
+
+  const requestUrl = new URL(`/api/documents/${documentId}/order`, API_URL);
+
+  return apiRequest(
+    requestUrl,
+    { ...headers, cookie, "Content-Type": "application/json" },
+    "POST",
+    JSON.stringify({
+      anonymousEmail,
+    })
+  );
+}

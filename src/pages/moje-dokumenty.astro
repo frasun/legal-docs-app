@@ -136,8 +136,8 @@ function getDateLabel(created: Date, modified: Date) {
                   <div>
                     <header>
                       <a
-                        href={`${Astro.url.origin}/dokumenty/${_id}/${
-                          draft ? `podsumowanie` : `dokument`
+                        href={`${Astro.url.origin}${routes.DOCUMENTS}/${_id}${
+                          draft ? routes.SUMMARY : routes.DOCUMENT
                         }`}
                       >
                         <span>{title}</span>

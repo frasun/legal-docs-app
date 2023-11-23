@@ -15,3 +15,33 @@ export async function getPrices(limit = 100) {
   const { data } = await stripe.prices.list({ limit });
   return data;
 }
+
+export async function createCheckoutSession(
+  priceId: string,
+  successUrl: string,
+  cancelUrl: string,
+  customerEmail: string
+) {
+  try {
+    const stripeSession = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      customer_email: customerEmail,
+    });
+
+    if (!stripeSession.url) {
+      throw new Error();
+    }
+
+    return stripeSession.url;
+  } catch (e) {
+    throw e;
+  }
+}

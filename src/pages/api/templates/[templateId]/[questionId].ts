@@ -9,6 +9,7 @@ import { getEntry } from "astro:content";
 import { getSession } from "auth-astro/server";
 import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
+import routes from "@utils/routes";
 
 export const get: APIRoute = async ({ request, params }) => {
   try {
@@ -112,7 +113,7 @@ export const get: APIRoute = async ({ request, params }) => {
     nextId =
       currentQuestionIndex < questionIndex.length - 1
         ? questionIndex[currentQuestionIndex + 1].slug
-        : `podsumowanie`;
+        : routes.SUMMARY;
 
     return new Response(
       JSON.stringify({

@@ -149,7 +149,11 @@ try {
       {
         canGenerate ? (
           session ? (
-            <a href={`${Astro.url.origin}/zamowienie`}>{GENERATE}</a>
+            <a
+              href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.ORDER}`}
+            >
+              {GENERATE}
+            </a>
           ) : (
             <show-modal data-modal="payment">
               <button>{GENERATE}</button>
@@ -162,7 +166,7 @@ try {
       {
         !isUserDocument && (
           <a
-            href={`${Astro.url.origin}/dokument?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`}
+            href={`${Astro.url.origin}${routes.DOCUMENT}?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`}
           >
             <Icon name="save" width={18} height={18} />
             Zapisz szkic

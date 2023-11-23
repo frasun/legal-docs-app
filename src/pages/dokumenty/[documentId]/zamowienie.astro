@@ -1,0 +1,56 @@
+---
+import { Icon } from "astro-icon";
+import Layout from "../../../layouts/Layout.astro";
+import pageTitle from "@utils/pageTitle";
+import { emailRegExp, testString } from "@utils/dataValidation";
+import routes from "@utils/routes";
+import { initDocumentOrder } from "@api/documents";
+
+const { documentId } = Astro.params as { documentId: string };
+let anonymousEmail: string | undefined;
+
+try {
+  if (Astro.request.method === "POST") {
+    const formData = await Astro.request.formData();
+    anonymousEmail = String(formData.get("email"));
+
+    if (!anonymousEmail || !testString(anonymousEmail, emailRegExp)) {
+      throw new Error();
+    }
+  }
+
+  const url = await initDocumentOrder(
+    `${Astro.request.headers.get("cookie")}`,
+    documentId,
+    anonymousEmail
+  );
+
+  return Astro.redirect(url);
+} catch (e) {
+  if (e instanceof Error) {
+    if (e.cause === 303) {
+      return Astro.redirect(
+        `${routes.DOCUMENTS}/${documentId}${routes.DOCUMENT}`
+      );
+    }
+  }
+
+  console.log(e);
+
+  return Astro.redirect(routes.NOT_FOUND);
+}
+---
+
+<Layout title={pageTitle("Zamówienie")}>
+  <Icon name="loader" width={64} height={64} />
+</Layout>
+
+<style is:inline>
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+  }
+</style>

@@ -11,6 +11,8 @@ interface Props {
 }
 
 const { documentId } = Astro.props;
+const redirectAfterSignIn = `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${routes.DOCUMENTS}/${documentId}${routes.ORDER}`;
+const redirectAfterSignUp = `${routes.SIGN_UP}?${PARAMS.REDIRECT}=${routes.DOCUMENTS}/${documentId}${routes.ORDER}`;
 ---
 
 <Modal modalId="payment" slot="footer">
@@ -19,13 +21,9 @@ const { documentId } = Astro.props;
   </header>
   <section>
     <header>
-      <a
-        href={`${routes.SIGN_IN}?${PARAMS.REDIRECT}=${routes.ORDER}&${PARAMS.DOCUMENT}=${documentId}`}
-        >Zaloguj się</a
-      > lub <a
-        href={`${routes.SIGN_UP}?${PARAMS.REDIRECT}=${routes.ORDER}&${PARAMS.DOCUMENT}=${documentId}`}
-        >Załóż konto</a
-      >
+      <a href={redirectAfterSignIn}>Zaloguj się</a>
+      lub
+      <a href={redirectAfterSignUp}>Załóż konto</a>
     </header>
     <ul>
       <li>
@@ -52,7 +50,10 @@ const { documentId } = Astro.props;
   </section>
   <footer>
     <h4>Zakup bez tworzenia konta</h4>
-    <form method="POST" action={`${Astro.url.origin}/zamowienie`}>
+    <form
+      method="POST"
+      action={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.ORDER}`}
+    >
       <input
         type="email"
         name="email"

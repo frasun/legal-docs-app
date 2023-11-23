@@ -14,4 +14,5 @@ export default {
   SET_PASSWORD: "/reset-hasla/nowe-haslo",
   PROFILE: "/profil",
   HOME: "/",
+  SUMMARY: "/podsumowanie",
 };
