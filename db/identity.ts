@@ -134,3 +134,13 @@ async function getEncryptedIdentity(validatedIdentity: Identity) {
 
   return encryptedIdentity;
 }
+
+export async function deleteUserIdentities(userId: string) {
+  try {
+    return await identityCollection.deleteMany({
+      userId,
+    });
+  } catch (e) {
+    throw e;
+  }
+}

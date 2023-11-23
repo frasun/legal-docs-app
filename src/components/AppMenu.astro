@@ -87,6 +87,10 @@ const { session } = Astro.props;
             <Icon name="user" width={18} height={18} />
             <span>{session.user?.email}</span>
           </span>
+          <a href={routes.PROFILE} title="Profil">
+            <Icon name="settings" width={24} height={24} />
+            <span>Profil</span>
+          </a>
           <SignOut
             title="Wyloguj się"
             aira-label="Wyloguj się"

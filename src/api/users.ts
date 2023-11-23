@@ -1,5 +1,6 @@
 import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
+import { UserProfile } from "@type";
 
 export async function signUp(
   tos: string,
@@ -68,4 +69,28 @@ export async function setNewPassword(
       password,
     })
   );
+}
+
+export async function getUserProfile(
+  cookie: string | null
+): Promise<UserProfile> {
+  if (!cookie || !cookie.length) {
+    throw new Error();
+  }
+
+  const requestUrl = new URL(`/api/users`, API_URL);
+
+  return apiRequest(requestUrl, { ...headers, cookie });
+}
+
+export async function deleteUserAccount(
+  cookie: string | null
+): Promise<UserProfile> {
+  if (!cookie || !cookie.length) {
+    throw new Error();
+  }
+
+  const requestUrl = new URL(`/api/users`, API_URL);
+
+  return apiRequest(requestUrl, { ...headers, cookie }, "DELETE");
 }

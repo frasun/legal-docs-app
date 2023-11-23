@@ -10,7 +10,7 @@ export enum UserRoles {
   user = "user",
 }
 
-interface User {
+export interface User {
   email: string;
   password: string;
   created?: Date;
@@ -196,15 +196,11 @@ export async function wrongPasswordCode(email: string, rateLimit: number) {
 
 export async function deleteUserAccount(userId: string): Promise<number> {
   try {
-    const updated = await userCollection.updateOne(
-      { _id: new UUID(userId).toBinary() },
-      {
-        $set: { deleted: true },
-        $currentDate: { modified: true },
-      }
-    );
+    const updated = await userCollection.deleteOne({
+      _id: new UUID(userId).toBinary(),
+    });
 
-    return updated.modifiedCount;
+    return updated.deletedCount;
   } catch (e) {
     throw e;
   }

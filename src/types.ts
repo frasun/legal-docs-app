@@ -2,6 +2,7 @@ import type { ImageAsset } from "@sanity/types";
 import type { PortableTextBlock } from "@portabletext/types";
 import type { entityEnum } from "@utils/constants";
 import type { MyDocument } from "@db/document";
+import { User } from "@db/user";
 
 export type Answers = Record<string, any>;
 
@@ -136,4 +137,12 @@ export interface Question {
 export interface UserSession {
   documentId: string;
   ssid: string;
+}
+
+export interface UserProfile {
+  email: User["email"];
+  created: User["created"];
+  documents: number;
+  drafts: number;
+  identities: number;
 }

@@ -5,6 +5,7 @@ import type { Answers } from "@type";
 import { emailRegExp, testString } from "@utils/dataValidation";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
 import { sendFiles } from "@utils/email";
+import { getUserIdentities } from "@db/identity";
 
 export interface Document {
   doc: string;
@@ -406,6 +407,40 @@ export async function copyDocument(documentId: string, userId: string) {
     } else {
       return null;
     }
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function getUserStats(userId: string) {
+  try {
+    const documents = await documentCollection.countDocuments({
+      userId: { $eq: userId },
+      draft: { $eq: false },
+    });
+
+    const drafts = await documentCollection.countDocuments({
+      userId: { $eq: userId },
+      draft: { $eq: true },
+    });
+
+    const identities = await getUserIdentities(userId);
+
+    return {
+      documents,
+      drafts,
+      identities: identities.length,
+    };
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function deleteUserDocuments(userId: string) {
+  try {
+    return await documentCollection.deleteMany({
+      userId,
+    });
   } catch (e) {
     throw e;
   }

@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 const SESSION_COOKIE = "pr-ssid";
 const SESSION_TOKEN_PREFIX = "__Secure-next-auth";
 const SESSION_TOKEN_DEV_PREFIX = "next-auth";
-const SESSION_TOKEN = `${
+export const SESSION_TOKEN = `${
   import.meta.env.MODE === "production"
     ? SESSION_TOKEN_PREFIX
     : SESSION_TOKEN_DEV_PREFIX

@@ -1,0 +1,118 @@
+---
+import Layout from "../layouts/App.astro";
+import pageTitle from "@utils/pageTitle";
+import routes from "@utils/routes";
+import { EMAIL, REDIRECT } from "@utils/urlParams";
+import plurals from "@utils/plurals";
+import { deleteUserAccount, getUserProfile } from "@api/users";
+import { UserProfile } from "@type";
+import formatDate from "@utils/date";
+import Toast from "@components/Toast.astro";
+import { ERROR, ToastStatus } from "@utils/toasts";
+import ConfirmationModal from "@components/ConfirmationModal.astro";
+import { SESSION_TOKEN } from "src/middleware";
+
+let title = "Profil",
+  email: UserProfile["email"],
+  created: UserProfile["created"],
+  documents: UserProfile["documents"],
+  drafts: UserProfile["drafts"],
+  identities: UserProfile["identities"],
+  toast: string | null = null,
+  toastStatus: ToastStatus | undefined;
+
+try {
+  ({ email, created, documents, drafts, identities } = await getUserProfile(
+    `${Astro.request.headers.get("cookie")}`
+  ));
+} catch {
+  return Astro.redirect(`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`);
+}
+
+if (Astro.request.method === "POST") {
+  try {
+    await deleteUserAccount(`${Astro.request.headers.get("cookie")}`);
+
+    Astro.cookies.delete(SESSION_TOKEN);
+
+    return Astro.redirect(routes.HOME);
+  } catch (e) {
+    console.log(e);
+    toast = ERROR;
+    toastStatus = ToastStatus.error;
+  }
+}
+---
+
+<Layout title={pageTitle(title)}>
+  <span slot="topbar-title">{title}</span>
+  <section>
+    <div>
+      <h3>{email}</h3>
+      <time>Konto utworzone: {formatDate(String(created))}</time>
+      <a href={`${routes.RESET_PASSWORD}?${EMAIL}=harofld@gmail.com`}
+        >Zmień hasło</a
+      >
+      <show-modal data-modal="confirm">
+        <button>Usuń konto</button>
+      </show-modal>
+    </div>
+    <aside>
+      <p>
+        <big>{documents}</big>
+        <span>{plurals.CREATED_DOCUMENTS(documents)}</span>
+      </p>
+      <p>
+        <big>{drafts}</big>
+        <span>{plurals.DRAFT_DOCUMENTS(drafts)}</span>
+      </p>
+      <p>
+        <big>{identities}</big>
+        <span>{plurals.CREATEED_IDENTITIES(identities)}</span>
+      </p>
+    </aside>
+  </section>
+  <ConfirmationModal slot="footer">
+    <h3 slot="header">Usunięcie konta</h3>
+    Czy na pewno chcesz usunąć konto i wszystkie dane? Tej operacji nie da się cofnąć
+  </ConfirmationModal>
+  {toast && <Toast info={toast} status={toastStatus} slot="footer" />}
+</Layout>
+
+<style>
+  section {
+    @apply flex flex-col-reverse gap-20 justify-start;
+    @apply my-20 sm:my-30;
+  }
+
+  div,
+  aside {
+    @apply bg-white rounded-lg p-30;
+    @apply w-[90%] max-w-[900px] mx-auto;
+  }
+
+  div {
+    @apply flex flex-col gap-20 items-start;
+  }
+
+  div button,
+  div a {
+    @apply btn btn-alt;
+  }
+
+  aside {
+    @apply flex gap-20 flex-wrap;
+  }
+
+  aside p {
+    @apply flex flex-col flex-grow sm:flex-1;
+  }
+
+  aside big {
+    @apply text-3xl font-serif text-dark90;
+  }
+</style>
+
+<script>
+  import "@wc/ShowModal";
+</script>

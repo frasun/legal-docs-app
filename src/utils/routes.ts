@@ -12,4 +12,6 @@ export default {
   DOCUMENT: "/dokument",
   RESET_PASSWORD: "/reset-hasla",
   SET_PASSWORD: "/reset-hasla/nowe-haslo",
+  PROFILE: "/profil",
+  HOME: "/",
 };

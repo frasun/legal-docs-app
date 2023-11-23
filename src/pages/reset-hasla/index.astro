@@ -11,6 +11,12 @@ let errors: string[] = [],
   userEmail;
 
 const PAGE_TITLE = "Resetowanie hasła";
+const url = new URL(Astro.request.url);
+const emailParam = url.searchParams.get(PARAMS.EMAIL);
+
+if (emailParam) {
+  userEmail = emailParam;
+}
 
 if (Astro.request.method === "POST") {
   try {
