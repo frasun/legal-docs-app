@@ -24,10 +24,12 @@ import { UUID } from "mongodb";
 import routes from "@utils/routes";
 import { changeDocumentName } from "@api/documents";
 import { getTemplateSummary } from "@api/templates";
+import { UserRoles } from "@db/user";
 
 const { documentId } = Astro.params as { documentId: string };
 const session = await getSession(Astro.request);
 const isUserDocument = UUID.isValid(documentId);
+const isAdmin = session?.user?.role === UserRoles.admin;
 
 const ssid = session
   ? session.user?.ssid
@@ -149,11 +151,19 @@ try {
       {
         canGenerate ? (
           session ? (
-            <a
-              href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.ORDER}`}
-            >
-              {GENERATE}
-            </a>
+            isAdmin ? (
+              <a
+                href={`${Astro.url.origin}${routes.DOCUMENT}?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=false`}
+              >
+                {GENERATE}
+              </a>
+            ) : (
+              <a
+                href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.ORDER}`}
+              >
+                {GENERATE}
+              </a>
+            )
           ) : (
             <show-modal data-modal="payment">
               <button>{GENERATE}</button>
