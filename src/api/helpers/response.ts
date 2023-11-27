@@ -7,6 +7,7 @@ export const responseHeaders = {
   "X-Frame-Options": "DENY",
   "Strict-Transport-Security": "max-age=86400; includeSubDomains",
   "X-XSS-Protection": "1",
+  "Cache-Control": "max-age=300",
 };
 
 export function getStatus(e: Error) {
