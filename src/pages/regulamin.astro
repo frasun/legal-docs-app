@@ -11,10 +11,8 @@ let title: Page["title"] | undefined, body: Page["body"];
 
 try {
   ({ title, body } = await getPage(pageId));
-} catch (e) {
-  if (e instanceof Error) {
-    return Astro.redirect(routes.NOT_FOUND);
-  }
+} catch {
+  return Astro.redirect(routes.NOT_FOUND);
 }
 ---
 

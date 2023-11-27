@@ -1,0 +1,38 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Appbar from "@components/Appbar.astro";
+import Footer from "@components/Footer.astro";
+import getTitle from "@utils/pageTitle";
+---
+
+<Layout title={getTitle("Podana strona nie istnieje (404)")}>
+  <Appbar />
+  <main>
+    <section id="error">
+      <h1>Przykro nam, podana strona nie istnieje (404)</h1>
+      <a href="/">Idź do strony głównej</a>
+    </section>
+    <Footer />
+  </main>
+</Layout>
+
+<style>
+  main {
+    @apply container;
+    @apply flex items-center justify-center;
+    @apply gap-50;
+    @apply flex-col;
+  }
+
+  @media (min-height: 500px) {
+    main {
+      @apply h-[calc(100vh-var(--navbar-height))];
+    }
+  }
+
+  #error {
+    @apply flex flex-col gap-60 justify-center;
+    @apply flex-grow;
+    @apply px-20;
+  }
+</style>

@@ -96,17 +96,18 @@ try {
   ));
 } catch (e) {
   if (e instanceof Error) {
-    if (e.cause === 403) {
-      return Astro.redirect(
-        `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
-      );
-    }
+    switch (e.cause) {
+      case 403:
+        return Astro.redirect(
+          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+        );
 
-    if (e.cause === 303) {
-      return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
-    }
+      case 303:
+        return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
 
-    return Astro.redirect(routes.NOT_FOUND);
+      default:
+        return Astro.redirect(routes.NOT_FOUND);
+    }
   }
 }
 ---

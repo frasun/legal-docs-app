@@ -36,12 +36,13 @@ try {
   ));
 } catch (e) {
   if (e instanceof Error) {
-    if (e.cause === 401) {
-      return Astro.redirect(
-        `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
-      );
-    } else {
-      return Astro.redirect(routes.NOT_FOUND);
+    switch (e.cause) {
+      case 401:
+        return Astro.redirect(
+          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+        );
+      default:
+        return Astro.redirect(routes.NOT_FOUND);
     }
   }
 }

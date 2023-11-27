@@ -37,7 +37,6 @@ if (Astro.request.method === "POST") {
 
     return Astro.redirect(routes.HOME);
   } catch (e) {
-    console.log(e);
     toast = ERROR;
     toastStatus = ToastStatus.error;
   }

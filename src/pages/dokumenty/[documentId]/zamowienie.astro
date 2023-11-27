@@ -33,9 +33,9 @@ try {
         `${routes.DOCUMENTS}/${documentId}${routes.DOCUMENT}`
       );
     }
-  }
 
-  return Astro.redirect(routes.NOT_FOUND);
+    return Astro.redirect(routes.NOT_FOUND);
+  }
 }
 ---
 

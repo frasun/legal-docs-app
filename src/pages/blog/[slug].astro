@@ -21,7 +21,8 @@ let title: Post["title"] | undefined,
   excerpt: Post["excerpt"],
   keywords: Post["keywords"],
   description: Post["description"],
-  documents: Post["documents"];
+  documents: Post["documents"],
+  error: string | undefined;
 
 try {
   ({
@@ -39,12 +40,18 @@ try {
   ));
 } catch (e) {
   if (e instanceof Error) {
-    if (e.cause === 403) {
-      return Astro.redirect(
-        `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
-      );
-    } else {
-      return Astro.redirect(routes.NOT_FOUND);
+    switch (e.cause) {
+      case 403:
+        return Astro.redirect(
+          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+        );
+
+      case 404:
+      case 401:
+        return Astro.redirect(routes.NOT_FOUND);
+
+      default:
+        return Astro.redirect(routes.NOT_FOUND);
     }
   }
 }
