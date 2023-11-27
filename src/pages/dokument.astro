@@ -12,8 +12,8 @@ import routes from "@utils/routes";
 import { postDocument } from "@api/documents";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { getSession } from "auth-astro/server";
-import { boolean } from "astro/zod";
 import { UserRoles } from "@db/user";
+import { captureError } from "@utils/sentry";
 
 const urlParams = new URL(Astro.request.url).searchParams;
 const draft = String(urlParams.get(PARAMS.DRAFT)) === "true";
@@ -81,21 +81,26 @@ try {
   return Astro.redirect(redirectUrl);
 } catch (e) {
   if (e instanceof Error) {
-    if (e.cause === 303) {
-      return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
-    }
+    switch (e.cause) {
+      case 303:
+        return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
 
-    if (e.cause === 401) {
-      const redirectUrl = new URL(`${routes.SIGN_IN}`, Astro.url.origin);
+      case 401:
+        const redirectUrl = new URL(`${routes.SIGN_IN}`, Astro.url.origin);
 
-      redirectUrl.searchParams.append(PARAMS.REDIRECT, routes.DOCUMENT);
-      redirectUrl.searchParams.append(PARAMS.DOCUMENT, documentId as string);
-      redirectUrl.searchParams.append(PARAMS.DRAFT, "true");
+        redirectUrl.searchParams.append(PARAMS.REDIRECT, routes.DOCUMENT);
+        redirectUrl.searchParams.append(PARAMS.DOCUMENT, documentId as string);
+        redirectUrl.searchParams.append(PARAMS.DRAFT, "true");
 
-      return Astro.redirect(redirectUrl);
+        return Astro.redirect(redirectUrl);
+
+      case 404:
+        return Astro.redirect(routes.NOT_FOUND);
+
+      default:
+        captureError(e);
+        return Astro.redirect(routes.NOT_FOUND);
     }
   }
-
-  return Astro.redirect(routes.NOT_FOUND);
 }
 ---

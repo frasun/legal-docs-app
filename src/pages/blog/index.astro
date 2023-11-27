@@ -8,6 +8,7 @@ import BlogPost from "@components/BlogPost.astro";
 import type { BlogPosts } from "@type";
 import { getPosts } from "@api/posts";
 import routes from "@utils/routes";
+import { captureError } from "@utils/sentry";
 
 const PAGE_TITLE = "Blog";
 const page = Number(new URL(Astro.request.url).searchParams.get(PAGE)) || 1;
@@ -24,6 +25,7 @@ try {
 
   currentPage = page <= pages ? page : 1;
 } catch (e) {
+  captureError(e);
   return Astro.redirect(routes.NOT_FOUND);
 }
 ---

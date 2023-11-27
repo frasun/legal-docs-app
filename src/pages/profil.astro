@@ -25,7 +25,7 @@ try {
   ({ email, created, documents, drafts, identities } = await getUserProfile(
     `${Astro.request.headers.get("cookie")}`
   ));
-} catch {
+} catch (e) {
   return Astro.redirect(`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`);
 }
 

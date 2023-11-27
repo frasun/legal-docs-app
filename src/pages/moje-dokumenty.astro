@@ -28,6 +28,7 @@ import routes from "@utils/routes";
 import { changeDocumentName } from "@api/documents";
 import { getDocuments } from "@api/documents";
 import { UserDocuments } from "@type";
+import { captureError } from "@utils/sentry";
 
 const urlParams = new URL(Astro.request.url).searchParams;
 const PAGE_TITLE = "Moje dokumenty";
@@ -50,6 +51,7 @@ try {
       `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
     );
   } else {
+    captureError(e);
     return Astro.redirect(routes.NOT_FOUND);
   }
 }

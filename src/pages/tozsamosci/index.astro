@@ -17,6 +17,7 @@ import { deleteIdentity, getIdentities } from "@api/identities";
 import type { UserIdentities } from "@type";
 import routes from "@utils/routes";
 import { ToastStatus } from "@utils/toasts";
+import { captureError } from "@utils/sentry";
 
 const PAGE_TITLE = "Tożsamości";
 
@@ -41,7 +42,10 @@ try {
         return Astro.redirect(
           `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
         );
+      case 404:
+        return Astro.redirect(routes.NOT_FOUND);
       default:
+        captureError(e);
         return Astro.redirect(routes.NOT_FOUND);
     }
   }
