@@ -9,13 +9,6 @@ import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
 import SharingModal from "@components/SharingModal.astro";
-import {
-  DOCUMENT_SHARED,
-  DOCUMENT_SHARED_PARAM,
-  ERROR,
-  ToastStatus,
-} from "@utils/toasts";
-import Toast from "@components/Toast.astro";
 import routes from "@utils/routes";
 
 const { documentId: dId } = Astro.params;
@@ -23,6 +16,7 @@ const documentId = String(dId);
 const session = await getSession(Astro.request);
 const urlParams = new URL(Astro.request.url).searchParams;
 const emailParam = urlParams.get(PARAMS.EMAIL);
+const firstTime = urlParams.get("success") === "true" ? true : false;
 
 let data, title;
 
@@ -64,19 +58,6 @@ for (let key of Object.keys(answers)) {
 }
 
 if (!title) title = docTitle;
-
-const firstTime = urlParams.get("success") === "true" ? true : false;
-let toast: string | null = null,
-  status: ToastStatus | undefined;
-
-if (urlParams.has(DOCUMENT_SHARED_PARAM)) {
-  if (Boolean(Number(urlParams.get(DOCUMENT_SHARED_PARAM)))) {
-    toast = DOCUMENT_SHARED;
-  } else {
-    toast = ERROR;
-    status = ToastStatus.error;
-  }
-}
 ---
 
 <Layout title={pageTitle(String(title))}>
@@ -160,7 +141,6 @@ if (urlParams.has(DOCUMENT_SHARED_PARAM)) {
     }
   </aside>
   {session && <SharingModal contentId="#doc" documentId={documentId} />}
-  {toast && <Toast info={toast} status={status} />}
 </Layout>
 
 <style>

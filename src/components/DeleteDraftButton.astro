@@ -1,59 +1,24 @@
 ---
 import Icon from "astro-icon";
+import { UUID } from "mongodb";
+
+interface Props {
+  id: UUID;
+}
 
 const { id } = Astro.props;
 ---
 
-<delete-draft data-document-id={id}>
-  <button title="Usuń szkic">
-    <Icon name="delete" width={20} height={20} />
-  </button>
+<delete-draft data-document-id={id} title="Usuń szkic">
+  <Icon name="delete" width={20} height={20} />
 </delete-draft>
 
 <style>
-  button {
+  delete-draft {
     @apply btn btn-alt;
   }
 </style>
 
 <script>
-  import { DRAFT_REMOVED_PARAM } from "@utils/toasts";
-  import { deleteDraft } from "@api/documents";
-
-  class DeleteDraft extends HTMLElement {
-    button: HTMLButtonElement | null;
-    documentId: string | undefined;
-
-    constructor() {
-      super();
-
-      this.button = this.querySelector("button");
-      this.documentId = this.dataset.documentId;
-    }
-
-    connectedCallback() {
-      if (this.button) {
-        this.button.addEventListener("click", async () => {
-          const redirectUrl = new URL(window.location.href);
-          redirectUrl.search = "";
-
-          if (this.documentId) {
-            try {
-              await deleteDraft(document.cookie, this.documentId);
-
-              redirectUrl.searchParams.set(DRAFT_REMOVED_PARAM, "1");
-            } catch {
-              redirectUrl.searchParams.set(DRAFT_REMOVED_PARAM, "0");
-            } finally {
-              window.requestAnimationFrame(() => {
-                window.history.pushState({}, "", redirectUrl);
-                window.location.reload();
-              });
-            }
-          }
-        });
-      }
-    }
-  }
-  customElements.define("delete-draft", DeleteDraft);
+  import "@wc/DeleteDraft";
 </script>

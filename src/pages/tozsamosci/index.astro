@@ -2,33 +2,20 @@
 import EmptyScreen from "@components/EmptyScreen.astro";
 import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
-import {
-  IDENTITY_SAVED_PARAM,
-  IDENTITY_SAVED,
-  IDENTITY_REMOVED,
-  IDENTITY_REMOVED_PARAM,
-  ERROR_PARAM,
-  ERROR,
-} from "@utils/toasts";
-import Toast from "@components/Toast.astro";
 import { entityEnum } from "@utils/constants";
 import { DATA_TYPE, REDIRECT } from "@utils/urlParams";
-import { deleteIdentity, getIdentities } from "@api/identities";
+import { getIdentities } from "@api/identities";
 import type { UserIdentities } from "@type";
 import routes from "@utils/routes";
-import { ToastStatus } from "@utils/toasts";
 import { captureError } from "@utils/sentry";
 
 const PAGE_TITLE = "Tożsamości";
-
 const urlParams = new URL(Astro.request.url).searchParams;
 const dataType = urlParams.get(DATA_TYPE) ?? undefined;
 const dataTypeFilter = dataType ? decodeURIComponent(dataType) : undefined;
 
 let identities: UserIdentities["identities"] = [],
-  count: UserIdentities["count"] = 0,
-  toast: string | null = null,
-  toastStatus: ToastStatus = ToastStatus.default;
+  count: UserIdentities["count"] = 0;
 
 try {
   ({ identities, count } = await getIdentities(
@@ -42,42 +29,14 @@ try {
         return Astro.redirect(
           `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
         );
+
       case 404:
         return Astro.redirect(routes.NOT_FOUND);
+
       default:
         captureError(e);
         return Astro.redirect(routes.NOT_FOUND);
     }
-  }
-}
-
-if (urlParams.has(IDENTITY_SAVED_PARAM)) {
-  toast = IDENTITY_SAVED;
-}
-
-if (urlParams.has(IDENTITY_REMOVED_PARAM)) {
-  toast = IDENTITY_REMOVED;
-}
-
-if (urlParams.has(ERROR_PARAM)) {
-  toast = ERROR;
-  toastStatus = ToastStatus.error;
-}
-
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  const id = formData.get("id");
-
-  try {
-    await deleteIdentity(`${Astro.request.headers.get("cookie")}`, String(id));
-
-    return Astro.redirect(
-      `${Astro.url.origin}/${routes.IDENTITIES}?${IDENTITY_REMOVED_PARAM}`
-    );
-  } catch {
-    return Astro.redirect(
-      `${Astro.url.origin}/${routes.IDENTITIES}?${ERROR_PARAM}`
-    );
   }
 }
 ---
@@ -113,10 +72,7 @@ if (Astro.request.method === "POST") {
                 </div>
                 <aside>
                   <a href={`${Astro.url.origin}/tozsamosci/${_id}`}>Edytuj</a>
-                  <form method="POST">
-                    <input type="hidden" name="id" value={_id} />
-                    <button>Usuń</button>
-                  </form>
+                  <delete-identity data-identity-id={_id}>Usuń</delete-identity>
                 </aside>
               </div>
             ))}
@@ -135,7 +91,6 @@ if (Astro.request.method === "POST") {
       </EmptyScreen>
     )
   }
-  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 
 <style>
@@ -162,7 +117,8 @@ if (Astro.request.method === "POST") {
   }
 
   section div a,
-  section div button {
+  section div button,
+  delete-identity {
     @apply btn btn-alt;
   }
 
@@ -182,4 +138,5 @@ if (Astro.request.method === "POST") {
 
 <script>
   import "@wc/DataTypeSelector";
+  import "@wc/DeleteIdentity";
 </script>

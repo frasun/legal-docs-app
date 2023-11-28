@@ -10,7 +10,8 @@
       "@type": ["src/types.ts"],
       "@db/*": ["db/*"],
       "@wc/*": ["src/webcomponents/*"],
-      "@api/*": ["src/api/*"]
+      "@api/*": ["src/api/*"],
+      "@stores/*": ["src/stores/*"]
     },
     "importsNotUsedAsValues": "remove"
   }

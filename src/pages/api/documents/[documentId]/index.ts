@@ -63,10 +63,6 @@ export const all: APIRoute = async ({ params, request }) => {
 
 export const put: APIRoute = async ({ request, params }) => {
   try {
-    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-      throw new Error(undefined, { cause: 401 });
-    }
-
     const session = await getSession(request);
 
     const { documentId } = params as {
@@ -94,7 +90,7 @@ export const put: APIRoute = async ({ request, params }) => {
       );
 
       if (response.modifiedCount > 0) {
-        return new Response(JSON.stringify(null), {
+        return new Response(JSON.stringify(response.modifiedCount), {
           status: 200,
           headers,
         });

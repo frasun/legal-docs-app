@@ -4,19 +4,13 @@ import { Icon } from "astro-icon";
 const { id, title } = Astro.props;
 ---
 
-<change-name-button data-doc-id={id} data-title={title}>
-  <button title="Zmień nazwę">
-    <Icon name="edit" width={20} height={20} />
-  </button>
+<change-name-button data-doc-id={id} data-title={title} title="Zmień nazwę">
+  <Icon name="edit" width={20} height={20} />
 </change-name-button>
 
 <style>
   change-name-button {
-    @apply block;
-  }
-
-  change-name-button button {
-    @apply btn btn-alt;
+    @apply btn btn-alt cursor-pointer;
   }
 </style>
 

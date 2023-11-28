@@ -7,25 +7,11 @@ import EmptyScreen from "@components/EmptyScreen.astro";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
 import pageTitle from "@utils/pageTitle";
-import Toast from "@components/Toast.astro";
-import { ERROR_PARAM, ToastStatus } from "@utils/toasts";
-import {
-  DOCUMENT_NAME_CHANGED,
-  DRAFT_SAVED,
-  DRAFT_SAVED_PARAM,
-  DOCUMENT_NAME_PARAM,
-  DRAFT_REMOVED,
-  DRAFT_REMOVED_PARAM,
-  ERROR,
-  COPY_DOCUMENT_PARAM,
-  COPY_DOCUMENT,
-} from "@utils/toasts";
 import * as PARAMS from "@utils/urlParams";
 import DeleteDraftButton from "@components/DeleteDraftButton.astro";
 import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 import Pagination from "@components/Pagination.astro";
 import routes from "@utils/routes";
-import { changeDocumentName } from "@api/documents";
 import { getDocuments } from "@api/documents";
 import { UserDocuments } from "@type";
 import { captureError } from "@utils/sentry";
@@ -36,9 +22,7 @@ const page = urlParams.get(PARAMS.PAGE) || undefined;
 
 let documents: UserDocuments["documents"],
   pages: UserDocuments["pages"],
-  currentPage: UserDocuments["currentPage"],
-  toast: string | null = null,
-  toastStatus;
+  currentPage: UserDocuments["currentPage"];
 
 try {
   ({ documents, pages, currentPage } = await getDocuments(
@@ -53,60 +37,6 @@ try {
   } else {
     captureError(e);
     return Astro.redirect(routes.NOT_FOUND);
-  }
-}
-
-if (urlParams.has(DRAFT_SAVED_PARAM)) {
-  toast = DRAFT_SAVED;
-}
-
-if (urlParams.has(DOCUMENT_NAME_PARAM)) {
-  toast = DOCUMENT_NAME_CHANGED;
-}
-
-if (urlParams.has(DRAFT_REMOVED_PARAM)) {
-  if (Boolean(Number(urlParams.get(DRAFT_REMOVED_PARAM)))) {
-    toast = DRAFT_REMOVED;
-    toastStatus = ToastStatus.default;
-  } else {
-    toast = ERROR;
-    toastStatus = ToastStatus.error;
-  }
-}
-
-if (urlParams.has(COPY_DOCUMENT_PARAM)) {
-  if (Boolean(Number(urlParams.get(COPY_DOCUMENT_PARAM)))) {
-    toast = COPY_DOCUMENT;
-    toastStatus = ToastStatus.default;
-  } else {
-    toast = ERROR;
-    toastStatus = ToastStatus.error;
-  }
-}
-
-if (urlParams.has(ERROR_PARAM)) {
-  toast = ERROR;
-  toastStatus = ToastStatus.error;
-}
-
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  const title = String(formData.get("title"));
-  const docId = String(formData.get("template"));
-  const redirectUrl = new URL(Astro.request.url);
-
-  try {
-    await changeDocumentName(
-      `${Astro.request.headers.get("cookie")}`,
-      docId,
-      title
-    );
-
-    redirectUrl.searchParams.set(DOCUMENT_NAME_PARAM, "true");
-  } catch {
-    redirectUrl.searchParams.set(ERROR_PARAM, "true");
-  } finally {
-    return Astro.redirect(redirectUrl);
   }
 }
 
@@ -195,7 +125,6 @@ function getDateLabel(created: Date, modified: Date) {
     )
   }
   <ChangeNameModal />
-  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 
 <style>

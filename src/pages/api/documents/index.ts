@@ -36,10 +36,6 @@ export const get: APIRoute = async ({ request }) => {
 
 export const post: APIRoute = async ({ request }) => {
   try {
-    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-      throw new Error(undefined, { cause: 401 });
-    }
-
     if (request.headers.get("Content-Type") !== "application/json") {
       throw new Error(undefined, { cause: 400 });
     }
@@ -60,8 +56,8 @@ export const post: APIRoute = async ({ request }) => {
     }
 
     const { answers, canGenerate } = await getTemplateSummary(
-      cookie,
-      documentId
+      documentId,
+      cookie
     );
 
     if (canGenerate || (draft && !userEmail)) {

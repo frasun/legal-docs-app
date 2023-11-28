@@ -3,7 +3,7 @@ import { Icon } from "astro-icon";
 import { ToastStatus } from "@utils/toasts";
 
 interface Props {
-  info: string;
+  info?: string;
   status?: ToastStatus;
 }
 
@@ -13,5 +13,5 @@ const toastIcon = status === ToastStatus.error ? "clear" : "tick";
 
 <toast-element data-status={status}>
   <Icon name={toastIcon} width={32} height={32} />
-  {info}
+  <p>{info}</p>
 </toast-element>

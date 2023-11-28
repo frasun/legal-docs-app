@@ -10,41 +10,43 @@ import Modal from "./Modal.astro";
       <hide-modal>
         <button>Anuluj</button>
       </hide-modal>
-      <button type="submit">Potwierdź</button>
+      <slot name="submit">
+        <button type="submit">Potwierdź</button>
+      </slot>
     </footer>
   </form>
+
+  <style>
+    form {
+      @apply flex flex-col gap-20 w-full;
+    }
+
+    p {
+      @apply text-xl mb-20;
+    }
+
+    footer {
+      @apply flex gap-15 justify-center;
+    }
+
+    footer button[type="submit"] {
+      @apply btn-default;
+    }
+
+    footer button:not([type="submit"]) {
+      @apply btn-alt;
+    }
+
+    footer button {
+      @apply btn btn-big;
+    }
+
+    :global(#confirm) {
+      @apply max-w-[400px];
+    }
+  </style>
+
+  <script>
+    import "@wc/HideModal";
+  </script>
 </Modal>
-
-<style>
-  form {
-    @apply flex flex-col gap-20 w-full;
-  }
-
-  p {
-    @apply text-xl mb-20;
-  }
-
-  footer {
-    @apply flex gap-15 justify-center;
-  }
-
-  footer button[type="submit"] {
-    @apply btn-default;
-  }
-
-  footer button:not([type="submit"]) {
-    @apply btn-alt;
-  }
-
-  footer button {
-    @apply btn btn-big;
-  }
-
-  :global(#confirm) {
-    @apply max-w-[400px];
-  }
-</style>
-
-<script>
-  import "@wc/HideModal";
-</script>

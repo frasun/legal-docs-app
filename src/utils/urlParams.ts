@@ -9,3 +9,4 @@ export const PAYMENT = "pid";
 export const DATA_TYPE = "dt";
 export const LIMIT = "l";
 export const USER_ID = "uid";
+export const SUCCESS = "success";

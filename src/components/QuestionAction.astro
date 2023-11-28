@@ -1,7 +1,7 @@
 ---
 import Progressbar from "@components/Progressbar.astro";
 import { Icon } from "astro-icon";
-import * as PARAMS from "@utils/urlParams";
+import SaveDraft from "@components/SaveDarft.astro";
 
 interface Props {
   current: number;
@@ -15,16 +15,7 @@ const { current, steps, docId, draft } = Astro.props;
 
 <div>
   <Progressbar current={current} steps={steps} />
-  {
-    !draft && (
-      <a
-        href={`${Astro.url.origin}/dokument?${PARAMS.DOCUMENT}=${docId}&${PARAMS.DRAFT}=true`}
-      >
-        <Icon name="save" width={18} height={18} />
-        Zapisz szkic
-      </a>
-    )
-  }
+  {!draft && <SaveDraft documentId={docId} />}
   <show-question-list>
     <button aria-label="Pokaż listę pytań">
       <Icon name="index" width={24} height={24} />

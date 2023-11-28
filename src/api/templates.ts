@@ -89,10 +89,10 @@ export async function getSessionAnswers(
 }
 
 export async function getTemplateSummary(
-  cookie: string | null,
-  templateId: string
+  templateId?: string,
+  cookie?: string | null
 ): Promise<TemplateSummary> {
-  if (!cookie || !cookie.length) {
+  if (!cookie || !cookie.length || !templateId) {
     throw new Error();
   }
 

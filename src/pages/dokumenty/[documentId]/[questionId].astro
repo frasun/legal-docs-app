@@ -9,24 +9,12 @@ import ChangeNameModal from "@components/ChangeNameModal.astro";
 import Badge from "@components/Badge.astro";
 import pageTitle from "@utils/pageTitle";
 import QuestionAction from "@components/QuestionAction.astro";
-import Toast from "@components/Toast.astro";
-import {
-  DOCUMENT_NAME_CHANGED,
-  ANSWER_UPDATED,
-  DOCUMENT_NAME_PARAM,
-  ANSWER_UPDATED_PARAM,
-  ERROR_PARAM,
-  ToastStatus,
-  ERROR,
-} from "@utils/toasts";
 import type { Answers, Question } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { deleteSessionDocument } from "@db/session";
-import ErrorList from "@components/ErrorList.astro";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
-import { changeDocumentName, postAnswers } from "@api/documents";
 import { getQuestion } from "@api/templates";
 import { captureError } from "@utils/sentry";
 
@@ -50,10 +38,7 @@ let answers: Answers = {},
   questionShort: Question["questionShort"],
   questionIndex: Question["questionIndex"] = 0,
   prevUrl: string | null = null,
-  nextUrl: string | null = null,
-  toast: string | null = null,
-  toastStatus: ToastStatus = ToastStatus.default,
-  errors: string[] = [];
+  nextUrl: string | null = null;
 
 const cookie = `${Astro.request.headers.get("cookie")}`;
 
@@ -128,103 +113,18 @@ try {
         return Astro.redirect(
           `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
         );
+
       case 303:
         return Astro.redirect(
           `${routes.DOCUMENTS}/${documentId}/${routes.DOCUMENT}`
         );
+
       case 404:
         return Astro.redirect(routes.NOT_FOUND);
+
       default:
         captureError(e);
         return Astro.redirect(routes.NOT_FOUND);
-    }
-  }
-}
-
-// show toast
-const urlParams = new URL(Astro.request.url).searchParams;
-
-if (urlParams.has(DOCUMENT_NAME_PARAM)) {
-  toast = DOCUMENT_NAME_CHANGED;
-  toastStatus = ToastStatus.default;
-}
-
-if (urlParams.has(ANSWER_UPDATED_PARAM)) {
-  toast = ANSWER_UPDATED;
-  toastStatus = ToastStatus.default;
-}
-
-if (urlParams.has(ERROR_PARAM)) {
-  toast = ERROR;
-  toastStatus = ToastStatus.error;
-}
-
-// post answers
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  const newTitle = formData.get("title");
-
-  if (newTitle && isUserDocument) {
-    const docId = String(formData.get("template"));
-    const redirectUrl = new URL(Astro.request.url);
-
-    try {
-      await changeDocumentName(
-        `${Astro.request.headers.get("cookie")}`,
-        docId,
-        newTitle as string
-      );
-
-      redirectUrl.searchParams.delete(ANSWER_UPDATED_PARAM);
-      redirectUrl.searchParams.set(DOCUMENT_NAME_PARAM, "true");
-    } catch {
-      redirectUrl.searchParams.set(ERROR_PARAM, "true");
-    } finally {
-      return Astro.redirect(redirectUrl);
-    }
-  }
-
-  if (formData && !newTitle) {
-    let newAnswers: Answers = {};
-
-    for (let [key, value] of formData.entries()) {
-      if (key in answers && value && value !== String(answers[key])) {
-        Object.assign(newAnswers, { [key]: value });
-      }
-    }
-
-    if (Object.keys(newAnswers).length) {
-      try {
-        await postAnswers(cookie, documentId, newAnswers);
-
-        if (isUserDocument) {
-          const redirectUrl = new URL(Astro.request.url);
-
-          redirectUrl.searchParams.delete(DOCUMENT_NAME_PARAM);
-
-          if (!redirectUrl.searchParams.has(ANSWER_UPDATED_PARAM)) {
-            redirectUrl.searchParams.append(ANSWER_UPDATED_PARAM, "true");
-          }
-
-          return Astro.redirect(redirectUrl);
-        }
-
-        return Astro.redirect(nextUrl);
-      } catch (e) {
-        if (e instanceof Error) {
-          if (e.cause === 400) {
-            e.message.split(",").forEach((error) => errors.push(error));
-          }
-        }
-      } finally {
-        answers = { ...answers, ...newAnswers };
-
-        for (let key of Object.keys(qData)) {
-          qData[key] = answers[key];
-        }
-      }
-    } else {
-      return Astro.redirect(nextUrl);
     }
   }
 }
@@ -250,7 +150,7 @@ if (Astro.request.method === "POST") {
     docId={templateId}
     draft={draft}
   />
-  <question-form>
+  <question-form data-document-id={documentId} data-next-url={nextUrl}>
     <form method="POST">
       <header>
         <h2>{question}</h2>
@@ -263,17 +163,6 @@ if (Astro.request.method === "POST") {
           )
         }
       </header>
-      {
-        errors.length ? (
-          <ErrorList>
-            {errors.map((message) => (
-              <p>{message}</p>
-            ))}
-          </ErrorList>
-        ) : (
-          ``
-        )
-      }
       {Content && <Content />}
       <footer>
         <div>
@@ -319,7 +208,6 @@ if (Astro.request.method === "POST") {
     )
   }
   {draft && <ChangeNameModal />}
-  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 
 <style>

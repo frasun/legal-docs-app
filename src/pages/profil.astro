@@ -4,22 +4,17 @@ import pageTitle from "@utils/pageTitle";
 import routes from "@utils/routes";
 import { EMAIL, REDIRECT } from "@utils/urlParams";
 import plurals from "@utils/plurals";
-import { deleteUserAccount, getUserProfile } from "@api/users";
+import { getUserProfile } from "@api/users";
 import { UserProfile } from "@type";
 import formatDate from "@utils/date";
-import Toast from "@components/Toast.astro";
-import { ERROR, ToastStatus } from "@utils/toasts";
 import ConfirmationModal from "@components/ConfirmationModal.astro";
-import { SESSION_TOKEN } from "src/middleware";
 
 let title = "Profil",
   email: UserProfile["email"],
   created: UserProfile["created"],
   documents: UserProfile["documents"],
   drafts: UserProfile["drafts"],
-  identities: UserProfile["identities"],
-  toast: string | null = null,
-  toastStatus: ToastStatus | undefined;
+  identities: UserProfile["identities"];
 
 try {
   ({ email, created, documents, drafts, identities } = await getUserProfile(
@@ -27,19 +22,6 @@ try {
   ));
 } catch (e) {
   return Astro.redirect(`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`);
-}
-
-if (Astro.request.method === "POST") {
-  try {
-    await deleteUserAccount(`${Astro.request.headers.get("cookie")}`);
-
-    Astro.cookies.delete(SESSION_TOKEN);
-
-    return Astro.redirect(routes.HOME);
-  } catch (e) {
-    toast = ERROR;
-    toastStatus = ToastStatus.error;
-  }
 }
 ---
 
@@ -74,8 +56,8 @@ if (Astro.request.method === "POST") {
   <ConfirmationModal slot="footer">
     <h3 slot="header">Usunięcie konta</h3>
     Czy na pewno chcesz usunąć konto i wszystkie dane? Tej operacji nie da się cofnąć
+    <delete-account slot="submit">Potwierdź</delete-account>
   </ConfirmationModal>
-  {toast && <Toast info={toast} status={toastStatus} slot="footer" />}
 </Layout>
 
 <style>
@@ -110,8 +92,13 @@ if (Astro.request.method === "POST") {
   aside big {
     @apply text-3xl font-serif text-dark90;
   }
+
+  delete-account {
+    @apply btn btn-big btn-default;
+  }
 </style>
 
 <script>
   import "@wc/ShowModal";
+  import "@wc/DeleteAccount";
 </script>

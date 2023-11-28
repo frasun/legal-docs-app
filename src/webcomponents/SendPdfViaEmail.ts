@@ -1,9 +1,10 @@
 import { emailRegExp, testString } from "@utils/dataValidation";
 import { getContentArray } from "@utils/pdf";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
-import { DOCUMENT_SHARED_PARAM } from "@utils/toasts";
+import { DOCUMENT_SHARED, DOCUMENT_SHARED_PARAM, ERROR } from "@utils/toasts";
 import trimWhiteSpace from "@utils/whitespace";
 import { shareDocument } from "@api/documents";
+import { displayError, displayToast } from "@stores/toast";
 
 class SendPdfViaEmail extends HTMLElement {
   form: HTMLFormElement | null;
@@ -24,128 +25,81 @@ class SendPdfViaEmail extends HTMLElement {
 
   connectedCallback() {
     if (this.form && this.contentId) {
-      this.form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(this.form as HTMLFormElement);
-        const sendToMe = formData.has("sendToMe");
-        const email1 = formData.get("email1");
-        const email2 = formData.get("email2");
-        const emails = [];
-
-        if (this.loader) {
-          this.loader.style.display = "block";
-        }
-
-        if (email1 && email1.length) {
-          emails.push(trimWhiteSpace(email1 as string));
-        }
-
-        if (email2 && email2.length) {
-          emails.push(trimWhiteSpace(email2 as string));
-        }
-
-        if (emails.length) {
-          for (let email of emails) {
-            const isEmail = testString(email, emailRegExp);
-
-            if (!isEmail) {
-              this.errors.push(`${WRONG_EMAIL_FORMAT}: ${email}`);
-            }
-          }
-        }
-
-        if (!emails.length && !sendToMe) {
-          this.errors.push("Podaj przynajmniej jeden adres e-mail");
-        }
-
-        const docContent = document.querySelector(`${this.contentId}`);
-
-        if (docContent && !this.errors.length) {
-          const title = docContent.getAttribute("data-title");
-          const template = docContent.getAttribute("data-template");
-          const redirectUrl = new URL(window.location.href);
-          redirectUrl.search = "";
-
-          if (this.documentId) {
-            try {
-              const data = {
-                pdf: getContentArray(docContent),
-                emails,
-                sendToMe,
-                title,
-                template,
-              };
-
-              await shareDocument(document.cookie, this.documentId, data);
-
-              redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "1");
-            } catch {
-              redirectUrl.searchParams.set(DOCUMENT_SHARED_PARAM, "0");
-            } finally {
-              document.body.dispatchEvent(new CustomEvent("hideModal"));
-
-              window.requestAnimationFrame(() => {
-                window.history.pushState({}, "", redirectUrl);
-                window.location.reload();
-              });
-            }
-          }
-        }
-
-        if (this.errors.length) {
-          this.displayErrors(this.errors);
-
-          if (this.loader) {
-            this.loader.removeAttribute("style");
-          }
-        }
-      });
+      this.form.addEventListener("submit", this.handleFormSubmit.bind(this));
     }
-
-    document.body.addEventListener("modalHidden", () => {
-      this.reset(true);
-    });
   }
 
-  displayErrors(errors: string[]) {
-    const footer = document.createElement("footer");
+  async handleFormSubmit(event: SubmitEvent) {
+    event.preventDefault();
 
-    for (let error of errors) {
-      let p = document.createElement("p");
-      p.classList.add("text-orangeDark");
-      p.innerText = error;
-      footer.append(p);
-    }
+    try {
+      const formData = new FormData(this.form as HTMLFormElement);
+      const sendToMe = formData.has("sendToMe");
+      const email1 = formData.get("email1");
+      const email2 = formData.get("email2");
+      const emails = [];
 
-    (this.form as HTMLFormElement).append(footer);
+      if (this.loader) {
+        this.loader.style.display = "block";
+      }
 
-    this.errors = [];
-  }
+      if (email1 && email1.length) {
+        emails.push(trimWhiteSpace(email1 as string));
+      }
 
-  reset(init = false) {
-    const footer = this.querySelector("form > footer");
-    const sendToMe = this.form?.querySelector("input[name='sendToMe']");
-    const inputs: NodeListOf<HTMLInputElement> = this.querySelectorAll(
-      'input[type="email"]'
-    );
+      if (email2 && email2.length) {
+        emails.push(trimWhiteSpace(email2 as string));
+      }
 
-    if (footer) {
-      footer.remove();
-    }
+      if (emails.length) {
+        for (let email of emails) {
+          const isEmail = testString(email, emailRegExp);
 
-    if (Array.from(inputs).length) {
-      Array.from(inputs).forEach((input) => {
-        input.value = "";
-      });
-    }
+          if (!isEmail) {
+            this.errors.push(`${WRONG_EMAIL_FORMAT}: ${email}`);
+          }
+        }
+      }
 
-    if (init && sendToMe) {
-      (sendToMe as HTMLInputElement).checked = true;
-    }
+      if (!emails.length && !sendToMe) {
+        this.errors.push("Podaj przynajmniej jeden adres e-mail");
+      }
 
-    if (this.loader) {
-      this.loader.removeAttribute("style");
+      if (this.errors.length) {
+        throw new Error(undefined, { cause: 400 });
+      }
+
+      const docContent = document.querySelector(`${this.contentId}`);
+
+      if (docContent && !this.errors.length) {
+        const title = docContent.getAttribute("data-title");
+        const template = docContent.getAttribute("data-template");
+
+        if (this.documentId) {
+          const data = {
+            pdf: getContentArray(docContent),
+            emails,
+            sendToMe,
+            title,
+            template,
+          };
+
+          await shareDocument(this.documentId, data);
+
+          displayToast(DOCUMENT_SHARED, true);
+        }
+      }
+    } catch {
+      if (this.errors.length) {
+        displayError(this.errors);
+        this.errors = [];
+      } else {
+        displayError();
+      }
+
+      if (this.loader) {
+        this.loader.removeAttribute("style");
+      }
     }
   }
 }

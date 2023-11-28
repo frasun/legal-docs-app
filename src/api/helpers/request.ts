@@ -1,6 +1,6 @@
 export async function apiRequest(
   url: URL,
-  headers: HeadersInit,
+  headers?: HeadersInit,
   method = "GET",
   body?: string
 ) {

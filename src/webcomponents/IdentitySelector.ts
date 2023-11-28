@@ -1,5 +1,5 @@
 import { getIdentity } from "@api/identities";
-import { displayGenericError } from "@utils/toasts";
+import { displayError } from "@stores/toast";
 
 class IdentitySelector extends HTMLElement {
   selector: HTMLSelectElement | null;
@@ -17,16 +17,13 @@ class IdentitySelector extends HTMLElement {
       this.selector.addEventListener("change", async () => {
         if (this.selector?.value) {
           try {
-            const detail = await getIdentity(
-              document.cookie,
-              this.selector?.value
-            );
+            const detail = await getIdentity(this.selector?.value);
 
             dataSelector?.dispatchEvent(
               new CustomEvent("select-identity", { detail })
             );
           } catch {
-            displayGenericError();
+            displayError();
           }
         }
       });

@@ -2,19 +2,10 @@
 import Layout from "../../../layouts/App.astro";
 import Answer from "@components/Answer.astro";
 import { getSession } from "auth-astro/server";
-import { Icon } from "astro-icon";
 import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
 import Badge from "@components/Badge.astro";
 import pageTitle from "@utils/pageTitle";
-import Toast from "@components/Toast.astro";
-import {
-  DOCUMENT_NAME_CHANGED,
-  DOCUMENT_NAME_PARAM,
-  ERROR,
-  ERROR_PARAM,
-  ToastStatus,
-} from "@utils/toasts";
 import type { TemplateSummary } from "@type";
 import { deleteSessionDocument } from "@db/session";
 import { SESSION_COOKIE } from "@utils/cookies";
@@ -22,10 +13,10 @@ import PaymentModal from "@components/PaymentModal.astro";
 import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
-import { changeDocumentName } from "@api/documents";
 import { getTemplateSummary } from "@api/templates";
 import { UserRoles } from "@db/user";
 import { captureError } from "@utils/sentry";
+import SaveDraft from "@components/SaveDarft.astro";
 
 const { documentId } = Astro.params as { documentId: string };
 const session = await getSession(Astro.request);
@@ -51,56 +42,21 @@ if (!isUserDocument) {
 let answers: TemplateSummary["answers"] = {},
   index: TemplateSummary["index"] = [],
   title: TemplateSummary["title"] = "",
-  canGenerate: TemplateSummary["canGenerate"] = true,
-  toast: string | null = null,
-  toastStatus: ToastStatus = ToastStatus.default;
-
-const urlParams = new URL(Astro.request.url).searchParams;
-
-if (urlParams.has(DOCUMENT_NAME_PARAM)) {
-  toast = DOCUMENT_NAME_CHANGED;
-  toastStatus = ToastStatus.default;
-}
-
-if (urlParams.has(ERROR_PARAM)) {
-  toast = ERROR;
-  toastStatus = ToastStatus.error;
-}
-
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  const title = String(formData.get("title"));
-  const docId = String(formData.get("template"));
-  const redirectUrl = new URL(Astro.request.url);
-
-  try {
-    await changeDocumentName(
-      `${Astro.request.headers.get("cookie")}`,
-      docId,
-      title
-    );
-
-    redirectUrl.searchParams.set(DOCUMENT_NAME_PARAM, "true");
-  } catch {
-    redirectUrl.searchParams.set(ERROR_PARAM, "true");
-  } finally {
-    return Astro.redirect(redirectUrl);
-  }
-}
+  canGenerate: TemplateSummary["canGenerate"] = true;
 
 const GENERATE = "Generuj dokument";
 
 try {
   ({ title, answers, index, canGenerate } = await getTemplateSummary(
-    `${Astro.request.headers.get("cookie")}`,
-    documentId
+    documentId,
+    `${Astro.request.headers.get("cookie")}`
   ));
 } catch (e) {
   if (e instanceof Error) {
     switch (e.cause) {
       case 403:
         return Astro.redirect(
-          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+          `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
         );
 
       case 303:
@@ -179,21 +135,11 @@ try {
           <h4>Aby wygenerować dokument wypełnij wszystkie wymagane pola</h4>
         )
       }
-      {
-        !isUserDocument && (
-          <a
-            href={`${Astro.url.origin}${routes.DOCUMENT}?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`}
-          >
-            <Icon name="save" width={18} height={18} />
-            Zapisz szkic
-          </a>
-        )
-      }
+      {!isUserDocument && <SaveDraft documentId={documentId} />}
     </footer>
   </section>
   <ChangeNameModal />
   <PaymentModal documentId={documentId} />
-  {toast && <Toast info={toast} status={toastStatus} />}
 </Layout>
 <style>
   section {

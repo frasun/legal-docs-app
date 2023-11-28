@@ -1,5 +1,5 @@
 ---
-import { DRAFT_SAVED_PARAM, SUCCESS_PARAM } from "@utils/toasts";
+import { SUCCESS } from "@utils/urlParams";
 import type { UserSession } from "@type";
 import {
   deletePaymentSession,
@@ -50,7 +50,7 @@ try {
   }
 
   if (documentId) {
-    modifiedId = await postDocument(cookie, documentId, draft, email);
+    modifiedId = await postDocument(documentId, draft, email, cookie);
   }
 
   if (ssid && documentId) {
@@ -65,14 +65,13 @@ try {
 
   if (draft) {
     redirectUrl = new URL(routes.MY_DOCUMENTS, Astro.url.origin);
-    redirectUrl.searchParams.append(DRAFT_SAVED_PARAM, "true");
   } else {
     const upsertedId = modifiedId || documentId;
     redirectUrl = new URL(
       `${routes.DOCUMENTS}/${upsertedId}/${routes.DOCUMENT}`,
       Astro.url.origin
     );
-    redirectUrl.searchParams.append(SUCCESS_PARAM, "true");
+    redirectUrl.searchParams.append(SUCCESS, "true");
     if (email) {
       redirectUrl.searchParams.append(PARAMS.EMAIL, encodeURIComponent(email));
     }
@@ -83,7 +82,9 @@ try {
   if (e instanceof Error) {
     switch (e.cause) {
       case 303:
-        return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
+        return Astro.redirect(
+          `${routes.DOCUMENTS}/${documentId}${routes.DOCUMENT}`
+        );
 
       case 401:
         const redirectUrl = new URL(`${routes.SIGN_IN}`, Astro.url.origin);

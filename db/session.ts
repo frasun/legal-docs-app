@@ -61,7 +61,6 @@ export async function getAnswers(
 
     return answers;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -70,7 +69,6 @@ export async function getAllAnswers(ssid: string, documentId: string) {
   try {
     return await kv.hgetall(`document-${ssid}-${documentId}`);
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -79,7 +77,6 @@ export async function deleteSessionDocument(ssid: string, documentId: string) {
   try {
     await kv.del(`document-${ssid}-${documentId}`);
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -94,7 +91,6 @@ export async function createPaymentSession(
     await kv.expire(`payment-${pid}`, PAYMENT_EXPIRATION_TIME);
     await kv.expire(`document-${ssid}-${documentId}`, PAYMENT_EXPIRATION_TIME);
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -122,7 +118,6 @@ export async function deletePaymentSession(pid: string) {
   try {
     await kv.del(`payment-${pid}`);
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }

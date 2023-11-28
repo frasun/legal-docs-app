@@ -83,14 +83,8 @@ export async function getUserProfile(
   return apiRequest(requestUrl, { ...headers, cookie });
 }
 
-export async function deleteUserAccount(
-  cookie: string | null
-): Promise<UserProfile> {
-  if (!cookie || !cookie.length) {
-    throw new Error();
-  }
-
+export async function deleteUserAccount(): Promise<UserProfile> {
   const requestUrl = new URL(`/api/users`, API_URL);
 
-  return apiRequest(requestUrl, { ...headers, cookie }, "DELETE");
+  return apiRequest(requestUrl, undefined, "DELETE");
 }

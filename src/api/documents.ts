@@ -19,31 +19,35 @@ export async function getDocuments(
   return await apiRequest(requestUrl, { cookie });
 }
 
-export async function copyDocument(cookie: string, documentId: string) {
+export async function copyDocument(documentId?: string) {
+  if (!documentId) {
+    throw new Error(undefined, { cause: 400 });
+  }
+
   const requestUrl = new URL(`/api/documents/${documentId}/copy`, API_URL);
 
-  return await apiRequest(requestUrl, { cookie }, "POST");
+  return await apiRequest(requestUrl, {}, "POST");
 }
 
-export async function shareDocument(
-  cookie: string,
-  documentId: string,
-  data: object
-) {
+export async function shareDocument(documentId: string, data: object) {
   const requestUrl = new URL(`/api/documents/${documentId}/share`, API_URL);
 
   return await apiRequest(
     requestUrl,
-    { cookie, "Content-Type": "application/json" },
+    { "Content-Type": "application/json" },
     "POST",
     JSON.stringify(data)
   );
 }
 
-export async function deleteDraft(cookie: string, documentId: string) {
+export async function deleteDraft(documentId?: string) {
+  if (!documentId) {
+    throw new Error(undefined, { cause: 400 });
+  }
+
   const requestUrl = new URL(`/api/documents/${documentId}`, API_URL);
 
-  return apiRequest(requestUrl, { cookie }, "DELETE");
+  return apiRequest(requestUrl, {}, "DELETE");
 }
 
 export async function changeDocumentName(
@@ -89,39 +93,45 @@ export async function getAnswers(
 }
 
 export async function postAnswers(
-  cookie: string | null,
   documentId: string,
-  answers: Answers
-) {
-  if (!cookie || !cookie.length) {
+  answers: Answers,
+  cookie?: string | null
+): Promise<number> {
+  if (!documentId) {
     throw new Error();
   }
 
   const requestUrl = new URL(`/api/documents/${documentId}`, API_URL);
+  const requestHeaders = { ...headers, "Content-Type": "application/json" };
 
-  return apiRequest(
-    requestUrl,
-    { ...headers, cookie, "Content-Type": "application/json" },
-    "PUT",
-    JSON.stringify(answers)
-  );
+  if (cookie) {
+    Object.assign(requestHeaders, { cookie });
+  }
+
+  return apiRequest(requestUrl, requestHeaders, "PUT", JSON.stringify(answers));
 }
 
 export async function postDocument(
-  cookie: string | null,
-  documentId: string,
+  documentId?: string,
   draft?: boolean,
-  userEmail?: string
+  userEmail?: string,
+  cookie?: string | null
 ): Promise<UUID> {
-  if (!cookie || !cookie.length) {
+  if (!documentId) {
     throw new Error();
   }
 
   const requestUrl = new URL(`/api/documents`, API_URL);
 
+  const requestHeaders = { "Content-Type": "application/json" };
+
+  if (cookie) {
+    Object.assign(requestHeaders, { cookie });
+  }
+
   return apiRequest(
     requestUrl,
-    { ...headers, cookie, "Content-Type": "application/json" },
+    requestHeaders,
     "POST",
     JSON.stringify({
       documentId,

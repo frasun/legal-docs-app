@@ -74,7 +74,6 @@ export async function initAccountVerify(email: string, password: string) {
 
     return code;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -83,7 +82,6 @@ export async function verificationInProgress(email: string) {
   try {
     return await kv.exists(`verify-${email}`);
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -92,7 +90,6 @@ export async function getVerificationData(email: string) {
   try {
     return await kv.hgetall(`verify-${email}`);
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -105,7 +102,6 @@ export async function wrongVerificationCode(email: string, rateLimit: number) {
       await kv.hset(`verify-${email}`, { rateLimit });
     }
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -128,7 +124,6 @@ export async function initPasswordReset(email: string) {
 
     return code;
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }
@@ -137,7 +132,6 @@ export async function passwordResetInProgress(email: string | null) {
   try {
     return await kv.exists(`reset-${email}`);
   } catch (e) {
-    console.log(e);
     throw e;
   }
 }

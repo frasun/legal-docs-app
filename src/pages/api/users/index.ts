@@ -7,10 +7,6 @@ import { deleteUserIdentities } from "@db/identity";
 
 export const all: APIRoute = async ({ request }) => {
   try {
-    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-      throw new Error(undefined, { cause: 401 });
-    }
-
     const session = await getSession(request);
 
     if (!session) {

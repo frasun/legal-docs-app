@@ -4,14 +4,12 @@ import Icon from "astro-icon";
 const { id } = Astro.props;
 ---
 
-<copy-document data-document-id={id}>
-  <button title="Utwórz kopię">
-    <Icon name="copy-document" width={20} height={20} />
-  </button>
+<copy-document data-document-id={id} title="Utwórz kopię">
+  <Icon name="copy-document" width={20} height={20} />
 </copy-document>
 
 <style>
-  button {
+  copy-document {
     @apply btn btn-alt;
   }
 </style>

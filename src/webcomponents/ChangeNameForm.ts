@@ -1,3 +1,7 @@
+import { changeDocumentName } from "@api/documents";
+import { displayError, displayToast } from "@stores/toast";
+import { DOCUMENT_NAME_CHANGED } from "@utils/toasts";
+
 class ChangeNameForm extends HTMLElement {
   input: HTMLInputElement | null;
   hiddenInput: HTMLInputElement | null;
@@ -30,16 +34,26 @@ class ChangeNameForm extends HTMLElement {
     }) as EventListener);
 
     if (this.form) {
-      this.form.addEventListener("submit", (event) => {
+      this.form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const formData = new FormData(this.form || undefined);
         const newTitle = formData.get("title");
 
-        if (newTitle !== this.title && String(newTitle).trim() !== "") {
-          this.form && this.form.submit();
-        } else {
+        if (newTitle === this.title || String(newTitle).trim() === "") {
           document.body.dispatchEvent(new CustomEvent("hideModal"));
+        } else {
+          try {
+            await changeDocumentName(
+              document.cookie,
+              this.docId,
+              newTitle as string
+            );
+            displayToast(DOCUMENT_NAME_CHANGED, true);
+          } catch {
+            document.body.dispatchEvent(new CustomEvent("hideModal"));
+            displayError();
+          }
         }
       });
     }

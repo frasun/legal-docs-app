@@ -167,8 +167,6 @@ export async function updateAnswers(
       const fieldSchema = schema[field];
       let parsedAnswer = fieldSchema.parse(answer);
 
-      console.log(field, answer);
-
       if (
         encryptedFields &&
         encryptedFields.includes(field) &&

@@ -17,41 +17,48 @@ export async function getIdentities(
 }
 
 export async function getIdentity(
-  cookie: string,
-  identityId: string
+  identityId: string,
+  cookie?: string
 ): Promise<Identity> {
   const requestUrl = new URL(`/api/identities/${identityId}`, API_URL);
 
-  return await apiRequest(requestUrl, { cookie });
+  return await apiRequest(requestUrl, cookie ? { cookie } : undefined);
 }
 
-export async function postIdentity(cookie: string, identity: Identity) {
+export async function postIdentity(identity: Identity): Promise<void> {
   const requestUrl = new URL(`/api/identities`, API_URL);
 
   return await apiRequest(
     requestUrl,
-    { cookie, "Content-Type": "application/json" },
+    { "Content-Type": "application/json" },
     "POST",
     JSON.stringify(identity)
   );
 }
 
-export async function deleteIdentity(cookie: string, identityId: string) {
+export async function deleteIdentity(identityId?: string) {
+  if (!identityId) {
+    throw new Error(undefined, { cause: 400 });
+  }
+
   const requestUrl = new URL(`/api/identities/${identityId}`, API_URL);
 
-  return await apiRequest(requestUrl, { cookie }, "DELETE");
+  return await apiRequest(requestUrl, undefined, "DELETE");
 }
 
 export async function updateIdentity(
-  cookie: string,
-  identityId: string,
-  identity: Identity
-) {
+  identityId?: string,
+  identity?: Identity
+): Promise<void> {
+  if (!identityId || !identity) {
+    throw new Error(undefined, { cause: 402 });
+  }
+
   const requestUrl = new URL(`/api/identities/${identityId}`, API_URL);
 
   return await apiRequest(
     requestUrl,
-    { cookie },
+    { "Content-Type": "application/json" },
     "PUT",
     JSON.stringify(identity)
   );

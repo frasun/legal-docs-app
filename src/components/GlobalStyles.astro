@@ -250,16 +250,18 @@
       @apply w-[260px];
       @apply leading-tight;
       @apply flex gap-15 items-center;
+    }
 
+    toast-element.animate {
       animation-name: showToast;
       animation-duration: 5s;
       animation-timing-function: linear;
-      animation-delay: 0.2s;
+      animation-delay: 0.5s;
       animation-iteration-count: 1;
     }
 
     toast-element svg {
-      @apply text-light;
+      @apply text-light flex-shrink-0;
     }
 
     toast-element[data-status="error"] {

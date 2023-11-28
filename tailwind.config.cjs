@@ -188,6 +188,7 @@ module.exports = {
 					transitionProperty: theme('transitionProperty.DEFAULT'),
 					transitionDuration: theme('transitionDuration.DEFAULT'),
 					transitionTimingFunction: theme('transitionTimingFunction.DEFAULT'),
+					cursor: 'pointer',
 					'&:hover': {
 						backgroundColor: theme('colors.orange'),
 						color: theme('colors.white'),

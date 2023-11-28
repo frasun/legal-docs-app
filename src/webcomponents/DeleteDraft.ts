@@ -1,8 +1,8 @@
-import { COPY_DOCUMENT } from "@utils/toasts";
-import { copyDocument } from "@api/documents";
+import { deleteDraft } from "@api/documents";
+import { DRAFT_REMOVED } from "@utils/toasts";
 import { displayError, displayToast } from "@stores/toast";
 
-class CopyDocument extends HTMLElement {
+class DeleteDraft extends HTMLElement {
   documentId: string | undefined;
 
   constructor() {
@@ -14,12 +14,12 @@ class CopyDocument extends HTMLElement {
   connectedCallback() {
     this.addEventListener("click", async () => {
       try {
-        await copyDocument(this.documentId);
-        displayToast(COPY_DOCUMENT, true, window.location.pathname);
+        await deleteDraft(this.documentId);
+        displayToast(DRAFT_REMOVED, true);
       } catch {
         displayError();
       }
     });
   }
 }
-customElements.define("copy-document", CopyDocument);
+customElements.define("delete-draft", DeleteDraft);
