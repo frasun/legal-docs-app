@@ -118,7 +118,7 @@ try {
     ? `${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${prevId}`
     : null;
 
-  nextUrl = `${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${
+  nextUrl = `${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${
     nextId ?? routes.SUMMARY
   }`;
 } catch (e) {
