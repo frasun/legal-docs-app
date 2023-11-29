@@ -1,5 +1,4 @@
 ---
-import { emailRegExp, testString } from "@utils/dataValidation";
 import routes from "@utils/routes";
 import { initDocumentOrder } from "@api/documents";
 import { captureError } from "@utils/sentry";
@@ -8,19 +7,10 @@ const { documentId } = Astro.params as { documentId: string };
 let anonymousEmail: string | undefined;
 
 try {
-  if (Astro.request.method === "POST") {
-    const formData = await Astro.request.formData();
-    anonymousEmail = String(formData.get("email"));
-
-    if (!anonymousEmail || !testString(anonymousEmail, emailRegExp)) {
-      throw new Error();
-    }
-  }
-
   const url = await initDocumentOrder(
-    `${Astro.request.headers.get("cookie")}`,
     documentId,
-    anonymousEmail
+    anonymousEmail,
+    `${Astro.request.headers.get("cookie")}`
   );
 
   return Astro.redirect(url);

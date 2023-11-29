@@ -142,19 +142,24 @@ export async function postDocument(
 }
 
 export async function initDocumentOrder(
-  cookie: string | null,
-  documentId: string,
-  anonymousEmail?: string
+  documentId?: string,
+  anonymousEmail?: string,
+  cookie?: string
 ): Promise<URL> {
-  if (!cookie || !cookie.length) {
-    throw new Error();
+  if (!documentId) {
+    throw new Error(undefined, { cause: 400 });
   }
 
   const requestUrl = new URL(`/api/documents/${documentId}/order`, API_URL);
+  const requestHeaders = { "Content-Type": "application/json" };
+
+  if (cookie) {
+    Object.assign(requestHeaders, { cookie });
+  }
 
   return apiRequest(
     requestUrl,
-    { ...headers, cookie, "Content-Type": "application/json" },
+    requestHeaders,
     "POST",
     JSON.stringify({
       anonymousEmail,

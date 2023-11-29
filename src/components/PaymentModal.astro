@@ -50,18 +50,17 @@ const redirectAfterSignUp = `${routes.SIGN_UP}?${PARAMS.REDIRECT}=${routes.DOCUM
   </section>
   <footer>
     <h4>Zakup bez tworzenia konta</h4>
-    <form
-      method="POST"
-      action={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.ORDER}`}
-    >
-      <input
-        type="email"
-        name="email"
-        placeholder="Podaj adres e-mail"
-        required
-      />
-      <button type="submit">Zakup bez konta</button>
-    </form>
+    <order-form data-document-id={documentId}>
+      <form method="POST">
+        <input
+          type="email"
+          name="email"
+          placeholder="Podaj adres e-mail"
+          required
+        />
+        <button type="submit">Zakup bez konta</button>
+      </form>
+    </order-form>
     <Image
       src={p24}
       alt="Płatności Przelewy24"
@@ -128,3 +127,7 @@ const redirectAfterSignUp = `${routes.SIGN_UP}?${PARAMS.REDIRECT}=${routes.DOCUM
     @apply flex-shrink-0;
   }
 </style>
+
+<script>
+  import "@wc/OrderForm";
+</script>

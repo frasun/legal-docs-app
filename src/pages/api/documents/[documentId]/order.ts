@@ -11,15 +11,12 @@ import { UUID } from "mongodb";
 import { getDocumentSummary } from "@db/document";
 import routes from "@utils/routes";
 import * as PARAMS from "@utils/urlParams";
+import { UserRoles } from "@db/user";
 
 export const post: APIRoute = async ({ request, params }) => {
   try {
-    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-      throw new Error(undefined, { cause: 401 });
-    }
-
     if (request.headers.get("Content-Type") !== "application/json") {
-      throw new Error(undefined, { cause: 401 });
+      throw new Error(undefined, { cause: 400 });
     }
 
     const { documentId } = params as { documentId: string };
@@ -29,6 +26,7 @@ export const post: APIRoute = async ({ request, params }) => {
     const cookies = CookieUtil.parse(cookie || "");
     const isUserDocument = UUID.isValid(documentId);
     const session = await getSession(request);
+    const isAdmin = session?.user?.role === UserRoles.admin;
     const ssid = session ? session.user?.ssid : cookies[SESSION_COOKIE];
 
     let doc: string | null = null,
@@ -36,6 +34,11 @@ export const post: APIRoute = async ({ request, params }) => {
 
     if (!ssid) {
       throw new Error(undefined, { cause: 404 });
+    }
+
+    if (isAdmin) {
+      const url = `${routes.DOCUMENT}?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=false`;
+      return new Response(JSON.stringify(url), { status: 200, headers });
     }
 
     if (isUserDocument) {

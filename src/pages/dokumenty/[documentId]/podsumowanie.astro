@@ -14,14 +14,12 @@ import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
 import { getTemplateSummary } from "@api/templates";
-import { UserRoles } from "@db/user";
 import { captureError } from "@utils/sentry";
 import SaveDraft from "@components/SaveDarft.astro";
 
 const { documentId } = Astro.params as { documentId: string };
 const session = await getSession(Astro.request);
 const isUserDocument = UUID.isValid(documentId);
-const isAdmin = session?.user?.role === UserRoles.admin;
 
 const ssid = session
   ? session.user?.ssid
@@ -115,19 +113,9 @@ try {
       {
         canGenerate ? (
           session ? (
-            isAdmin ? (
-              <a
-                href={`${Astro.url.origin}${routes.DOCUMENT}?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=false`}
-              >
-                {GENERATE}
-              </a>
-            ) : (
-              <a
-                href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.ORDER}`}
-              >
-                {GENERATE}
-              </a>
-            )
+            <submit-order data-document-id={documentId}>
+              {GENERATE}
+            </submit-order>
           ) : (
             <show-modal data-modal="payment">
               <button>{GENERATE}</button>
@@ -184,8 +172,13 @@ try {
   show-payment-modal button {
     @apply btn btn-default btn-big;
   }
+
+  submit-order {
+    @apply btn btn-big btn-default;
+  }
 </style>
 
 <script>
   import "@wc/ShowModal";
+  import "@wc/SubmitOrder";
 </script>
