@@ -101,7 +101,9 @@ try {
                   type={type}
                 />
               </div>
-              <a href={`${Astro.url.origin}/dokumenty/${documentId}/${slug}`}>
+              <a
+                href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${slug}`}
+              >
                 Zmień
               </a>
             </div>

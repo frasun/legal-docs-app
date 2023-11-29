@@ -1,7 +1,4 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import { Icon } from "astro-icon";
-import pageTitle from "@utils/pageTitle";
 import { emailRegExp, testString } from "@utils/dataValidation";
 import routes from "@utils/routes";
 import { initDocumentOrder } from "@api/documents";
@@ -40,17 +37,3 @@ try {
   }
 }
 ---
-
-<Layout title={pageTitle("Zamówienie")}>
-  <Icon name="loader" width={64} height={64} />
-</Layout>
-
-<style is:inline>
-  body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100vw;
-  }
-</style>

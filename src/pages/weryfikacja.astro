@@ -6,6 +6,7 @@ import * as PARAMS from "@utils/urlParams";
 import routes from "@utils/routes";
 import { verifyCode, getVerificationInProgress } from "@api/users";
 import { captureError } from "@utils/sentry";
+import Icon from "astro-icon";
 
 const url = new URL(Astro.request.url);
 const emailParam = url.searchParams.get(PARAMS.EMAIL);
@@ -14,8 +15,8 @@ const redirectParam = url.searchParams.get(PARAMS.REDIRECT);
 const docParam = url.searchParams.get(PARAMS.DOCUMENT);
 const draftParam = url.searchParams.get(PARAMS.DRAFT);
 
-let errors = [];
-let userPassword;
+let errors = [],
+  userPassword;
 
 try {
   await getVerificationInProgress(userEmail);
@@ -59,7 +60,9 @@ if (Astro.request.method === "POST") {
         email={userEmail}
         password={userPassword}
         redirect={redirectUrl}
-      />
+      >
+        <Icon name="loader" width={64} height={64} />
+      </auto-login>
     ) : (
       <AuthForm>
         <p slot="form-header">
@@ -74,6 +77,16 @@ if (Astro.request.method === "POST") {
     )
   }
 </Layout>
+
+<style>
+  auto-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+  }
+</style>
 
 <script>
   import "@wc/AutoLogin";
