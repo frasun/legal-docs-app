@@ -81,6 +81,7 @@ const metaKeywords = keywords ?? KEYWORDS;
   <body>
     {import.meta.env.VERCEL_ENV === "production" && <GA />}
     <slot />
+    <toast-element></toast-element>
     {import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}
   </body>
 </html>
@@ -91,3 +92,7 @@ const metaKeywords = keywords ?? KEYWORDS;
     --app-height: 100vh;
   }
 </style>
+
+<script>
+  import "@wc/ToastElement";
+</script>

@@ -68,7 +68,7 @@ try {
   } else {
     const upsertedId = modifiedId || documentId;
     redirectUrl = new URL(
-      `${routes.DOCUMENTS}/${upsertedId}/${routes.DOCUMENT}`,
+      `${routes.DOCUMENTS}/${upsertedId}${routes.DOCUMENT}`,
       Astro.url.origin
     );
     redirectUrl.searchParams.append(SUCCESS, "true");

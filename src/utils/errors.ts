@@ -7,5 +7,5 @@ export default {
   WRONG_EMAIL: "Adres e-mail jest nieprawidłowy",
   UNSAFE_PASSWORD: "Hasło nie spełnia warunków bezpieczeństwa",
   ACCEPT_TERMS: "Aby kontynuować musisz zaakceptować regulamin",
-  DIFFERENT_PASSWORDS: "Hasła muszą nie są jednakowe",
+  DIFFERENT_PASSWORDS: "Hasła nie są jednakowe",
 };

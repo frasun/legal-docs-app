@@ -22,7 +22,7 @@ class AutoLogin extends HTMLElement {
       callbackUrl: `${
         this.redirect
           ? this.redirect
-          : `${document.location.origin}/${routes.MY_DOCUMENTS}`
+          : `${document.location.origin}${routes.MY_DOCUMENTS}`
       }`,
     });
 
