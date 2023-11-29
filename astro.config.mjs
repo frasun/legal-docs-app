@@ -17,7 +17,7 @@ for (let [key, value] of Object.entries(localEnv)) {
 }
 
 Sentry.init({
-  environment: import.meta.env.MODE
+  environment: import.meta.env.VERCEL_ENV
 });
 
 const {

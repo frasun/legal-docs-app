@@ -76,12 +76,12 @@ const metaKeywords = keywords ?? KEYWORDS;
     <meta property="twitter:description" content={metaDescription} />
     <meta property="twitter:title" content={title} />
     <title>{title}</title>
-    {import.meta.env.MODE === "production" && <Sentry />}
+    {import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
   </head>
   <body>
-    {import.meta.env.MODE === "production" && <GA />}
+    {import.meta.env.VERCEL_ENV === "production" && <GA />}
     <slot />
-    {import.meta.env.MODE === "production" && <ChatWidget />}
+    {import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}
   </body>
 </html>
 
