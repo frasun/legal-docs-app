@@ -1,10 +1,13 @@
 ---
 import { Icon } from "astro-icon";
-import { getSession } from "auth-astro/server";
 import SignedInMenu from "@components/SignedInMenu.astro";
 import routes from "@utils/routes";
 
-const session = await getSession(Astro.request);
+interface Props {
+  email?: string;
+}
+
+const { email } = Astro.props;
 
 const menuItems = [
   { href: "dokumenty", label: "Dokumenty" },
@@ -25,9 +28,9 @@ const menuItems = [
     </div>
     <aside>
       {
-        session ? (
+        email ? (
           <>
-            <SignedInMenu email={session.user?.email} />
+            <SignedInMenu email={email} />
           </>
         ) : (
           <>
