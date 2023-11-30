@@ -122,7 +122,11 @@ try {
     docId={templateId}
     draft={draft}
   />
-  <question-form data-document-id={documentId} data-next-url={nextUrl}>
+  <question-form
+    data-document-id={documentId}
+    data-next-url={nextUrl}
+    data-fields={JSON.stringify(Object.keys(answers))}
+  >
     <form method="POST">
       <header>
         <h2>{question}</h2>

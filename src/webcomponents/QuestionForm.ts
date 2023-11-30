@@ -9,6 +9,7 @@ class QuestionForm extends HTMLElement {
   answers: Answers;
   documentId: string;
   nextUrl: string;
+  fields: string[];
 
   constructor() {
     super();
@@ -20,12 +21,15 @@ class QuestionForm extends HTMLElement {
     this.answers = {};
     this.documentId = this.dataset.documentId ?? "";
     this.nextUrl = this.dataset.nextUrl ?? "";
+    this.fields = this.dataset.fields ? JSON.parse(this.dataset.fields) : [];
   }
 
   connectedCallback() {
     if (this.form) {
       for (let [key, value] of new FormData(this.form).entries()) {
-        Object.assign(this.answers, { [key]: value });
+        if (this.fields.includes(key)) {
+          Object.assign(this.answers, { [key]: value });
+        }
       }
 
       this.form.addEventListener("input", () => {
@@ -60,10 +64,10 @@ class QuestionForm extends HTMLElement {
           displayToast(ANSWER_UPDATED, true, this.nextUrl);
         }
       } catch (e) {
-        if (e instanceof Error) {
-          if (e.cause === 400) {
-            displayError(e.message);
-          }
+        if (e instanceof Error && e.cause === 400) {
+          displayError(e.message);
+        } else {
+          displayError();
         }
       }
     } else {
