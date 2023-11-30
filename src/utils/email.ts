@@ -4,7 +4,7 @@ const client = new postmark.ServerClient(import.meta.env.POSTMARK_SECRET);
 
 export default async function (
   To: string,
-  code: string,
+  TemplateModel: object,
   TemplateAlias = "verification-code"
 ) {
   try {
@@ -12,9 +12,7 @@ export default async function (
       From: import.meta.env.POSTMARK_SENDER,
       To,
       TemplateAlias,
-      TemplateModel: {
-        code,
-      },
+      TemplateModel,
       InlineCss: false,
     });
   } catch (e) {

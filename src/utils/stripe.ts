@@ -23,7 +23,7 @@ export async function createCheckoutSession(
   customerEmail: string
 ) {
   try {
-    const stripeSession = await stripe.checkout.sessions.create({
+    const { url, id } = await stripe.checkout.sessions.create({
       line_items: [
         {
           price: priceId,
@@ -36,11 +36,29 @@ export async function createCheckoutSession(
       customer_email: customerEmail,
     });
 
-    if (!stripeSession.url) {
+    if (!url) {
       throw new Error();
     }
 
-    return stripeSession.url;
+    return { url, id };
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function getCheckoutSession(stripeId: string) {
+  try {
+    const { payment_intent } = await stripe.checkout.sessions.retrieve(
+      stripeId
+    );
+
+    if (!payment_intent) {
+      throw new Error();
+    }
+
+    return typeof payment_intent === "string"
+      ? payment_intent
+      : payment_intent.id;
   } catch (e) {
     throw e;
   }

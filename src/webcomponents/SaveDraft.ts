@@ -16,7 +16,7 @@ class SaveDraft extends HTMLElement {
   connectedCallback() {
     this.addEventListener("click", async () => {
       try {
-        const id = await postDocument(this.documentId, true);
+        const { id } = await postDocument(this.documentId, true);
 
         if (!id) {
           throw new Error();

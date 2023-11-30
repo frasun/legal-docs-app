@@ -17,6 +17,7 @@ export interface Document {
   draft: boolean;
   shared?: Date;
   sharedWith?: string[];
+  paymentId?: string;
 }
 
 type UserDocument = Omit<Document, "answers" | "userId" | "sharedWith">;
@@ -200,7 +201,8 @@ export async function createDocument(
   doc: string,
   answers: Answers,
   userId: string,
-  draft = false
+  draft = false,
+  paymentId?: string
 ) {
   const template = await getEntry("documents", doc);
   const { default: schema } = await import(`../src/documentSchema/${doc}.ts`);
@@ -255,6 +257,7 @@ export async function createDocument(
       title: documentTitle,
       created,
       modified: created,
+      paymentId,
     });
 
     return new UUID(result.insertedId.toString("hex"));
@@ -263,12 +266,16 @@ export async function createDocument(
   }
 }
 
-export async function publishDraft(id: string, userId: string) {
+export async function publishDraft(
+  id: string,
+  userId: string,
+  paymentId?: string
+) {
   try {
     const response = await documentCollection.updateOne(
       { _id: new UUID(id).toBinary(), userId, draft: true },
       {
-        $set: { draft: false },
+        $set: { draft: false, paymentId },
         $currentDate: { modified: true },
       }
     );

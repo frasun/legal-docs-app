@@ -40,11 +40,13 @@ export const post: APIRoute = async ({ request }) => {
       throw new Error(undefined, { cause: 400 });
     }
 
-    const { documentId, draft, userEmail } = (await request.json()) as {
-      documentId: string;
-      draft: boolean;
-      userEmail?: string;
-    };
+    const { documentId, draft, userEmail, stripeId } =
+      (await request.json()) as {
+        documentId: string;
+        draft: boolean;
+        userEmail?: string;
+        stripeId?: string;
+      };
 
     const cookie = request.headers.get("cookie");
     const isUserDocument = UUID.isValid(documentId);
@@ -55,7 +57,7 @@ export const post: APIRoute = async ({ request }) => {
       throw new Error(undefined, { cause: 401 });
     }
 
-    const { answers, canGenerate } = await getTemplateSummary(
+    const { answers, canGenerate, title } = await getTemplateSummary(
       documentId,
       cookie
     );
@@ -69,24 +71,37 @@ export const post: APIRoute = async ({ request }) => {
 
         modifiedId = await publishDraft(
           documentId,
-          session?.user?.id as string
+          session?.user?.id as string,
+          stripeId
         );
       } else {
         // create document
         const userId = userEmail || session?.user?.id;
 
         if (userId) {
-          modifiedId = await createDocument(documentId, answers, userId, draft);
+          modifiedId = await createDocument(
+            documentId,
+            answers,
+            userId,
+            draft,
+            stripeId
+          );
         }
       }
     } else {
       throw new Error(undefined, { cause: 403 });
     }
 
-    return new Response(JSON.stringify(modifiedId), {
-      status: 200,
-      headers,
-    });
+    return new Response(
+      JSON.stringify({
+        id: modifiedId,
+        title,
+      }),
+      {
+        status: 200,
+        headers,
+      }
+    );
   } catch (e) {
     if (e instanceof z.ZodError) {
       const errors = e.errors.map(({ message }) => message);

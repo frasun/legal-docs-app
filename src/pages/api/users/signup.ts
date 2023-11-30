@@ -37,7 +37,7 @@ export const post: APIRoute = async ({ request }) => {
     }
 
     const code = await initAccountVerify(email, password);
-    await sendEmail(email, code);
+    await sendEmail(email, { code });
 
     return new Response(JSON.stringify(null), {
       status: 200,

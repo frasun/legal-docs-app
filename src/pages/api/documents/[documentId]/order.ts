@@ -71,10 +71,7 @@ export const post: APIRoute = async ({ request, params }) => {
     successUrl.searchParams.append(PARAMS.DRAFT, "false");
 
     if (anonymousEmail) {
-      successUrl.searchParams.append(
-        PARAMS.EMAIL,
-        encodeURIComponent(anonymousEmail)
-      );
+      successUrl.searchParams.append(PARAMS.EMAIL, anonymousEmail);
     }
     const draftUrl = `${baseUrl}${routes.DOCUMENT}?${PARAMS.DOCUMENT}=${documentId}&${PARAMS.DRAFT}=true`;
     const referUrl = `${baseUrl}${routes.DOCUMENTS}/${documentId}${routes.SUMMARY}`;
@@ -88,14 +85,14 @@ export const post: APIRoute = async ({ request, params }) => {
       ? (session.user?.email as string)
       : anonymousEmail;
 
-    await createPaymentSession(pid, ssid, documentId);
-
-    const url = await createCheckoutSession(
+    const { url, id } = await createCheckoutSession(
       priceId,
       successUrl.toString(),
       cancelUrl.toString(),
       customerEmail
     );
+
+    await createPaymentSession(pid, ssid, documentId, id);
 
     return new Response(JSON.stringify(url), { status: 200, headers });
   } catch (e) {

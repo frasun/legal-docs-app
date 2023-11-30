@@ -137,6 +137,7 @@ export interface Question {
 export interface UserSession {
   documentId: string;
   ssid: string;
+  stripeId?: string;
 }
 
 export interface UserProfile {

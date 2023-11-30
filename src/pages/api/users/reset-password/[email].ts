@@ -32,7 +32,7 @@ export const get: APIRoute = async ({ request, params }) => {
     }
 
     const code = await initPasswordReset(email);
-    await sendResetCode(email, code, "reset-password");
+    await sendResetCode(email, { code }, "reset-password");
 
     return new Response(JSON.stringify(null), { status: 200, headers });
   } catch (e) {

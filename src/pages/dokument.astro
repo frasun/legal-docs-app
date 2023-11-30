@@ -14,6 +14,8 @@ import { SESSION_COOKIE } from "@utils/cookies";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
 import { captureError } from "@utils/sentry";
+import { getCheckoutSession } from "@utils/stripe";
+import sendConfirmation from "@utils/email";
 
 const urlParams = new URL(Astro.request.url).searchParams;
 const draft = String(urlParams.get(PARAMS.DRAFT)) === "true";
@@ -22,8 +24,10 @@ const paymentId = urlParams.get(PARAMS.PAYMENT);
 
 let documentId = urlParams.get(PARAMS.DOCUMENT),
   ssid: UserSession["ssid"] | undefined = undefined,
+  stripePaymentId: string | undefined,
   modifiedId: UUID | null = null,
-  isAdmin = false;
+  isAdmin = false,
+  title: string | undefined;
 
 let cookie = Astro.request.headers.get("cookie");
 
@@ -44,13 +48,24 @@ try {
 
     if (userSession) {
       ({ documentId, ssid } = userSession);
-
       cookie = `${cookie}; ${SESSION_COOKIE}=${ssid}`;
+
+      const { stripeId } = userSession;
+
+      if (stripeId) {
+        stripePaymentId = await getCheckoutSession(stripeId);
+      }
     }
   }
 
   if (documentId) {
-    modifiedId = await postDocument(documentId, draft, email, cookie);
+    ({ id: modifiedId, title } = await postDocument(
+      documentId,
+      draft,
+      email ? decodeURIComponent(email) : undefined,
+      stripePaymentId,
+      cookie
+    ));
   }
 
   if (ssid && documentId) {
@@ -59,6 +74,18 @@ try {
 
   if (paymentId) {
     await deletePaymentSession(paymentId);
+  }
+
+  if (email && modifiedId) {
+    const documentUrl = `${Astro.url.origin}${routes.DOCUMENTS}/${modifiedId}${
+      routes.DOCUMENT
+    }?${PARAMS.EMAIL}=${encodeURIComponent(email)}`;
+
+    await sendConfirmation(
+      decodeURIComponent(email),
+      { url: documentUrl, title, paymentId: stripePaymentId },
+      "document-link"
+    );
   }
 
   let redirectUrl: URL;

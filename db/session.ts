@@ -100,10 +100,11 @@ export async function deleteSessionDocument(
 export async function createPaymentSession(
   pid: string,
   ssid: string,
-  documentId: string
+  documentId: string,
+  stripeId?: string
 ) {
   try {
-    await kv.hset(`payment-${pid}`, { ssid, documentId });
+    await kv.hset(`payment-${pid}`, { ssid, documentId, stripeId });
     await kv.expire(`payment-${pid}`, PAYMENT_EXPIRATION_TIME);
     await kv.expire(`document-${ssid}-${documentId}`, PAYMENT_EXPIRATION_TIME);
   } catch (e) {
@@ -118,6 +119,7 @@ export async function getPaymentSession(
     const session = (await kv.hgetall(`payment-${pid}`)) as {
       documentId: string;
       ssid: string;
+      stripeId?: string;
     };
 
     if (!session) {

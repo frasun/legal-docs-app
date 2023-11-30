@@ -115,8 +115,9 @@ export async function postDocument(
   documentId?: string,
   draft?: boolean,
   userEmail?: string,
+  stripeId?: string,
   cookie?: string | null
-): Promise<UUID> {
+): Promise<{ id: UUID; title: string }> {
   if (!documentId) {
     throw new Error();
   }
@@ -137,6 +138,7 @@ export async function postDocument(
       documentId,
       draft,
       userEmail,
+      stripeId,
     })
   );
 }
