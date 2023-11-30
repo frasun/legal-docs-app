@@ -7,10 +7,8 @@ import ChangeNameModal from "@components/ChangeNameModal.astro";
 import Badge from "@components/Badge.astro";
 import pageTitle from "@utils/pageTitle";
 import type { TemplateSummary } from "@type";
-import { deleteSessionDocument } from "@db/session";
-import { SESSION_COOKIE } from "@utils/cookies";
 import PaymentModal from "@components/PaymentModal.astro";
-import * as PARAMS from "@utils/urlParams";
+import { REDIRECT } from "@utils/urlParams";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
 import { getTemplateSummary } from "@api/templates";
@@ -18,24 +16,9 @@ import { captureError } from "@utils/sentry";
 import SaveDraft from "@components/SaveDarft.astro";
 
 const { documentId } = Astro.params as { documentId: string };
+
 const session = await getSession(Astro.request);
 const isUserDocument = UUID.isValid(documentId);
-
-const ssid = session
-  ? session.user?.ssid
-  : Astro.cookies.get(SESSION_COOKIE).value;
-
-if (!ssid) {
-  return Astro.redirect(routes.NOT_FOUND);
-}
-
-if (!isUserDocument) {
-  const refererUrl = Astro.request.headers.get("referer");
-
-  if (!refererUrl || !refererUrl.includes(documentId)) {
-    await deleteSessionDocument(ssid, documentId);
-  }
-}
 
 let answers: TemplateSummary["answers"] = {},
   index: TemplateSummary["index"] = [],
@@ -54,7 +37,7 @@ try {
     switch (e.cause) {
       case 403:
         return Astro.redirect(
-          `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
+          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
         );
 
       case 303:

@@ -1,5 +1,8 @@
 import type { Answers, UserSession } from "@type";
+import { SESSION_COOKIE } from "@utils/cookies";
 import { kv } from "@vercel/kv";
+import { AstroCookies } from "astro";
+import { getSession } from "auth-astro/server";
 
 const DOCUMENT_EXPIRATION_TIME = 3600;
 const PAYMENT_EXPIRATION_TIME = 86400;
@@ -73,8 +76,21 @@ export async function getAllAnswers(ssid: string, documentId: string) {
   }
 }
 
-export async function deleteSessionDocument(ssid: string, documentId: string) {
+export async function deleteSessionDocument(
+  documentId: string,
+  request: Request,
+  cookies: AstroCookies
+) {
   try {
+    const session = await getSession(request);
+    const ssid = session
+      ? session.user?.ssid
+      : cookies.get(SESSION_COOKIE).value;
+
+    if (!ssid) {
+      throw new Error(undefined, { cause: 400 });
+    }
+
     await kv.del(`document-${ssid}-${documentId}`);
   } catch (e) {
     throw e;

@@ -1,4 +1,7 @@
+import { deleteSessionDocument } from "@db/session";
+import routes from "@utils/routes";
 import { defineMiddleware } from "astro/middleware";
+import { UUID } from "mongodb";
 import { nanoid } from "nanoid";
 
 const SESSION_COOKIE = "pr-ssid";
@@ -24,6 +27,24 @@ export const onRequest = defineMiddleware(
           secure: import.meta.env.MODE === "production",
           path: "/",
         });
+      }
+    }
+
+    if (request.url.includes(routes.DOCUMENTS)) {
+      const refererUrl = request.headers.get("referer");
+      const urlSegments = request.url.split("/");
+      const documentId = urlSegments[urlSegments.length - 2];
+
+      if (!UUID.isValid(documentId)) {
+        if (
+          !refererUrl ||
+          !refererUrl.includes(documentId) ||
+          refererUrl.endsWith(documentId)
+        ) {
+          try {
+            await deleteSessionDocument(documentId, request, cookies);
+          } catch {}
+        }
       }
     }
 

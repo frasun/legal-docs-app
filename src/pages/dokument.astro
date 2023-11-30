@@ -54,7 +54,7 @@ try {
   }
 
   if (ssid && documentId) {
-    await deleteSessionDocument(ssid, documentId);
+    await deleteSessionDocument(documentId, Astro.request, Astro.cookies);
   }
 
   if (paymentId) {
