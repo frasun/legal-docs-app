@@ -45,8 +45,10 @@ class ToastElement extends HTMLElement {
     let content = message;
 
     if (message instanceof Array) {
-      content = message.join("<br />");
+      content = message.join("<br /><br />");
     }
+
+    this.classList.remove("animate");
 
     window.requestAnimationFrame(() => {
       this.setAttribute("data-status", status);

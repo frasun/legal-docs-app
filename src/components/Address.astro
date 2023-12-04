@@ -1,66 +1,65 @@
 ---
 import InputGroup from "@components/InputGroup.astro";
+import type { Address } from "@type";
+
+interface Props extends Partial<Address> {
+  fieldId?: string;
+  required?: boolean;
+}
 
 const {
   street,
   apt,
   postalCode,
   city,
-  streetFieldName,
-  aptFieldName,
-  postalCodeFieldName,
-  cityFieldName,
+  fieldId,
   required = false,
 } = Astro.props;
 ---
 
 <address>
   <InputGroup>
-    <label for={streetFieldName || "street"}>Adres (ulica i numer domu)</label>
+    <label for="street">Adres (ulica i numer domu)</label>
     <input
-      id={streetFieldName || "street"}
+      id="street"
       type="text"
-      name={streetFieldName || "street"}
+      name="street"
       value={street}
       required={required || undefined}
       class="flex-grow"
+      data-label="Adres (ulica i numer domu)"
     />
   </InputGroup>
   <InputGroup>
-    <label for={aptFieldName || "apt"}>Adres (numer lokalu)</label>
-    <input
-      id={aptFieldName || "apt"}
-      type="text"
-      name={aptFieldName || "apt"}
-      value={apt}
-      required={required || undefined}
-      class="flex-grow"
-    />
+    <label for="apt">Adres (numer lokalu)</label>
+    <input id="apt" type="text" name="apt" value={apt} class="flex-grow" />
   </InputGroup>
   <section>
     <InputGroup>
-      <label for={postalCodeFieldName || "postalCode"}>Kod pocztowy</label>
+      <label for="postalCode">Kod pocztowy</label>
       <input
-        id={postalCodeFieldName || "postalCode"}
+        id="postalCode"
         type="text"
-        name={postalCodeFieldName || "postalCode"}
+        name="postalCode"
         value={postalCode}
         required={required || undefined}
         class="flex-grow"
       />
     </InputGroup>
     <InputGroup>
-      <label for={cityFieldName || "city"}>Miasto</label>
+      <label for="city">Miasto</label>
       <input
-        id={cityFieldName || "city"}
+        id="city"
         type="text"
-        name={cityFieldName || "city"}
+        name="city"
         value={city}
         required={required || undefined}
         class="flex-grow"
+        data-label="Miasto"
       />
     </InputGroup>
   </section>
+  {fieldId && <input type="hidden" name={fieldId} />}
 </address>
 
 <style>

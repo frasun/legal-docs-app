@@ -4,9 +4,10 @@ interface Props {
   labels: string[];
   token: string[];
   selected: string[];
+  fieldId?: string;
 }
 
-const { options, labels, token, selected } = Astro.props;
+const { options, labels, token, selected, fieldId } = Astro.props;
 ---
 
 <radio-grid>
@@ -15,7 +16,7 @@ const { options, labels, token, selected } = Astro.props;
   </header>
   <fieldset class={`md:grid md:gap-y-10 gap-x-0 grid-cols-${options.length}`}>
     {
-      labels.map((label) => (
+      labels.map((label, labelIndex) => (
         <>
           <label>{label}</label>
           {options.map((opt, index) => {
@@ -23,13 +24,13 @@ const { options, labels, token, selected } = Astro.props;
               <div>
                 <input
                   type="radio"
-                  id={`${opt}-${label}`}
+                  id={`rd-${labelIndex}-${index}`}
                   name={label}
                   value={opt}
                   aria-label={`${opt}`}
                   checked={selected[index - 1].includes(label)}
                 />
-                <label for={`${opt}-${label}`}>{opt}</label>
+                <label for={`rd-${labelIndex}-${index}`}>{opt}</label>
               </div>
             ) : null;
           })}
@@ -44,6 +45,8 @@ const { options, labels, token, selected } = Astro.props;
         name={t}
         id={options[index + 1]}
         value={selected[index].toString()}
+        data-type="array"
+        data-key={fieldId}
       />
     ))
   }

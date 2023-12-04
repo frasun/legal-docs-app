@@ -34,7 +34,7 @@ export const get: APIRoute = async ({ request, params }) => {
       throw new Error(undefined, { cause: 403 });
     }
 
-    const { index, encryptedFields, dates, dataFields } = document.data;
+    const { index, encryptedFields, dates } = document.data;
 
     if (!index) {
       throw new Error();
@@ -57,7 +57,6 @@ export const get: APIRoute = async ({ request, params }) => {
         })),
         encryptedFields,
         dateFields: dates,
-        dataFields,
       }),
       {
         status: 200,

@@ -8,6 +8,10 @@ export async function apiRequest(
   const message = await response.json();
 
   if (!response.ok) {
+    if (response.status === 400) {
+      throw new Error(JSON.stringify(message), { cause: response.status });
+    }
+
     throw new Error(message, { cause: response.status });
   }
 

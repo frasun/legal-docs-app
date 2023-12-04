@@ -2,6 +2,7 @@ import type { Answers, UserSession } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { kv } from "@vercel/kv";
 import { AstroCookies } from "astro";
+import { z } from "astro:content";
 import { getSession } from "auth-astro/server";
 
 const DOCUMENT_EXPIRATION_TIME = 3600;

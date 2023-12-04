@@ -84,9 +84,10 @@ export const all: APIRoute = async ({ request, params }) => {
     throw new Error(undefined, { cause: 400 });
   } catch (e) {
     if (e instanceof z.ZodError) {
-      const errors: string[] = [];
-
-      e.errors.map(({ message }) => errors.push(message));
+      const errors = e.errors.map(({ message, path }) => [
+        message,
+        path[path.length - 1],
+      ]);
 
       return new Response(JSON.stringify(errors), {
         status: 400,

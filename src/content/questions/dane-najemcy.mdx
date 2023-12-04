@@ -1,38 +1,27 @@
 ---
-landlordType: osoba fizyczna
-landlordPersonName: ""
-landlordPersonStreet: ""
-landlordPersonApt: ""
-landlordPersonPostalCode: ""
-landlordPersonCity: ""
-landlordPersonPin: ""
-landlordCompanyName: ""
-landlordCompanyStreet: ""
-landlordCompanyApt: ""
-landlordCompanyPostalCode: ""
-landlordCompanyCity: ""
-landlordCompanyPin: ""
 question: Podaj dane Najemcy
 info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
-_isLoggedIn: false
+landlord: {
+  type: osoba fizyczna,
+  name: "",
+  street: "",
+  apt: "",
+  postalCode: "",
+  city: "",
+  pin: "",
+}
 ---
 
 import DataInput from "@components/DataInput.astro";
 
 <DataInput
-  name="landlord"  
-  type={frontmatter["landlordType"]}
-  personName={frontmatter["landlordPersonName"]}
-  personStreet={frontmatter["landlordPersonStreet"]}
-  personApt={frontmatter["landlordPersonApt"]}
-  personPostalCode={frontmatter["landlordPersonPostalCode"]}
-  personCity={frontmatter["landlordPersonCity"]}
-  personPin={frontmatter["landlordPersonPin"]}
-  companyName={frontmatter["landlordCompanyName"]}
-  companyStreet={frontmatter["landlordCompanyStreet"]}
-  companyApt={frontmatter["landlordCompanyApt"]}
-  companyPostalCode={frontmatter["landlordCompanyPostalCode"]}
-  companyCity={frontmatter["landlordCompanyCity"]}
-  companyPin={frontmatter["landlordCompanyPin"]}
-  showIdentitySelector={frontmatter["_isLoggedIn"]}
+  fieldId="landlord"
+  type={frontmatter.landlord.type}
+  name={frontmatter.landlord.name}
+  street={frontmatter.landlord.street}
+  apt={frontmatter.landlord.apt}
+  postalCode={frontmatter.landlord.postalCode}
+  city={frontmatter.landlord.city}
+  pin={frontmatter.landlord.pin}
+  showIdentities={true}
 />

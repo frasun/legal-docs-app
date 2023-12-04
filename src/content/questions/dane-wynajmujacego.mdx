@@ -1,38 +1,27 @@
 ---
-tenantType: osoba fizyczna
-tenantPersonName: ""
-tenantPersonStreet: ""
-tenantPersonApt: ""
-tenantPersonPostalCode: ""
-tenantPersonCity: ""
-tenantPersonPin: ""
-tenantCompanyName: ""
-tenantCompanyStreet: ""
-tenantCompanyApt: ""
-tenantCompanyPostalCode: ""
-tenantCompanyCity: ""
-tenantCompanyPin: ""
 question: Podaj dane Wynajmującego
 info: Nie musisz teraz podawać danych. Chociaż są one wymagane, aby stworzyć dokument, możesz zapisać szkic dokumentu i uzupełnić je później.
-_isLoggedIn: false
+tenant: {
+  type: osoba fizyczna,
+  name: "",
+  street: "",
+  apt: "",
+  postalCode: "",
+  city: "",
+  pin: ""  
+}
 ---
 
 import DataInput from "@components/DataInput.astro";
 
 <DataInput
-  name="tenant"  
-  type={frontmatter["tenantType"]}
-  personName={frontmatter["tenantPersonName"]}
-  personStreet={frontmatter["tenantPersonStreet"]}
-  personApt={frontmatter["tenantPersonApt"]}
-  personPostalCode={frontmatter["tenantPersonPostalCode"]}
-  personCity={frontmatter["tenantPersonCity"]}
-  personPin={frontmatter["tenantPersonPin"]}
-  companyName={frontmatter["tenantCompanyName"]}
-  companyStreet={frontmatter["tenantCompanyStreet"]}
-  companyApt={frontmatter["tenantCompanyApt"]}
-  companyPostalCode={frontmatter["tenantCompanyPostalCode"]}
-  companyCity={frontmatter["tenantCompanyCity"]}
-  companyPin={frontmatter["tenantCompanyPin"]}
-  showIdentitySelector={frontmatter["_isLoggedIn"]}
+  fieldId="tenant"
+  type={frontmatter.tenant.type}
+  name={frontmatter.tenant.name}
+  street={frontmatter.tenant.street}
+  apt={frontmatter.tenant.apt}
+  postalCode={frontmatter.tenant.postalCode}
+  city={frontmatter.tenant.city}
+  pin={frontmatter.tenant.pin}
+  showIdentities={true}
 />

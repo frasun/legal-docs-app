@@ -11,9 +11,9 @@ export function getDataValue(
   companyValue: string
 ): string {
   switch (type) {
-    case entityEnum[0]:
+    case entityEnum.PERSONAL:
       return personValue;
-    case entityEnum[1]:
+    case entityEnum.COMPANY:
       return companyValue;
     default:
       return "";

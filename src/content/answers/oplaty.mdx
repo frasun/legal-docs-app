@@ -1,7 +1,9 @@
 ---
-billsLandlord: [$billsLandlord]
-billsTenant: [$billsTenant]
+bills: {
+    landlord: ['zużycie energii', 'zużycie gazu', 'zużycie wody', 'wywóz śmieci'],
+    tenant: ['dostęp do internetu', 'usługa telewizyjna']
+}
 ---
-Wynajmujący: {frontmatter.billsLandlord !== 'undefined' ? frontmatter.billsLandlord.replace(',', ', ') : 'brak'}
+Wynajmujący: {frontmatter.bills.landlord.length ? frontmatter.bills.landlord.join(', ') : 'brak'}
 
-Najemca: {frontmatter.billsTenant !== 'undefined' ? frontmatter.billsTenant.replace(',', ', '): 'brak'}
+Najemca: {frontmatter.bills.tenant.length ? frontmatter.bills.tenant.join(', ') : 'brak'}

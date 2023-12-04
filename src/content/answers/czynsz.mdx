@@ -1,8 +1,10 @@
 ---
-rent: $rent
-rentMethod: $rentMethod
-rentdue: $rentdue
+rent: {
+  value: 200,
+  method: gotówką,
+  due: 12
+}
 ---
 import formatNumber from '@utils/number'
 
-{formatNumber(frontmatter.rent)} zł, {frontmatter.rentMethod}, do {frontmatter.rentdue}. dnia miesiąca
+{formatNumber(frontmatter.rent.value)} zł, {frontmatter.rent.method}, do {frontmatter.rent.due}. dnia miesiąca

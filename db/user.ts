@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { kv } from "@vercel/kv";
 import errors from "@utils/errors";
 import mongodb from "@db/mongodb";
-import { emailRegExp, passwordRegExp, testString } from "@utils/dataValidation";
+import { isEmail, testPassword } from "@utils/validation";
 import { UUID } from "mongodb";
 
 export enum UserRoles {
@@ -30,11 +30,11 @@ export async function getUserByEmail(email: string) {
 }
 
 export async function createUser(email: string, password: string) {
-  if (!testString(email, emailRegExp)) {
+  if (!isEmail(email)) {
     throw new Error(errors.WRONG_EMAIL, { cause: 400 });
   }
 
-  if (!testString(password, passwordRegExp)) {
+  if (!testPassword(password)) {
     throw new Error(errors.UNSAFE_PASSWORD, { cause: 400 });
   }
 
@@ -54,11 +54,11 @@ export async function createUser(email: string, password: string) {
 
 export async function initAccountVerify(email: string, password: string) {
   try {
-    if (!testString(email, emailRegExp)) {
+    if (!isEmail(email)) {
       throw new Error(errors.WRONG_EMAIL, { cause: 400 });
     }
 
-    if (!testString(password, passwordRegExp)) {
+    if (!testPassword(password)) {
       throw new Error(errors.UNSAFE_PASSWORD, { cause: 400 });
     }
 
@@ -107,7 +107,7 @@ export async function wrongVerificationCode(email: string, rateLimit: number) {
 }
 
 export async function initPasswordReset(email: string) {
-  if (!testString(email, emailRegExp)) {
+  if (!isEmail(email)) {
     throw new Error(errors.WRONG_EMAIL, { cause: 400 });
   }
 
@@ -154,11 +154,11 @@ export async function changePassword(
   password: string
 ): Promise<number> {
   try {
-    if (!testString(email, emailRegExp)) {
+    if (!isEmail(email)) {
       throw new Error(errors.WRONG_EMAIL, { cause: 400 });
     }
 
-    if (!testString(password, passwordRegExp)) {
+    if (!testPassword(password)) {
       throw new Error(errors.UNSAFE_PASSWORD, { cause: 400 });
     }
 

@@ -1,8 +1,8 @@
 import { UUID } from "mongodb";
 import mongo, { getDataKey, encryptField } from "@db/mongodb";
-import { getEntry } from "astro:content";
+import { getEntry, z } from "astro:content";
 import type { Answers } from "@type";
-import { emailRegExp, testString } from "@utils/dataValidation";
+import { isEmail } from "@utils/validation";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
 import { sendFiles } from "@utils/email";
 import { getUserIdentities } from "@db/identity";
@@ -204,21 +204,25 @@ export async function createDocument(
   draft = false,
   paymentId?: string
 ) {
-  const template = await getEntry("documents", doc);
-  const { default: schema } = await import(`../src/documentSchema/${doc}.ts`);
-
-  if (!template || !schema) {
-    throw "No template found";
-  }
-
-  const {
-    data: { title, encryptedFields },
-  } = template;
-
-  let validatedAnswers: Answers;
-
   try {
-    validatedAnswers = schema.parse(answers);
+    const template = await getEntry("documents", doc);
+    const { default: schema, draftSchema } = await import(
+      `../src/documentSchema/${doc}.ts`
+    );
+
+    if (!template || !schema || !draftSchema) {
+      throw new Error("No template found");
+    }
+
+    const {
+      data: { title, encryptedFields },
+    } = template;
+
+    let validatedAnswers: Answers;
+
+    validatedAnswers = draft
+      ? draftSchema.parse(answers)
+      : schema.parse(answers);
 
     if (encryptedFields) {
       const dataKey = await getDataKey();
@@ -235,7 +239,7 @@ export async function createDocument(
       }
     }
 
-    const anonymousUser = testString(userId, emailRegExp);
+    const anonymousUser = isEmail(userId);
     let documentTitle: string;
 
     if (anonymousUser) {
@@ -272,20 +276,34 @@ export async function publishDraft(
   paymentId?: string
 ) {
   try {
-    const response = await documentCollection.updateOne(
-      { _id: new UUID(id).toBinary(), userId, draft: true },
-      {
-        $set: { draft: false, paymentId },
-        $currentDate: { modified: true },
-      }
+    const documentQuery = { _id: new UUID(id).toBinary(), userId, draft: true };
+    const document = await documentCollection.findOne(documentQuery);
+
+    if (!document) {
+      throw new Error(id, { cause: 404 });
+    }
+
+    const { default: schema } = await import(
+      `../src/documentSchema/${document.doc}.ts`
     );
+
+    if (!schema) {
+      throw new Error("No template found", { cause: 404 });
+    }
+
+    schema.parse(document.answers);
+
+    const response = await documentCollection.updateOne(documentQuery, {
+      $set: { draft: false, paymentId },
+      $currentDate: { modified: true },
+    });
 
     if (response.modifiedCount !== 1) {
       throw new Error(id, { cause: 303 });
     }
 
     return new UUID(id);
-  } catch (e: any) {
+  } catch (e) {
     throw e;
   }
 }
@@ -334,9 +352,7 @@ export async function shareDocument(
   }
 
   for (let email of emailList) {
-    const isEmail = testString(email, emailRegExp);
-
-    if (!isEmail) {
+    if (!isEmail(email)) {
       throw new Error(`${WRONG_EMAIL_FORMAT}: ${email}`);
     }
   }
@@ -449,4 +465,14 @@ export async function deleteUserDocuments(userId: string) {
   } catch (e) {
     throw e;
   }
+}
+
+export async function validateAnswers(doc: string, answers: Answers) {
+  const { default: schema } = await import(`../src/documentSchema/${doc}.ts`);
+
+  if (!schema) {
+    throw new Error("No template found", { cause: 404 });
+  }
+
+  return schema.safeParse(answers).success;
 }

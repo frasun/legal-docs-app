@@ -1,115 +1,59 @@
-import { entityEnum } from "@utils/constants";
-
 class DataSelector extends HTMLElement {
   selector: HTMLSelectElement | null;
-  fieldsets: NodeListOf<HTMLFieldSetElement>;
-  prefix: string | null;
+  fields: NodeListOf<HTMLInputElement>;
 
   constructor() {
     super();
 
     this.selector = this.querySelector("select");
-    this.fieldsets = this.querySelectorAll("fieldset");
-    this.prefix = this.getAttribute("data-prefix");
+    this.fields = this.querySelectorAll("fieldset input");
   }
 
   connectedCallback() {
-    if (this.selector) {
-      this.selector.addEventListener("change", () => {
-        const activeTab = this.selector?.value;
+    this.selector?.addEventListener("change", this.dataTypeChanged.bind(this));
 
-        if (activeTab) {
-          Array.from(this.fieldsets).forEach((fieldset) => {
-            if (fieldset.getAttribute("data-type") === activeTab) {
-              fieldset.removeAttribute("style");
-            } else {
-              fieldset.style.display = "none";
-              const inputs = fieldset.querySelectorAll("input");
+    this.addEventListener(
+      "select-identity",
+      this.handleSelectIdentity.bind(this) as EventListener
+    );
+  }
 
-              if (Array.from(inputs).length) {
-                Array.from(inputs).forEach((input) => {
-                  input.value = "";
-                });
-              }
-            }
-          });
-        }
-      });
-    }
+  dataTypeChanged(event: Event) {
+    const selectedType = (event.target as HTMLSelectElement)?.value;
 
-    this.addEventListener("select-identity", ((event: CustomEvent) => {
-      if (event.detail) {
-        const { type, name, pin, street, apt, postalCode, city } = event.detail;
-        let typePrefix = "";
-        let fieldPrefix = "";
-
-        switch (type) {
-          case entityEnum[0]:
-            typePrefix = "Person";
-            break;
-          case entityEnum[1]:
-            typePrefix = "Company";
-            break;
-          default:
-            return;
-        }
-
-        if (this.prefix) {
-          fieldPrefix = `${this.prefix}${typePrefix}`;
-        }
-
-        const typeField = this.querySelector(
-          "[name*='Type']"
-        ) as HTMLSelectElement;
-        const nameField = this.querySelector(
-          `[name*="${fieldPrefix}Name"]`
-        ) as HTMLInputElement;
-        const pinField = this.querySelector(
-          `[name*="${fieldPrefix}Pin"]`
-        ) as HTMLInputElement;
-        const streetField = this.querySelector(
-          `[name*="${fieldPrefix}Street"]`
-        ) as HTMLInputElement;
-        const aptField = this.querySelector(
-          `[name*="${fieldPrefix}Apt"]`
-        ) as HTMLInputElement;
-        const postalCodeField = this.querySelector(
-          `[name*="${fieldPrefix}PostalCode"]`
-        ) as HTMLInputElement;
-        const cityField = this.querySelector(
-          `[name*="${fieldPrefix}City"]`
-        ) as HTMLInputElement;
-
-        if (typeField) {
-          typeField.value = type;
-          typeField.dispatchEvent(new Event("change"));
-        }
-
-        if (nameField) {
-          nameField.value = name;
-        }
-
-        if (pinField) {
-          pinField.value = pin;
-        }
-
-        if (streetField) {
-          streetField.value = street;
-        }
-
-        if (aptField) {
-          aptField.value = apt;
-        }
-
-        if (postalCodeField) {
-          postalCodeField.value = postalCode;
-        }
-
-        if (cityField) {
-          cityField.value = city;
+    Array.from(this.querySelectorAll<HTMLElement>("[data-type]")).forEach(
+      (element) => {
+        if (element.dataset.type === selectedType) {
+          element.removeAttribute("style");
+        } else {
+          element.style.display = "none";
         }
       }
-    }) as EventListener);
+    );
+  }
+
+  handleSelectIdentity(event: CustomEvent) {
+    if (event.detail) {
+      const { type, name, pin, street, apt, postalCode, city } = event.detail;
+
+      const typeField = this.querySelector("#type") as HTMLSelectElement;
+      const nameField = this.querySelector("#name") as HTMLInputElement;
+      const pinField = this.querySelector("#pin") as HTMLInputElement;
+      const streetField = this.querySelector("#street") as HTMLInputElement;
+      const aptField = this.querySelector("#apt") as HTMLInputElement;
+      const postalCodeField = this.querySelector(
+        "#postalCode"
+      ) as HTMLInputElement;
+      const cityField = this.querySelector("#city") as HTMLInputElement;
+
+      typeField.value = type;
+      nameField.value = name;
+      pinField.value = pin;
+      streetField.value = street;
+      aptField.value = apt;
+      postalCodeField.value = postalCode;
+      cityField.value = city;
+    }
   }
 }
 

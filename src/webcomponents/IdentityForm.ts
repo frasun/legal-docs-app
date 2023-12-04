@@ -4,6 +4,7 @@ import routes from "@utils/routes";
 import { postIdentity, updateIdentity } from "@api/identities";
 import { entityEnum } from "@utils/constants";
 import { Identity } from "@type";
+import { handleFormValidation } from "@utils/errors";
 
 class IdentityForm extends HTMLElement {
   form?: HTMLFormElement;
@@ -27,44 +28,17 @@ class IdentityForm extends HTMLElement {
 
     try {
       const formData = new FormData(this.form);
-      const dataType = formData.get("Type");
-
-      let name: Identity["name"],
-        pin: Identity["pin"],
-        street: Identity["street"],
-        apt: Identity["apt"],
-        postalCode: Identity["postalCode"],
-        city: Identity["city"];
-
-      switch (dataType) {
-        case entityEnum[0]:
-          name = String(formData.get("PersonName") || "");
-          pin = String(formData.get("PersonPin") || "");
-          street = String(formData.get("PersonStreet") || "");
-          apt = String(formData.get("PersonApt") || "");
-          postalCode = String(formData.get("PersonPostalCode") || "");
-          city = String(formData.get("PersonCity") || "");
-          break;
-        case entityEnum[1]:
-          name = String(formData.get("CompanyName") || "");
-          pin = String(formData.get("CompanyPin") || "");
-          street = String(formData.get("CompanyStreet") || "");
-          apt = String(formData.get("CompanyApt") || "");
-          postalCode = String(formData.get("CompanyPostalCode") || "");
-          city = String(formData.get("CompanyCity") || "");
-          break;
-        default:
-          throw new Error(undefined, { cause: 400 });
-      }
-
-      const identity = {
-        type: dataType,
-        name,
-        pin,
-        street,
-        apt,
-        postalCode,
-        city,
+      const identity: Identity = {
+        type:
+          formData.get("type") === entityEnum.PERSONAL
+            ? entityEnum.PERSONAL
+            : entityEnum.COMPANY,
+        name: String(formData.get("name") || ""),
+        pin: String(formData.get("pin") || ""),
+        street: String(formData.get("street") || ""),
+        apt: String(formData.get("apt") || ""),
+        postalCode: String(formData.get("postalCode") || ""),
+        city: String(formData.get("city") || ""),
       };
 
       if (this.identityId) {
@@ -76,9 +50,7 @@ class IdentityForm extends HTMLElement {
       }
     } catch (e) {
       if (e instanceof Error && e.cause === 400) {
-        const erros = e.message.split(",");
-
-        displayError(erros);
+        handleFormValidation(this, e);
       } else {
         displayError();
       }

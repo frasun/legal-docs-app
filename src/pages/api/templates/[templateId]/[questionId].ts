@@ -9,7 +9,6 @@ import { getEntry } from "astro:content";
 import { getSession } from "auth-astro/server";
 import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
-import routes from "@utils/routes";
 
 export const get: APIRoute = async ({ request, params }) => {
   try {
@@ -85,10 +84,6 @@ export const get: APIRoute = async ({ request, params }) => {
       }
     }
 
-    if ("_isLoggedIn" in answers) {
-      answers["_isLoggedIn"] = Boolean(session);
-    }
-
     // get question data
     ({ title: documentTitle, index } = await getTemplate(cookie, docId));
 
@@ -113,7 +108,7 @@ export const get: APIRoute = async ({ request, params }) => {
     nextId =
       currentQuestionIndex < questionIndex.length - 1
         ? questionIndex[currentQuestionIndex + 1].slug
-        : routes.SUMMARY;
+        : null;
 
     return new Response(
       JSON.stringify({

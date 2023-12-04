@@ -1,5 +1,13 @@
 export const EMPTY = "brak";
-export const entityEnum = ["osoba fizyczna", "firma"] as const;
+
+/**
+ * This will be displayed as an enumeration.
+ * @enum
+ */
+export enum entityEnum {
+  PERSONAL = "osoba fizyczna",
+  COMPANY = "firma",
+}
 export const paymentMethodEnum = [
   "przelewem na konto bankowe",
   "gotówką",

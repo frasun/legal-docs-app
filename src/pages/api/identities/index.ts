@@ -22,16 +22,10 @@ export const get: APIRoute = async ({ request }) => {
 
     const urlParams = new URL(request.url).searchParams;
     const dataType = urlParams.get(DATA_TYPE) ?? undefined;
-    const dataTypeFilter = entityEnum.includes(
-      dataType as (typeof entityEnum)[number]
-    )
-      ? dataType
-      : undefined;
+    const dataTypeFilter =
+      (dataType as entityEnum) in entityEnum ? dataType : undefined;
     const [identities, count] = await Promise.all([
-      getUserIdentities(
-        userId as string,
-        dataTypeFilter as (typeof entityEnum)[number]
-      ),
+      getUserIdentities(userId as string, dataTypeFilter as entityEnum),
       getUserIdentitiesCount(userId as string),
     ]);
 
@@ -69,9 +63,10 @@ export const post: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify(null), { status: 200, headers });
   } catch (e) {
     if (e instanceof z.ZodError) {
-      const errors: string[] = [];
-
-      e.errors.map(({ message }) => errors.push(message));
+      const errors = e.errors.map(({ message, path }) => [
+        message,
+        path[path.length - 1],
+      ]);
 
       return new Response(JSON.stringify(errors), {
         status: 400,

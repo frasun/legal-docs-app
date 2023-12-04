@@ -16,9 +16,11 @@ for (let [key, value] of Object.entries(localEnv)) {
   process.env[key] = value;
 }
 
-Sentry.init({
-  environment: import.meta.env.VERCEL_ENV
-});
+if (import.meta.env.VERCEL_ENV !== 'development') {
+  Sentry.init({
+    environment: import.meta.env.VERCEL_ENV
+  });
+}
 
 const {
   SANITY_PROJECT,

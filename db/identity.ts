@@ -1,9 +1,8 @@
 import mongo, { encryptField, getDataKey } from "@db/mongodb";
 import { entityEnum } from "@utils/constants";
-import * as validators from "@utils/dataValidation";
-import { z } from "astro:content";
 import { UUID } from "mongodb";
 import type { Identity, UserIdentity as UIdentity } from "@type";
+import { identitySchema } from "@utils/validation";
 
 type UserIdentity = Identity & { userId: string };
 
@@ -11,9 +10,6 @@ const identityCollection = mongo.collection<UserIdentity>("identities");
 
 export async function createUserIdentity(data: UserIdentity) {
   const { userId, ...identity } = data;
-  const personalData = identity.type === entityEnum[0];
-
-  const identitySchema = getIdentitySchema(personalData);
 
   try {
     const validatedIdentity = identitySchema.parse(identity);
@@ -29,10 +25,7 @@ export async function createUserIdentity(data: UserIdentity) {
   }
 }
 
-export async function getUserIdentities(
-  userId: string,
-  type?: (typeof entityEnum)[number]
-) {
+export async function getUserIdentities(userId: string, type?: entityEnum) {
   let query;
 
   if (type) {
@@ -70,9 +63,6 @@ export async function updateUserIdentity(
   userId: string,
   identity: Identity
 ) {
-  const personalData = identity.type === entityEnum[0];
-  const identitySchema = getIdentitySchema(personalData);
-
   try {
     const validatedIdentity = identitySchema.parse(identity);
     const encryptedIdentity = await getEncryptedIdentity(validatedIdentity);
@@ -80,7 +70,7 @@ export async function updateUserIdentity(
     return await identityCollection.updateOne(
       { _id: new UUID(identityId).toBinary(), userId },
       {
-        $set: { ...encryptedIdentity },
+        $set: { ...encryptedIdentity, type: validatedIdentity.type },
       }
     );
   } catch (e) {
@@ -97,26 +87,6 @@ export async function deleteUserIdentity(identityId: string, userId: string) {
   } catch (e) {
     throw e;
   }
-}
-
-function getIdentitySchema(personalData: boolean) {
-  return z.object({
-    type: z.enum(entityEnum),
-    name: validators.trimmedString.refine((val) => val.length, {
-      message: personalData ? "Podaj imię i nazwisko" : "Podaj nazwę firmy",
-    }),
-    pin: personalData
-      ? validators.personalPin(true)
-      : validators.companyPin(true),
-    street: validators.trimmedString.refine((val) => val.length, {
-      message: "Podaj adres",
-    }),
-    apt: validators.trimmedStringOrNumber,
-    postalCode: validators.zipCode(true),
-    city: validators.trimmedString.refine((val) => val.length, {
-      message: "Podaj miasto",
-    }),
-  });
 }
 
 async function getEncryptedIdentity(validatedIdentity: Identity) {

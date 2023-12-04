@@ -47,7 +47,7 @@ export async function sendFile(
       ],
     });
   } catch (e) {
-    console.error(e);
+    throw new Error(e instanceof Error ? e.message : undefined, { cause: 500 });
   }
 }
 
@@ -55,6 +55,6 @@ export async function sendFiles(emailData: postmark.Models.TemplatedMessage[]) {
   try {
     await client.sendEmailBatchWithTemplates(emailData);
   } catch (e) {
-    console.error(e);
+    throw new Error(e instanceof Error ? e.message : undefined, { cause: 500 });
   }
 }

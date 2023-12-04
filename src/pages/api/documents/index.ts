@@ -69,6 +69,10 @@ export const post: APIRoute = async ({ request }) => {
           throw new Error(undefined, { cause: 401 });
         }
 
+        if (draft) {
+          throw new Error(undefined, { cause: 303 });
+        }
+
         modifiedId = await publishDraft(
           documentId,
           session?.user?.id as string,

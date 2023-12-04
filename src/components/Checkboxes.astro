@@ -17,75 +17,23 @@ const { values, selected, token, required, size = "default" } = Astro.props;
 
 <checkbox-list required={required} size={size}>
   {
-    values.map((val) => (
-      <label for={val} data-checked={selected.includes(val)}>
-        <input type="checkbox" id={val} checked={selected.includes(val)} />
+    values.map((val, index) => (
+      <label
+        for={`cb-${index}`}
+        data-checked={selected.includes(val)}
+        data-label={val}
+      >
+        <input
+          type="checkbox"
+          id={`cb-${index}`}
+          checked={selected.includes(val)}
+        />
         {val}
       </label>
     ))
   }
-  <input type="hidden" name={token} value={selected} />
+  <input type="hidden" name={token} value={selected} data-type="array" />
 </checkbox-list>
-
-<script>
-  import { EMPTY } from "@utils/constants";
-
-  class CheckboxList extends HTMLElement {
-    valueInput: HTMLInputElement | null;
-    checkboxes: NodeListOf<HTMLInputElement>;
-    required: boolean;
-
-    constructor() {
-      super();
-
-      this.valueInput = this.querySelector('input[type="hidden"]');
-      this.checkboxes = this.querySelectorAll('input[type="checkbox"]');
-      this.required = this.hasAttribute("required");
-    }
-
-    connectedCallback() {
-      for (let checkbox of Array.from(this.checkboxes)) {
-        checkbox.addEventListener("change", this.setHiddenValue.bind(this));
-      }
-    }
-
-    setHiddenValue() {
-      let value = [];
-
-      for (let checkbox of Array.from(this.checkboxes)) {
-        const { checked, id } = checkbox;
-        const checkboxParent = checkbox.parentElement;
-
-        if (checked) {
-          value.push(id);
-
-          if (checkboxParent) {
-            checkboxParent.setAttribute("data-checked", "");
-          }
-        } else {
-          if (checkboxParent) {
-            checkboxParent.removeAttribute("data-checked");
-          }
-        }
-      }
-
-      if (this.valueInput) {
-        this.valueInput.value = value.length ? value.join(", ") : EMPTY;
-      }
-
-      if (this.required) {
-        if (!value.length) {
-          Array.from(this.checkboxes)[0].setAttribute("required", "required");
-        } else {
-          for (let checkbox of Array.from(this.checkboxes)) {
-            checkbox.removeAttribute("required");
-          }
-        }
-      }
-    }
-  }
-  customElements.define("checkbox-list", CheckboxList);
-</script>
 
 <style>
   checkbox-list {
@@ -130,3 +78,7 @@ const { values, selected, token, required, size = "default" } = Astro.props;
     @apply p-30 gap-20;
   }
 </style>
+
+<script>
+  import "@wc/CheckboxList";
+</script>

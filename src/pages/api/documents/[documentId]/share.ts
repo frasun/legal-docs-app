@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
-import { emailRegExp, testString } from "@utils/dataValidation";
+import { isEmail } from "@utils/validation";
 import { createPDF, generateSafeFileName } from "@utils/pdf";
 import { shareDocument } from "@db/document";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
@@ -29,9 +29,7 @@ export const post: APIRoute = async ({ request, params }) => {
     }
 
     for (let email of emailList) {
-      const isEmail = testString(email, emailRegExp);
-
-      if (!isEmail) {
+      if (!isEmail(email)) {
         throw new Error(`${WRONG_EMAIL_FORMAT}: ${email}`, { cause: 400 });
       }
     }

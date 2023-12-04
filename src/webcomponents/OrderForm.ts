@@ -1,6 +1,6 @@
 import { initDocumentOrder } from "@api/documents";
 import { displayError } from "@stores/toast";
-import { emailRegExp, testString } from "@utils/dataValidation";
+import { isEmail } from "@utils/validation";
 import routes from "@utils/routes";
 
 class OrderForm extends HTMLElement {
@@ -26,7 +26,7 @@ class OrderForm extends HTMLElement {
 
       const anonymousEmail = String(formData.get("email"));
 
-      if (!anonymousEmail || !testString(anonymousEmail, emailRegExp)) {
+      if (!anonymousEmail || !isEmail(anonymousEmail)) {
         throw new Error();
       }
 

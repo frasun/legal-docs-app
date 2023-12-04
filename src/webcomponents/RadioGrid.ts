@@ -1,5 +1,3 @@
-import { EMPTY } from "@utils/constants";
-
 class Radiogrid extends HTMLElement {
   valueInputs: NodeListOf<HTMLInputElement>;
   radios: NodeListOf<HTMLInputElement>;
@@ -21,9 +19,9 @@ class Radiogrid extends HTMLElement {
     const values = this.getHiddenValue();
 
     Array.from(this.valueInputs).map((input) => {
-      const answer = values[input.id] ? values[input.id] : EMPTY;
+      const answer = values[input.id] ? values[input.id] : "";
 
-      input.value = Array.isArray(answer) ? answer.join(", ") : answer;
+      input.value = Array.isArray(answer) ? answer.join(",") : answer;
     });
   }
 

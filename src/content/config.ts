@@ -38,7 +38,6 @@ const documents = defineCollection({
     priceId: z.string(),
     index: documentIndex.optional(),
     dates: z.array(z.string()).optional(),
-    dataFields: z.array(z.string()).optional(),
     encryptedFields: z.array(z.string()).optional(),
     draft: z.boolean(),
     memberContent: z.boolean().optional(),

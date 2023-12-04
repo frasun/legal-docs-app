@@ -2,7 +2,6 @@
 import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import DataInput from "@components/DataInput.astro";
-import { entityEnum } from "@utils/constants";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
 import { getIdentity } from "@api/identities";
@@ -18,19 +17,7 @@ let type: Identity["type"],
   street: Identity["street"],
   apt: Identity["apt"],
   postalCode: Identity["postalCode"],
-  city: Identity["city"],
-  personName = "",
-  personStreet = "",
-  personApt: Identity["apt"] = "",
-  personPostalCode = "",
-  personCity = "",
-  personPin = "",
-  companyName = "",
-  companyStreet = "",
-  companyApt: Identity["apt"] = "",
-  companyPostalCode = "",
-  companyCity = "",
-  companyPin = "";
+  city: Identity["city"];
 
 try {
   ({ type, name, pin, street, apt, postalCode, city } = await getIdentity(
@@ -47,27 +34,6 @@ try {
   captureError(e);
   return Astro.redirect(routes.NOT_FOUND);
 }
-
-switch (type) {
-  case entityEnum[0]:
-    personName = name;
-    personPin = pin;
-    personStreet = street;
-    personApt = apt;
-    personPostalCode = postalCode;
-    personCity = city;
-    break;
-  case entityEnum[1]:
-    companyName = name;
-    companyPin = pin;
-    companyStreet = street;
-    companyApt = apt;
-    companyPostalCode = postalCode;
-    companyCity = city;
-    break;
-  default:
-    return Astro.redirect(routes.NOT_FOUND);
-}
 ---
 
 <Layout title={pageTitle(PAGE_TITLE)}>
@@ -79,18 +45,12 @@ switch (type) {
       </header>
       <DataInput
         type={type}
-        personName={personName}
-        personStreet={personStreet}
-        personApt={personApt}
-        personPostalCode={personPostalCode}
-        personCity={personCity}
-        personPin={personPin}
-        companyName={companyName}
-        companyStreet={companyStreet}
-        companyApt={companyApt}
-        companyPostalCode={companyPostalCode}
-        companyCity={companyCity}
-        companyPin={companyPin}
+        name={name}
+        street={street}
+        apt={apt}
+        postalCode={postalCode}
+        city={city}
+        pin={pin}
       />
       <footer>
         <a href={`${Astro.url.origin}/tozsamosci`}>Anuluj</a>

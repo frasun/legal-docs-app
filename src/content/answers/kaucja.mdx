@@ -1,7 +1,9 @@
 ---
-deposit: $deposit
-depositMethod: $depositMethod
+deposit: {
+  value: 2000,
+  method: gotówką
+}
 ---
 import formatNumber from '@utils/number'
 
-{formatNumber(frontmatter.deposit)} zł, {frontmatter.depositMethod}
+{formatNumber(frontmatter.deposit.value)} zł, {frontmatter.deposit.method}

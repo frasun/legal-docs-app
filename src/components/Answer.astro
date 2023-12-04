@@ -13,17 +13,21 @@ let CompiledContent;
 let textContent;
 
 if (template) {
-  const answer = await getEntry("answers", template);
+  try {
+    const answer = await getEntry("answers", template);
 
-  if (!answer) return;
+    if (!answer) return;
 
-  const { remarkPluginFrontmatter: aData, Content } = await answer.render();
+    const { remarkPluginFrontmatter: aData, Content } = await answer.render();
 
-  for (let key of Object.keys(aData)) {
-    aData[key] = data[key];
-  }
+    for (let key of Object.keys(aData)) {
+      if (data[key]) {
+        aData[key] = data[key];
+      }
+    }
 
-  CompiledContent = Content;
+    CompiledContent = Content;
+  } catch {}
 }
 
 if (!template && token) {
@@ -35,7 +39,11 @@ if (!template && token) {
     textContent = value;
   }
 
-  if (value === "") {
+  if (Array.isArray(value)) {
+    textContent = value.join(", ");
+  }
+
+  if (!value || !value.length) {
     textContent = EMPTY;
   }
 }

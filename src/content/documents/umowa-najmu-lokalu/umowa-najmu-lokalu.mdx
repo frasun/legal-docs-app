@@ -47,41 +47,10 @@ dates: [
   start,
   contractDate
 ]
-dataFields: [
+encryptedFields: [
+  address,
   landlord,
   tenant
-]
-encryptedFields: [
-  street,
-  apt,
-  postalCode,
-  city,
-  landlordType,
-  landlordPersonName,
-  landlordPersonStreet,
-  landlordPersonApt,
-  landlordPersonPostalCode,
-  landlordPersonCity,
-  landlordPersonPin,
-  landlordCompanyName,
-  landlordCompanyStreet,
-  landlordCompanyApt,
-  landlordCompanyPostalCode,
-  landlordCompanyCity,
-  landlordCompanyPin,
-  tenantType,
-  tenantPersonName,
-  tenantPersonStreet,
-  tenantPersonApt,
-  tenantPersonPostalCode,
-  tenantPersonCity,
-  tenantPersonPin,
-  tenantCompanyName,
-  tenantCompanyStreet,
-  tenantCompanyApt,
-  tenantCompanyPostalCode,
-  tenantCompanyCity,
-  tenantCompanyPin
 ]
 ---
 import formatNumber from "@utils/number";
@@ -89,65 +58,53 @@ import formatDate from "@utils/date";
 import getAmount from '@utils/amount';
 import getItems from '@utils/itemlist';
 import PLURALS from "@utils/plurals";
-import MdxDataDisplay from "@components/MdxDataDisplay.astro";
+import MdxDataDisplay from "@components/DataDisplay.astro";
 import MdxConditionalBullet from "@components/MdxConditionalBullet.astro";
 import MdxDataValue, { getDataValue } from "@components/MdxDataValue.astro";
 import MdxSignature from "@components/MdxSignature.astro";
 
-{formatDate(frontmatter.contractDate)}, <MdxDataValue type={frontmatter["landlordType"]} personValue={frontmatter["landlordPersonCity"]} companyValue={frontmatter["landlordCompanyCity"]} />
+{formatDate(frontmatter.contractDate)}, {frontmatter.landlord.city}
 
 ### Umowa najmu lokalu
 
 #### Strony Umowy
 <MdxDataDisplay
   label="Najemca"
-  type={frontmatter["landlordType"]}
-  personName={frontmatter["landlordPersonName"]}
-  personPin={frontmatter["landlordPersonPin"]}
-  personStreet={frontmatter["landlordPersonStreet"]}
-  personApt={frontmatter["landlordPersonApt"]}
-  personPostalCode={frontmatter["landlordPersonPostalCode"]}
-  personCity={frontmatter["landlordPersonCity"]}
-  companyName={frontmatter["landlordCompanyName"]}
-  companyPin={frontmatter["landlordCompanyPin"]}
-  companyStreet={frontmatter["landlordCompanyStreet"]}
-  companyApt={frontmatter["landlordCompanyApt"]}
-  companyPostalCode={frontmatter["landlordCompanyPostalCode"]}
-  companyCity={frontmatter["landlordCompanyCity"]}
+  type={frontmatter.landlord.type}
+  name={frontmatter.landlord.name}
+  pin={frontmatter.landlord.pin}
+  street={frontmatter.landlord.street}
+  apt={frontmatter.landlord.apt}
+  postalCode={frontmatter.landlord.postalCode}
+  city={frontmatter.landlord.city}  
 />
 <MdxDataDisplay
   label="Wynajmujący"
-  type={frontmatter["tenantType"]}
-  personName={frontmatter["tenantPersonName"]}
-  personPin={frontmatter["tenantPersonPin"]}
-  personStreet={frontmatter["tenantPersonStreet"]}
-  personApt={frontmatter["tenantPersonApt"]}
-  personPostalCode={frontmatter["tenantPersonPostalCode"]}
-  personCity={frontmatter["tenantPersonCity"]}
-  companyName={frontmatter["tenantCompanyName"]}
-  companyPin={frontmatter["tenantCompanyPin"]}
-  companyStreet={frontmatter["tenantCompanyStreet"]}
-  companyApt={frontmatter["tenantCompanyApt"]}
-  companyPostalCode={frontmatter["tenantCompanyPostalCode"]}
-  companyCity={frontmatter["tenantCompanyCity"]}
+  type={frontmatter.tenant.type}
+  name={frontmatter.tenant.name}
+  pin={frontmatter.tenant.pin}
+  street={frontmatter.tenant.street}
+  apt={frontmatter.tenant.apt}
+  postalCode={frontmatter.tenant.postalCode}
+  city={frontmatter.tenant.city}  
 />
 
 #### Przedmiot Umowy
 
-  1. Umowa dotyczy lokalu o powierzchni {formatNumber(frontmatter.area)} m<sup>2</sup>, znajdującego się pod adresem {frontmatter.postalCode} {frontmatter.city}, {frontmatter.street} / {frontmatter.apt}.
-  1. W skład lokalu wchodzą następujące pomieszczenia: {getItems([[frontmatter.room, PLURALS.ROOM], [frontmatter.kitchen, PLURALS.KITCHEN, true], [frontmatter.hall, PLURALS.HALL], [frontmatter.bathroom, PLURALS.BATHROOM, true], [frontmatter.toilet, PLURALS.TOILET, true], [frontmatter.balcony, PLURALS.BALCONY], [frontmatter.wardrobe, PLURALS.WARDROBE, true], [frontmatter.garage, PLURALS.GARAGE]])}.  
+  1. Umowa dotyczy lokalu o powierzchni {formatNumber(frontmatter.area)} m<sup>2</sup>, znajdującego się pod adresem {frontmatter.address.postalCode} {frontmatter.address.city}, {frontmatter.address.street} / {frontmatter.address.apt}.
+  1. W skład lokalu wchodzą następujące pomieszczenia: {getItems([[frontmatter.rooms.room, PLURALS.ROOM], [frontmatter.rooms.kitchen, PLURALS.KITCHEN, true], [frontmatter.rooms.hall, PLURALS.HALL], [frontmatter.rooms.bathroom, PLURALS.BATHROOM, true], [frontmatter.rooms.toilet, PLURALS.TOILET, true], [frontmatter.rooms.balcony, PLURALS.BALCONY], [frontmatter.rooms.wardrobe, PLURALS.WARDROBE, true], [frontmatter.rooms.garage, PLURALS.GARAGE]])}.  
       <MdxConditionalBullet value={frontmatter.equipment}>
         <>Na stanie lokalu znajduje się wyposażenie: {frontmatter.equipment}.</>
       </MdxConditionalBullet>
-  1. W lokalu dostępne są instalacje: {frontmatter.systems}.
+  1. W lokalu dostępne są instalacje: {frontmatter.systems.join(', ')}.
 
 #### Przebieg umowy
    
-  1. Lokal będzie użytkowany {frontmatter.purpose}.
-  1. Czynsz w wysokości {getAmount(frontmatter.rent)}, płatny {frontmatter.rentMethod} do {frontmatter.rentdue}. dnia miesiąca.      
-  1. Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.billsLandlord}.
-  1. Najemca zobowiązuje się ponosić opłaty: {frontmatter.billsTenant}.
-  1. Kaucja w wysokości {getAmount(frontmatter.deposit)}, płatna {frontmatter.depositMethod}.
+  1. Lokal będzie użytkowany {frontmatter.purpose.join(', ')}.
+  1. Czynsz w wysokości {getAmount(frontmatter.rent.value)}, płatny {frontmatter.rent.method} do {frontmatter.rent.due}. dnia miesiąca.      
+  1. Wynajmujący zobowiązuje się ponosić opłaty: {frontmatter.bills.landlord.join(', ')}.
+  1. Najemca zobowiązuje się ponosić opłaty: {frontmatter.bills.tenant.join(', ')}.
+  1. Kaucja w wysokości {getAmount(frontmatter.deposit.value)}, płatna {frontmatter.deposit.method}.
   1. Najemca pokrywa koszty napraw do {getAmount(frontmatter.repairs)}.      
   1. Każda ze Stron może wypowiedzieć umowę z okresem wypowiedzenia {frontmatter.termination} dni.
   1. Zwrot lokalu powinien nastąpić do {frontmatter.returnTime}. dnia od daty zakończenia Umowy.
@@ -161,8 +118,8 @@ import MdxSignature from "@components/MdxSignature.astro";
 #### Oświadczenia
 
 <MdxSignature>
-  Wynajmujący: {getDataValue(frontmatter["landlordType"], frontmatter["landlordPersonName"], frontmatter["landlordCompanyName"])}
+  Wynajmujący: {getDataValue(frontmatter.landlord.type, frontmatter.landlord.name)}
 </MdxSignature>
 <MdxSignature>
-  Najemca: {getDataValue(frontmatter["tenantType"], frontmatter["tenantPersonName"], frontmatter["tenantCompanyName"])}
+  Najemca: {getDataValue(frontmatter.tenant.type, frontmatter.tenant.name)}
 </MdxSignature>

@@ -9,15 +9,17 @@ export function getItem(
     return "";
   } else if (number === 1) {
     return plural(1);
-  } else if (female) {
-    if (number === 2) {
-      return `dwie ${plural(number)}`;
-    } else if (String(number).endsWith("12")) {
-      return `${n2words(number)} ${plural(number)}`;
-    } else if (String(number).endsWith("2")) {
-      return `${n2words(number - 2)} dwie ${plural(number)}`;
-    }
   } else {
+    if (female) {
+      if (number === 2) {
+        return `dwie ${plural(number)}`;
+      } else if (String(number).endsWith("12")) {
+        return `${n2words(number)} ${plural(number)}`;
+      } else if (String(number).endsWith("2")) {
+        return `${n2words(number - 2)} dwie ${plural(number)}`;
+      }
+    }
+
     return `${n2words(number)} ${plural(number)}`;
   }
 }

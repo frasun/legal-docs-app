@@ -1,7 +1,7 @@
-import { emailRegExp, testString } from "@utils/dataValidation";
+import { isEmail } from "@utils/validation";
 import { getContentArray } from "@utils/pdf";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
-import { DOCUMENT_SHARED, DOCUMENT_SHARED_PARAM, ERROR } from "@utils/toasts";
+import { DOCUMENT_SHARED } from "@utils/toasts";
 import trimWhiteSpace from "@utils/whitespace";
 import { shareDocument } from "@api/documents";
 import { displayError, displayToast } from "@stores/toast";
@@ -53,9 +53,7 @@ class SendPdfViaEmail extends HTMLElement {
 
       if (emails.length) {
         for (let email of emails) {
-          const isEmail = testString(email, emailRegExp);
-
-          if (!isEmail) {
+          if (!isEmail(email)) {
             this.errors.push(`${WRONG_EMAIL_FORMAT}: ${email}`);
           }
         }

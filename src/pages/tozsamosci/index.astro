@@ -54,7 +54,7 @@ try {
             <label for="category">Rodzaj podmiotu</label>
             <select id="category">
               <option value="">Wszystkie</option>
-              {entityEnum.map((type) => (
+              {Object.values(entityEnum).map((type) => (
                 <option value={type} selected={type === dataTypeFilter}>
                   {`${type[0].toUpperCase()}${type.slice(1)}`}
                 </option>

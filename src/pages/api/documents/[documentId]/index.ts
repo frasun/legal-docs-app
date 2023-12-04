@@ -81,6 +81,7 @@ export const put: APIRoute = async ({ request, params }) => {
       const { doc: docId } = await getDocumentTemplate(cookie, documentId);
       const { encryptedFields } = await getTemplate(cookie, docId);
       const userId = session.user?.id as string;
+
       const response = await updateAnswers(
         documentId,
         userId,
@@ -110,7 +111,10 @@ export const put: APIRoute = async ({ request, params }) => {
     });
   } catch (e) {
     if (e instanceof z.ZodError) {
-      const errors = e.errors.map(({ message }) => message);
+      const errors = e.errors.map(({ message, path }) => [
+        message,
+        path[path.length - 1],
+      ]);
 
       return new Response(JSON.stringify(errors), {
         status: 400,

@@ -1,68 +1,46 @@
 ---
-import { Icon } from "astro-icon";
+import { Identity } from "@type";
 import { entityEnum } from "@utils/constants";
-import routes from "@utils/routes";
+import Icon from "astro-icon";
 
-const {
-  type,
-  personName,
-  personStreet,
-  personApt,
-  personPostalCode,
-  personCity,
-  personPin,
-  companyName,
-  companyStreet,
-  companyApt,
-  companyPostalCode,
-  companyCity,
-  companyPin,
-} = Astro.props;
-
-let name, street, apt, postalCode, city, pin, address, typeLabel, pinLabel;
-
-switch (type) {
-  case entityEnum[0]:
-    name = personName;
-    street = personStreet;
-    apt = personApt;
-    postalCode = personPostalCode;
-    city = personCity;
-    pin = personPin;
-
-    typeLabel = entityEnum[0];
-    pinLabel = "PESEL";
-    break;
-  case entityEnum[1]:
-    name = companyName;
-    street = companyStreet;
-    apt = companyApt;
-    postalCode = companyPostalCode;
-    city = companyCity;
-    pin = companyPin;
-
-    typeLabel = entityEnum[1];
-    pinLabel = "NIP";
-    break;
-  default:
-    return Astro.redirect(routes.NOT_FOUND);
+interface Props {
+  label: string;
+  type: Identity["type"];
+  name: Identity["name"];
+  street: Identity["street"];
+  apt: Identity["apt"];
+  postalCode: Identity["postalCode"];
+  city: Identity["city"];
+  pin: Identity["pin"];
 }
 
-let streetAddr = `${street}${apt.length ? ` / ${apt}` : ``}`;
-address = `${postalCode} ${city}, ${streetAddr}`;
+const { label, type, name, street, apt, postalCode, city, pin } = Astro.props;
 
-const data = [name, pin, street, postalCode, city].every((field) => field);
+const streetAddr = `${street}${apt?.toString().length ? ` / ${apt}` : ``}`;
+const address = `${postalCode} ${city}, ${streetAddr}`;
+const isPersonal = type === entityEnum.PERSONAL;
+const typeLabel = isPersonal ? entityEnum.PERSONAL : entityEnum.COMPANY;
+const pinLabel = isPersonal ? "PESEL" : "NIP";
+
+const canDisplay = [name, street, postalCode, city, pin].every(
+  (item) => item && item !== ""
+);
 ---
 
 {
-  data ? (
-    <>
-      {name} ({typeLabel})
-      <br />
+  canDisplay ? (
+    <p>
+      {label && (
+        <>
+          {label}:
+          <br />
+        </>
+      )}
+      {name} ({typeLabel}) <br />
       {address}
       <br />
       {pinLabel}: {pin}
-    </>
+    </p>
   ) : (
     <div class="text-orangeDark flex gap-10 items-center">
       <Icon name="info" width={24} height={24} class="text-orange" />

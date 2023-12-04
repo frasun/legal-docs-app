@@ -75,8 +75,8 @@ try {
     ? `${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${prevId}`
     : null;
 
-  nextUrl = `${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${
-    nextId ?? routes.SUMMARY
+  nextUrl = `${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${
+    nextId ? `/${nextId}` : routes.SUMMARY
   }`;
 } catch (e) {
   if (e instanceof Error) {
@@ -124,8 +124,7 @@ try {
   />
   <question-form
     data-document-id={documentId}
-    data-next-url={nextUrl}
-    data-fields={JSON.stringify(Object.keys(answers))}
+    data-next-url={!isUserDocument ? nextUrl : undefined}
   >
     <form method="POST">
       <header>

@@ -2,7 +2,6 @@
 import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import DataInput from "@components/DataInput.astro";
-import { entityEnum } from "@utils/constants";
 import { getSession } from "auth-astro/server";
 import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
@@ -14,19 +13,6 @@ if (!session) {
 }
 
 const PAGE_TITLE = "Dodaj tożsamość";
-let type: Identity["type"] = entityEnum[0],
-  personName = "",
-  personStreet = "",
-  personApt = "",
-  personPostalCode = "",
-  personCity = "",
-  personPin = "",
-  companyName = "",
-  companyStreet = "",
-  companyApt = "",
-  companyPostalCode = "",
-  companyCity = "",
-  companyPin = "";
 ---
 
 <Layout title={pageTitle(PAGE_TITLE)}>
@@ -36,21 +22,7 @@ let type: Identity["type"] = entityEnum[0],
       <header>
         <h3>Wypełnij formularz z danymi</h3>
       </header>
-      <DataInput
-        type={type}
-        personName={personName}
-        personStreet={personStreet}
-        personApt={personApt}
-        personPostalCode={personPostalCode}
-        personCity={personCity}
-        personPin={personPin}
-        companyName={companyName}
-        companyStreet={companyStreet}
-        companyApt={companyApt}
-        companyPostalCode={companyPostalCode}
-        companyCity={companyCity}
-        companyPin={companyPin}
-      />
+      <DataInput />
       <footer>
         <a href={`${Astro.url.origin}/tozsamosci`}>Anuluj</a>
         <button type="submit">Zapisz</button>

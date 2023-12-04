@@ -3,40 +3,37 @@ import { entityEnum } from "@utils/constants";
 import InputGroup, { InputSize } from "@components/InputGroup.astro";
 import Address from "./Address.astro";
 import { getIdentities } from "@api/identities";
-import routes from "@utils/routes";
+import { getSession } from "auth-astro/server";
+import { Identity, UserIdentity } from "@type";
 
-const {
-  name,
-  type,
-  personName,
-  personStreet,
-  personApt,
-  personPostalCode,
-  personCity,
-  personPin,
-  companyName,
-  companyStreet,
-  companyApt,
-  companyPostalCode,
-  companyCity,
-  companyPin,
-  showIdentitySelector,
-} = Astro.props;
-
-let prefix = name || "";
-let identities;
-
-if (showIdentitySelector) {
-  try {
-    const response = await getIdentities(
-      `${Astro.request.headers.get("cookie")}`
-    );
-
-    ({ identities } = response);
-  } catch {
-    return Astro.redirect(routes.NOT_FOUND);
-  }
+interface Props extends Partial<Identity> {
+  fieldId?: string;
+  showIdentities?: boolean;
 }
+
+let type: entityEnum | undefined;
+({ type } = Astro.props);
+
+if (!type) {
+  type = entityEnum.PERSONAL;
+}
+
+const { fieldId, name, street, apt, postalCode, city, pin, showIdentities } =
+  Astro.props;
+
+let identities: UserIdentity[] | undefined;
+
+const session = await getSession(Astro.request);
+
+if (session && showIdentities) {
+  try {
+    ({ identities } = await getIdentities(
+      `${Astro.request.headers.get("cookie")}`
+    ));
+  } catch {}
+}
+
+const isPersonal = type === entityEnum.PERSONAL;
 ---
 
 {
@@ -56,102 +53,64 @@ if (showIdentitySelector) {
   )
 }
 
-<data-selector data-prefix={prefix}>
+<data-selector>
   <InputGroup>
     <label for="type">Rodzaj podmiotu</label>
-    <select id="type" name={`${prefix}Type`} value={type}>
+    <select id="type" name="type" value={type}>
       {
-        entityEnum.map((entityType) => (
+        Object.values(entityEnum).map((entityType) => (
           <option selected={type === entityType}>{entityType}</option>
         ))
       }
     </select>
   </InputGroup>
-  <fieldset
-    data-type={entityEnum[0]}
-    style={type === entityEnum[1] ? `display:none` : ``}
-  >
+  <fieldset>
     <InputGroup size={InputSize.lg}>
-      <label for="personName">Imię i nazwisko</label>
-      <input
-        id="personName"
-        type="text"
-        name={`${prefix}PersonName`}
-        value={personName}
-      />
+      <label
+        for="name"
+        data-type={entityEnum.PERSONAL}
+        style={isPersonal ? `` : `display: none`}>Imię i nazwisko</label
+      >
+      <label
+        for="name"
+        data-type={entityEnum.COMPANY}
+        style={isPersonal ? `display: none` : ``}>Nazwa firmy</label
+      >
+      <input id="name" type="text" name="name" value={name} />
     </InputGroup>
     <InputGroup>
-      <label for="personPin">Numer PESEL</label>
-      <input
-        id="personPin"
-        type="text"
-        name={`${prefix}PersonPin`}
-        value={personPin}
-        class="flex-grow"
-      />
+      <label
+        for="pin"
+        data-type={entityEnum.PERSONAL}
+        style={isPersonal ? `` : `display: none`}>Numer PESEL</label
+      >
+      <label
+        for="pin"
+        data-type={entityEnum.COMPANY}
+        style={isPersonal ? `display: none` : ``}>Numer NIP</label
+      >
+      <input id="pin" type="text" name="pin" value={pin} class="flex-grow" />
     </InputGroup>
-    <Address
-      street={personStreet}
-      apt={personApt}
-      postalCode={personPostalCode}
-      city={personCity}
-      streetFieldName={`${prefix}PersonStreet`}
-      aptFieldName={`${prefix}PersonApt`}
-      postalCodeFieldName={`${prefix}PersonPostalCode`}
-      cityFieldName={`${prefix}PersonCity`}
-    />
+    <Address street={street} apt={apt} postalCode={postalCode} city={city} />
   </fieldset>
-  <fieldset
-    data-type={entityEnum[1]}
-    style={type === entityEnum[0] ? `display:none` : ``}
-  >
-    <InputGroup size={InputSize.lg}>
-      <label for="companyName">Nazwa firmy</label>
-      <input
-        id="companyName"
-        type="text"
-        name={`${prefix}CompanyName`}
-        value={companyName}
-      />
-    </InputGroup>
-    <InputGroup>
-      <label for="companyPin">Numer NIP</label>
-      <input
-        id="companyPin"
-        type="text"
-        name={`${prefix}CompanyPin`}
-        value={companyPin}
-        class="flex-grow"
-      />
-    </InputGroup>
-    <Address
-      street={companyStreet}
-      apt={companyApt}
-      postalCode={companyPostalCode}
-      city={companyCity}
-      streetFieldName={`${prefix}CompanyStreet`}
-      aptFieldName={`${prefix}CompanyApt`}
-      postalCodeFieldName={`${prefix}CompanyPostalCode`}
-      cityFieldName={`${prefix}CompanyCity`}
-    />
-  </fieldset>
+  {fieldId && <input type="hidden" name={fieldId} />}
+
+  <style>
+    data-selector {
+      @apply flex flex-col gap-20;
+    }
+
+    :global(data-selector div input) {
+      @apply flex-grow;
+    }
+
+    identity-selector select {
+      @apply w-full;
+    }
+  </style>
+
+  <script>
+    import "@wc/DataSelector";
+    import "@wc/IdentitySelector";
+  </script>
 </data-selector>
-
-<style>
-  data-selector {
-    @apply flex flex-col gap-20;
-  }
-
-  :global(data-selector div input) {
-    @apply flex-grow;
-  }
-
-  identity-selector select {
-    @apply w-full;
-  }
-</style>
-
-<script>
-  import "@wc/DataSelector";
-  import "@wc/IdentitySelector";
-</script>

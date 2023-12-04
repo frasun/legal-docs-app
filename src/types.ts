@@ -62,7 +62,6 @@ export interface Template {
   }[];
   encryptedFields?: string[];
   dateFields?: string[];
-  dataFields?: string[];
 }
 
 export interface TemplateSummary {
@@ -90,14 +89,17 @@ export interface BlogPosts {
   pages: number;
 }
 
-export interface Identity {
-  type: (typeof entityEnum)[number];
-  name: string;
-  pin: string;
+export interface Address {
   street: string;
-  apt?: string;
+  apt?: string | number;
   postalCode: string;
   city: string;
+}
+
+export interface Identity extends Address {
+  type: entityEnum;
+  name: string;
+  pin: string;
 }
 
 export interface UserIdentity extends Identity {

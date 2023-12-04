@@ -1,7 +1,9 @@
 ---
-street: Marszałkowska 3a
-apt: '7'
-postalCode: 90-001
-city: Warszawa
+address: {
+  street: Marszałkowska 3a,
+  apt: 7,
+  postalCode: 90-001,
+  city: Warszawa
+}
 ---
-{frontmatter.postalCode} {frontmatter.city}, {frontmatter.street} / {frontmatter.apt}
+{frontmatter.address.postalCode} {frontmatter.address.city}, {frontmatter.address.street}{frontmatter.address.apt ? ` / ${frontmatter.address.apt}` : ``}
