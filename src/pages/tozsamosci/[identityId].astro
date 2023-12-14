@@ -17,13 +17,12 @@ let type: Identity["type"],
   street: Identity["street"],
   apt: Identity["apt"],
   postalCode: Identity["postalCode"],
-  city: Identity["city"];
+  city: Identity["city"],
+  bankAccount: Identity["bankAccount"];
 
 try {
-  ({ type, name, pin, street, apt, postalCode, city } = await getIdentity(
-    identityId,
-    `${Astro.request.headers.get("cookie")}`
-  ));
+  ({ type, name, pin, street, apt, postalCode, city, bankAccount } =
+    await getIdentity(identityId, `${Astro.request.headers.get("cookie")}`));
 } catch (e) {
   if (e instanceof Error) {
     if (e.cause === 404) {
@@ -51,6 +50,8 @@ try {
         postalCode={postalCode}
         city={city}
         pin={pin}
+        bankAccount={bankAccount}
+        showBankAccount={true}
       />
       <footer>
         <a href={`${Astro.url.origin}/tozsamosci`}>Anuluj</a>

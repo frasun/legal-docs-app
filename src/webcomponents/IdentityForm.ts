@@ -39,6 +39,7 @@ class IdentityForm extends HTMLElement {
         apt: String(formData.get("apt") || ""),
         postalCode: String(formData.get("postalCode") || ""),
         city: String(formData.get("city") || ""),
+        bankAccount: String(formData.get("bankAccount")) || undefined,
       };
 
       if (this.identityId) {

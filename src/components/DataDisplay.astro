@@ -3,18 +3,12 @@ import { Identity } from "@type";
 import { entityEnum } from "@utils/constants";
 import Icon from "astro-icon";
 
-interface Props {
+interface Props extends Identity {
   label: string;
-  type: Identity["type"];
-  name: Identity["name"];
-  street: Identity["street"];
-  apt: Identity["apt"];
-  postalCode: Identity["postalCode"];
-  city: Identity["city"];
-  pin: Identity["pin"];
 }
 
-const { label, type, name, street, apt, postalCode, city, pin } = Astro.props;
+const { label, type, name, street, apt, postalCode, city, pin, bankAccount } =
+  Astro.props;
 
 const streetAddr = `${street}${apt?.toString().length ? ` / ${apt}` : ``}`;
 const address = `${postalCode} ${city}, ${streetAddr}`;
@@ -40,6 +34,12 @@ const canDisplay = [name, street, postalCode, city, pin].every(
       {address}
       <br />
       {pinLabel}: {pin}
+      {bankAccount && (
+        <>
+          <br />
+          Nr konta bankowego: {bankAccount}
+        </>
+      )}
     </p>
   ) : (
     <div class="text-orangeDark flex gap-10 items-center">

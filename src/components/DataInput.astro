@@ -9,6 +9,7 @@ import { Identity, UserIdentity } from "@type";
 interface Props extends Partial<Identity> {
   fieldId?: string;
   showIdentities?: boolean;
+  showBankAccount?: boolean;
 }
 
 let type: entityEnum | undefined;
@@ -18,8 +19,18 @@ if (!type) {
   type = entityEnum.PERSONAL;
 }
 
-const { fieldId, name, street, apt, postalCode, city, pin, showIdentities } =
-  Astro.props;
+const {
+  fieldId,
+  name,
+  street,
+  apt,
+  postalCode,
+  city,
+  pin,
+  showIdentities,
+  showBankAccount,
+  bankAccount,
+} = Astro.props;
 
 let identities: UserIdentity[] | undefined;
 
@@ -91,6 +102,20 @@ const isPersonal = type === entityEnum.PERSONAL;
       >
       <input id="pin" type="text" name="pin" value={pin} class="flex-grow" />
     </InputGroup>
+    {
+      showBankAccount && (
+        <InputGroup>
+          <label for="bankAccount">Numer konta bankowego</label>
+          <input
+            id="bankAccount"
+            type="text"
+            name="bankAccount"
+            value={bankAccount}
+            class="flex-grow"
+          />
+        </InputGroup>
+      )
+    }
     <Address street={street} apt={apt} postalCode={postalCode} city={city} />
   </fieldset>
   {fieldId && <input type="hidden" name={fieldId} />}

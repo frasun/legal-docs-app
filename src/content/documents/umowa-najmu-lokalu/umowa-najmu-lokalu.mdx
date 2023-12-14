@@ -60,7 +60,7 @@ import getItems from '@utils/itemlist';
 import PLURALS from "@utils/plurals";
 import MdxDataDisplay from "@components/DataDisplay.astro";
 import MdxConditionalBullet from "@components/MdxConditionalBullet.astro";
-import MdxDataValue, { getDataValue } from "@components/MdxDataValue.astro";
+import{ getDataValue } from "@components/MdxDataValue.astro";
 import MdxSignature from "@components/MdxSignature.astro";
 
 {formatDate(frontmatter.contractDate)}, {frontmatter.landlord.city}
@@ -77,6 +77,7 @@ import MdxSignature from "@components/MdxSignature.astro";
   apt={frontmatter.landlord.apt}
   postalCode={frontmatter.landlord.postalCode}
   city={frontmatter.landlord.city}  
+  bankAccount={frontmatter.landlord.bankAccount}
 />
 <MdxDataDisplay
   label="Wynajmujący"

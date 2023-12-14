@@ -34,7 +34,8 @@ class DataSelector extends HTMLElement {
 
   handleSelectIdentity(event: CustomEvent) {
     if (event.detail) {
-      const { type, name, pin, street, apt, postalCode, city } = event.detail;
+      const { type, name, pin, street, apt, postalCode, city, bankAccount } =
+        event.detail;
 
       const typeField = this.querySelector("#type") as HTMLSelectElement;
       const nameField = this.querySelector("#name") as HTMLInputElement;
@@ -45,6 +46,9 @@ class DataSelector extends HTMLElement {
         "#postalCode"
       ) as HTMLInputElement;
       const cityField = this.querySelector("#city") as HTMLInputElement;
+      const bankAccountField = this.querySelector(
+        "#bankAccount"
+      ) as HTMLInputElement;
 
       typeField.value = type;
       nameField.value = name;
@@ -53,6 +57,10 @@ class DataSelector extends HTMLElement {
       aptField.value = apt;
       postalCodeField.value = postalCode;
       cityField.value = city;
+
+      if (bankAccountField && bankAccount) {
+        bankAccountField.value = bankAccount;
+      }
     }
   }
 }

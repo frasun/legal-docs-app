@@ -100,6 +100,7 @@ export interface Identity extends Address {
   type: entityEnum;
   name: string;
   pin: string;
+  bankAccount?: string;
 }
 
 export interface UserIdentity extends Identity {

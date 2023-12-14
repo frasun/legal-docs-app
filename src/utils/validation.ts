@@ -1,6 +1,7 @@
 import { z } from "astro:content";
 import { validatePolish } from "validate-polish";
 import trimWhitespace from "@utils/whitespace";
+import { trimString } from "@utils/whitespace";
 import { entityEnum, paymentMethodEnum } from "@utils/constants";
 import errors from "@utils/errors";
 
@@ -9,6 +10,21 @@ export const passwordRegExp = /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$/;
 export const testString = (string: string, regexp: RegExp) =>
   regexp.test(string);
 const postalCodeRegExp = new RegExp("^[0-9]{2}-[0-9]{3}$");
+
+const testAccountNumber = (ac: string) => {
+  const value = trimString(ac);
+
+  if (value.length != 26) {
+    return false;
+  }
+
+  const countryCode = 2521;
+  const checkSum = value.substring(0, 2);
+  const accountNumber = value.substring(2);
+  const reversedDigits = `${accountNumber}${countryCode}${checkSum}`;
+
+  return BigInt(reversedDigits) % 97n === 1n;
+};
 
 export const isEmail = (val: string) =>
   z.string().email().safeParse(val).success;
@@ -44,6 +60,12 @@ export const zipCode = z
     (val) => (val.length ? postalCodeRegExp.test(val) : true),
     errors.ANSWER_WRONG_FORMAT
   );
+
+export const accountNumber = z
+  .string()
+  .or(z.number())
+  .transform((val) => val.toString())
+  .refine((val) => testAccountNumber(val), errors.ANSWER_WRONG_FORMAT);
 
 export const notEmptyString = z
   .string()
@@ -118,6 +140,7 @@ const iSchema = {
   apt: optionalString,
   postalCode: zipCode,
   city: notEmptyString,
+  bankAccount: accountNumber.optional(),
 };
 
 export const personalSchema = z.object({
@@ -145,4 +168,5 @@ export const draftIdentitySchema = z.object({
   apt: optionalString,
   postalCode: zipCode.or(z.literal("")),
   city: optionalString,
+  bankAccount: accountNumber.or(z.literal("")).optional(),
 });
