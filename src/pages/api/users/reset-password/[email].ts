@@ -13,10 +13,6 @@ import errors from "@utils/errors";
 
 export const get: APIRoute = async ({ request, params }) => {
   try {
-    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-      throw new Error(undefined, { cause: 401 });
-    }
-
     const { email } = params as {
       email: string;
     };
@@ -34,7 +30,10 @@ export const get: APIRoute = async ({ request, params }) => {
     const code = await initPasswordReset(email);
     await sendResetCode(email, { code }, "reset-password");
 
-    return new Response(JSON.stringify(null), { status: 200, headers });
+    return new Response(JSON.stringify(null), {
+      status: 200,
+      headers: { ...headers, "Cache-Control": "no-cache" },
+    });
   } catch (e) {
     const { message, status } = parseError(e);
     return new Response(JSON.stringify(message), {
@@ -46,10 +45,6 @@ export const get: APIRoute = async ({ request, params }) => {
 
 export const post: APIRoute = async ({ request, params }) => {
   try {
-    if (request.headers.get("Content-Type") !== "application/json") {
-      throw new Error(undefined, { cause: 400 });
-    }
-
     const { code, password } = (await request.json()) as {
       code: string;
       password: string;

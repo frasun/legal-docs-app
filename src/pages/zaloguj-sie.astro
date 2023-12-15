@@ -43,7 +43,13 @@ if (redirectUrl) {
       </InputGroup>
       <InputGroup>
         <label for="password">Hasło</label>
-        <input id="password" type="password" name="password" required />
+        <input
+          id="password"
+          type="password"
+          name="password"
+          required
+          pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
+        />
         <a href={routes.RESET_PASSWORD}>Zapomniałeś hasła?</a>
       </InputGroup>
       <button type="submit">Zaloguj się</button>

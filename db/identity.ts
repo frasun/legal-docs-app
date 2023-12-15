@@ -12,7 +12,7 @@ export async function createUserIdentity(data: UserIdentity) {
   const { userId, ...identity } = data;
 
   try {
-    const validatedIdentity = identitySchema.parse(identity);
+    const validatedIdentity: Identity = identitySchema.parse(identity);
     const encryptedIdentity = await getEncryptedIdentity(validatedIdentity);
 
     return await identityCollection.insertOne({

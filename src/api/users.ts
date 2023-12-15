@@ -11,7 +11,7 @@ export async function signUp(
 
   return apiRequest(
     requestUrl,
-    { ...headers, "Content-Type": "application/json" },
+    { "Content-Type": "application/json" },
     "POST",
     JSON.stringify({
       tos,

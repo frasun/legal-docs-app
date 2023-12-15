@@ -31,7 +31,7 @@ try {
     <div>
       <h3>{email}</h3>
       <time>Konto utworzone: {formatDate(String(created))}</time>
-      <a href={`${routes.RESET_PASSWORD}?${EMAIL}=harofld@gmail.com`}
+      <a href={`${routes.RESET_PASSWORD}?${EMAIL}=${encodeURIComponent(email)}`}
         >Zmień hasło</a
       >
       <show-modal data-modal="confirm">

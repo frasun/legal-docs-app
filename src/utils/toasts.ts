@@ -9,7 +9,7 @@ export const DOCUMENT_SHARED =
 export const ERROR = "Coś poszło nie tak, spróbuj ponownie później";
 export const DRAFT_REMOVED = "Szkic został usunięty";
 export const COPY_DOCUMENT = "Kopia dokumentu została utworzona";
-export const PASSWORD_RESET = "Hasło zostało zmienione, zaloguj się ponownie";
+export const PASSWORD_RESET = "Hasło zostało zmienione";
 
 export enum ToastStatus {
   default = "default",

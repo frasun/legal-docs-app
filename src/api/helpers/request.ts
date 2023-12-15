@@ -9,7 +9,11 @@ export async function apiRequest(
 
   if (!response.ok) {
     if (response.status === 400) {
-      throw new Error(JSON.stringify(message), { cause: response.status });
+      if (Array.isArray(message)) {
+        throw new Error(JSON.stringify(message), { cause: response.status });
+      } else {
+        throw new Error(message, { cause: response.status });
+      }
     }
 
     throw new Error(message, { cause: response.status });

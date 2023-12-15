@@ -1,5 +1,6 @@
 import { signIn } from "auth-astro/client";
 import errors from "@utils/errors";
+import { displayError } from "@stores/toast";
 
 class LoginForm extends HTMLElement {
   form?: HTMLFormElement;
@@ -21,8 +22,6 @@ class LoginForm extends HTMLElement {
         const email = String(formData.get("email"));
         const password = String(formData.get("password"));
 
-        this.hideError();
-
         const response = await signIn("credentials", {
           redirect: false,
           email,
@@ -35,28 +34,10 @@ class LoginForm extends HTMLElement {
         });
 
         if (response) {
-          this.showError();
+          displayError(errors.WRONG_CREDENTIALS);
         }
       });
     }
-  }
-
-  showError() {
-    const error = document.createElement("p");
-    error.id = "error";
-    error.innerHTML = errors.WRONG_CREDENTIALS;
-
-    window.setTimeout(() => {
-      if (this.form) {
-        this.form.append(error);
-      }
-    }, 200);
-  }
-
-  hideError() {
-    const error = this.querySelector("#error");
-
-    if (error) error.remove();
   }
 }
 customElements.define("login-form", LoginForm);

@@ -4,9 +4,8 @@ import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import * as PARAMS from "@utils/urlParams";
 import routes from "@utils/routes";
-import { verifyCode, getVerificationInProgress } from "@api/users";
+import { getVerificationInProgress } from "@api/users";
 import { captureError } from "@utils/sentry";
-import Icon from "astro-icon";
 
 const url = new URL(Astro.request.url);
 const emailParam = url.searchParams.get(PARAMS.EMAIL);
@@ -14,9 +13,6 @@ const userEmail = emailParam ? decodeURIComponent(emailParam) : null;
 const redirectParam = url.searchParams.get(PARAMS.REDIRECT);
 const docParam = url.searchParams.get(PARAMS.DOCUMENT);
 const draftParam = url.searchParams.get(PARAMS.DRAFT);
-
-let errors = [],
-  userPassword;
 
 try {
   await getVerificationInProgress(userEmail);
@@ -38,56 +34,20 @@ if (redirectUrl) {
     redirectUrl.searchParams.append(PARAMS.DRAFT, draftParam);
   }
 }
-
-if (Astro.request.method === "POST") {
-  const formData = await Astro.request.formData();
-  const code = formData.get("code") as string;
-
-  try {
-    userPassword = await verifyCode(code, userEmail as string);
-  } catch (e) {
-    if (e instanceof Error) {
-      errors.push(e.message);
-    }
-  }
-}
 ---
 
 <Layout title={pageTitle("Weryfikacja adresu e-mail")}>
-  {
-    userPassword ? (
-      <auto-login
-        email={userEmail}
-        password={userPassword}
-        redirect={redirectUrl}
-      >
-        <Icon name="loader" width={64} height={64} />
-      </auto-login>
-    ) : (
-      <AuthForm>
-        <p slot="form-header">
-          Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong>
-        </p>
-        <input type="text" name="code" required />
-        <button type="submit">Wyślij</button>
-        {errors.length
-          ? errors.map((error) => <p slot="after-submit">{error}</p>)
-          : null}
-      </AuthForm>
-    )
-  }
+  <verification-form email={userEmail} redirect={redirectUrl}>
+    <AuthForm>
+      <p slot="form-header">
+        Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong>
+      </p>
+      <input type="text" name="code" required />
+      <button type="submit">Wyślij</button>
+    </AuthForm>
+  </verification-form>
 </Layout>
 
-<style>
-  auto-login {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100vw;
-  }
-</style>
-
 <script>
-  import "@wc/AutoLogin";
+  import "@wc/VerificationForm";
 </script>

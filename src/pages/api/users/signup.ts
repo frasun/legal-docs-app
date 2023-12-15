@@ -11,10 +11,6 @@ import sendEmail from "@utils/email";
 
 export const post: APIRoute = async ({ request }) => {
   try {
-    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-      throw new Error(undefined, { cause: 401 });
-    }
-
     if (request.headers.get("Content-Type") !== "application/json") {
       throw new Error(undefined, { cause: 400 });
     }
