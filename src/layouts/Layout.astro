@@ -87,7 +87,10 @@ const cookies = Astro.cookies.get(BANNER_COOKIE).value;
     <slot />
     <toast-element></toast-element>
     {import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}
-    {typeof cookies === "undefined" && <CookieBanner />}
+    {
+      import.meta.env.VERCEL_ENV === "production" &&
+        typeof cookies === "undefined" && <CookieBanner />
+    }
   </body>
 </html>
 

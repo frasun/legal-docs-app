@@ -11,12 +11,24 @@ import Footer from "@components/Footer.astro";
 import getTitle from "@utils/pageTitle";
 import LatestPosts from "@components/LatestPosts.astro";
 import { getSession } from "auth-astro/server";
+import { Page } from "@type";
+import captureError from "@utils/sentry";
+import { getPage } from "@api/pages";
 
 const session = await getSession(Astro.request);
 const userEmail = session?.user?.email ?? undefined;
+
+const pageId = `6c91451c-fad4-46e7-984c-ed81074ed4b4`;
+let keywords: Page["keywords"], description: Page["description"];
+
+try {
+  ({ keywords, description } = await getPage(pageId));
+} catch (e) {
+  captureError(e);
+}
 ---
 
-<Layout title={getTitle()}>
+<Layout title={getTitle()} keywords={keywords} description={description}>
   <Appbar email={userEmail} />
   <main>
     <section id="browse">

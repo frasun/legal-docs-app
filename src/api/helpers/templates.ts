@@ -104,7 +104,9 @@ export async function getCategories(): Promise<DocumentCategory[]> {
       title, 
       "slug": slug.current,
       showOnIndex,
-      icon
+      icon,
+      keywords,
+      description
   }`
   );
 }

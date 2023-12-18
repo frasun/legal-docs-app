@@ -42,7 +42,11 @@ try {
 }
 ---
 
-<Layout title={pageTitle(title)}>
+<Layout
+  title={pageTitle(title)}
+  keywords={currentCategory?.keywords}
+  description={currentCategory?.description}
+>
   <span slot="topbar-title">{title}</span>
   <header slot="content-header">
     <search-documents>

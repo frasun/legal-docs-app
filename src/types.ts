@@ -85,6 +85,8 @@ export interface TemplateSummary {
 export interface Page {
   title: string;
   body?: PortableTextBlock[];
+  keywords?: string;
+  description?: string;
 }
 
 export interface BlogPosts {

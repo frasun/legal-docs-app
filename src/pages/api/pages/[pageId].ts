@@ -13,7 +13,9 @@ export const get: APIRoute = async ({ request, params }) => {
     const page: Page = await sanityClient.fetch(
       `*[_type == "page" && _id == $id] {
           title,
-          body, 
+          body,
+          keywords,
+          description
         }[0]`,
       {
         id: params.pageId,
