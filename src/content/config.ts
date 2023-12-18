@@ -1,14 +1,5 @@
 import { z, defineCollection, reference } from "astro:content";
 
-const categories = defineCollection({
-  type: "data",
-  schema: z.object({
-    name: z.string(),
-    icon: z.string(),
-    index: z.boolean(),
-  }),
-});
-
 const questionsIndex = z.array(
   z.object({
     id: reference("questions"),
@@ -32,15 +23,9 @@ export type DocumentIndex = z.infer<typeof documentIndex>;
 const documents = defineCollection({
   type: "content",
   schema: z.object({
-    title: z.string(),
-    categories: z.array(reference("categories")),
-    keywords: z.array(z.string()).optional(),
-    priceId: z.string(),
     index: documentIndex.optional(),
     dates: z.array(z.string()).optional(),
     encryptedFields: z.array(z.string()).optional(),
-    draft: z.boolean(),
-    memberContent: z.boolean().optional(),
   }),
 });
 
@@ -59,7 +44,6 @@ const answers = defineCollection({
 });
 
 export const collections = {
-  categories,
   documents,
   questions,
   answers,

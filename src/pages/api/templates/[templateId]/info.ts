@@ -24,9 +24,17 @@ export const get: APIRoute = async ({ request, params }) => {
     if (!info || !template) {
       throw new Error(undefined, { cause: 404 });
     }
-    const { index, priceId } = template.data;
-    const { title, body, draft, memberContent, keywords, description, posts } =
-      info;
+    const { index } = template.data;
+    const {
+      title,
+      body,
+      draft,
+      memberContent,
+      keywords,
+      description,
+      posts,
+      priceId,
+    } = info;
 
     if ((draft && !showDraft) || !index) {
       throw new Error(undefined, { cause: 404 });

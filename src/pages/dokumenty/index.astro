@@ -1,40 +1,39 @@
 ---
 import Layout from "../../layouts/App.astro";
 import { Icon } from "astro-icon";
-import { getCollection } from "astro:content";
 import DocumentTile from "@components/DocumentTile.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
-import type { TemplateShort, Category } from "@type";
-import { getTemplates } from "@api/templates";
+import type { TemplateShort, DocumentCategory } from "@type";
+import { getCategories, getDocumentTemplates } from "@api/templates";
+import routes from "@utils/routes";
+import { captureError } from "@utils/sentry";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get(CATEGORY);
 const search = url.searchParams.get(SEARCH);
 const PAGE_TITLE = "Wszystkie dokumenty";
-import routes from "@utils/routes";
-import { captureError } from "@utils/sentry";
 
 let documents: TemplateShort[],
-  categories: Category[],
-  currentCategory: Category | undefined,
+  categories: DocumentCategory[],
+  currentCategory: DocumentCategory | undefined,
   title: string;
 
 try {
   [documents, categories] = await Promise.all([
-    getTemplates(
+    getDocumentTemplates(
       `${Astro.request.headers.get("cookie")}`,
       currentCat ?? undefined,
       search ?? undefined
     ),
-    getCollection("categories"),
+    getCategories(),
   ]);
 
-  currentCategory = categories.find(({ id }) => id === currentCat);
+  currentCategory = categories.find(({ slug }) => slug === currentCat);
   title = currentCategory
-    ? `Dokumenty w kategorii ${currentCategory.data.name.toLowerCase()}`
+    ? `Dokumenty w kategorii ${currentCategory.title.toLowerCase()}`
     : PAGE_TITLE;
 } catch (e) {
   captureError(e);
@@ -79,7 +78,7 @@ try {
       <select id="category">
         <option value="">Wszystkie</option>
         {
-          categories.map(({ id, data: { name } }) => (
+          categories.map(({ slug: id, title: name }) => (
             <option value={id} selected={id === currentCat}>
               {name}
             </option>

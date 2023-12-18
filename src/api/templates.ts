@@ -11,7 +11,7 @@ import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
 import { getAnswers } from "@db/session";
 
-export async function getTemplates(
+export async function getDocumentTemplates(
   cookie: string,
   category?: string,
   search?: string
@@ -99,4 +99,10 @@ export async function getTemplateSummary(
   const requestUrl = new URL(`/api/templates/${templateId}/summary`, API_URL);
 
   return apiRequest(requestUrl, { ...headers, cookie });
+}
+
+export async function getCategories() {
+  const requestUrl = new URL(`/api/templates/categories`, API_URL);
+
+  return apiRequest(requestUrl, headers);
 }

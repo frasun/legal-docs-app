@@ -1,6 +1,6 @@
 //@ts-ignore
 import { sanityClient } from "sanity:client";
-import type { BlogPosts, Post, DocumentInfo } from "@type";
+import type { BlogPosts, Post } from "@type";
 
 export async function getPost(slug: string, showDraft: boolean): Promise<Post> {
   const postQuery = `_type == "post" && slug.current == $slug`;

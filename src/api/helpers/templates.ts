@@ -1,9 +1,7 @@
-import { getCollection, getEntry } from "astro:content";
-import Fuse from "fuse.js";
-import trimWhitespace from "@utils/whitespace";
 //@ts-ignore
 import { sanityClient } from "sanity:client";
-import type { DocumentInfo } from "@type";
+import trimWhitespace from "@utils/whitespace";
+import type { DocumentCategory, DocumentInfo } from "@type";
 
 type SanityTemplate = Pick<DocumentInfo, "title" | "draft" | "memberContent">;
 
@@ -30,6 +28,7 @@ export async function getDocumentInfo(
     `*[_type == 'legalDocument' && slug.current == "${documentId}"] { 
       title, 
       "draft": !defined(publishedAt), 
+      priceId,
       body,
       memberContent,
       keywords,
@@ -45,39 +44,77 @@ export async function getDocumentInfo(
   );
 }
 
+export type DocumentTemplate = Pick<
+  DocumentInfo,
+  "title" | "slug" | "categories" | "memberContent" | "priceId" | "draft"
+>;
+
 export async function getTemplates(
   showDarft = false,
   showMemberContent = false,
   category?: string | null,
   search?: string | null
-) {
-  const documents = await getCollection(
-    "documents",
-    ({ data: { draft, memberContent } }) => {
-      const draftCondition = !showDarft ? !draft : true;
-      const memberContentCondition = !showMemberContent ? !memberContent : true;
-
-      return draftCondition && memberContentCondition;
-    }
-  );
-
-  let fitleredDocuments = documents;
+): Promise<DocumentTemplate[]> {
+  let query = `_type == 'legalDocument'`;
 
   if (category) {
-    fitleredDocuments = documents.filter(({ data: { categories } }) =>
-      categories.find(({ id }) => id === category)
+    const categoryId = await sanityClient.fetch(
+      `*[_type == 'category' && slug.current == "${category}"][0]._id`
     );
+
+    if (categoryId) {
+      query += ` && "${categoryId}" in category[]._ref`;
+    }
   }
 
   if (search) {
-    const fuse = new Fuse(fitleredDocuments, {
-      keys: ["data.title", "data.keywords"],
-      threshold: 0.5,
-    });
-
-    const searchResults = fuse.search(trimWhitespace(search));
-    fitleredDocuments = searchResults.map((results) => results.item);
+    query += ` && [title, keywords, description] match "*${trimWhitespace(
+      search
+    )}*"`;
   }
 
-  return fitleredDocuments;
+  if (!showMemberContent) {
+    query += ` && memberContent == false`;
+  }
+
+  if (!showDarft) {
+    query += ` && defined(publishedAt)`;
+  }
+
+  const documents: DocumentTemplate[] = await sanityClient.fetch(
+    `*[${query}] | order(title asc) { 
+      title, 
+      "slug": slug.current,
+      "draft": !defined(publishedAt), 
+      memberContent,
+      "categories": category[]->{
+        title, 
+        "slug": slug.current
+      },
+      priceId
+    }`
+  );
+
+  return documents;
+}
+
+export async function getCategories(): Promise<DocumentCategory[]> {
+  return await sanityClient.fetch(
+    `*[_type == 'category'] { 
+      title, 
+      "slug": slug.current,
+      showOnIndex,
+      icon
+  }`
+  );
+}
+
+export async function getDocumentPrice(
+  documentId: string
+): Promise<Pick<DocumentInfo, "priceId">> {
+  return await sanityClient.fetch(
+    `*[_type == 'legalDocument' && slug.current == "${documentId}"] { 
+      priceId,
+  }[0]`
+  );
 }

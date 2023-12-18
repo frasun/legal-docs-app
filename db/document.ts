@@ -6,6 +6,7 @@ import { isEmail } from "@utils/validation";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";
 import { sendFiles } from "@utils/email";
 import { getUserIdentities } from "@db/identity";
+import { getDocumentInfo } from "@api/helpers/templates";
 
 export interface Document {
   doc: string;
@@ -215,7 +216,7 @@ export async function createDocument(
     }
 
     const {
-      data: { title, encryptedFields },
+      data: { encryptedFields },
     } = template;
 
     let validatedAnswers: Answers;
@@ -241,6 +242,7 @@ export async function createDocument(
 
     const anonymousUser = isEmail(userId);
     let documentTitle: string;
+    const { title } = await getDocumentInfo(doc, true);
 
     if (anonymousUser) {
       documentTitle = title;

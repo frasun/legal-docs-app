@@ -1,16 +1,18 @@
 import { getDocuments } from "@db/document";
 import type { UserDocuments } from "@type";
 import { LOCALE } from "@utils/date";
-import { getEntry } from "astro:content";
+import { DocumentTemplate, getTemplates } from "@api/helpers/templates";
 
 export async function getUserDocuments(
   userId: string,
   page = 1
 ): Promise<UserDocuments> {
   const { documents, pages, currentPage } = await getDocuments(userId, page);
+  const templates = await getTemplates(true, true);
+
   const documentsWithTemplates = await Promise.all(
     documents.map(async (document) => ({
-      template: await getDocTitle(document.doc),
+      template: await getDocTitle(document.doc, templates),
       ...document,
     }))
   );
@@ -37,14 +39,13 @@ export async function getUserDocuments(
   return { documents: groupedItems, pages, currentPage };
 }
 
-async function getDocTitle(docId: string) {
-  const docEntry = await getEntry("documents", docId);
+async function getDocTitle(docId: string, templates: DocumentTemplate[]) {
+  const docEntry = templates.find(({ slug }) => slug === docId);
+
   let docTitle = "";
 
   if (docEntry) {
-    const {
-      data: { title },
-    } = docEntry;
+    const { title } = docEntry;
     docTitle = title;
   }
 

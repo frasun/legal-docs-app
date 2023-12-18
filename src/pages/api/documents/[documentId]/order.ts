@@ -3,7 +3,6 @@ import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import CookieUtil from "cookie";
 import { getSession } from "auth-astro/server";
 import { SESSION_COOKIE } from "@utils/cookies";
-import { getEntry } from "astro:content";
 import { nanoid } from "nanoid";
 import { createPaymentSession } from "@db/session";
 import { createCheckoutSession } from "@utils/stripe";
@@ -12,6 +11,7 @@ import { getDocumentSummary } from "@db/document";
 import routes from "@utils/routes";
 import * as PARAMS from "@utils/urlParams";
 import { UserRoles } from "@db/user";
+import { getDocumentPrice } from "@api/helpers/templates";
 
 export const post: APIRoute = async ({ request, params }) => {
   try {
@@ -55,13 +55,7 @@ export const post: APIRoute = async ({ request, params }) => {
       }
     }
 
-    const template = await getEntry("documents", doc ?? (documentId as string));
-
-    if (!template) {
-      throw new Error(undefined, { cause: 404 });
-    }
-
-    const { priceId } = template.data;
+    const { priceId } = await getDocumentPrice(doc ?? (documentId as string));
     const pid = nanoid();
     const baseUrl = new URL(request.url).origin;
 

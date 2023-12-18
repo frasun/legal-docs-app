@@ -24,21 +24,17 @@ export const get: APIRoute = async ({ request }) => {
     ]);
 
     const documentsWithPrices = documents.map((document) => {
-      const {
-        slug,
-        data: { title, priceId, categories, draft },
-      } = document;
+      const { slug, title, priceId, categories, draft } = document;
       const priceObj = prices.find((price) => price.id === priceId);
 
-      if (priceObj) {
-        return {
-          title,
-          slug,
-          price: priceObj.unit_amount ? priceObj.unit_amount / 100 : 0,
-          draft,
-          categories: categories.map(({ id }) => id),
-        };
-      }
+      return {
+        title,
+        slug,
+        price:
+          priceObj && priceObj.unit_amount ? priceObj.unit_amount / 100 : 0,
+        draft,
+        categories: categories ? categories.map(({ slug }) => slug) : [],
+      };
     });
 
     return new Response(JSON.stringify(documentsWithPrices), {

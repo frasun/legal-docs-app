@@ -2,13 +2,13 @@
 import { Icon } from "astro-icon";
 import formatNumber from "@utils/number";
 import Badge from "./Badge.astro";
-import type { Category } from "@type";
+import type { DocumentCategory } from "@type";
 
 interface Props {
   slug: string;
   title: string;
   docCategories: string[];
-  categories: Category[];
+  categories: DocumentCategory[];
   price: number;
   draft: boolean;
 }
@@ -16,9 +16,9 @@ interface Props {
 const { slug, title, docCategories, categories, price, draft } = Astro.props;
 
 const getCategoryName = (slug: string) => {
-  const ct = categories.find(({ id }: { id: string }) => id === slug);
+  const ct = categories.find(({ slug: id }) => id === slug);
 
-  return ct ? ct.data.name.toLowerCase() : null;
+  return ct ? ct.title.toLowerCase() : null;
 };
 
 const categoryList = docCategories

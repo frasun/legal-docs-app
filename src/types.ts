@@ -24,6 +24,15 @@ export type PostShort = Pick<
   "title" | "publishedAt" | "slug" | "mainImage" | "excerpt"
 >;
 
+export interface DocumentCategory {
+  title: string;
+  slug: string;
+  keywords?: string | null;
+  description?: string | null;
+  showOnIndex: boolean;
+  icon?: string;
+}
+
 export interface DocumentInfo {
   title: string;
   draft: boolean;
@@ -33,6 +42,8 @@ export interface DocumentInfo {
   keywords?: string | null;
   description?: string | null;
   posts: PostShort[] | null;
+  categories: DocumentCategory[];
+  priceId: string;
 }
 
 export interface TemplateInfo extends DocumentInfo {
@@ -44,7 +55,7 @@ export interface TemplateShort {
   title: DocumentInfo["title"];
   slug: DocumentInfo["slug"];
   price: number;
-  categories: string[];
+  categories: DocumentCategory["slug"][];
   draft: DocumentInfo["draft"];
 }
 
@@ -75,11 +86,6 @@ export interface Page {
   title: string;
   body?: PortableTextBlock[];
 }
-
-export type Category = {
-  id: string;
-  data: { name: string };
-};
 
 export interface BlogPosts {
   posts: Pick<

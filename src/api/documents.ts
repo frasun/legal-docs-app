@@ -1,7 +1,7 @@
 import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
 import { Document } from "@db/document";
-import { Answers, DocumentInfo, Template, UserDocuments } from "@type";
+import { Answers, UserDocuments } from "@type";
 import { PAGE } from "@utils/urlParams";
 import trimWhitespace from "@utils/whitespace";
 import { UUID } from "mongodb";

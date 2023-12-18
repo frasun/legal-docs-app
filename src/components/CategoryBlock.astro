@@ -4,16 +4,20 @@ import { Icon } from "astro-icon";
 export interface Props {
   title: string;
   href: string;
-  icon: string;
+  icon?: string;
 }
 
 const { href, title, icon } = Astro.props;
 ---
 
 <a href={href} title={title}>
-  <figure>
-    <Icon name={icon} width={36} height={36} />
-  </figure>
+  {
+    icon && (
+      <figure>
+        <Icon name={icon} width={36} height={36} />
+      </figure>
+    )
+  }
   <span>
     {title}
   </span>
