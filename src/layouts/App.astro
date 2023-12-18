@@ -8,13 +8,25 @@ import { Icon } from "astro-icon";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
 
-const { title, description, keywords } = Astro.props;
+export interface Props {
+  title: string;
+  keywords?: string;
+  description?: string;
+  image?: string;
+}
+
+const { title, description, keywords, image } = Astro.props;
 const session = await getSession(Astro.request);
 
 const redirectUrl = `${Astro.url.pathname}${Astro.url.search}`;
 ---
 
-<Layout title={title} description={description} keywords={keywords}>
+<Layout
+  title={title}
+  description={description}
+  keywords={keywords}
+  image={image}
+>
   <AppMenu session={session} />
   <main>
     <header>
@@ -32,7 +44,7 @@ const redirectUrl = `${Astro.url.pathname}${Astro.url.search}`;
         <nav>
           {
             session ? (
-              <SignedInMenu email={session.user?.email} />
+              <SignedInMenu email={session.user?.email as string} />
             ) : (
               <>
                 <a href={`${routes.SIGN_UP}?${REDIRECT}=${redirectUrl}`}>

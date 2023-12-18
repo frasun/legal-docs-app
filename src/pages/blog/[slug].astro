@@ -61,7 +61,8 @@ try {
 <Layout
   title={pageTitle(`${title} - Blog`)}
   description={description ?? trimWhitespace(excerpt || "")}
-  keywords={keywords}
+  keywords={keywords ?? undefined}
+  image={mainImage ? imageUrl(mainImage, 1000, 400).url() : undefined}
 >
   <span slot="topbar-title">{PAGE_TITLE}</span>
   <div>
