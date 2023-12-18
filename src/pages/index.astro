@@ -14,12 +14,6 @@ import { getSession } from "auth-astro/server";
 
 const session = await getSession(Astro.request);
 const userEmail = session?.user?.email ?? undefined;
-
-// create new data key
-// import encryption from "@db/mongodb";
-// await encryption.createDataKey("local", {
-//   keyAltNames: [import.meta.env.DATA_KEY],
-// });
 ---
 
 <Layout title={getTitle()}>
