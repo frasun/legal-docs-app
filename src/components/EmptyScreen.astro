@@ -7,7 +7,15 @@ const { icon, cta, ctaUrl } = Astro.props;
 <div>
   {icon && <Icon name={icon} width={80} height={80} />}
   <slot />
-  {ctaUrl && <a href={ctaUrl}>{cta}</a>}
+  {
+    ctaUrl && (
+      <footer>
+        <a href={ctaUrl} aria-label={cta}>
+          {cta}
+        </a>
+      </footer>
+    )
+  }
 </div>
 
 <style>
@@ -19,7 +27,7 @@ const { icon, cta, ctaUrl } = Astro.props;
     @apply text-xl;
   }
 
-  a {
+  footer a {
     @apply btn btn-default btn-big;
   }
 
