@@ -46,7 +46,7 @@ try {
   <span slot="topbar-title">{title}</span>
   <header slot="content-header">
     <search-documents>
-      <form method="GET" action={Astro.request.url}>
+      <form method="GET" action={Astro.request.url} spellcheck="false">
         <input
           type="search"
           placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
