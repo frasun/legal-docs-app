@@ -1,12 +1,12 @@
 class ChangeNameButton extends HTMLElement {
-  doctitle: string | null;
-  docId: string | null;
+  doctitle?: string;
+  docId?: string;
 
   constructor() {
     super();
 
-    this.doctitle = this.getAttribute("data-title");
-    this.docId = this.getAttribute("data-doc-id");
+    this.doctitle = this.dataset.title;
+    this.docId = this.dataset.docId;
   }
 
   connectedCallback() {
