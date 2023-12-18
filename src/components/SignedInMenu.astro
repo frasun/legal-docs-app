@@ -3,6 +3,10 @@ import { Icon } from "astro-icon";
 import { SignOut } from "auth-astro/components";
 import routes from "@utils/routes";
 
+interface Props {
+  email: string;
+}
+
 const { email } = Astro.props;
 ---
 

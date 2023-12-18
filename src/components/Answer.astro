@@ -2,6 +2,14 @@
 import { getEntry } from "astro:content";
 import formatDate from "@utils/date";
 import { EMPTY } from "@utils/constants";
+import type { Answers, Template } from "@type";
+
+interface Props {
+  data: Answers;
+  template: Template["index"][number]["questions"][number]["slug"];
+  token: Template["index"][number]["questions"][number]["token"];
+  type: Template["index"][number]["questions"][number]["type"];
+}
 
 const { data, template, token, type } = Astro.props;
 

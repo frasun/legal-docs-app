@@ -2,6 +2,12 @@
 import { LOCALE } from "@utils/date";
 import InputGroup, { InputSize } from "@components/InputGroup.astro";
 
+interface Props {
+  date: string;
+  name: string;
+  label: string;
+}
+
 const { date, name, label } = Astro.props;
 
 const dateValue = isNaN(Date.parse(date)) ? formatDate() : formatDate(date);
