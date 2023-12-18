@@ -1,6 +1,6 @@
 import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
-import { UserProfile } from "@type";
+import type { UserProfile } from "@type";
 
 export async function signUp(
   tos: string,

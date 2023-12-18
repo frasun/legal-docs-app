@@ -1,10 +1,10 @@
 import { apiRequest, headers } from "@api/helpers/request";
 import { API_URL } from "@api/helpers/url";
-import { Document } from "@db/document";
-import { Answers, UserDocuments } from "@type";
+import type { Document } from "@db/document";
+import type { Answers, UserDocuments } from "@type";
 import { PAGE } from "@utils/urlParams";
 import trimWhitespace from "@utils/whitespace";
-import { UUID } from "mongodb";
+import type { UUID } from "mongodb";
 
 export async function getDocuments(
   cookie: string,

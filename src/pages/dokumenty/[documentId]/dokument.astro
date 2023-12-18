@@ -24,8 +24,8 @@ let data, title, docTitle;
 const userId = session
   ? session.user?.id
   : emailParam
-  ? decodeURIComponent(emailParam)
-  : undefined;
+    ? decodeURIComponent(emailParam)
+    : undefined;
 
 if (!userId) {
   return Astro.redirect(routes.NOT_FOUND);
@@ -120,7 +120,7 @@ if (!title) {
       <download-pdf data-content-id="#doc">
         <button>
           <Icon name="file-pdf" width={24} height={24} />
-          Pobierz plik PDF
+           Pobierz plik PDF
         </button>
       </download-pdf>
       {
@@ -157,7 +157,7 @@ if (!title) {
 
   article :global(h4::before) {
     counter-increment: section;
-    content: "\00A7"counter(section) ". ";
+    content: "\00A7" counter(section) ". ";
   }
 
   aside {

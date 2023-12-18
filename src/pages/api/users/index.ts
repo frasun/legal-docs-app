@@ -1,11 +1,11 @@
-import { APIRoute } from "astro";
+import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { deleteUserAccount, getUserByEmail } from "@db/user";
 import { deleteUserDocuments, getUserStats } from "@db/document";
 import { deleteUserIdentities } from "@db/identity";
 
-export const all: APIRoute = async ({ request }) => {
+export const ALL: APIRoute = async ({ request }) => {
   try {
     const session = await getSession(request);
 

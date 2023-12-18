@@ -11,7 +11,8 @@
       "@db/*": ["db/*"],
       "@wc/*": ["src/webcomponents/*"],
       "@api/*": ["src/api/*"],
-      "@stores/*": ["src/stores/*"]
+      "@stores/*": ["src/stores/*"],
+      "@lib/*": ["src/lib/*"]
     },
     "importsNotUsedAsValues": "remove"
   }

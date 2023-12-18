@@ -9,7 +9,7 @@ import {
   wrongVerificationCode,
 } from "@db/user";
 
-export const get: APIRoute = async ({ request, params }) => {
+export const GET: APIRoute = async ({ request, params }) => {
   try {
     if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
       throw new Error(undefined, { cause: 401 });
@@ -39,7 +39,7 @@ export const get: APIRoute = async ({ request, params }) => {
   }
 };
 
-export const post: APIRoute = async ({ request, params }) => {
+export const POST: APIRoute = async ({ request, params }) => {
   try {
     if (request.headers.get("Content-Type") !== "application/json") {
       throw new Error(undefined, { cause: 400 });

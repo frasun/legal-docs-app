@@ -1,7 +1,7 @@
 import type { Answers, UserSession } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { kv } from "@vercel/kv";
-import { AstroCookies } from "astro";
+import type { AstroCookies } from "astro";
 import { getSession } from "auth-astro/server";
 
 const DOCUMENT_EXPIRATION_TIME = 3600;
@@ -83,9 +83,12 @@ export async function deleteSessionDocument(
 ) {
   try {
     const session = await getSession(request);
+    const sessionCookie = cookies.get(SESSION_COOKIE);
     const ssid = session
       ? session.user?.ssid
-      : cookies.get(SESSION_COOKIE).value;
+      : sessionCookie
+      ? sessionCookie.value
+      : sessionCookie;
 
     if (!ssid) {
       throw new Error(undefined, { cause: 400 });

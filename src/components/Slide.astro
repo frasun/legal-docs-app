@@ -1,5 +1,5 @@
 ---
-import { Picture } from "@astrojs/image/components";
+import { Picture } from "astro:assets";
 
 export interface Props {
   title: string;
@@ -9,7 +9,7 @@ export interface Props {
 }
 
 type SlideImage = {
-  src: string;
+  src: ImageMetadata;
   widths: number[];
   width: number;
   height: number;
@@ -20,7 +20,7 @@ const {
   title,
   number,
   body,
-  image: { src, widths, width, height, sizes },
+  image: { src, width, height, sizes, widths },
 } = Astro.props;
 ---
 
@@ -33,12 +33,12 @@ const {
   <Picture
     src={src}
     widths={widths}
-    aspectRatio={width / height}
-    format="avif"
+    formats={["avif"]}
     sizes={sizes}
     alt={title}
     width={width}
     height={height}
+    loading="lazy"
   />
 </figure>
 
@@ -49,7 +49,7 @@ const {
 
   figure img {
     @apply flex-shrink;
-    @apply max-h-[300px] w-auto md:max-h-none min-w-0;
+    @apply max-h-[300px] w-auto md:max-h-[700px] min-w-0;
   }
 
   figure figcaption {

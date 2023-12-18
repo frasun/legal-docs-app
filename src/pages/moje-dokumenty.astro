@@ -13,7 +13,7 @@ import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 import Pagination from "@components/Pagination.astro";
 import routes from "@utils/routes";
 import { getDocuments } from "@api/documents";
-import { UserDocuments } from "@type";
+import type { UserDocuments } from "@type";
 import { captureError } from "@utils/sentry";
 
 const urlParams = new URL(Astro.request.url).searchParams;
@@ -94,12 +94,8 @@ function getDateLabel(created: Date, modified: Date) {
                       <time>{formatDateTime(modified)}</time>
                     )}
                     <aside>
-                      <ChangeNameButton
-                        id={_id}
-                        title={title}
-                        label="Zmień nazwę"
-                      />
-                      <CopyDocumentButton id={_id} />
+                      <ChangeNameButton id={_id.toString()} title={title} />
+                      <CopyDocumentButton id={_id.toString()} />
                       <DeleteDocumentButton id={_id} />
                     </aside>
                   </div>

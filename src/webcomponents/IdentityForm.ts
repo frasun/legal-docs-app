@@ -3,7 +3,7 @@ import { IDENTITY_SAVED, IDENTITY_UPDATED } from "@utils/toasts";
 import routes from "@utils/routes";
 import { postIdentity, updateIdentity } from "@api/identities";
 import { entityEnum } from "@utils/constants";
-import { Identity } from "@type";
+import type { Identity } from "@type";
 import { handleFormValidation } from "@utils/errors";
 
 class IdentityForm extends HTMLElement {

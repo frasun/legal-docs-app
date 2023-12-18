@@ -6,7 +6,7 @@ import { createPDF, generateSafeFileName } from "@utils/pdf";
 import { shareDocument } from "@db/document";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
 
-export const post: APIRoute = async ({ request, params }) => {
+export const POST: APIRoute = async ({ request, params }) => {
   try {
     if (request.headers.get("Content-Type") !== "application/json") {
       throw new Error(undefined, { cause: 401 });

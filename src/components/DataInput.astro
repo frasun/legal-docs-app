@@ -4,7 +4,7 @@ import InputGroup, { InputSize } from "@components/InputGroup.astro";
 import Address from "./Address.astro";
 import { getIdentities } from "@api/identities";
 import { getSession } from "auth-astro/server";
-import { Identity, UserIdentity } from "@type";
+import type { Identity, UserIdentity } from "@type";
 
 interface Props extends Partial<Identity> {
   fieldId?: string;

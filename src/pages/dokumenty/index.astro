@@ -44,8 +44,8 @@ try {
 
 <Layout
   title={pageTitle(title)}
-  keywords={currentCategory?.keywords}
-  description={currentCategory?.description}
+  keywords={currentCategory?.keywords ?? undefined}
+  description={currentCategory?.description ?? undefined}
 >
   <span slot="topbar-title">{title}</span>
   <header slot="content-header">

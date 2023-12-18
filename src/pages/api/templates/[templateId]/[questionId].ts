@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getTemplate } from "@api/templates";
 import { getAnswers as getSessionAnswers } from "@db/session";
-import { Answers, Template } from "@type";
+import type { Answers, Template } from "@type";
 import { UUID } from "mongodb";
 import { getAnswers, getDocumentTemplate } from "@api/documents";
 import { getEntry } from "astro:content";
@@ -10,7 +10,7 @@ import { getSession } from "auth-astro/server";
 import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
 
-export const get: APIRoute = async ({ request, params }) => {
+export const GET: APIRoute = async ({ request, params }) => {
   try {
     if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
       throw new Error(undefined, { cause: 401 });

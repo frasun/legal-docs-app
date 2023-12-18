@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getCategories } from "@api/helpers/templates";
 
-export const get: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
       throw new Error(undefined, { cause: 401 });

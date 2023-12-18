@@ -10,7 +10,7 @@ import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 import { z } from "astro:content";
 
-export const get: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     const session = await getSession(request);
 
@@ -48,7 +48,7 @@ export const get: APIRoute = async ({ request }) => {
   }
 };
 
-export const post: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     const session = await getSession(request);
 

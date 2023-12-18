@@ -9,7 +9,7 @@ import {
 } from "@db/user";
 import sendEmail from "@utils/email";
 
-export const post: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     if (request.headers.get("Content-Type") !== "application/json") {
       throw new Error(undefined, { cause: 400 });

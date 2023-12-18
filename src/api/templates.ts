@@ -35,7 +35,7 @@ export async function getTemplateInfo(
 ): Promise<TemplateInfo> {
   const requestUrl = new URL(`/api/templates/${templateId}/info`, API_URL);
 
-  return apiRequest(requestUrl, { ...headers, cookie });
+  return await apiRequest(requestUrl, { ...headers, cookie });
 }
 
 export async function getTemplate(
@@ -48,7 +48,7 @@ export async function getTemplate(
 
   const requestUrl = new URL(`/api/templates/${templateId}`, API_URL);
 
-  return apiRequest(requestUrl, { ...headers, cookie });
+  return await apiRequest(requestUrl, { ...headers, cookie });
 }
 
 export async function getQuestion(
@@ -61,7 +61,7 @@ export async function getQuestion(
     API_URL
   );
 
-  return apiRequest(requestUrl, { ...headers, cookie });
+  return await apiRequest(requestUrl, { ...headers, cookie });
 }
 
 export async function getSessionAnswers(
@@ -98,11 +98,11 @@ export async function getTemplateSummary(
 
   const requestUrl = new URL(`/api/templates/${templateId}/summary`, API_URL);
 
-  return apiRequest(requestUrl, { ...headers, cookie });
+  return await apiRequest(requestUrl, { ...headers, cookie });
 }
 
 export async function getCategories() {
   const requestUrl = new URL(`/api/templates/categories`, API_URL);
 
-  return apiRequest(requestUrl, headers);
+  return await apiRequest(requestUrl, headers);
 }

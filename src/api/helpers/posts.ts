@@ -1,4 +1,3 @@
-//@ts-ignore
 import { sanityClient } from "sanity:client";
 import type { BlogPosts, Post } from "@type";
 

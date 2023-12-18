@@ -1,4 +1,4 @@
-import { APIRoute } from "astro";
+import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
 import {
   deleteUserIdentity,
@@ -9,7 +9,7 @@ import { UUID } from "mongodb";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { z } from "astro:content";
 
-export const get: APIRoute = async ({ request, params }) => {
+export const GET: APIRoute = async ({ request, params }) => {
   try {
     const session = await getSession(request);
 
@@ -42,7 +42,7 @@ export const get: APIRoute = async ({ request, params }) => {
   }
 };
 
-export const all: APIRoute = async ({ request, params }) => {
+export const ALL: APIRoute = async ({ request, params }) => {
   try {
     const session = await getSession(request);
 

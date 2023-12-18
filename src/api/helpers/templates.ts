@@ -1,4 +1,3 @@
-//@ts-ignore
 import { sanityClient } from "sanity:client";
 import trimWhitespace from "@utils/whitespace";
 import type { DocumentCategory, DocumentInfo } from "@type";
@@ -100,14 +99,14 @@ export async function getTemplates(
 
 export async function getCategories(): Promise<DocumentCategory[]> {
   return await sanityClient.fetch(
-    `*[_type == 'category'] { 
+    `*[_type == "category"] { 
       title, 
       "slug": slug.current,
       showOnIndex,
       icon,
       keywords,
       description
-  }`
+    }`
   );
 }
 

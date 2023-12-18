@@ -9,7 +9,7 @@ import { z } from "astro:content";
 import { getTemplateSummary } from "@api/templates";
 import { parseError } from "@api/helpers/response";
 
-export const get: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     const session = await getSession(request);
 
@@ -34,7 +34,7 @@ export const get: APIRoute = async ({ request }) => {
   }
 };
 
-export const post: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     if (request.headers.get("Content-Type") !== "application/json") {
       throw new Error(undefined, { cause: 400 });

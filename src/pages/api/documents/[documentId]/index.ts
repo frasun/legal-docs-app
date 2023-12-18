@@ -14,7 +14,7 @@ import { storeAnswers } from "@db/session";
 import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
 
-export const all: APIRoute = async ({ params, request }) => {
+export const ALL: APIRoute = async ({ params, request }) => {
   try {
     const { documentId } = params as { documentId: string };
     const session = await getSession(request);
@@ -65,7 +65,7 @@ export const all: APIRoute = async ({ params, request }) => {
   }
 };
 
-export const put: APIRoute = async ({ request, params }) => {
+export const PUT: APIRoute = async ({ request, params }) => {
   try {
     const session = await getSession(request);
 

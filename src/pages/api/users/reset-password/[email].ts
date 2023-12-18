@@ -11,7 +11,7 @@ import {
 import sendResetCode from "@utils/email";
 import errors from "@utils/errors";
 
-export const get: APIRoute = async ({ request, params }) => {
+export const GET: APIRoute = async ({ params }) => {
   try {
     const { email } = params as {
       email: string;
@@ -43,7 +43,7 @@ export const get: APIRoute = async ({ request, params }) => {
   }
 };
 
-export const post: APIRoute = async ({ request, params }) => {
+export const POST: APIRoute = async ({ request, params }) => {
   try {
     const { code, password } = (await request.json()) as {
       code: string;

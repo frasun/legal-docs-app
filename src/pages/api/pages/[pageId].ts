@@ -1,10 +1,9 @@
 import type { APIRoute } from "astro";
-//@ts-ignore
 import { sanityClient } from "sanity:client";
 import type { Page } from "@type";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
 
-export const get: APIRoute = async ({ request, params }) => {
+export const GET: APIRoute = async ({ request, params }) => {
   try {
     if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
       throw new Error(undefined, { cause: 401 });

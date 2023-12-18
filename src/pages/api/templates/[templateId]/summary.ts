@@ -5,13 +5,13 @@ import { getDocumentSummary, validateAnswers } from "@db/document";
 import type { Document as UserDocument } from "@db/document";
 import { getSession } from "auth-astro/server";
 import { getTemplate } from "@api/templates";
-import { Template } from "@type";
+import type { Template } from "@type";
 import { getEntry } from "astro:content";
 import { getAnswers } from "@db/session";
 import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
 
-export const get: APIRoute = async ({ request, params }) => {
+export const GET: APIRoute = async ({ request, params }) => {
   try {
     if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
       throw new Error(undefined, { cause: 401 });

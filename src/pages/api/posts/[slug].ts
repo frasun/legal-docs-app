@@ -4,7 +4,7 @@ import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
 
-export const get: APIRoute = async ({ request, params }) => {
+export const GET: APIRoute = async ({ request, params }) => {
   try {
     if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
       throw new Error(undefined, { cause: 401 });

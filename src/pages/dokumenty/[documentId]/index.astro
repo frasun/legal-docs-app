@@ -41,7 +41,11 @@ try {
 }
 ---
 
-<Layout title={pageTitle(title)} keyword={keywords} description={description}>
+<Layout
+  title={pageTitle(title)}
+  keywords={keywords ?? undefined}
+  description={description ?? undefined}
+>
   <span slot="topbar-title">{title}</span>
   <section>
     <header>

@@ -1,10 +1,10 @@
 ---
 import Modal from "@components/Modal.astro";
-import { Image } from "@astrojs/image/components";
-import p24 from "public/p24.png";
 import { Icon } from "astro-icon";
 import * as PARAMS from "@utils/urlParams";
 import routes from "@utils/routes";
+import { Image } from "astro:assets";
+import p24 from "public/p24.png";
 
 interface Props {
   documentId: string;
@@ -22,7 +22,7 @@ const redirectAfterSignUp = `${routes.SIGN_UP}?${PARAMS.REDIRECT}=${routes.DOCUM
   <section>
     <header>
       <a href={redirectAfterSignIn}>Zaloguj się</a>
-      lub
+       lub
       <a href={redirectAfterSignUp}>Załóż konto</a>
     </header>
     <ul>
@@ -67,7 +67,6 @@ const redirectAfterSignUp = `${routes.SIGN_UP}?${PARAMS.REDIRECT}=${routes.DOCUM
       width={600}
       height={306}
       format="avif"
-      fit="fill"
     />
   </footer>
 </Modal>
@@ -125,6 +124,10 @@ const redirectAfterSignUp = `${routes.SIGN_UP}?${PARAMS.REDIRECT}=${routes.DOCUM
   footer button[type="submit"] {
     @apply btn btn-alt;
     @apply flex-shrink-0;
+  }
+
+  footer image {
+    @apply max-w-full;
   }
 </style>
 

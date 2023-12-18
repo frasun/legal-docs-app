@@ -1,6 +1,6 @@
 import { postAnswers } from "@api/documents";
 import { displayError, displayToast } from "@stores/toast";
-import { Answers } from "@type";
+import type { Answers } from "@type";
 import { handleFormValidation } from "@utils/errors";
 import { ANSWER_UPDATED } from "@utils/toasts";
 

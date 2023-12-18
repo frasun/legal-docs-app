@@ -26,7 +26,7 @@ const metaDescription = description ?? DESC;
 const metaKeywords = keywords ?? KEYWORDS;
 const metaImage = image ?? socialImageURL;
 
-const cookies = Astro.cookies.get(BANNER_COOKIE).value;
+const cookies = Astro.cookies.has(BANNER_COOKIE);
 ---
 
 <!DOCTYPE html>
@@ -90,8 +90,9 @@ const cookies = Astro.cookies.get(BANNER_COOKIE).value;
     <toast-element></toast-element>
     {import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}
     {
-      import.meta.env.VERCEL_ENV === "production" &&
-        typeof cookies === "undefined" && <CookieBanner />
+      import.meta.env.VERCEL_ENV === "production" && !cookies && (
+        <CookieBanner />
+      )
     }
   </body>
 </html>

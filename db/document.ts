@@ -1,6 +1,6 @@
 import { UUID } from "mongodb";
 import mongo, { getDataKey, encryptField } from "@db/mongodb";
-import { getEntry, z } from "astro:content";
+import { getEntry } from "astro:content";
 import type { Answers } from "@type";
 import { isEmail } from "@utils/validation";
 import { WRONG_EMAIL_FORMAT } from "@utils/response";

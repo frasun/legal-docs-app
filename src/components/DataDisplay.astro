@@ -1,5 +1,5 @@
 ---
-import { Identity } from "@type";
+import type { Identity } from "@type";
 import { entityEnum } from "@utils/constants";
 import Icon from "astro-icon";
 
@@ -42,9 +42,19 @@ const canDisplay = [name, street, postalCode, city, pin].every(
       )}
     </p>
   ) : (
-    <div class="text-orangeDark flex gap-10 items-center">
-      <Icon name="info" width={24} height={24} class="text-orange" />
+    <div>
+      <Icon name="info" width={24} height={24} />
       Uzupełnij dane
     </div>
   )
 }
+
+<style>
+  div {
+    @apply text-orangeDark flex gap-10 items-center;
+  }
+
+  div svg {
+    @apply text-orange;
+  }
+</style>

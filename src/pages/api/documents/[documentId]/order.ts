@@ -13,7 +13,7 @@ import * as PARAMS from "@utils/urlParams";
 import { UserRoles } from "@db/user";
 import { getDocumentPrice } from "@api/helpers/templates";
 
-export const post: APIRoute = async ({ request, params }) => {
+export const POST: APIRoute = async ({ request, params }) => {
   try {
     if (request.headers.get("Content-Type") !== "application/json") {
       throw new Error(undefined, { cause: 400 });

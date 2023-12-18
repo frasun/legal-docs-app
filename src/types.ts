@@ -2,7 +2,7 @@ import type { ImageAsset } from "@sanity/types";
 import type { PortableTextBlock } from "@portabletext/types";
 import type { entityEnum } from "@utils/constants";
 import type { MyDocument } from "@db/document";
-import { User } from "@db/user";
+import type { User } from "@db/user";
 
 export type Answers = Record<string, any>;
 

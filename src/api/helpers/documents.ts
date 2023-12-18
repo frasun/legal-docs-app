@@ -1,7 +1,8 @@
 import { getDocuments } from "@db/document";
 import type { UserDocuments } from "@type";
 import { LOCALE } from "@utils/date";
-import { DocumentTemplate, getTemplates } from "@api/helpers/templates";
+import { getTemplates } from "@api/helpers/templates";
+import type { DocumentTemplate } from "@api/helpers/templates";
 
 export async function getUserDocuments(
   userId: string,

@@ -53,8 +53,6 @@ export default {
   },
   callbacks: {
     async session({ session, token }) {
-      // console.log("session callback");
-      // console.log({ session, token });
       return {
         ...session,
         user: {
@@ -65,18 +63,7 @@ export default {
         },
       };
     },
-    // async signIn({ user, account, profile, email, credentials }) {
-    //   console.log("signIn callback");
-    //   console.log({ user, account, profile, email, credentials });
-    //   return true;
-    // },
-    // async redirect({ url, baseUrl }) {
-    //   // console.log("redirect callback", { url, baseUrl });
-    //   return baseUrl;
-    // },
-    async jwt({ token, user, account, profile, isNewUser }) {
-      // console.log("jwt callback");
-      // console.log({ token, user, account, profile, isNewUser });
+    async jwt({ token, user }) {
       if (user) {
         return {
           ...token,

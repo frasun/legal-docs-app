@@ -3,7 +3,7 @@ import { getSession } from "auth-astro/server";
 import { copyDocument } from "@db/document";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
 
-export const post: APIRoute = async ({ request, params }) => {
+export const POST: APIRoute = async ({ request, params }) => {
   try {
     const session = await getSession(request);
 
