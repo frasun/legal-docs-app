@@ -310,12 +310,11 @@ export async function publishDraft(
   }
 }
 
-export async function deleteDraft(documentId: string, userId: string) {
+export async function deleteDocument(documentId: string, userId: string) {
   try {
     return await documentCollection.deleteOne({
       _id: new UUID(documentId).toBinary(),
       userId,
-      draft: true,
     });
   } catch (e: any) {
     throw e;

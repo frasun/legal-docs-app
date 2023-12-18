@@ -1,8 +1,8 @@
-import { deleteDraft } from "@api/documents";
-import { DRAFT_REMOVED } from "@utils/toasts";
+import { deleteDocument } from "@api/documents";
+import { DOCUMENT_REMOVED } from "@utils/toasts";
 import { displayError, displayToast } from "@stores/toast";
 
-class DeleteDraft extends HTMLElement {
+class DeleteDocument extends HTMLElement {
   documentId: string | undefined;
 
   constructor() {
@@ -14,12 +14,12 @@ class DeleteDraft extends HTMLElement {
   connectedCallback() {
     this.addEventListener("click", async () => {
       try {
-        await deleteDraft(this.documentId);
-        displayToast(DRAFT_REMOVED, true);
+        await deleteDocument(this.documentId);
+        displayToast(DOCUMENT_REMOVED, true);
       } catch {
         displayError();
       }
     });
   }
 }
-customElements.define("delete-draft", DeleteDraft);
+customElements.define("delete-document", DeleteDocument);

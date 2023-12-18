@@ -7,7 +7,7 @@ export const IDENTITY_REMOVED = "Tożsamość została usunięta";
 export const DOCUMENT_SHARED =
   "Dokument zostanie wysłany na podane adresy e-mail";
 export const ERROR = "Coś poszło nie tak, spróbuj ponownie później";
-export const DRAFT_REMOVED = "Szkic został usunięty";
+export const DOCUMENT_REMOVED = "Dokument został usunięty";
 export const COPY_DOCUMENT = "Kopia dokumentu została utworzona";
 export const PASSWORD_RESET = "Hasło zostało zmienione";
 

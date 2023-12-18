@@ -1,6 +1,10 @@
 import type { APIRoute } from "astro";
 import { getSession } from "auth-astro/server";
-import { deleteDraft, changeDocumentName, updateAnswers } from "@db/document";
+import {
+  deleteDocument,
+  changeDocumentName,
+  updateAnswers,
+} from "@db/document";
 import { responseHeaders as headers, parseError } from "@api/helpers/response";
 import { getDocumentTemplate } from "@api/documents";
 import { getTemplate } from "@api/templates";
@@ -22,7 +26,7 @@ export const all: APIRoute = async ({ params, request }) => {
     const userId = session.user?.id;
 
     if (request.method === "DELETE") {
-      const response = await deleteDraft(
+      const response = await deleteDocument(
         documentId as string,
         userId as string
       );

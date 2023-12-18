@@ -9,16 +9,16 @@ interface Props {
 const { id } = Astro.props;
 ---
 
-<delete-draft data-document-id={id} title="Usuń szkic">
+<delete-document data-document-id={id} title="Usuń szkic">
   <Icon name="delete" width={20} height={20} />
-</delete-draft>
+</delete-document>
 
 <style>
-  delete-draft {
+  delete-document {
     @apply btn btn-alt;
   }
 </style>
 
 <script>
-  import "@wc/DeleteDraft";
+  import "@wc/DeleteDocument";
 </script>

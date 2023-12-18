@@ -40,7 +40,7 @@ export async function shareDocument(documentId: string, data: object) {
   );
 }
 
-export async function deleteDraft(documentId?: string) {
+export async function deleteDocument(documentId?: string) {
   if (!documentId) {
     throw new Error(undefined, { cause: 400 });
   }

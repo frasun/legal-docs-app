@@ -8,7 +8,7 @@ import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
 import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
-import DeleteDraftButton from "@components/DeleteDraftButton.astro";
+import DeleteDocumentButton from "@components/DeleteDocumentButton.astro";
 import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 import Pagination from "@components/Pagination.astro";
 import routes from "@utils/routes";
@@ -94,13 +94,13 @@ function getDateLabel(created: Date, modified: Date) {
                       <time>{formatDateTime(modified)}</time>
                     )}
                     <aside>
-                      {draft && <DeleteDraftButton id={_id} />}
                       <ChangeNameButton
                         id={_id}
                         title={title}
                         label="Zmień nazwę"
                       />
                       <CopyDocumentButton id={_id} />
+                      <DeleteDocumentButton id={_id} />
                     </aside>
                   </div>
                 )
