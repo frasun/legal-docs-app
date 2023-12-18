@@ -41,8 +41,13 @@ export function displayError(message?: string | string[]) {
 export function displayToast(
   message: string,
   reload = false,
-  reloadUrl?: string
+  reloadUrl?: string,
+  error = false
 ) {
+  if (error) {
+    $toast.setKey("status", ToastStatus.error);
+  }
+
   $toast.setKey("message", message);
 
   if (reload) {

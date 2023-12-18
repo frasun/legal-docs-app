@@ -12,6 +12,8 @@ export default {
   DIFFERENT_PASSWORDS: "Hasła nie są jednakowe",
   ANSWER_WRONG_FORMAT: "pole ma nieprawidłowy format",
   ANSWER_REQUIRED: "pole jest wymagane",
+  LIMIT_LOGIN_ATTEMPTS:
+    "Podano nieprawdiłowe dane logowania 4 razy pod rząd. Spróbuj ponownie za chwilę",
 };
 
 export function handleFormValidation(el: Element, e: Error) {

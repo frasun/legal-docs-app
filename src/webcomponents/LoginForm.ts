@@ -1,16 +1,19 @@
 import { signIn } from "auth-astro/client";
 import errors from "@utils/errors";
-import { displayError } from "@stores/toast";
+import { displayError, displayToast } from "@stores/toast";
+import routes from "@utils/routes";
 
 class LoginForm extends HTMLElement {
   form?: HTMLFormElement;
   redirect?: string;
+  loginAttempts: number;
 
   constructor() {
     super();
 
     this.form = this.querySelector("form") || undefined;
     this.redirect = this.getAttribute("redirect") || undefined;
+    this.loginAttempts = 0;
   }
 
   connectedCallback() {
@@ -21,6 +24,8 @@ class LoginForm extends HTMLElement {
         const formData = new FormData(this.form);
         const email = String(formData.get("email"));
         const password = String(formData.get("password"));
+
+        this.loginAttempts++;
 
         const response = await signIn("credentials", {
           redirect: false,
@@ -34,7 +39,11 @@ class LoginForm extends HTMLElement {
         });
 
         if (response) {
-          displayError(errors.WRONG_CREDENTIALS);
+          if (this.loginAttempts > 3) {
+            displayToast(errors.LIMIT_LOGIN_ATTEMPTS, true, routes.HOME, true);
+          } else {
+            displayError(errors.WRONG_CREDENTIALS);
+          }
         }
       });
     }
