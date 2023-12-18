@@ -1,8 +1,10 @@
 ---
 import ChatWidget from "@components/ChatWidget.astro";
+import CookieBanner from "@components/CookieBanner.astro";
 import GA from "@components/GA.astro";
 import "@components/GlobalStyles.astro";
 import Sentry from "@components/Sentry.astro";
+import { BANNER_COOKIE } from "@utils/cookies";
 
 export interface Props {
   title: string;
@@ -21,6 +23,8 @@ const socialImageURL = new URL("/og.png", Astro.url);
 
 const metaDescription = description ?? DESC;
 const metaKeywords = keywords ?? KEYWORDS;
+
+const cookies = Astro.cookies.get(BANNER_COOKIE).value;
 ---
 
 <!DOCTYPE html>
@@ -83,6 +87,7 @@ const metaKeywords = keywords ?? KEYWORDS;
     <slot />
     <toast-element></toast-element>
     {import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}
+    {typeof cookies === "undefined" && <CookieBanner />}
   </body>
 </html>
 

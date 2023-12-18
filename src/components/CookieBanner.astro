@@ -1,0 +1,45 @@
+---
+---
+
+<cookie-banner>
+  <p>Strona zapisuje informacje dotyczące użytkowników w formie ciasteczek.</p>
+  <p>Informacje są niezbędne w celu poprawnego funkcjonowania serwisu.</p>
+
+  <button>Rozumiem</button>
+</cookie-banner>
+
+<style>
+  cookie-banner {
+    @apply py-15 px-20 bg-light text-dark75 rounded z-max;
+    @apply fixed bottom-15 right-15;
+    @apply w-[260px];
+    @apply leading-tight;
+    @apply flex flex-col gap-15 items-start;
+    @apply text-sm;
+  }
+
+  cookie-banner button {
+    @apply btn btn-default;
+  }
+
+  cookie-banner.animate {
+    animation-name: hideToast;
+    animation-duration: 0.25s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: 1;
+  }
+
+  @keyframes hideToast {
+    0% {
+      @apply opacity-100;
+    }
+
+    100% {
+      @apply opacity-0;
+    }
+  }
+</style>
+
+<script>
+  import "@wc/CookieBanner";
+</script>
