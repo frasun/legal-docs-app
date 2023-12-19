@@ -1,5 +1,6 @@
 import { persistentMap } from "@nanostores/persistent";
 import { ERROR, ToastStatus } from "@utils/toasts";
+import { navigate } from "astro:transitions/client";
 
 export type ToastStore = {
   message?: string | string[];
@@ -52,9 +53,9 @@ export function displayToast(
 
   if (reload) {
     if (reloadUrl) {
-      window.location.href = reloadUrl;
+      navigate(reloadUrl);
     } else {
-      window.location.reload();
+      navigate(window.location.href);
     }
   } else {
     $toast.setKey("show", true);

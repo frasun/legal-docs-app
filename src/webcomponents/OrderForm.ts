@@ -2,6 +2,7 @@ import { initDocumentOrder } from "@api/documents";
 import { displayError } from "@stores/toast";
 import { isEmail } from "@utils/validation";
 import routes from "@utils/routes";
+import { navigate } from "astro:transitions/client";
 
 class OrderForm extends HTMLElement {
   form?: HTMLFormElement;
@@ -41,7 +42,7 @@ class OrderForm extends HTMLElement {
             window.location.origin
           );
 
-          window.location.href = redirectUrl.toString();
+          navigate(redirectUrl.toString());
         } else {
           displayError();
         }

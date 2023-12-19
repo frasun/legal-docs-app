@@ -1,5 +1,6 @@
 import { initDocumentOrder } from "@api/documents";
 import { displayError } from "@stores/toast";
+import { navigate } from "astro:transitions/client";
 
 class SubmitOrder extends HTMLElement {
   documentId?: string;
@@ -15,7 +16,7 @@ class SubmitOrder extends HTMLElement {
       try {
         const url = await initDocumentOrder(this.documentId);
 
-        window.location.href = url.toString();
+        navigate(url.toString());
       } catch {
         displayError();
       }

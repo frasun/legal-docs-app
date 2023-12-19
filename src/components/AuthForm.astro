@@ -9,7 +9,7 @@ import Logo from "../images/logo.astro";
     </a>
     <slot name="form-header" />
   </header>
-  <form spellcheck="false" method="POST">
+  <form spellcheck="false" method="POST" data-astro-reload>
     <slot />
     <slot name="after-submit" />
   </form>

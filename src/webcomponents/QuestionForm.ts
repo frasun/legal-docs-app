@@ -3,6 +3,7 @@ import { displayError, displayToast } from "@stores/toast";
 import type { Answers } from "@type";
 import { handleFormValidation } from "@utils/errors";
 import { ANSWER_UPDATED } from "@utils/toasts";
+import { navigate } from "astro:transitions/client";
 
 class QuestionForm extends HTMLElement {
   form?: HTMLFormElement;
@@ -112,7 +113,7 @@ class QuestionForm extends HTMLElement {
       }
     } else {
       if (this.nextUrl) {
-        window.location.href = this.nextUrl;
+        navigate(this.nextUrl);
       }
     }
   }

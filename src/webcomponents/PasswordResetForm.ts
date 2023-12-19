@@ -2,6 +2,7 @@ import { displayError } from "@stores/toast";
 import { sendResetCode } from "@api/users";
 import routes from "@utils/routes";
 import { EMAIL } from "@utils/urlParams";
+import { navigate } from "astro:transitions/client";
 
 class PasswordReset extends HTMLElement {
   form?: HTMLFormElement;
@@ -26,7 +27,7 @@ class PasswordReset extends HTMLElement {
 
           await sendResetCode(userEmail);
 
-          window.location.href = redirectUrl;
+          navigate(redirectUrl);
         } catch (e) {
           if (e instanceof Error && e.cause === 400) {
             displayError(e.message);

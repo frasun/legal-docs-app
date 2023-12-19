@@ -4,6 +4,7 @@ import CookieBanner from "@components/CookieBanner.astro";
 import GA from "@components/GA.astro";
 import "@components/GlobalStyles.astro";
 import Sentry from "@components/Sentry.astro";
+import Spinner from "@components/Spinner.astro";
 import { BANNER_COOKIE } from "@utils/cookies";
 import { ViewTransitions } from "astro:transitions";
 
@@ -96,6 +97,7 @@ const cookies = Astro.cookies.has(BANNER_COOKIE);
         <CookieBanner />
       )
     }
+    <Spinner />
 
     <style is:global>
       :root {

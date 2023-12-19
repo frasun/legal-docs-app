@@ -17,7 +17,7 @@ const { contentId, documentId } = Astro.props;
     <p>Możesz wysłać dokument na 3 adresy email</p>
   </header>
   <send-via-email data-content-id={contentId} data-document-id={documentId}>
-    <form spellcheck="false">
+    <form spellcheck="false" data-astro-reload>
       <fieldset>
         <div>
           <input id="sendToMe" type="checkbox" name="sendToMe" checked />

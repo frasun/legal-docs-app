@@ -1,0 +1,18 @@
+---
+import Icon from "astro-icon";
+---
+
+<page-spinner class="hidden">
+  <Icon name="loader" width="40" height="40" />
+</page-spinner>
+
+<style>
+  svg {
+    @apply text-orange;
+    @apply fixed bottom-15 right-15 z-max;
+  }
+</style>
+
+<script>
+  import "@wc/PageSpinner";
+</script>

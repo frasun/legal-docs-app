@@ -2,6 +2,7 @@ import { signUp } from "@api/users";
 import { displayError } from "@stores/toast";
 import routes from "@utils/routes";
 import * as PARAMS from "@utils/urlParams";
+import { navigate } from "astro:transitions/client";
 
 class SignUpForm extends HTMLElement {
   form?: HTMLFormElement;
@@ -48,7 +49,7 @@ class SignUpForm extends HTMLElement {
             }
           }
 
-          window.location.href = redirectUrl.toString();
+          navigate(redirectUrl.toString());
         } catch (e) {
           if (e instanceof Error && e.cause === 400) {
             displayError(e.message);
