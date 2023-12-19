@@ -9,6 +9,9 @@ npm i
 ## API Docs
 https://documenter.getpostman.com/view/30286359/2s9YeEcY41
 
+## Test cases
+[Test cases](https://github.com/frasun/legal-docs-app/blob/main/TESTING.md)
+
 ## 3rd Party Services
 #### Deployment
 - Vercel
