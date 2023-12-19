@@ -5,6 +5,7 @@ import GA from "@components/GA.astro";
 import "@components/GlobalStyles.astro";
 import Sentry from "@components/Sentry.astro";
 import { BANNER_COOKIE } from "@utils/cookies";
+import { ViewTransitions } from "astro:transitions";
 
 export interface Props {
   title: string;
@@ -29,7 +30,7 @@ const metaImage = image ?? socialImageURL;
 const cookies = Astro.cookies.has(BANNER_COOKIE);
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -82,6 +83,7 @@ const cookies = Astro.cookies.has(BANNER_COOKIE);
     <meta property="twitter:description" content={metaDescription} />
     <meta property="twitter:title" content={title} />
     <title>{title}</title>
+    <ViewTransitions />
     {import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
   </head>
   <body>
@@ -94,16 +96,16 @@ const cookies = Astro.cookies.has(BANNER_COOKIE);
         <CookieBanner />
       )
     }
+
+    <style is:global>
+      :root {
+        --navbar-height: 62px;
+        --app-height: 100vh;
+      }
+    </style>
+
+    <script>
+      import "@wc/ToastElement";
+    </script>
   </body>
 </html>
-
-<style is:global>
-  :root {
-    --navbar-height: 62px;
-    --app-height: 100vh;
-  }
-</style>
-
-<script>
-  import "@wc/ToastElement";
-</script>
