@@ -1,7 +1,5 @@
 ---
-import { Picture } from "astro:assets";
 import { Icon } from "astro-icon";
-import searchImage from "/public/image-1.png";
 ---
 
 <section>
@@ -21,15 +19,6 @@ import searchImage from "/public/image-1.png";
     <button>Szukaj</button>
     <Icon name="search" id="menuOpen" width={24} height={24} />
   </form>
-  <Picture
-    src={searchImage}
-    alt="Prawniczek"
-    widths={[153, 306]}
-    sizes="153px"
-    loading="eager"
-    width={158}
-    height={121}
-  />
 </section>
 
 <style>
