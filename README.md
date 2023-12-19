@@ -5,6 +5,9 @@
 vercel env pull
 npm i
 ```
+## Environments
+- [Production](https://legal-docs-app.vercel.app)
+- [Preview](https://legal-docs-app-prawniczek.vercel.app)
 
 ## API Docs
 https://documenter.getpostman.com/view/30286359/2s9YeEcY41
