@@ -8,11 +8,10 @@
       "@utils/*": ["src/utils/*"],
       "@schema/*": ["src/documentSchema/*"],
       "@type": ["src/types.ts"],
-      "@db/*": ["db/*"],
+      "@db/*": ["src/db/*"],
       "@wc/*": ["src/webcomponents/*"],
       "@api/*": ["src/api/*"],
-      "@stores/*": ["src/stores/*"],
-      "@lib/*": ["src/lib/*"]
+      "@stores/*": ["src/stores/*"]
     },
     "importsNotUsedAsValues": "remove"
   }
