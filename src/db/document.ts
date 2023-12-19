@@ -159,7 +159,7 @@ export async function updateAnswers(
 ) {
   try {
     const validatedAnswers: Answers = {};
-    const schema = await import(`../src/documentSchema/${docId}.ts`);
+    const schema = await import(`../documentSchema/${docId}.ts`);
 
     if (!schema) {
       throw new Error("missing field schema");
@@ -208,7 +208,7 @@ export async function createDocument(
   try {
     const template = await getEntry("documents", doc);
     const { default: schema, draftSchema } = await import(
-      `../src/documentSchema/${doc}.ts`
+      `../documentSchema/${doc}.ts`
     );
 
     if (!template || !schema || !draftSchema) {
@@ -286,7 +286,7 @@ export async function publishDraft(
     }
 
     const { default: schema } = await import(
-      `../src/documentSchema/${document.doc}.ts`
+      `../documentSchema/${document.doc}.ts`
     );
 
     if (!schema) {
@@ -469,7 +469,7 @@ export async function deleteUserDocuments(userId: string) {
 }
 
 export async function validateAnswers(doc: string, answers: Answers) {
-  const { default: schema } = await import(`../src/documentSchema/${doc}.ts`);
+  const { default: schema } = await import(`../documentSchema/${doc}.ts`);
 
   if (!schema) {
     throw new Error("No template found", { cause: 404 });

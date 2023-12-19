@@ -14,7 +14,7 @@ const { options, labels, token, selected, fieldId } = Astro.props;
   <header class={`hidden md:grid grid-cols-${options.length}`}>
     {options.map((opt) => <div>{opt}</div>)}
   </header>
-  <fieldset class={`md:grid md:gap-y-10 gap-x-0 grid-cols-${options.length}`}>
+  <fieldset class={`grid-cols-${options.length}`}>
     {
       labels.map((label, labelIndex) => (
         <>
@@ -55,6 +55,10 @@ const { options, labels, token, selected, fieldId } = Astro.props;
 <style>
   radio-grid {
     @apply flex flex-col gap-10;
+  }
+
+  radio-grid fieldset {
+    @apply md:grid md:gap-y-10 gap-x-0;
   }
 
   header {

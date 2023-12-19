@@ -112,6 +112,7 @@ export const GET: APIRoute = async ({ request, params }) => {
       }
     );
   } catch (e) {
+    console.log(e);
     const { message, status } = parseError(e);
     return new Response(JSON.stringify(message), {
       status,
