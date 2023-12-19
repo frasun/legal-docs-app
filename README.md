@@ -23,5 +23,9 @@ https://documenter.getpostman.com/view/30286359/2s9YeEcY41
 - Amazon KMS (data encryption key management)
 
 #### Services
-- Postmark (Email)
-- Stripe (Payments)
+- Sanity (content management)
+- Postmark (email)
+- Stripe (payments)
+- Sentry (bug tracking)
+- Google Analytics (analytics)
+- Tawk.io (knowledge base, customer service)
