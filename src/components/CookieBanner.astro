@@ -1,11 +1,13 @@
 ---
+
 ---
 
 <cookie-banner>
   <p>Strona zapisuje informacje dotyczące użytkowników w formie ciasteczek.</p>
   <p>Informacje są niezbędne w celu poprawnego funkcjonowania serwisu.</p>
 
-  <button>Rozumiem</button>
+  <button id="accept">Rozumiem</button>
+  <button id="reject">Użyj tylko niezbędnych</button>
 </cookie-banner>
 
 <style>
@@ -18,8 +20,16 @@
     @apply text-sm;
   }
 
-  cookie-banner button {
+  cookie-banner button#accept {
     @apply btn btn-default;
+  }
+
+  cookie-banner button#reject {
+    @apply text-xxs underline;
+  }
+
+  cookie-banner button#reject:hover {
+    @apply text-orangeDark;
   }
 
   cookie-banner.animate {

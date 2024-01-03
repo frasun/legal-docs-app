@@ -1,24 +1,28 @@
 import { BANNER_COOKIE } from "@utils/cookies";
 
 class CookieBanner extends HTMLElement {
-  button: HTMLButtonElement | null;
+  button: NodeListOf<HTMLButtonElement>;
 
   constructor() {
     super();
 
-    this.button = this.querySelector("button");
+    this.button = this.querySelectorAll("button");
   }
 
   connectedCallback() {
-    if (this.button) {
-      this.button.addEventListener("click", () => {
-        this.setCookie(BANNER_COOKIE, "true");
+    if (this.button.length) {
+      Array.from(this.button).forEach((button) => {
+        button.addEventListener("click", () => {
+          const answer = button.id === "accept" ? "true" : "false";
 
-        window.requestAnimationFrame(() => {
-          this.classList.add("animate");
+          this.setCookie(BANNER_COOKIE, answer);
 
-          this.addEventListener("animationend", () => {
-            this.remove();
+          window.requestAnimationFrame(() => {
+            this.classList.add("animate");
+
+            this.addEventListener("animationend", () => {
+              this.remove();
+            });
           });
         });
       });
