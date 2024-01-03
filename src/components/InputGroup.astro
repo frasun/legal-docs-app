@@ -1,67 +1,67 @@
 ---
 export enum InputSize {
-    default = "",
-    lg = "lg",
+  default = "",
+  lg = "lg",
 }
 
 export enum InputType {
-    default = "",
-    checkbox = "checkbox",
+  default = "",
+  checkbox = "checkbox",
 }
 
 interface Props {
-    size?: InputSize;
-    type?: InputType;
-    className?: string;
+  size?: InputSize;
+  type?: InputType;
+  className?: string;
 }
 
 const {
-    size = InputSize.default,
-    type = InputType.default,
-    className = "",
+  size = InputSize.default,
+  type = InputType.default,
+  className = "",
 } = Astro.props;
 ---
 
 <div class:list={[`${size}`, `${type}`, `${className}`]}>
-    <slot />
+  <slot />
 </div>
 
 <style>
-    div {
-        @apply flex gap-10 items-baseline flex-wrap;
-    }
+  div {
+    @apply flex gap-10 items-baseline flex-wrap;
+  }
 
-    div :global(label) {
-        @apply w-full;
-    }
+  div :global(label) {
+    @apply w-full;
+  }
 
-    div :global(span) {
-        @apply font-serif italic text-dark75;
-    }
+  div :global(span) {
+    @apply font-serif italic text-dark75 self-center;
+  }
 
-    div.lg :global(input) {
-        @apply py-15;
-        @apply text-xxl;
-    }
+  div.lg :global(input) {
+    @apply py-15;
+    @apply text-xxl;
+  }
 
-    div.lg :global(span) {
-        @apply text-xxl;
-    }
+  div.lg :global(span) {
+    @apply text-xxl;
+  }
 
-    div.checkbox {
-        @apply flex-row items-start flex-nowrap;
-        @apply mt-20;
-    }
+  div.checkbox {
+    @apply flex-row items-start flex-nowrap;
+    @apply mt-20;
+  }
 
-    div.checkbox :global(label) {
-        @apply w-auto flex-shrink;
-    }
+  div.checkbox :global(label) {
+    @apply w-auto flex-shrink;
+  }
 
-    div.checkbox :global(label a) {
-        @apply text-orangeDark;
-    }
+  div.checkbox :global(label a) {
+    @apply text-orangeDark;
+  }
 
-    div.checkbox :global(label a:hover) {
-        @apply text-dark90;
-    }
+  div.checkbox :global(label a:hover) {
+    @apply text-dark90;
+  }
 </style>
