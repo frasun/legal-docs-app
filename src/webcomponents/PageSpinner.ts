@@ -5,11 +5,15 @@ class PageSpinner extends HTMLElement {
 
   connectedCallback() {
     document.addEventListener("astro:before-preparation", () => {
-      this.classList.remove("hidden");
+      window.requestAnimationFrame(() => {
+        this.classList.remove("hidden");
+      });
     });
 
-    document.addEventListener("astro:after-preparation", () => {
-      this.classList.add("hidden");
+    document.addEventListener("astro:after-swap", () => {
+      window.requestAnimationFrame(() => {
+        this.classList.add("hidden");
+      });
     });
   }
 }

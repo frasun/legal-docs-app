@@ -1,15 +1,28 @@
----
-import Icon from "astro-icon";
----
-
-<page-spinner class="hidden">
-  <Icon name="loader" width="40" height="40" />
-</page-spinner>
+<page-spinner class="hidden"></page-spinner>
 
 <style>
-  svg {
-    @apply text-orange;
-    @apply fixed bottom-15 right-15 z-max;
+  page-spinner {
+    @apply fixed top-0 left-0 right-0 z-max;
+    @apply h-[3px];
+    @apply bg-dark10;
+  }
+
+  page-spinner:not(.hidden) {
+    @apply flex items-start;
+  }
+
+  page-spinner::after {
+    @apply content-[''];
+    @apply h-full w-1/2;
+    @apply -translate-x-[200%];
+    @apply bg-dark90;
+    animation: progressBar 2.5s infinite cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  @keyframes progressBar {
+    100% {
+      @apply translate-x-[200%];
+    }
   }
 </style>
 
