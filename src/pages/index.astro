@@ -1,12 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Appbar from "@components/Appbar.astro";
-import Search from "@components/Search.astro";
-import Categories from "@components/Categories.astro";
-import Slides from "@components/Slides.astro";
-import Customers from "@components/Customers.astro";
-import Alternatives from "@components/Alternatives.astro";
-import CTA from "@components/CTA.astro";
+import Appbar, { AppBarTheme } from "@components/Appbar.astro";
+import Splash from "@components/Splash.astro";
+import HowItWorks from "@components/HowItWorks.astro";
+import MostPopular from "@components/MostPopular.astro";
+import SecurityInfo from "@components/SecurityInfo.astro";
 import Footer from "@components/Footer.astro";
 import getTitle from "@utils/pageTitle";
 import LatestPosts from "@components/LatestPosts.astro";
@@ -29,30 +27,25 @@ try {
 ---
 
 <Layout title={getTitle()} keywords={keywords} description={description}>
-  <Appbar email={userEmail} />
+  <Appbar email={userEmail} theme={AppBarTheme.yellow} />
   <main>
-    <section id="browse">
-      <Search />
-      <Categories />
-    </section>
-    <Slides />
-    <Customers />
-    <Alternatives />
+    <Splash />
+    <HowItWorks />
+    <MostPopular />
+    <SecurityInfo />
     <LatestPosts />
   </main>
-  <CTA />
-  <Footer />
+  <footer>
+    <Footer />
+  </footer>
 </Layout>
 
 <style>
   main {
-    @apply container;
-    @apply flex items-center justify-center flex-wrap;
-    @apply gap-50;
+    @apply flex-grow;
   }
 
-  #browse {
-    @apply pt-15 md:pt-50 lg:pt-60;
-    @apply flex flex-col gap-60;
+  footer {
+    @apply bg-black text-white/70;
   }
 </style>

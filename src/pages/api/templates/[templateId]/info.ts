@@ -50,7 +50,7 @@ export const GET: APIRoute = async ({ request, params }) => {
         keywords,
         description,
         price: await getPrice(priceId),
-        firstQuestionUrl: `/dokumenty/${templateId}/${index[0].questions[0].id.slug}`,
+        firstQuestionUrl: `/dokumenty/${templateId}/${index[0].id.slug}`,
         body,
         posts,
       }),

@@ -11,7 +11,7 @@ class ModalDialog extends HTMLElement {
     this.modalId = this.dataset.modalId || DEFAULT_MODAL;
     this.modalContainer = document.getElementById(this.modalId);
     this.modalClose =
-      this.modalContainer && this.modalContainer.querySelector(".modalClose");
+      this.modalContainer && this.modalContainer.querySelector("#modalClose");
   }
 
   connectedCallback() {

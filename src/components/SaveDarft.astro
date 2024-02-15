@@ -1,6 +1,4 @@
 ---
-import { Icon } from "astro-icon";
-
 interface Props {
   documentId: string;
 }
@@ -8,10 +6,7 @@ interface Props {
 const { documentId } = Astro.props;
 ---
 
-<save-draft data-document-id={documentId}>
-  <Icon name="save" width={18} height={18} />
-  Zapisz szkic
-</save-draft>
+<save-draft data-document-id={documentId}>Zapisz</save-draft>
 
 <style>
   save-draft {

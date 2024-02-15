@@ -65,7 +65,7 @@ const isPersonal = type === entityEnum.PERSONAL;
 }
 
 <data-selector>
-  <InputGroup>
+  <InputGroup size={InputSize.lg}>
     <label for="type">Rodzaj podmiotu</label>
     <select id="type" name="type" value={type}>
       {
@@ -75,49 +75,53 @@ const isPersonal = type === entityEnum.PERSONAL;
       }
     </select>
   </InputGroup>
-  <fieldset>
-    <InputGroup size={InputSize.lg}>
-      <label
-        for="name"
-        data-type={entityEnum.PERSONAL}
-        style={isPersonal ? `` : `display: none`}>Imię i nazwisko</label
-      >
-      <label
-        for="name"
-        data-type={entityEnum.COMPANY}
-        style={isPersonal ? `display: none` : ``}>Nazwa firmy</label
-      >
-      <input id="name" type="text" name="name" value={name} />
-    </InputGroup>
-    <InputGroup>
-      <label
-        for="pin"
-        data-type={entityEnum.PERSONAL}
-        style={isPersonal ? `` : `display: none`}>Numer PESEL</label
-      >
-      <label
-        for="pin"
-        data-type={entityEnum.COMPANY}
-        style={isPersonal ? `display: none` : ``}>Numer NIP</label
-      >
-      <input id="pin" type="text" name="pin" value={pin} class="flex-grow" />
-    </InputGroup>
-    {
-      showBankAccount && (
-        <InputGroup>
-          <label for="bankAccount">Numer konta bankowego</label>
-          <input
-            id="bankAccount"
-            type="text"
-            name="bankAccount"
-            value={bankAccount}
-            class="flex-grow"
-          />
-        </InputGroup>
-      )
-    }
-    <Address street={street} apt={apt} postalCode={postalCode} city={city} />
-  </fieldset>
+  <InputGroup size={InputSize.lg}>
+    <label
+      for="name"
+      data-identity={entityEnum.PERSONAL}
+      style={isPersonal ? `` : `display: none`}>Imię i nazwisko</label
+    >
+    <label
+      for="name"
+      data-identity={entityEnum.COMPANY}
+      style={isPersonal ? `display: none` : ``}>Nazwa firmy</label
+    >
+    <input id="name" type="text" name="name" value={name} />
+  </InputGroup>
+  <InputGroup size={InputSize.lg}>
+    <label
+      for="pin"
+      data-identity={entityEnum.PERSONAL}
+      style={isPersonal ? `` : `display: none`}>Numer PESEL</label
+    >
+    <label
+      for="pin"
+      data-identity={entityEnum.COMPANY}
+      style={isPersonal ? `display: none` : ``}>Numer NIP</label
+    >
+    <input id="pin" type="text" name="pin" value={pin} class="flex-grow" />
+  </InputGroup>
+  {
+    showBankAccount && (
+      <InputGroup size={InputSize.lg}>
+        <label for="bankAccount">Numer konta bankowego</label>
+        <input
+          id="bankAccount"
+          type="text"
+          name="bankAccount"
+          value={bankAccount}
+          class="flex-grow"
+        />
+      </InputGroup>
+    )
+  }
+  <Address
+    street={street}
+    apt={apt}
+    postalCode={postalCode}
+    city={city}
+    size={InputSize.lg}
+  />
   {fieldId && <input type="hidden" name={fieldId} />}
 
   <style>
@@ -125,8 +129,8 @@ const isPersonal = type === entityEnum.PERSONAL;
       @apply flex flex-col gap-20;
     }
 
-    :global(data-selector div input) {
-      @apply flex-grow;
+    identity-selector {
+      @apply py-15;
     }
 
     identity-selector select {

@@ -36,8 +36,7 @@ export async function getDocumentInfo(
         title, 
         mainImage, 
         publishedAt,
-        "slug": slug.current,
-        "excerpt": array::join(string::split((pt::text(body)), "")[0..255], "") + "..."
+        "slug": slug.current
       }
   }[0]`
   );
@@ -103,7 +102,6 @@ export async function getCategories(): Promise<DocumentCategory[]> {
       title, 
       "slug": slug.current,
       showOnIndex,
-      icon,
       keywords,
       description
     }`

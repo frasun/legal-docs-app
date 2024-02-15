@@ -15,40 +15,29 @@ try {
 ---
 
 <section>
-  <h4>lub przeglądaj w kategoriach</h4>
-  <div id="categories">
+  <h4>Przeglądaj dokumenty w kategoriach:</h4>
+  <div>
     {
-      categories.map(({ title: name, icon, slug: id }) => (
+      categories.map(({ title: name, slug: id }) => (
         <CategoryBlock
           title={name}
-          icon={icon}
           href={`${Astro.url.origin}/dokumenty?${CATEGORY}=${id}`}
         />
       ))
     }
   </div>
-  <footer>
-    <a href={`${Astro.url.origin}/dokumenty`}>Zobacz wszystkie dokumenty</a>
-  </footer>
 </section>
 
 <style>
   section {
-    /* @apply lg:px-60; */
-    @apply text-center w-full;
-    @apply flex flex-col gap-40;
+    @apply flex flex-col gap-15 py-10;
   }
 
-  section > div {
-    @apply flex flex-wrap items-center justify-center lg:grid lg:grid-cols-5 gap-30;
-    @apply m-auto;
+  div {
+    @apply grid sm:grid-cols-2 gap-x-30 gap-y-10 py-8;
   }
 
-  footer > a {
-    @apply btn btn-alt;
-  }
-
-  section > h4 {
-    @apply text-dark55;
+  h4 {
+    @apply text-sans-sm;
   }
 </style>

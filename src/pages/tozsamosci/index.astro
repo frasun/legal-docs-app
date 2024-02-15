@@ -1,6 +1,6 @@
 ---
 import EmptyScreen from "@components/EmptyScreen.astro";
-import Layout from "../../layouts/App.astro";
+import Layout, { LayoutType } from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import { entityEnum } from "@utils/constants";
 import { DATA_TYPE, REDIRECT } from "@utils/urlParams";
@@ -8,11 +8,14 @@ import { getIdentities } from "@api/identities";
 import type { UserIdentities } from "@type";
 import routes from "@utils/routes";
 import { captureError } from "@utils/sentry";
+import AccountNav from "@components/AccountNav.astro";
+import MyIdentity from "@components/MyIdentity.astro";
 
 const PAGE_TITLE = "Tożsamości";
 const urlParams = new URL(Astro.request.url).searchParams;
 const dataType = urlParams.get(DATA_TYPE) ?? undefined;
 const dataTypeFilter = dataType ? decodeURIComponent(dataType) : undefined;
+const ALL_IDENTITIES = "Osoby fizyczne i firmy";
 
 let identities: UserIdentities["identities"] = [],
   count: UserIdentities["count"] = 0;
@@ -41,50 +44,48 @@ try {
 }
 ---
 
-<Layout title={pageTitle(PAGE_TITLE)}>
-  <span slot="topbar-title">{PAGE_TITLE}</span>
+<Layout
+  pageName={pageTitle(PAGE_TITLE)}
+  title={PAGE_TITLE}
+  layout={LayoutType.sidebar}
+>
+  <AccountNav slot="sidebar" />
+  <aside slot="topbar-aside">
+    {
+      count > 0 && (
+        <data-type-selector>
+          <select>
+            <option value="">{ALL_IDENTITIES}</option>
+            {Object.values(entityEnum).map((type) => (
+              <option value={type} selected={type === dataTypeFilter}>
+                {`${type[0].toUpperCase()}${type.slice(1)}`}
+              </option>
+            ))}
+          </select>
+        </data-type-selector>
+      )
+    }
+    <a href={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}>
+      Dodaj tożsamość
+    </a>
+  </aside>
   {
     count > 0 ? (
-      <section>
-        <header>
-          <a href={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}>
-            Dodaj tożsamość
-          </a>
-          <data-type-selector>
-            <label for="category">Rodzaj podmiotu</label>
-            <select id="category">
-              <option value="">Wszystkie</option>
-              {Object.values(entityEnum).map((type) => (
-                <option value={type} selected={type === dataTypeFilter}>
-                  {`${type[0].toUpperCase()}${type.slice(1)}`}
-                </option>
-              ))}
-            </select>
-          </data-type-selector>
-        </header>
+      <>
         {identities.length ? (
           <div>
             {identities.map(({ _id, name, type }) => (
-              <div>
-                <div>
-                  <h3>{name}</h3>
-                  <span>{type}</span>
-                </div>
-                <aside>
-                  <a href={`${Astro.url.origin}/tozsamosci/${_id}`}>Edytuj</a>
-                  <delete-identity data-identity-id={_id}>Usuń</delete-identity>
-                </aside>
-              </div>
+              <MyIdentity id={_id} name={name} type={type} />
             ))}
           </div>
         ) : (
           <EmptyScreen>Brak tożsamości do wyświetlenia</EmptyScreen>
         )}
-      </section>
+      </>
     ) : (
       <EmptyScreen
-        icon="id"
-        cta="Dodaj tożsamość"
+        icon="organization"
+        cta="Stwórz pierwszą tożsamość"
         ctaUrl={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}
       >
         Nie masz jeszcze zapisanych tożsamości
@@ -94,49 +95,20 @@ try {
 </Layout>
 
 <style>
-  section {
-    @apply w-full max-w-[1024px] mx-auto py-20 h-full;
-    @apply flex flex-col gap-20;
+  aside {
+    @apply flex items-center gap-15 flex-wrap;
+  }
+
+  aside > a {
+    @apply btn btn-default;
   }
 
   section > div {
     @apply flex flex-col gap-20;
   }
-
-  section > div > div {
-    @apply flex w-full items-center flex-wrap gap-10;
-    @apply px-20 py-15 bg-white rounded-lg w-full;
-  }
-
-  section > div > div > div {
-    @apply flex-grow w-full sm:w-auto;
-  }
-
-  section div aside {
-    @apply flex gap-10;
-  }
-
-  section div a,
-  section div button,
-  delete-identity {
-    @apply btn btn-alt;
-  }
-
-  section header {
-    @apply flex justify-between items-center flex-wrap gap-20;
-  }
-
-  data-type-selector {
-    @apply flex gap-10 items-center;
-  }
-
-  section header a {
-    @apply btn btn-default btn-big;
-    @apply flex-shrink-0;
-  }
 </style>
 
 <script>
-  import "@wc/DataTypeSelector";
   import "@wc/DeleteIdentity";
+  import "@wc/DataTypeSelector";
 </script>

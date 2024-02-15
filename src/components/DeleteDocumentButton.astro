@@ -1,6 +1,6 @@
 ---
-import Icon from "astro-icon";
 import { UUID } from "mongodb";
+import Icon, { IconSize } from "@components/Icon.astro";
 
 interface Props {
   id: UUID;
@@ -10,12 +10,12 @@ const { id } = Astro.props;
 ---
 
 <delete-document data-document-id={id} title="Usuń szkic">
-  <Icon name="delete" width={20} height={20} />
+  <Icon name="delete" size={IconSize.sm} />
 </delete-document>
 
 <style>
   delete-document {
-    @apply btn btn-alt;
+    @apply btn btn-alt btn-icon;
   }
 </style>
 

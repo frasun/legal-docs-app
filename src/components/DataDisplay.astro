@@ -1,7 +1,6 @@
 ---
 import type { Identity } from "@type";
 import { entityEnum } from "@utils/constants";
-import Icon from "astro-icon";
 
 interface Props extends Identity {
   label: string;
@@ -42,19 +41,16 @@ const canDisplay = [name, street, postalCode, city, pin].every(
       )}
     </p>
   ) : (
-    <div>
-      <Icon name="info" width={24} height={24} />
-      Uzupełnij dane
-    </div>
+    <div>Uzupełnij dane</div>
   )
 }
 
 <style>
   div {
-    @apply text-orangeDark flex gap-10 items-center;
+    @apply text-active flex gap-10 items-center;
   }
 
   div svg {
-    @apply text-orange;
+    @apply text-active;
   }
 </style>

@@ -9,5 +9,6 @@ address: {
 }
 ---
 import Address from '@components/Address.astro';
+import {InputSize} from '@components/InputGroup.astro'
 
-<Address street={frontmatter.address.street} apt={frontmatter.address.apt} postalCode={frontmatter.address.postalCode} city={frontmatter.address.city} fieldId="address" required={true} />
+<Address street={frontmatter.address.street} apt={frontmatter.address.apt} postalCode={frontmatter.address.postalCode} city={frontmatter.address.city} fieldId="address" required={true} size={InputSize.lg} />

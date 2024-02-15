@@ -1,0 +1,41 @@
+---
+import routes from "@utils/routes";
+import Icon from "@components/Icon.astro";
+
+function isActive(path: string) {
+  const cleanUrl = Astro.url.pathname.replace(/\/+$/, "");
+  const urlSegments = cleanUrl.split("/");
+  const currentPath = urlSegments[urlSegments.length - 1];
+
+  return path.includes(currentPath);
+}
+---
+
+<div>
+  <a href={routes.MY_DOCUMENTS} data-active={isActive(routes.MY_DOCUMENTS)}>
+    <Icon name="documents" />
+    Moje dokumenty
+  </a>
+  <a href={routes.IDENTITIES} data-active={isActive(routes.IDENTITIES)}>
+    <Icon name="organization" />
+    Moje tożsamości
+  </a>
+  <a href={routes.PROFILE} data-active={isActive(routes.PROFILE)}>
+    <Icon name="account" />
+    Moje konto
+  </a>
+</div>
+
+<style>
+  div {
+    @apply flex flex-col gap-8 py-15;
+  }
+
+  a {
+    @apply menu-item;
+  }
+
+  a[data-active] {
+    @apply text-active pointer-events-none;
+  }
+</style>

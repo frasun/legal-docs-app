@@ -1,35 +1,96 @@
 ---
-const footerMenu = [
-  {
-    title: "O nas",
-    url: "#",
-  },
-  { title: "Pomoc", url: "#" },
-  { title: "Kontakt", url: "mailto:info@prawniczek.pl" },
-];
+import FooterCopy from "@components/FooterCopy.astro";
+import SocialLinks from "@components/SocialLinks.astro";
+import PaymentLogos from "@components/PaymentLogos.astro";
+import { CATEGORY } from "@utils/urlParams";
+import { getCategories } from "@api/templates";
+import type { DocumentCategory } from "@type";
+import routes from "@utils/routes";
+
+let categories: DocumentCategory[];
+
+try {
+  categories = await getCategories();
+} catch {
+  return Astro.redirect(routes.NOT_FOUND);
+}
+
+interface Props {
+  isSignedIn?: boolean;
+}
+
+const { isSignedIn = false } = Astro.props;
 ---
 
-<footer>
-  <nav>
-    {footerMenu.map(({ title, url }) => <a href={url}>{title}</a>)}
-  </nav>
-  <aside>
-    &copy; Prawniczek 2023<br />
-    Wszelkie prawa zastrzeżone
-  </aside>
-</footer>
+<section>
+  <div>
+    <span>Dokumenty wg kategorii</span>
+    {
+      categories.map(({ title: name, slug: id }) => (
+        <a href={`${Astro.url.origin}/dokumenty?${CATEGORY}=${id}`}>{name}</a>
+      ))
+    }
+  </div>
+  <div>
+    <span>Informacje</span>
+    <a href="#">FAQ</a>
+    <a href="#">O projekcie</a>
+    <a href="#">Kontakt</a>
+  </div>
+  <div>
+    <span>Konto użytkownika</span>
+    {
+      isSignedIn ? (
+        <>
+          <a href={routes.MY_DOCUMENTS}>Moje dokumenty</a>
+          <a href={routes.IDENTITIES}>Moje tożsamości</a>
+          <a href={routes.PROFILE}>Profil</a>
+        </>
+      ) : (
+        <>
+          <a href={routes.SIGN_IN}>Zaloguj się</a>
+          <a href={routes.SIGN_UP}>Załóż konto</a>
+        </>
+      )
+    }
+    <a href={routes.TOS}>Regulamin</a>
+    <a href="#">Polityka prywatności</a>
+  </div>
+  <div>
+    <PaymentLogos />
+    <span>Obserwuj w mediach społecznościowych</span>
+    <SocialLinks />
+  </div>
+</section>
+<FooterCopy />
 
 <style>
-  footer {
-    @apply container flex flex-wrap flex-col md:flex-row gap-30;
-    @apply py-30;
+  section {
+    @apply px-20 lg:container py-30;
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-30;
   }
 
-  footer > nav {
-    @apply flex-grow flex gap-20;
+  section div {
+    @apply flex flex-col gap-5;
   }
 
-  footer > aside {
-    @apply md:text-right text-xxs;
+  section div span {
+    @apply pb-5 text-sans-xxs;
+  }
+
+  section :global(div) + span {
+    @apply mt-20;
+  }
+
+  section a {
+    @apply text-sans-md text-white hover:underline;
+  }
+
+  section :global(div svg) {
+    @apply text-white;
+  }
+
+  section :global(a > svg) {
+    @apply text-white/70 hover:text-white transition-colors;
   }
 </style>

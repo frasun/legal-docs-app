@@ -1,0 +1,18 @@
+---
+import { Icon as AstroIcon } from "astro-icon";
+import type { HTMLAttributes } from "astro/types";
+
+export enum IconSize {
+  sm = 20,
+  base = 24,
+  xl = 32,
+}
+
+interface Props extends HTMLAttributes<"svg"> {
+  size?: IconSize;
+}
+
+const { size = IconSize.base } = Astro.props;
+---
+
+<AstroIcon width={size} height={size} {...Astro.props} />

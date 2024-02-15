@@ -1,4 +1,6 @@
 ---
+import type { HTMLAttributes } from "astro/types";
+
 export enum InputSize {
   default = "",
   lg = "lg",
@@ -9,59 +11,69 @@ export enum InputType {
   checkbox = "checkbox",
 }
 
-interface Props {
+interface Props extends HTMLAttributes<"div"> {
   size?: InputSize;
   type?: InputType;
-  className?: string;
 }
 
-const {
-  size = InputSize.default,
-  type = InputType.default,
-  className = "",
-} = Astro.props;
+const { size = InputSize.default, type = InputType.default } = Astro.props;
 ---
 
-<div class:list={[`${size}`, `${type}`, `${className}`]}>
+<div data-size={size} data-type={type} class:list={[Astro.props.class]}>
   <slot />
 </div>
 
 <style>
   div {
-    @apply flex gap-10 items-baseline flex-wrap;
+    @apply flex gap-y-5 gap-x-15 items-baseline flex-wrap;
   }
 
   div :global(label) {
     @apply w-full;
   }
 
+  div :global(input:not([type="checkbox"]):not([type="radio"])),
+  div :global(textarea),
+  div :global(select) {
+    @apply flex-grow;
+  }
+
   div :global(span) {
-    @apply font-serif italic text-dark75 self-center;
+    @apply text-sans-md self-center text-black;
   }
 
-  div.lg :global(input) {
+  div[data-size="lg"] :global(label) {
+    @apply text-sans-lg;
+  }
+
+  div[data-size="lg"] :global(input:not([type="checkbox"]):not([type="radio"])),
+  div[data-size="lg"] :global(textarea),
+  div[data-size="lg"] :global(select) {
     @apply py-15;
-    @apply text-xxl;
+    @apply text-sans-xl;
+    @apply rounded;
   }
 
-  div.lg :global(span) {
-    @apply text-xxl;
+  div[data-size="lg"] :global(span) {
+    @apply text-sans-xl;
   }
 
-  div.checkbox {
-    @apply flex-row items-start flex-nowrap;
-    @apply mt-20;
+  div[data-type="checkbox"] {
+    @apply flex-row items-start flex-nowrap py-5;
   }
 
-  div.checkbox :global(label) {
+  div[data-type="checkbox"] :global(label) {
     @apply w-auto flex-shrink;
+    @apply text-sans-md;
+    @apply text-black;
+    @apply mt-[2px];
   }
 
-  div.checkbox :global(label a) {
-    @apply text-orangeDark;
+  div[data-size="lg"][data-type="checkbox"] :global(label) {
+    @apply text-sans-xl mt-0;
   }
 
-  div.checkbox :global(label a:hover) {
-    @apply text-dark90;
+  div[data-type="checkbox"] :global(input[type="radio"]:not(:checked) + label) {
+    @apply text-black/70;
   }
 </style>

@@ -5,7 +5,4 @@ purpose: ["do celów mieszkalnych"]
 import Checkboxes from '@components/Checkboxes.astro'
 import {purposeEnum} from '@schema/umowa-najmu-lokalu'
 
-<fieldset>
-    <legend>Zaznacz wszystkie pasujące odpowiedzi</legend>
-    <Checkboxes values={purposeEnum} selected={frontmatter.purpose} token="purpose" required size="lg" />
-</fieldset>
+<Checkboxes values={purposeEnum} selected={frontmatter.purpose} token="purpose" size="lg" label="Zaznacz przynajmniej jedną odpowiedź" />

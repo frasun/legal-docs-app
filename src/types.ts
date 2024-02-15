@@ -21,7 +21,7 @@ export interface Post {
 
 export type PostShort = Pick<
   Post,
-  "title" | "publishedAt" | "slug" | "mainImage" | "excerpt"
+  "title" | "publishedAt" | "slug" | "mainImage"
 >;
 
 export interface DocumentCategory {
@@ -30,7 +30,6 @@ export interface DocumentCategory {
   keywords?: string | null;
   description?: string | null;
   showOnIndex: boolean;
-  icon?: string;
 }
 
 export interface DocumentInfo {
@@ -63,13 +62,10 @@ export interface Template {
   title: DocumentInfo["title"];
   index: {
     title: string;
-    questions: {
-      title: string;
-      slug: string;
-      token?: string;
-      answer?: string;
-      type?: string;
-    }[];
+    slug: string;
+    token?: string;
+    answer?: string;
+    type?: string;
   }[];
   encryptedFields?: string[];
   dateFields?: string[];

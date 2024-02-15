@@ -1,57 +1,26 @@
 ---
-import { Icon } from "astro-icon";
+import Icon, { IconSize } from "@components/Icon.astro";
 
 export interface Props {
   title: string;
   href: string;
-  icon?: string;
 }
 
-const { href, title, icon } = Astro.props;
+const { href, title } = Astro.props;
 ---
 
 <a href={href} title={title}>
-  {
-    icon && (
-      <figure>
-        <Icon name={icon} width={36} height={36} />
-      </figure>
-    )
-  }
-  <span>
-    {title}
-  </span>
+  <Icon name="arrow-right-circle" size={IconSize.sm} />
+  {title}
 </a>
 
 <style>
   a {
-    @apply flex flex-col items-center gap-10 px-10;
-    @apply w-[140px];
-    @apply text-dark75 hover:text-orangeDark active:text-orangeDark;
+    @apply flex items-center gap-15 px-5;
+    @apply text-black hover:text-active text-sans-xl;
   }
 
-  a figure {
-    @apply p-20;
-    /* @apply btn btn-alt; */
-    @apply rounded-xl;
-    @apply bg-dark10;
-    @apply basis-[90px] w-[90px];
-    @apply flex;
-    @apply items-center justify-center;
-    @apply text-dark55;
-  }
-
-  a span {
-    @apply text-ellipsis;
-    @apply max-w-full overflow-hidden;
-  }
-
-  a:hover figure {
-    @apply bg-orange;
-    @apply text-white95;
-  }
-
-  a:active figure {
-    @apply bg-orangeDark;
+  svg {
+    @apply flex-shrink-0;
   }
 </style>

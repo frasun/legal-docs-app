@@ -1,0 +1,38 @@
+---
+import Modal, { ModalSize } from "@components/Modal.astro";
+---
+
+<Modal
+  slot="footer"
+  modalTitle="Usuń konto"
+  size={ModalSize.sm}
+  modalId="confirm"
+>
+  <p>Czy na pewno chcesz usunąć konto oraz wszystkie dane?</p>
+  <small>Tej operacji nie da się cofnąć</small>
+  <footer>
+    <hide-modal>
+      <button>Anuluj</button>
+    </hide-modal>
+    <delete-account slot="submit">Potwierdź</delete-account>
+  </footer>
+</Modal>
+
+<style>
+  button {
+    @apply btn btn-alt;
+  }
+
+  delete-account {
+    @apply btn btn-default;
+  }
+
+  footer {
+    @apply flex gap-10 justify-center;
+  }
+</style>
+
+<script>
+  import "@wc/DeleteAccount";
+  import "@wc/HideModal";
+</script>

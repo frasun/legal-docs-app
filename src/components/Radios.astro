@@ -1,4 +1,6 @@
 ---
+import InputGroup, { InputType, InputSize } from "./InputGroup.astro";
+
 interface Props {
   options: string[];
   labels: string[];
@@ -11,39 +13,34 @@ const { options, labels, token, selected, fieldId } = Astro.props;
 ---
 
 <radio-grid>
-  <header class={`hidden md:grid grid-cols-${options.length}`}>
-    {options.map((opt) => <div>{opt}</div>)}
-  </header>
-  <fieldset class={`grid-cols-${options.length}`}>
-    {
-      labels.map((label, labelIndex) => (
-        <>
-          <label>{label}</label>
-          {options.map((opt, index) => {
-            return index > 0 ? (
-              <div>
-                <input
-                  type="radio"
-                  id={`rd-${labelIndex}-${index}`}
-                  name={label}
-                  value={opt}
-                  aria-label={`${opt}`}
-                  checked={selected[index - 1].includes(label)}
-                />
-                <label for={`rd-${labelIndex}-${index}`}>{opt}</label>
-              </div>
-            ) : null;
-          })}
-        </>
-      ))
-    }
-  </fieldset>
+  {
+    labels.map((label, labelIndex) => (
+      <div>
+        <label>{label}</label>
+        <div>
+          {options.map((opt, index) => (
+            <InputGroup type={InputType.checkbox} size={InputSize.lg}>
+              <input
+                type="radio"
+                id={`rd-${labelIndex}-${index}`}
+                name={label}
+                value={opt}
+                aria-label={`${opt}`}
+                checked={selected[index].includes(label)}
+              />
+              <label for={`rd-${labelIndex}-${index}`}>{opt}</label>
+            </InputGroup>
+          ))}
+        </div>
+      </div>
+    ))
+  }
   {
     token.map((t, index) => (
       <input
         type="hidden"
         name={t}
-        id={options[index + 1]}
+        id={options[index]}
         value={selected[index].toString()}
         data-type="array"
         data-key={fieldId}
@@ -54,41 +51,23 @@ const { options, labels, token, selected, fieldId } = Astro.props;
 
 <style>
   radio-grid {
-    @apply flex flex-col gap-10;
+    @apply flex flex-col gap-20;
   }
 
-  radio-grid fieldset {
-    @apply md:grid md:gap-y-10 gap-x-0;
+  radio-grid > div {
+    @apply flex flex-col gap-5;
   }
 
-  header {
-    @apply font-bold text-sm;
+  radio-grid label {
+    @apply text-sans-lg;
   }
 
-  header div:first-child {
-    @apply px-20;
+  radio-grid > div > div {
+    @apply flex gap-x-60 gap-y-15 flex-wrap;
   }
 
-  header div:not(:first-child),
-  fieldset div {
-    @apply md:text-center;
-  }
-
-  fieldset div,
-  fieldset label {
-    @apply md:bg-white md:px-20 md:py-15;
-  }
-
-  fieldset > label {
-    @apply font-serif italic text-dark90 text-xl;
-  }
-
-  fieldset > label:not(:first-child) {
-    @apply mt-15 md:mt-0;
-  }
-
-  fieldset div > label {
-    @apply md:hidden ml-10;
+  radio-grid > div > div :global(> div) {
+    @apply flex-grow;
   }
 </style>
 

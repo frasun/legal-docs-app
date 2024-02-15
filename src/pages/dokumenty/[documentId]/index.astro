@@ -9,6 +9,9 @@ import { getTemplateInfo } from "@api/templates";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
 import { captureError } from "@utils/sentry";
+import { IconSize } from "@components/Icon.astro";
+import Icon from "astro-icon";
+import Badge, { BadgeStyle } from "@components/Badge.astro";
 
 let title: TemplateInfo["title"] = "",
   keywords: TemplateInfo["keywords"],
@@ -42,98 +45,90 @@ try {
 ---
 
 <Layout
-  title={pageTitle(title)}
+  pageName={pageTitle(title)}
   keywords={keywords ?? undefined}
   description={description ?? undefined}
+  title={title}
 >
-  <span slot="topbar-title">{title}</span>
-  <section>
-    <header>
-      <h1>{title}</h1>
-      <span>
-        <small>Cena za 1 dokument:</small>
-        {price && <strong>{formatNumber(price)} zł</strong>}
-      </span>
-      <a href={`${Astro.url.origin}${firstQuestionUrl}`}>Stwórz dokument</a>
-    </header>
-    <hr />
-    {
-      body && (
+  <aside slot="topbar-aside">
+    {price && <span>{formatNumber(price)} zł</span>}
+    <a href={`${Astro.url.origin}${firstQuestionUrl}`}>Stwórz dokument</a>
+  </aside>
+  {
+    body && (
+      <>
         <article class="prose">
           <BlogContent content={body} />
+          <footer class="not-prose">
+            {price && <span>{formatNumber(price)} zł</span>}
+            <a href={`${Astro.url.origin}${firstQuestionUrl}`}>
+              Stwórz dokument
+            </a>
+          </footer>
         </article>
-      )
-    }
-    {
-      posts && (
-        <>
-          <hr />
-          <aside>
-            <h4>Powiązane artykuły</h4>
-            <div>
-              {posts.map(({ title, slug, publishedAt, mainImage, excerpt }) => (
-                <BlogPost
-                  title={title}
-                  url={slug}
-                  publishedAt={publishedAt}
-                  mainImage={mainImage}
-                  excerpt={excerpt}
-                  size="small"
-                />
-              ))}
-            </div>
-          </aside>
-        </>
-      )
-    }
-    <footer>
-      <a href={`${Astro.url.origin}${firstQuestionUrl}`}>Stwórz dokument</a>
-    </footer>
-  </section>
+      </>
+    )
+  }
+  {
+    posts && (
+      <aside>
+        <header>
+          <Icon name="blog" size={IconSize.sm} />
+          <Badge style={BadgeStyle.orange}>Powiązane artykuły</Badge>
+        </header>
+        {posts.map(({ title, slug, publishedAt, mainImage }) => (
+          <BlogPost
+            title={title}
+            url={slug}
+            publishedAt={publishedAt}
+            mainImage={mainImage}
+          />
+        ))}
+      </aside>
+    )
+  }
 </Layout>
 
 <style>
-  section {
-    @apply bg-white rounded-lg p-20 sm:p-40 my-20 flex flex-col gap-30 max-w-[1000px];
-  }
-
-  header {
-    @apply flex items-center gap-15 lg:gap-30 flex-wrap;
-  }
-
-  header h1 {
-    @apply flex-grow;
-    @apply text-2xl;
-    @apply w-full lg:w-auto;
-  }
-
-  header span {
-    @apply flex flex-col lg:items-end flex-grow;
-  }
-
-  header span strong {
-    @apply text-lg;
-  }
-
-  footer a,
-  header a {
-    @apply btn btn-default btn-big;
-  }
-
-  hr {
-    @apply border-dark30;
-  }
-
+  aside,
   footer {
-    @apply p-20 flex justify-center;
+    @apply flex items-center flex-wrap gap-15 md:gap-30;
+  }
+
+  aside a,
+  footer a {
+    @apply btn btn-default;
   }
 
   footer a {
     @apply btn-big;
+    @apply md:min-w-[260px];
   }
 
-  aside > div {
-    @apply grid sm:grid-cols-2 lg:grid-cols-3 gap-20;
-    @apply pt-10;
+  aside span,
+  footer span {
+    @apply text-sans-xxl text-black;
+  }
+
+  article {
+    @apply col-span-12 lg:col-span-7 mt-10;
+  }
+
+  article + aside {
+    @apply col-span-12 lg:col-span-4 lg:col-start-9;
+    @apply lg:flex-col gap-5 items-start;
+    @apply mt-40 lg:mt-10;
+  }
+
+  article + aside header {
+    @apply flex items-center gap-10 text-black;
+  }
+
+  footer {
+    @apply pt-40;
+  }
+
+  article :global(h3:first-child) {
+    @apply mt-0;
   }
 </style>

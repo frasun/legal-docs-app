@@ -1,10 +1,12 @@
 ---
 import InputGroup from "@components/InputGroup.astro";
 import type { Address } from "@type";
+import { InputSize } from "@components/InputGroup.astro";
 
 interface Props extends Partial<Address> {
   fieldId?: string;
   required?: boolean;
+  size?: InputSize;
 }
 
 const {
@@ -14,11 +16,12 @@ const {
   city,
   fieldId,
   required = false,
+  size = InputSize.default,
 } = Astro.props;
 ---
 
 <address>
-  <InputGroup>
+  <InputGroup size={size}>
     <label for="street">Adres (ulica i numer domu)</label>
     <input
       id="street"
@@ -26,52 +29,38 @@ const {
       name="street"
       value={street}
       required={required || undefined}
-      class="flex-grow"
       data-label="Adres (ulica i numer domu)"
     />
   </InputGroup>
-  <InputGroup>
+  <InputGroup size={size}>
     <label for="apt">Adres (numer lokalu)</label>
-    <input id="apt" type="text" name="apt" value={apt} class="flex-grow" />
+    <input id="apt" type="text" name="apt" value={apt} />
   </InputGroup>
-  <section>
-    <InputGroup>
-      <label for="postalCode">Kod pocztowy</label>
-      <input
-        id="postalCode"
-        type="text"
-        name="postalCode"
-        value={postalCode}
-        required={required || undefined}
-        class="flex-grow"
-      />
-    </InputGroup>
-    <InputGroup>
-      <label for="city">Miasto</label>
-      <input
-        id="city"
-        type="text"
-        name="city"
-        value={city}
-        required={required || undefined}
-        class="flex-grow"
-        data-label="Miasto"
-      />
-    </InputGroup>
-  </section>
+  <InputGroup size={size}>
+    <label for="postalCode">Kod pocztowy</label>
+    <input
+      id="postalCode"
+      type="text"
+      name="postalCode"
+      value={postalCode}
+      required={required || undefined}
+    />
+  </InputGroup>
+  <InputGroup size={size}>
+    <label for="city">Miasto</label>
+    <input
+      id="city"
+      type="text"
+      name="city"
+      value={city}
+      required={required || undefined}
+      data-label="Miasto"
+    />
+  </InputGroup>
   {fieldId && <input type="hidden" name={fieldId} />}
 </address>
 
 <style>
-  section {
-    @apply flex gap-20 flex-wrap lg:flex-nowrap;
-  }
-
-  section :global(div),
-  address :global(div input) {
-    @apply flex-grow;
-  }
-
   address {
     @apply flex flex-col gap-20;
   }

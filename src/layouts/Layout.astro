@@ -30,6 +30,9 @@ const metaImage = image ?? socialImageURL;
 
 const cookies = Astro.cookies.has(BANNER_COOKIE);
 const useAnalytics = Astro.cookies.get(BANNER_COOKIE)?.boolean();
+
+const refererUrl = Astro.request.headers.get("referer");
+const initialLoad = refererUrl === null;
 ---
 
 <!doctype html>
@@ -58,7 +61,7 @@ const useAnalytics = Astro.cookies.get(BANNER_COOKIE)?.boolean();
     <link
       rel="mask-icon"
       href=`${Astro.url.origin}/favicon/safari-pinned-tab.svg`
-      color="#5bbad5"
+      color="#282725"
     />
     <link rel="shortcut icon" href=`${Astro.url.origin}/favicon/favicon.ico` />
     <link rel="canonical" href={canonicalURL} />
@@ -88,7 +91,7 @@ const useAnalytics = Astro.cookies.get(BANNER_COOKIE)?.boolean();
     <ViewTransitions />
     {import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
   </head>
-  <body>
+  <body class={initialLoad ? "opacity-0" : undefined}>
     {import.meta.env.VERCEL_ENV === "production" && <GA /> && useAnalytics}
     <slot />
     <toast-element></toast-element>
@@ -100,15 +103,23 @@ const useAnalytics = Astro.cookies.get(BANNER_COOKIE)?.boolean();
     }
     <Spinner />
 
-    <style is:global>
-      :root {
-        --navbar-height: 62px;
-        --app-height: 100vh;
+    <style>
+      body {
+        @apply flex flex-col h-[100vh];
+        @apply transition-opacity;
       }
     </style>
 
     <script>
       import "@wc/ToastElement";
+
+      document.addEventListener(
+        "astro:page-load",
+        () => {
+          document.body.classList.remove("opacity-0");
+        },
+        { once: true }
+      );
     </script>
   </body>
 </html>

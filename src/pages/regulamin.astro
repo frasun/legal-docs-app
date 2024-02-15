@@ -1,5 +1,5 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import BlogContent from "@components/BlogContent.astro";
 import { getPage } from "@api/pages";
@@ -18,17 +18,14 @@ try {
 }
 ---
 
-<Layout title={pageTitle(title)}>
-  <div class="prose">
-    <h1>{title}</h1>
+<Layout pageName={pageTitle(title)} title={title}>
+  <article class="prose">
     {body && <BlogContent content={body} />}
-  </div>
+  </article>
 </Layout>
 
 <style>
-  div {
-    @apply bg-white rounded-lg p-30;
-    @apply w-[90%] max-w-[900px] mx-auto;
-    @apply my-20 sm:my-30;
+  article {
+    @apply col-span-full md:col-span-9;
   }
 </style>

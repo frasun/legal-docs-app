@@ -1,0 +1,55 @@
+---
+import type { UserIdentity } from "@type";
+import Icon, { IconSize } from "@components/Icon.astro";
+import { entityEnum } from "@utils/constants";
+
+interface Props {
+  id: UserIdentity["_id"];
+  name: UserIdentity["name"];
+  type: UserIdentity["type"];
+}
+
+const { id, name, type } = Astro.props;
+---
+
+<div>
+  <a href={`${Astro.url.origin}/tozsamosci/${id}`}>
+    <Icon
+      name={type === entityEnum["COMPANY"] ? "company" : "person"}
+      size={IconSize.sm}
+    />
+    {name}
+  </a>
+  <aside>
+    <a href={`${Astro.url.origin}/tozsamosci/${id}`}>Edytuj</a>
+    <delete-identity data-identity-id={id}>Usuń</delete-identity>
+  </aside>
+</div>
+
+<style>
+  div {
+    @apply flex gap-x-40 gap-y-10 items-center sm:px-10 py-15 flex-wrap md:flex-nowrap;
+    @apply border-t border-black/30;
+  }
+
+  div > a svg {
+    @apply text-black/70;
+    @apply flex-shrink-0;
+  }
+
+  div > a {
+    @apply text-sans-lg text-black hover:text-active text-ellipsis flex-grow;
+    @apply flex items-center gap-10;
+    @apply w-full md:w-auto;
+  }
+
+  div aside {
+    @apply flex gap-10;
+  }
+
+  div aside a,
+  div aside button,
+  delete-identity {
+    @apply btn btn-alt;
+  }
+</style>

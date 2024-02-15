@@ -1,23 +1,24 @@
 ---
-import Layout from "../../../layouts/App.astro";
+import Layout, { FooterType } from "../../../layouts/App.astro";
 import { getEntry } from "astro:content";
 import { getUserDocument } from "@db/document";
 import { getSession } from "auth-astro/server";
-import { Icon } from "astro-icon";
-import { formatDateTime } from "@utils/date";
+import Icon, { IconSize } from "@components/Icon.astro";
 import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
 import SharingModal from "@components/SharingModal.astro";
 import routes from "@utils/routes";
 import { getDocumentInfo } from "@api/helpers/templates";
+import Badge, { BadgeStyle } from "@components/Badge.astro";
+import Overlay from "@components/Overlay.astro";
+import { formatDateTime } from "@utils/date";
 
 const { documentId: dId } = Astro.params;
 const documentId = String(dId);
 const session = await getSession(Astro.request);
 const urlParams = new URL(Astro.request.url).searchParams;
 const emailParam = urlParams.get(PARAMS.EMAIL);
-const firstTime = urlParams.get("success") === "true" ? true : false;
 
 let data, title, docTitle;
 
@@ -64,8 +65,37 @@ if (!title) {
 }
 ---
 
-<Layout title={pageTitle(String(title))}>
-  <span slot="topbar-title">{title}</span>
+<Layout
+  pageName={pageTitle(String(title))}
+  title={title}
+  footer={FooterType.short}
+>
+  <aside slot="topbar-aside">
+    <download-pdf data-content-id="#doc">
+      <button>Pobierz</button>
+    </download-pdf>
+    {
+      session && shared && sharedWith && sharedWith.length ? (
+        <Overlay>
+          <Icon name="email" size={IconSize.sm} />
+          <Badge style={BadgeStyle.orange}>{sharedWith.length}</Badge>
+          <div slot="overlay">
+            <time>Wysłany {formatDateTime(shared)} do </time>
+            {sharedWith.map((email) => (
+              <div>
+                <Icon name="pass" size={IconSize.sm} />
+                {email}
+              </div>
+            ))}
+          </div>
+        </Overlay>
+      ) : (
+        <show-modal data-modal="sharing">
+          <button>Wyślij</button>
+        </show-modal>
+      )
+    }
+  </aside>
   <article
     id="doc"
     class="prose prose-document"
@@ -74,83 +104,16 @@ if (!title) {
   >
     <Content />
   </article>
-  <aside>
-    <header>
-      {
-        firstTime ? (
-          <>
-            <Icon name="big-tick" width={48} height={48} />
-            <h3>Twój dokument jest gotowy!</h3>
-          </>
-        ) : (
-          <>
-            <Icon name="document" width={48} height={48} />
-            <h3>{title}</h3>
-          </>
-        )
-      }
-    </header>
-    {
-      firstTime ? (
-        <h6>Wybierz co chcesz teraz zrobić</h6>
-      ) : (
-        <>
-          <h6>
-            Utworzony:
-            <br />
-            <time>
-              {modified
-                ? formatDateTime(modified)
-                : formatDateTime(created as Date)}
-            </time>
-          </h6>
-          {shared && sharedWith && sharedWith.length && (
-            <h6>
-              Wysłany:
-              <br />
-              <time>{formatDateTime(shared)}</time> do
-              <br />
-              {sharedWith.join(", ")}
-            </h6>
-          )}
-        </>
-      )
-    }
-    <div>
-      <download-pdf data-content-id="#doc">
-        <button>
-          <Icon name="file-pdf" width={24} height={24} />
-           Pobierz plik PDF
-        </button>
-      </download-pdf>
-      {
-        session && !shared && (
-          <show-modal data-modal="sharing">
-            <button>
-              <Icon name="email" width={24} height={24} />
-              Wyślij przez e-mail
-            </button>
-          </show-modal>
-        )
-      }
-    </div>
-    {
-      !emailParam && (
-        <footer>
-          <a href={`${Astro.url.origin}/moje-dokumenty`}>
-            Zobacz w moich dokumentach
-          </a>
-        </footer>
-      )
-    }
-  </aside>
   {session && <SharingModal contentId="#doc" documentId={documentId} />}
 </Layout>
 
 <style>
   article {
-    @apply bg-white p-20 sm:p-30 lg:p-50 w-full max-w-[900px] flex-shrink;
-    @apply order-2 xl:order-1;
+    @apply bg-white border border-black/70 rounded-sm;
+    @apply px-20 py-30 lg:px-40 lg:py-60;
+    @apply col-span-12 lg:col-span-10 lg:col-start-2;
+    @apply mt-15 lg:mt-30 mb-60;
+    @apply shadow-2;
 
     counter-reset: section;
   }
@@ -161,45 +124,24 @@ if (!title) {
   }
 
   aside {
-    @apply order-1 xl:order-2;
-    @apply flex flex-col gap-15 items-start;
-    @apply lg:sticky lg:top-[var(--navbar-height)] p-30;
-    @apply print:hidden;
-    @apply bg-light rounded-lg;
-    @apply w-full lg:max-w-[300px];
+    @apply flex gap-10 items-center;
   }
 
-  aside header {
-    @apply flex gap-15 items-center lg:items-start;
-  }
-
-  aside header h3 {
-    @apply flex-shrink;
-  }
-
-  aside header svg {
-    @apply flex-shrink-0;
-    @apply w-[24px] h-[24px];
-  }
-
-  aside > div {
-    @apply mt-10;
-  }
-
-  aside button {
-    @apply btn btn-default btn-big;
-  }
-
-  aside a {
+  button,
+  show-modal button {
     @apply btn btn-alt;
   }
 
-  aside > div {
-    @apply flex flex-wrap gap-15;
+  download-pdf button {
+    @apply btn btn-default;
   }
 
-  aside footer {
-    @apply lg:mt-20;
+  aside :global(.dropdownMenu > div) {
+    @apply flex flex-col gap-5;
+  }
+
+  aside :global(.dropdownMenu > div div) {
+    @apply flex gap-10 items-center;
   }
 </style>
 <script>

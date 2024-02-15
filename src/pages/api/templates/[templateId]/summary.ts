@@ -58,14 +58,7 @@ export const GET: APIRoute = async ({ request, params }) => {
     } = await getTemplate(cookie, doc));
 
     if (!isUserDocument) {
-      // get default answers
-      const questionIndex: Template["index"][number]["questions"] = [];
-
-      for (let { questions } of index) {
-        questionIndex.push(...questions);
-      }
-
-      for (let { slug } of questionIndex) {
+      for (let { slug } of index) {
         const questionEntry = await getEntry("questions", slug);
 
         if (!questionEntry) {

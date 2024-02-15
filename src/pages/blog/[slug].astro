@@ -3,7 +3,7 @@ import Layout from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import imageUrl from "@utils/sanityImage";
 import formatDate from "@utils/date";
-import Badge from "@components/Badge.astro";
+import Badge, { BadgeSize, BadgeStyle } from "@components/Badge.astro";
 import screens from "@utils/screens";
 import trimWhitespace from "@utils/whitespace";
 import type { Post } from "@type";
@@ -12,6 +12,7 @@ import { getPost } from "@api/posts";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
 import { captureError } from "@utils/sentry";
+import Icon, { IconSize } from "@components/Icon.astro";
 
 const PAGE_TITLE = "Blog";
 
@@ -59,86 +60,102 @@ try {
 ---
 
 <Layout
-  title={pageTitle(`${title} - Blog`)}
+  pageName={pageTitle(`${title} - Blog`)}
   description={description ?? trimWhitespace(excerpt || "")}
   keywords={keywords ?? undefined}
   image={mainImage ? imageUrl(mainImage, 1000, 400).url() : undefined}
+  title=""
 >
-  <span slot="topbar-title">{PAGE_TITLE}</span>
-  <div>
+  <header>
+    {
+      mainImage && (
+        <figure>
+          <picture>
+            <source
+              media={`(max-width:${screens.sm - 1}px)`}
+              srcset={`${imageUrl(mainImage, 600, 500).url()}`}
+            />
+            <source
+              media={`(min-width:${screens.sm}px)`}
+              srcset={`${imageUrl(mainImage, 1000, 400).url()}`}
+            />
+            <img
+              src={imageUrl(mainImage, 1220, 400).url()}
+              alt={title}
+              loading="lazy"
+              width="100%"
+            />
+          </picture>
+        </figure>
+      )
+    }
+  </header>
+  <article class="prose">
     <header>
+      <h1>{title}</h1>
       {
-        mainImage && (
-          <figure>
-            <picture>
-              <source
-                media={`(max-width:${screens.sm - 1}px)`}
-                srcset={`${imageUrl(mainImage, 600, 180).url()}`}
-              />
-              <source
-                media={`(min-width:${screens.sm}px)`}
-                srcset={`${imageUrl(mainImage, 1000, 400).url()}`}
-              />
-              <img
-                src={imageUrl(mainImage, 1000, 400).url()}
-                alt={title}
-                loading="lazy"
-                width="100%"
-              />
-            </picture>
-          </figure>
+        publishedAt ? (
+          <time>Opublikowano {formatDate(publishedAt)}</time>
+        ) : (
+          <Badge size={BadgeSize.medium}>szkic artykułu</Badge>
         )
       }
-      <div>
-        <h1>{title}</h1>
-        {
-          publishedAt ? (
-            <time>{formatDate(publishedAt)}</time>
-          ) : (
-            <Badge>Szkic artykułu</Badge>
-          )
-        }
-      </div>
     </header>
-    <article class="prose">
-      {body && <BlogContent content={body} />}
-      {
-        documents && (
-          <>
-            <hr />
-            <h4>Powiązane dokumenty</h4>
-            <ul>
-              {documents.map(({ title, slug }) => (
-                <li>
-                  <a href={`${Astro.url.origin}/dokumenty/${slug}`}>{title}</a>
-                </li>
-              ))}
-            </ul>
-          </>
-        )
-      }
-    </article>
-  </div>
+    {body && <BlogContent content={body} />}
+  </article>
+  {
+    documents && (
+      <aside>
+        <Badge style={BadgeStyle.orange} size={BadgeSize.medium}>
+          Powiązane dokumenty
+        </Badge>
+        <ul>
+          {documents.map(({ title, slug }) => (
+            <li>
+              <a href={`${Astro.url.origin}/dokumenty/${slug}`}>
+                <Icon name="document" size={IconSize.sm} />
+                {title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    )
+  }
 </Layout>
 
 <style>
-  div {
-    @apply bg-white rounded-lg my-20 flex flex-col items-start w-full max-w-[1000px];
-  }
-
-  header > div {
-    @apply py-20 px-20 sm:px-40;
-  }
-
-  header h1 {
-    @apply text-dark90 mt-20 mb-20;
-  }
-
-  header figure {
-    @apply rounded-t overflow-hidden p-0;
+  header {
+    @apply col-span-full mt-15;
   }
 
   article {
-    @apply px-20 sm:px-40 pb-40;
+    @apply col-span-full md:col-span-7 md:col-start-3 md:pb-60;
+  }
+
+  article header {
+    @apply flex flex-col items-start gap-15 mt-0;
+  }
+
+  header figure {
+    @apply rounded-sm overflow-hidden;
+  }
+
+  time {
+    @apply text-sans-sm;
+  }
+
+  aside {
+    @apply col-span-full md:col-span-3 md:col-start-10 mt-40 md:mt-60;
+    @apply flex flex-col gap-10 items-start;
+  }
+
+  aside li a {
+    @apply flex gap-10 px-10 py-5;
+    @apply text-sans-sm text-black hover:text-active;
+  }
+
+  aside li a svg {
+    @apply flex-shrink-0;
   }
 </style>

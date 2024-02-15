@@ -1,5 +1,5 @@
 ---
-import Icon from "astro-icon";
+import Icon, { IconSize } from "@components/Icon.astro";
 import { PAGE } from "@utils/urlParams";
 
 interface Props {
@@ -20,7 +20,7 @@ const { pages, currentPage, url } = Astro.props;
           aria-label="Poprzednia strona"
           title="Poprzednia strona"
         >
-          <Icon name="arrow-left" width={24} height={24} />
+          <Icon name="arrow-left" />
         </a>
       ) : (
         <span />
@@ -37,7 +37,7 @@ const { pages, currentPage, url } = Astro.props;
           aria-label="Następna strona"
           title="Następna strona"
         >
-          <Icon name="arrow-right" width={24} height={24} />
+          <Icon name="arrow-right" size={IconSize.sm} />
         </a>
       )}
     </footer>
@@ -47,10 +47,12 @@ const { pages, currentPage, url } = Astro.props;
 <style>
   footer {
     @apply grid grid-cols-[1fr_auto_1fr] gap-20 items-center w-full;
+    @apply py-20;
+    @apply col-span-full;
   }
 
   footer > small {
-    @apply justify-self-center;
+    @apply justify-self-center text-sans-xxs;
   }
 
   footer > a:first-child {

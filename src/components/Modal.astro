@@ -1,59 +1,90 @@
 ---
 import { DEFAULT_MODAL } from "@utils/modal";
+import Icon, { IconSize } from "./Icon.astro";
+
+export enum ModalSize {
+  sm = "small",
+  default = "",
+  lg = "large",
+}
 
 interface Props {
   modalId?: string;
+  size?: ModalSize;
+  modalTitle: string;
 }
 
-const { modalId } = Astro.props;
+const {
+  modalId,
+  modalTitle = "Modal title",
+  size = ModalSize.default,
+} = Astro.props;
 
 const id = modalId || DEFAULT_MODAL;
 ---
 
-<modal-dialog data-modal-id={modalId}>
-  <div id={id} class="modal">
-    <button class="modalClose" aria-label="Zamknij">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        viewBox="0 0 18 18"
-      >
-        <path
-          d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"
-          fill="currentColor"
-        >
-        </path>
-      </svg>
-    </button>
-    <slot />
+<modal-dialog data-modal-id={modalId} data-size={size}>
+  <div id={id}>
+    <slot name="aside" />
+    <section>
+      <button id="modalClose" aria-label="Zamknij">
+        <Icon name="close" size={IconSize.sm} />
+      </button>
+      <header><h3>{modalTitle}</h3></header>
+      <slot />
+    </section>
   </div>
+
+  <style>
+    div {
+      @apply fixed w-[90%] m-auto max-w-[550px] max-h-[90%] overflow-y-auto z-max;
+      @apply top-[50%] left-[50%] -translate-x-1/2;
+      @apply flex flex-col md:flex-row justify-start md:justify-center;
+      @apply bg-yellow rounded-sm;
+      @apply border border-black;
+      @apply shadow-3;
+      @apply -translate-y-[200vh];
+      @apply text-sans-md text-black;
+    }
+
+    div > section {
+      @apply flex-grow;
+      @apply flex flex-col gap-15;
+      @apply px-20 py-30;
+    }
+
+    modal-dialog[data-size="small"] > div {
+      @apply max-w-[340px];
+    }
+
+    modal-dialog[data-size="large"] > div {
+      @apply max-w-[880px];
+    }
+
+    div.touched {
+      @apply transition-transform duration-300;
+    }
+
+    div.open {
+      @apply -translate-y-1/2;
+    }
+
+    #modalClose {
+      @apply absolute top-15 right-15 z-50;
+      @apply btn btn-alt btn-icon;
+    }
+
+    header {
+      @apply pr-60 text-italic-md w-full text-black;
+    }
+
+    div :global(> aside) {
+      @apply md:max-w-[350px];
+      @apply border-b md:border-r md:border-b-0;
+    }
+  </style>
+
+  <script>
+    import "@wc/ModalDialog";
+  </script>
 </modal-dialog>
-
-<style>
-  .modal {
-    @apply fixed w-[90%] m-auto max-w-[800px] max-h-[90%] overflow-y-auto z-max;
-    @apply top-[50%] left-[50%] -translate-x-1/2;
-    @apply flex items-start justify-center flex-col;
-    @apply bg-white rounded-xl;
-    @apply -translate-y-[200vh];
-    @apply p-30;
-  }
-
-  .modal.touched {
-    @apply transition-transform duration-300;
-  }
-
-  .modal.open {
-    @apply -translate-y-1/2;
-  }
-
-  .modalClose {
-    @apply absolute top-10 right-10 z-50;
-    @apply btn btn-alt;
-  }
-</style>
-
-<script>
-  import "@wc/ModalDialog";
-</script>

@@ -11,7 +11,7 @@ const { icon, cta, ctaUrl } = Astro.props;
 ---
 
 <div>
-  {icon && <Icon name={icon} width={80} height={80} />}
+  {icon && <Icon name={icon} width={64} height={64} />}
   <slot />
   {
     ctaUrl && (
@@ -26,18 +26,20 @@ const { icon, cta, ctaUrl } = Astro.props;
 
 <style>
   div {
-    @apply h-full flex flex-col gap-20 items-center justify-center;
+    @apply h-full flex flex-col gap-15 items-center justify-center;
+    @apply text-italic-md text-black;
+    @apply pb-60;
   }
 
-  p {
-    @apply text-xl;
+  footer {
+    @apply flex not-italic;
   }
 
   footer a {
-    @apply btn btn-default btn-big;
+    @apply btn btn-default;
   }
 
   div :global(svg path) {
-    @apply fill-dark40;
+    @apply fill-black;
   }
 </style>

@@ -29,7 +29,6 @@ export const GET: APIRoute = async ({ request, params }) => {
       title: string | undefined,
       documentTitle: Template["title"] = "",
       index: Template["index"] = [],
-      questionIndex: Template["index"][0]["questions"] = [],
       fields: Answers = {},
       info: string | undefined,
       currentQuestionIndex: number = 0,
@@ -89,25 +88,16 @@ export const GET: APIRoute = async ({ request, params }) => {
 
     if (!title) title = documentTitle;
 
-    // get index
-    for (let { questions } of index) {
-      questionIndex.push(...questions);
-    }
+    currentQuestionIndex = index.findIndex(({ slug }) => slug === questionId);
 
-    currentQuestionIndex = questionIndex.findIndex(
-      ({ slug }) => slug === questionId
-    );
-
-    qTitle = questionIndex[currentQuestionIndex].title;
+    qTitle = index[currentQuestionIndex].title;
 
     // get next/prev links
     prevId =
-      currentQuestionIndex > 0
-        ? questionIndex[currentQuestionIndex - 1].slug
-        : null;
+      currentQuestionIndex > 0 ? index[currentQuestionIndex - 1].slug : null;
     nextId =
-      currentQuestionIndex < questionIndex.length - 1
-        ? questionIndex[currentQuestionIndex + 1].slug
+      currentQuestionIndex < index.length - 1
+        ? index[currentQuestionIndex + 1].slug
         : null;
 
     return new Response(
@@ -123,7 +113,7 @@ export const GET: APIRoute = async ({ request, params }) => {
         templateId: docId,
         draft,
         index,
-        questionIndex: questionIndex.length,
+        questionIndex: index.length,
       }),
       {
         status: 200,

@@ -43,17 +43,12 @@ export const GET: APIRoute = async ({ request, params }) => {
     return new Response(
       JSON.stringify({
         title,
-        index: index.map(({ title, questions }) => ({
+        index: index.map(({ id: { slug }, title, token, answer, type }) => ({
           title,
-          questions: questions.map(
-            ({ id: { slug }, title, token, answer, type }) => ({
-              title,
-              slug,
-              token,
-              answer: answer ? answer.slug : answer,
-              type,
-            })
-          ),
+          slug,
+          token,
+          answer: answer ? answer.slug : answer,
+          type,
         })),
         encryptedFields,
         dateFields: dates,

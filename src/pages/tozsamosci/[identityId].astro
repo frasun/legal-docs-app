@@ -1,5 +1,5 @@
 ---
-import Layout from "../../layouts/App.astro";
+import Layout, { LayoutType } from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import DataInput from "@components/DataInput.astro";
 import routes from "@utils/routes";
@@ -7,6 +7,7 @@ import { REDIRECT } from "@utils/urlParams";
 import { getIdentity } from "@api/identities";
 import type { Identity } from "@type";
 import { captureError } from "@utils/sentry";
+import AccountNav from "@components/AccountNav.astro";
 
 const { identityId } = Astro.params as { identityId: string };
 
@@ -35,13 +36,14 @@ try {
 }
 ---
 
-<Layout title={pageTitle(PAGE_TITLE)}>
-  <span slot="topbar-title">{PAGE_TITLE}</span>
+<Layout
+  pageName={pageTitle(PAGE_TITLE)}
+  title={PAGE_TITLE}
+  layout={LayoutType.sidebar}
+>
+  <AccountNav slot="sidebar" />
   <identity-form data-identity-id={identityId}>
     <form method="POST" spellcheck="false" transition:persist data-astro-reload>
-      <header>
-        <h3>Wypełnij formularz z danymi</h3>
-      </header>
       <DataInput
         type={type}
         name={name}
@@ -63,27 +65,17 @@ try {
 
 <style>
   form {
-    @apply w-full max-w-[780px] mx-auto;
-    @apply flex flex-col justify-center min-h-full;
-    @apply py-[var(--navbar-height)];
-  }
-
-  form header {
-    @apply flex flex-col gap-15 mb-15;
-  }
-
-  form :global(fieldset) {
-    @apply flex flex-col gap-20;
+    @apply w-full max-w-[700px];
   }
 
   form footer {
-    @apply flex justify-between items-center;
+    @apply flex justify-between items-center gap-15 flex-wrap sm:flex-nowrap;
     @apply my-30;
   }
 
   form footer button[type="submit"],
   form footer a {
-    @apply btn btn-big;
+    @apply btn btn-big flex-grow w-full sm:w-auto;
   }
 
   form footer a {

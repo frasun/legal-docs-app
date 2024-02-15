@@ -5,7 +5,4 @@ question: Jakie instalacje dostępne są w lokalu?
 import Checkboxes from '@components/Checkboxes.astro'
 import {systemsEnum} from '@schema/umowa-najmu-lokalu'
 
-<fieldset>
-    <legend>Zaznacz wszystkie pasujące odpowiedzi</legend>
-    <Checkboxes values={systemsEnum} selected={frontmatter.systems} token="systems" />
-</fieldset>
+<Checkboxes values={systemsEnum} selected={frontmatter.systems} token="systems" label="Zaznacz wszystkie pasujące odpowiedzi" size="lg" />

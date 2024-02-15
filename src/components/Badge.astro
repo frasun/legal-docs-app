@@ -2,26 +2,67 @@
 export enum BadgeStyle {
   default = "yellow",
   purple = "purple",
+  orange = "orange",
+  blue = "blue",
+  red = "red",
+  green = "green",
+}
+
+export enum BadgeSize {
+  default = "default",
+  medium = "md",
+  large = "lg",
+  xlarge = "xlg",
 }
 
 interface Props {
   style?: BadgeStyle;
+  size?: BadgeSize;
 }
 
-const { style = BadgeStyle.default } = Astro.props;
+const { style = BadgeStyle.default, size = BadgeStyle.default } = Astro.props;
 ---
 
-<span data-style={style}>
+<span data-style={style} data-size={size}>
   <slot />
 </span>
 
 <style>
   span {
-    @apply px-10 py-[5px] bg-yellow text-yellowDark rounded-xl;
-    @apply font-sans text-tiny font-bold uppercase not-italic tracking-wide;
+    @apply bg-yellow;
+    @apply text-italic-xs text-black;
+    @apply inline-block;
   }
 
   span[data-style="purple"] {
-    @apply bg-purple text-purpleDark;
+    @apply bg-purple;
+  }
+
+  span[data-style="orange"] {
+    @apply bg-orange;
+  }
+
+  span[data-style="blue"] {
+    @apply bg-blue;
+  }
+
+  span[data-style="red"] {
+    @apply bg-red;
+  }
+
+  span[data-style="green"] {
+    @apply bg-green;
+  }
+
+  span[data-size="md"] {
+    @apply text-italic-sm;
+  }
+
+  span[data-size="lg"] {
+    @apply text-italic-md;
+  }
+
+  span[data-size="xlg"] {
+    @apply text-italic-lg;
   }
 </style>

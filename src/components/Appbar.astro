@@ -2,27 +2,47 @@
 import Menu from "@components/Menu.astro";
 import Logo from "../images/logo.astro";
 
-interface Props {
-  email?: string;
+export enum AppBarTheme {
+  default = "",
+  yellow = "yellow",
 }
 
-const { email } = Astro.props;
+interface Props {
+  email?: string;
+  theme?: AppBarTheme;
+}
+
+const { email, theme } = Astro.props;
 ---
 
-<header>
-  <a href="/" id="logo" aria-label="Prawniczek">
-    <Logo />
-  </a>
-  <Menu email={email} />
+<header data-theme={theme !== AppBarTheme.default ? theme : undefined}>
+  <div>
+    <a href="/" id="logo" aria-label="Prawniczek">
+      <Logo />
+    </a>
+    <Menu
+      email={email}
+      theme={theme !== AppBarTheme.default ? theme : undefined}
+    />
+  </div>
 </header>
 
 <style>
   header {
-    @apply container;
-    @apply flex items-center flex-wrap justify-between;
-    @apply py-15;
+    @apply w-full;
     @apply sticky top-0;
-    @apply bg-gray;
-    @apply z-40;
+    @apply bg-white;
+    @apply z-menu;
+    @apply shadow-1;
+  }
+
+  header > div {
+    @apply lg:container;
+    @apply flex items-center flex-wrap gap-30 justify-between;
+    @apply px-20 lg:px-30 py-15;
+  }
+
+  header[data-theme="yellow"] {
+    @apply bg-yellow;
   }
 </style>

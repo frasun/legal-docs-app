@@ -8,17 +8,15 @@ question: Ile będzie wynosić kaucja i jakie są warunki jej zwrotu?
 import {paymentMethodEnum} from '@utils/constants';
 import InputGroup, { InputSize } from '@components/InputGroup.astro';
 
-<fieldset>
-    <InputGroup size={InputSize.lg}>
-        <label for="deposit">Wysokość</label>
-        <input type="number" id="deposit" name="value" value={frontmatter.deposit.value} required step=".01" min="1" />
-        <span>zł</span>
-    </InputGroup>
-    <InputGroup>
-        <label for="depositMethod">Sposób płatności</label>
-        <select id="depositMethod" name="method" required>
-        {paymentMethodEnum.map(m => <option value={m} selected={frontmatter.deposit.method === m}>{m}</option>)}
-        </select>
-    </InputGroup>
-    <input type="hidden" name="deposit" />
-</fieldset>
+<InputGroup size={InputSize.lg}>
+    <label for="deposit">Wysokość</label>
+    <input type="number" id="deposit" name="value" value={frontmatter.deposit.value} required step=".01" min="1" />
+    <span>zł</span>
+</InputGroup>
+<InputGroup size={InputSize.lg}>
+    <label for="depositMethod">Sposób płatności</label>
+    <select id="depositMethod" name="method" required>
+    {paymentMethodEnum.map(m => <option value={m} selected={frontmatter.deposit.method === m}>{m}</option>)}
+    </select>
+</InputGroup>
+<input type="hidden" name="deposit" />

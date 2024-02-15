@@ -1,0 +1,42 @@
+---
+import Icon from "@components/Icon.astro";
+
+const links = [
+  {
+    url: "https://twitter.com/?lang=pl",
+    icon: "x",
+    alt: "Profil na platformie X",
+  },
+  {
+    url: "https://pl.linkedin.com/",
+    icon: "linkedin",
+    alt: "Profil na platformie LinkedIn",
+  },
+  {
+    url: "https://www.facebook.com/?locale=pl_PL",
+    icon: "facebook",
+    alt: "Profil na platformie Facebook",
+  },
+  {
+    url: "https://www.instagram.com/",
+    icon: "instagram",
+    alt: "Profil na platformie Instagram",
+  },
+];
+---
+
+<div>
+  {
+    links.map(({ url, icon, alt }) => (
+      <a href={url} title={alt} target="_blank">
+        <Icon name={icon} />
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  div {
+    @apply flex items-center gap-15;
+  }
+</style>

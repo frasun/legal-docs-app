@@ -8,24 +8,18 @@ const { current, steps } = Astro.props;
 ---
 
 <div>
-  <strong><small>Krok {current} z {steps}</small></strong>
-  <span>
-    <span style={`width: ${(current / steps) * 100}%`}></span>
-  </span>
+  <span style={`width: ${(current / steps) * 100}%`}></span>
 </div>
 
 <style>
   div {
-    @apply flex flex-col gap-[3px] flex-shrink-0;
+    @apply hidden sm:flex flex-col flex-shrink-0;
     @apply w-[90px] lg:w-[150px];
+    @apply h-[3px];
+    @apply bg-black/10;
   }
 
   div > span {
-    @apply h-[3px];
-    @apply bg-dark10 mb-10;
-  }
-
-  span > span {
-    @apply block h-full bg-dark90;
+    @apply block h-full bg-black;
   }
 </style>

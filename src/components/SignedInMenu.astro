@@ -1,6 +1,6 @@
 ---
-import { Icon } from "astro-icon";
 import { SignOut } from "auth-astro/components";
+import Icon from "@components/Icon.astro";
 import routes from "@utils/routes";
 
 interface Props {
@@ -10,32 +10,34 @@ interface Props {
 const { email } = Astro.props;
 ---
 
-<>
-  <a href={routes.PROFILE} title="Profil">
-    <Icon name="user" width={18} height={18} />
-    <span>{email}</span>
-  </a>
-  <a href={`${Astro.url.origin}/moje-dokumenty`}>Moje dokumenty</a>
-  <SignOut params={{ callbackUrl: Astro.url.origin }}>Wyloguj się</SignOut>
-</>
+<div>
+  <span>Zalogowany jako:</span>
+  <em>{email}</em>
+</div>
+<a href={routes.MY_DOCUMENTS}>
+  <Icon name="documents" />
+  Moje dokumenty
+</a>
+<a href={routes.IDENTITIES}>
+  <Icon name="organization" />
+  Moje tożsamości
+</a>
+<a href={routes.PROFILE}>
+  <Icon name="account" />
+  Mój profil
+</a>
+<SignOut params={{ callbackUrl: Astro.url.origin }}>Wyloguj się</SignOut>
 
 <style>
-  span {
-    @apply hidden xl:flex gap-10 items-center order-2 lg:order-1;
+  div {
+    @apply mb-8 lg:border-b px-10 lg:px-15 pb-8;
   }
 
-  span > span {
-    @apply truncate max-w-[180px] block;
-    @apply text-sm;
+  div span {
+    @apply text-sans-xxs text-black/70;
   }
 
-  button {
-    @apply btn btn-alt order-3;
-  }
-
-  a {
-    @apply order-1 lg:order-2;
-    @apply btn btn-default;
-    @apply mb-15 md:mb-0;
+  div em {
+    @apply text-italic-sm lg:text-italic-xs text-black truncate text-ellipsis block;
   }
 </style>

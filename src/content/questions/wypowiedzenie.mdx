@@ -5,7 +5,7 @@ termination: 14
 import InputGroup, { InputSize } from '@components/InputGroup.astro';
 
 <InputGroup size={InputSize.lg}>
-    <span>Termin wypowiedzenia do</span>
+    <label for="termination">Termin wypowiedzenia do</label>
     <input type="number" id="termination" name="termination" value={frontmatter.termination} required min="1" aria-label="Termin wypowiedzenia" />
     <span>dni od dnia zakończenia umowy</span>
 </InputGroup>

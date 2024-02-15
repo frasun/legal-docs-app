@@ -1,40 +1,40 @@
 ---
-import { Icon } from "astro-icon";
+import Hint from "./Hint.astro";
+import InputGroup, { InputSize } from "./InputGroup.astro";
 ---
 
-<section>
-  <h1>Stwórz precyzyjne dokumenty prawne z&nbsp;pomocą wirtualnego prawnika</h1>
-  <form
-    id="search"
-    method="GET"
-    action={`${Astro.url.origin}/dokumenty`}
-    spellcheck="false"
-  >
-    <input
-      type="search"
-      placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
-      spellcheck="false"
-      name="s"
-    />
+<form
+  id="search"
+  method="GET"
+  action={`${Astro.url.origin}/dokumenty`}
+  spellcheck="false"
+>
+  <div>
+    <InputGroup size={InputSize.lg}>
+      <input
+        type="search"
+        placeholder="Szukaj dokumentu lub sprawy"
+        spellcheck="false"
+        name="s"
+      />
+    </InputGroup>
     <button>Szukaj</button>
-    <Icon name="search" id="menuOpen" width={24} height={24} />
-  </form>
-</section>
+  </div>
+  <Hint>np. testament, umowa najmu, darowizna</Hint>
+</form>
 
 <style>
-  section {
-    @apply flex items-center justify-center flex-col gap-20;
-  }
-
-  section > h1 {
-    @apply text-center;
-    @apply max-w-[600px];
-  }
-
   form {
-    @apply w-full;
-    @apply flex flex-wrap gap-15 items-center justify-center;
-    @apply relative;
+    @apply flex flex-col sm:gap-10 gap-15;
+  }
+
+  form > div {
+    @apply flex flex-col justify-center sm:flex-row gap-10 sm:gap-15 items-center flex-wrap;
+  }
+
+  form > div :global(div) {
+    @apply flex-grow;
+    @apply w-full sm:w-auto;
   }
 
   button {
@@ -43,20 +43,5 @@ import { Icon } from "astro-icon";
 
   input[type="search"] {
     @apply flex-grow;
-    @apply pl-60;
-    @apply text-lg leading-8;
-    @apply py-10;
-  }
-
-  form :global(> svg) {
-    @apply absolute left-20 top-0 translate-y-1/2 mt-[4px];
-  }
-
-  form :global(> svg path) {
-    @apply fill-orangeDark;
-  }
-
-  section > img {
-    @apply mt-10;
   }
 </style>

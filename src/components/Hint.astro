@@ -1,0 +1,26 @@
+---
+import Icon, { IconSize } from "@components/Icon.astro";
+---
+
+<div>
+  <Icon name="bulb" size={IconSize.sm} />
+  <span><slot /></span>
+</div>
+
+<style>
+  div {
+    @apply flex gap-10 px-10 pt-8 pb-10 bg-yellow rounded-sm;
+  }
+
+  svg {
+    @apply text-black flex-shrink-0;
+  }
+
+  div span {
+    @apply text-serif-sm text-black/70;
+  }
+
+  div :global(strong) {
+    @apply text-sans-sm text-black;
+  }
+</style>

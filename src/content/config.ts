@@ -10,20 +10,12 @@ const questionsIndex = z.array(
   })
 );
 
-const documentIndex = z.array(
-  z.object({
-    title: z.string(),
-    questions: questionsIndex,
-  })
-);
-
 export type QuestionIndex = z.infer<typeof questionsIndex>;
-export type DocumentIndex = z.infer<typeof documentIndex>;
 
 const documents = defineCollection({
   type: "content",
   schema: z.object({
-    index: documentIndex.optional(),
+    index: questionsIndex.optional(),
     dates: z.array(z.string()).optional(),
     encryptedFields: z.array(z.string()).optional(),
   }),

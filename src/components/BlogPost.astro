@@ -1,12 +1,23 @@
 ---
 import imageUrl from "@utils/sanityImage";
-import Badge from "./Badge.astro";
-import formatDate from "@utils/date";
-import screens from "@utils/screens";
+import Badge, { BadgeSize } from "./Badge.astro";
+import type { Post } from "@type";
 
 export enum BlogPostSize {
   default = "",
-  small = "small",
+  large = "lg",
+  xlarge = "xlg",
+}
+
+interface Props {
+  title: Post["title"];
+  url: string;
+  publishedAt: Post["publishedAt"];
+  createdAt?: Post["publishedAt"];
+  mainImage: Post["mainImage"];
+  excerpt?: Post["excerpt"];
+  size?: BlogPostSize;
+  newest?: boolean;
 }
 
 const {
@@ -16,77 +27,117 @@ const {
   mainImage,
   excerpt,
   size = BlogPostSize.default,
+  newest = false,
 } = Astro.props;
+
+function getWidth(size: BlogPostSize) {
+  switch (size) {
+    case BlogPostSize.default:
+      return 100;
+    case BlogPostSize.large:
+      return 150;
+    case BlogPostSize.xlarge:
+      return 480;
+  }
+}
+
+function getHeight(size: BlogPostSize) {
+  switch (size) {
+    case BlogPostSize.default:
+      return 100;
+    case BlogPostSize.large:
+      return 150;
+    case BlogPostSize.xlarge:
+      return 270;
+  }
+}
 ---
 
-<a href={`${Astro.url.origin}/blog/${url}`} title={title}>
+<div data-size={size}>
   {
     mainImage && (
       <figure>
         <picture>
-          <source
-            media={`(max-width:${screens.sm - 1}px)`}
-            srcset={`${imageUrl(mainImage, 600, 180).url()}`}
-          />
-          <source
-            media={`(min-width:${screens.sm}px) and (max-width:${
-              screens.md - 1
-            }px)`}
-            srcset={`${imageUrl(mainImage, 400, 300).url()}`}
-          />
-          <source
-            media={`(min-width:${screens.md}px)`}
-            srcset={`${imageUrl(mainImage, 350, 200).url()}`}
-          />
           <img
-            src={imageUrl(mainImage, 600, 300).url()}
+            src={imageUrl(mainImage, getWidth(size), getHeight(size)).url()}
             alt={title}
             loading="lazy"
-            width="100%"
-            height="300"
+            width={getWidth(size)}
+            height={getHeight(size)}
           />
         </picture>
       </figure>
     )
   }
   <div>
-    {size === BlogPostSize.small ? <h4>{title}</h4> : <h3>{title}</h3>}
-    {
-      publishedAt ? (
-        <time>{formatDate(publishedAt)}</time>
-      ) : (
-        <Badge>Szkic artykułu</Badge>
-      )
-    }
-    {excerpt && size !== BlogPostSize.small && <p>{excerpt}</p>}
+    {newest && <span>Najnowszy wpis</span>}
+    <a href={`${Astro.url.origin}/blog/${url}`}>
+      <h5>{title}</h5>
+    </a>
+    {!publishedAt && <Badge>szkic artykułu</Badge>}
+    {excerpt && <p>{excerpt}</p>}
+    <a href={`${Astro.url.origin}/blog/${url}`}>Czytaj</a>
   </div>
-</a>
+</div>
 
 <style>
-  a {
-    @apply flex flex-col gap-10;
-    @apply bg-white rounded pb-20;
+  div {
+    @apply flex gap-15 py-10 w-full;
   }
 
-  a:hover h3,
-  a:hover h4,
-  a:hover p {
-    @apply text-orangeDark;
+  figure {
+    @apply w-[100px] h-[100px] flex-shrink-0 rounded-sm overflow-hidden;
+    @apply opacity-90;
   }
 
-  a figure {
-    @apply rounded-t overflow-hidden;
+  div[data-size="lg"] figure {
+    @apply lg:w-[150px] lg:h-[150px];
   }
 
-  a div {
-    @apply flex flex-col gap-10 px-15 items-start;
+  div[data-size="xlg"] figure {
+    @apply w-full h-[200px] lg:w-[480px] lg:h-[270px];
   }
 
-  a time {
-    @apply text-xs;
+  div[data-size="xlg"] figure img {
+    @apply w-full h-auto;
   }
 
-  a p {
-    @apply text-sm text-dark75 pb-15;
+  div:hover figure {
+    @apply opacity-100;
+  }
+
+  div a:last-child {
+    @apply btn btn-alt;
+  }
+
+  div > div {
+    @apply flex-col py-0 flex-grow items-start;
+  }
+
+  h5 {
+    @apply text-serif-sm text-black hover:text-active;
+  }
+
+  div[data-size="lg"] h5,
+  div[data-size="xlg"] h5 {
+    @apply md:text-serif-md;
+  }
+
+  div[data-size="xlg"] {
+    @apply col-span-full;
+    @apply lg:gap-40;
+    @apply flex-wrap lg:flex-nowrap;
+  }
+
+  div[data-size="xlg"] > div {
+    @apply lg:pt-10;
+  }
+
+  p {
+    @apply text-serif-sm lg:text-serif-md;
+  }
+
+  span {
+    @apply uppercase text-sans-xxs;
   }
 </style>

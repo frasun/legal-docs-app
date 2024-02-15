@@ -2,21 +2,27 @@
 
 <style>
   page-spinner {
-    @apply fixed top-0 left-0 right-0 z-max;
+    @apply fixed top-0 left-0 right-0 z-loader;
     @apply h-[3px];
-    @apply bg-dark10;
+    @apply bg-black/5;
+    @apply flex items-start;
   }
 
-  page-spinner:not(.hidden) {
+  page-spinner.hidden {
     @apply flex items-start;
+    visibility: hidden;
   }
 
   page-spinner::after {
     @apply content-[''];
     @apply h-full w-1/2;
     @apply -translate-x-[200%];
-    @apply bg-dark90;
+    @apply bg-black;
     animation: progressBar 2.5s infinite cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  page-spinner.hidden::after {
+    animation: none;
   }
 
   @keyframes progressBar {

@@ -9,6 +9,7 @@ import type { BlogPosts } from "@type";
 import { getPosts } from "@api/posts";
 import routes from "@utils/routes";
 import { captureError } from "@utils/sentry";
+import { BlogPostSize } from "@components/BlogPost.astro";
 
 const PAGE_TITLE = "Blog";
 const page = Number(new URL(Astro.request.url).searchParams.get(PAGE)) || 1;
@@ -30,22 +31,30 @@ try {
 }
 ---
 
-<Layout title={pageTitle(PAGE_TITLE)}>
+<Layout pageName={pageTitle(PAGE_TITLE)} title={PAGE_TITLE}>
   <span slot="topbar-title">{PAGE_TITLE}</span>
   {
     posts ? (
-      <div>
-        <section>
-          {posts.map(({ title, slug, publishedAt, mainImage, excerpt }) => (
-            <BlogPost
-              title={title}
-              url={slug}
-              publishedAt={publishedAt}
-              mainImage={mainImage}
-              excerpt={excerpt}
-            />
-          ))}
-        </section>
+      <>
+        <div>
+          {posts.map(
+            ({ title, slug, publishedAt, mainImage, excerpt }, index) => (
+              <BlogPost
+                title={title}
+                url={slug}
+                publishedAt={publishedAt}
+                mainImage={mainImage}
+                excerpt={index === 0 && currentPage === 1 ? excerpt : undefined}
+                size={
+                  index === 0 && currentPage === 1
+                    ? BlogPostSize.xlarge
+                    : BlogPostSize.large
+                }
+                newest={index === 0 && currentPage === 1}
+              />
+            )
+          )}
+        </div>
         {pages > 1 && (
           <Pagination
             pages={pages}
@@ -53,7 +62,7 @@ try {
             url={`${Astro.url.origin}/blog`}
           />
         )}
-      </div>
+      </>
     ) : (
       <EmptyScreen>Brak artykułów do wyświetlenia</EmptyScreen>
     )
@@ -62,11 +71,7 @@ try {
 
 <style>
   div {
-    @apply flex flex-col gap-20;
-  }
-
-  section {
-    @apply grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-20 w-full;
-    @apply pt-10;
+    @apply grid sm:grid-cols-2 lg:grid-cols-3 gap-x-40 gap-y-20 w-full;
+    @apply pb-15;
   }
 </style>

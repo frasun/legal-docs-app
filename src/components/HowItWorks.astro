@@ -1,0 +1,70 @@
+---
+import Badge, { BadgeStyle } from "@components/Badge.astro";
+import Icon from "astro-icon";
+import { BadgeSize } from "./Badge.astro";
+
+const items = [
+  {
+    text: "Wybierz dokument lub sprawę, którą chcesz załatwić",
+    icon: "search-fuzzy",
+    theme: BadgeStyle.orange,
+  },
+  {
+    text: "Odpowiedz na pytania i podaj dane Stron. Na każdym etapie otrzymasz pomoc",
+    icon: "chat",
+    theme: BadgeStyle.orange,
+  },
+  {
+    text: "Wygeneruj dokument prawny gotowy do podpisu. Możesz go wydrukować lub wysłać",
+    icon: "file-pdf",
+    theme: BadgeStyle.orange,
+  },
+  {
+    text: "Twórz szkice i zapisuj je na  koncie użytkownika. Zarządzaj i udostępniaj swoje dokumenty",
+    icon: "references",
+    theme: BadgeStyle.purple,
+  },
+  {
+    text: "Korzystaj z zapisanych tożsamości przy tworzeniu kolejnych dokumentów",
+    icon: "organization",
+    theme: BadgeStyle.purple,
+  },
+];
+---
+
+<section id="howItWorks">
+  <h2>
+    <Badge size={BadgeSize.xlarge}>Jak to działa?</Badge>
+  </h2>
+  {
+    items.map(({ text, icon, theme }) => (
+      <div>
+        <Badge style={theme}>
+          <Icon name={icon} width={48} height={48} />
+        </Badge>
+        {text}
+      </div>
+    ))
+  }
+</section>
+
+<style>
+  section {
+    @apply lg:container px-20 lg:px-60 py-40;
+    @apply flex flex-col sm:flex-row flex-wrap gap-20 md:gap-40 justify-center items-start;
+  }
+
+  div {
+    @apply flex flex-col gap-30 items-center pt-20 pb-10 justify-center;
+    @apply sm:max-w-[50%] md:max-w-[25%];
+    @apply text-center;
+  }
+
+  svg {
+    @apply text-black;
+  }
+
+  h2 {
+    @apply w-full text-center;
+  }
+</style>

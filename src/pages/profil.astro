@@ -1,15 +1,16 @@
 ---
-import Layout from "../layouts/App.astro";
+import Layout, { LayoutType } from "../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import routes from "@utils/routes";
 import { EMAIL, REDIRECT } from "@utils/urlParams";
-import plurals from "@utils/plurals";
 import { getUserProfile } from "@api/users";
 import type { UserProfile } from "@type";
 import formatDate from "@utils/date";
-import ConfirmationModal from "@components/ConfirmationModal.astro";
+import AccountNav from "@components/AccountNav.astro";
+import UserStats from "@components/UserStats.astro";
+import AccountRemoveModal from "@components/AccountRemoveModal.astro";
 
-let title = "Profil",
+let title = "Moje konto",
   email: UserProfile["email"],
   created: UserProfile["created"],
   documents: UserProfile["documents"],
@@ -25,80 +26,54 @@ try {
 }
 ---
 
-<Layout title={pageTitle(title)}>
-  <span slot="topbar-title">{title}</span>
+<Layout pageName={pageTitle(title)} title={title} layout={LayoutType.sidebar}>
+  <AccountNav slot="sidebar" />
+  <UserStats documents={documents} drafts={drafts} identities={identities} />
   <section>
     <div>
       <h3>{email}</h3>
       <time>Konto utworzone: {formatDate(String(created))}</time>
+    </div>
+    <aside>
       <a href={`${routes.RESET_PASSWORD}?${EMAIL}=${encodeURIComponent(email)}`}
         >Zmień hasło</a
       >
       <show-modal data-modal="confirm">
         <button>Usuń konto</button>
       </show-modal>
-    </div>
-    <aside>
-      <p>
-        <big>{documents}</big>
-        <span>{plurals.CREATED_DOCUMENTS(documents)}</span>
-      </p>
-      <p>
-        <big>{drafts}</big>
-        <span>{plurals.DRAFT_DOCUMENTS(drafts)}</span>
-      </p>
-      <p>
-        <big>{identities}</big>
-        <span>{plurals.CREATEED_IDENTITIES(identities)}</span>
-      </p>
     </aside>
   </section>
-  <ConfirmationModal slot="footer">
-    <h3 slot="header">Usunięcie konta</h3>
-    Czy na pewno chcesz usunąć konto i wszystkie dane? Tej operacji nie da się cofnąć
-    <delete-account slot="submit">Potwierdź</delete-account>
-  </ConfirmationModal>
+  <AccountRemoveModal />
 </Layout>
 
 <style>
   section {
-    @apply flex flex-col-reverse gap-20 justify-start;
-    @apply my-20 sm:my-30;
+    @apply border-t border-black/30 sm:px-10;
+    @apply flex flex-wrap gap-15 py-15;
   }
 
-  div,
+  section div {
+    @apply flex-grow;
+  }
+
+  h3 {
+    @apply text-sans-lg text-black;
+  }
+
+  time {
+    @apply text-sans-sm;
+  }
+
   aside {
-    @apply bg-white rounded-lg p-30;
-    @apply w-[90%] max-w-[900px] mx-auto;
+    @apply flex gap-10 items-center;
   }
 
-  div {
-    @apply flex flex-col gap-20 items-start;
-  }
-
-  div button,
-  div a {
+  aside a,
+  aside button {
     @apply btn btn-alt;
-  }
-
-  aside {
-    @apply flex gap-20 flex-wrap;
-  }
-
-  aside p {
-    @apply flex flex-col flex-grow sm:flex-1;
-  }
-
-  aside big {
-    @apply text-3xl font-serif text-dark90;
-  }
-
-  delete-account {
-    @apply btn btn-big btn-default;
   }
 </style>
 
 <script>
   import "@wc/ShowModal";
-  import "@wc/DeleteAccount";
 </script>

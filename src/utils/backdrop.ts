@@ -1,9 +1,9 @@
 const BACKDROP_ID = "backdrop";
 const BACKDROP_CLASS =
-  "fixed left-0 top-0 right-0 bottom-0 bg-dark55 opacity-0 cursor-n-resize";
+  "fixed left-0 top-0 right-0 bottom-0 bg-black/10 opacity-0 cursor-n-resize";
 const TRANSITION_OPACITY = "transition-opacity";
 const OPACITY_100 = "opacity-100";
-const Z_INDEX = "z-50";
+const Z_INDEX = "z-menu";
 
 export function addBackdrop(
   onClickCallback?: Function,

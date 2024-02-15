@@ -6,69 +6,57 @@
   @layer base {
     @font-face {
       font-display: swap;
-      font-family: "Bitter";
+      font-family: "Lora";
       font-style: italic;
       font-weight: 500;
       src:
-        local("Bitter Medium Italic"),
-        url("../fonts/bitter-v32-latin_latin-ext-500italic.woff2")
-          format("woff2"),
-        url("../fonts/bitter-v32-latin_latin-ext-500italic.woff") format("woff");
+        local("Lora Medium Italic"),
+        url("../fonts/Lora-MediumItalic.woff2") format("woff2"),
+        url("../fonts/Lora-MediumItalic.woff") format("woff");
     }
 
     @font-face {
       font-display: swap;
-      font-family: "Chivo";
-      font-style: normal;
+      font-family: "Lora";
+      font-style: italic;
       font-weight: 700;
       src:
-        local("Chivo Bold"),
-        url("../fonts/chivo-v18-latin_latin-ext-700.woff2") format("woff2"),
-        url("../fonts/chivo-v18-latin_latin-ext-700.woff") format("woff");
+        local("Lora Bold Italic"),
+        url("../fonts/Lora-BoldItalic.woff2") format("woff2"),
+        url("../fonts/Lora-BoldItalic.woff") format("woff");
     }
 
     @font-face {
       font-display: swap;
-      font-family: "Chivo";
+      font-family: "Lora";
       font-style: normal;
-      font-weight: 400;
+      font-weight: 500;
       src:
-        local("Chivo Regular"),
-        url("../fonts/chivo-v18-latin_latin-ext-regular.woff2") format("woff2"),
-        url("../fonts/chivo-v18-latin_latin-ext-regular.woff") format("woff");
+        local("Lora Medium"),
+        url("../fonts/Lora-Medium.woff2") format("woff2"),
+        url("../fonts/Lora-Medium.woff") format("woff");
+    }
+
+    @font-face {
+      font-display: swap;
+      font-family: "IBM Plex";
+      font-style: normal;
+      font-weight: 500;
+      src:
+        local("IBM Plex Medium"),
+        url("../fonts/IBMPlexSans-Medium.woff2") format("woff2"),
+        url("../fonts/IBMPlexSans-Medium.woff") format("woff");
     }
 
     body {
-      @apply tracking-tight antialiased;
-      @apply bg-gray text-dark65;
-      @apply tracking-tight;
+      @apply bg-white;
+      @apply text-serif-md;
+      @apply antialiased;
+      @apply text-black/70;
     }
 
     a {
-      @apply text-dark65 hover:text-orangeDark;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4 {
-      @apply font-serif font-medium italic text-dark90 tracking-tight;
-    }
-
-    h1 {
-      @apply text-2xl md:text-3xl;
-    }
-
-    h2 {
-      @apply text-2xl;
-    }
-
-    h3 {
-      @apply text-h3;
-    }
-
-    h4 {
-      @apply text-xl;
+      @apply text-black/70 hover:text-active;
     }
   }
 
@@ -88,13 +76,13 @@
     [multiple],
     textarea,
     select {
-      @apply rounded-xl;
-      @apply border-2 border-dark30 border-solid;
-      @apply py-10 px-20;
-      @apply text-dark75;
+      @apply rounded-sm;
+      @apply border-2 border-black/10;
+      @apply px-15 py-8;
+      @apply text-sans-md text-black;
       @apply text-ellipsis;
-      @apply tracking-tighter;
       @apply transition-colors;
+      @apply shadow-1;
     }
 
     [type="text"]::placeholder,
@@ -112,7 +100,7 @@
     [multiple]::placeholder,
     textarea::placeholder,
     select::placeholder {
-      @apply text-dark40;
+      @apply text-black/50;
     }
 
     [type="text"]:hover,
@@ -130,8 +118,7 @@
     [multiple]:hover,
     textarea:hover,
     select:hover {
-      @apply text-dark75;
-      @apply border-dark55;
+      @apply border-black/50;
     }
 
     [type="text"]:hover::placeholder,
@@ -149,7 +136,7 @@
     [multiple]:hover::placeholder,
     textarea:hover::placeholder,
     select:hover::placeholder {
-      @apply text-dark55;
+      @apply text-black/50;
     }
 
     [type="text"]:focus,
@@ -167,9 +154,8 @@
     [multiple]:focus,
     textarea:focus,
     select:focus {
-      @apply text-dark90;
-      @apply border-dark75;
-      @apply shadow-none ring-transparent;
+      @apply border-black;
+      @apply shadow-2 ring-transparent;
     }
 
     [type="text"]:focus::placeholder,
@@ -187,7 +173,12 @@
     [multiple]:focus::placeholder,
     textarea:focus::placeholder,
     select:focus::placeholder {
-      @apply text-dark30;
+      @apply text-black/30;
+    }
+
+    label,
+    legend {
+      @apply text-sans-sm text-black/70;
     }
 
     label[for] {
@@ -195,10 +186,16 @@
     }
 
     input[type="checkbox"],
-    input[type="radio"] {
-      @apply text-orange;
-      @apply w-[20px] h-[20px];
+    input[type="radio"],
+    input[type="checkbox"]:focus,
+    input[type="radio"]:focus {
+      --tw-ring-offset-width: 0px;
+
+      @apply text-green;
+      @apply w-[24px] h-[24px];
       @apply transition-colors;
+      @apply outline-none outline-offset-0 outline-0 ring-transparent;
+      @apply shadow-1;
     }
 
     input[type="checkbox"]:not([disabled]),
@@ -207,35 +204,40 @@
     }
 
     input[type="checkbox"] {
-      @apply border-2 rounded-sm;
+      @apply rounded border-0 bg-black/10;
+
+      background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' opacity='0.1' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill='282725' d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z' /%3e%3c/svg%3e");
     }
 
-    input[type="checkbox"]:focus,
-    input[type="radio"]:focus {
-      --tw-ring-color: transparent;
+    input[type="checkbox"]:checked {
+      background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill='282725' d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z' /%3e%3c/svg%3e");
+    }
 
-      @apply outline-none outline-offset-0;
+    input[type="checkbox"]:not(:checked):hover {
+      background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' opacity='0.5' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill='282725' d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z' /%3e%3c/svg%3e");
     }
 
     input[type="radio"] {
-      @apply border-2 border-dark30;
+      @apply border-0 bg-black/10;
+
+      background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='282725' opacity='0.1' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
     }
 
-    input[type="radio"]:hover {
-      @apply border-dark55;
+    input[type="radio"]:checked {
+      background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='282725' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+    }
+
+    input[type="radio"]:not(:checked):hover {
+      background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='282725' opacity='0.5' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+    }
+
+    input[type="radio"]:checked + label {
+      @apply text-active;
     }
 
     select {
-      @apply min-w-[200px] py-10 px-20 pr-30;
+      @apply min-w-[200px] pr-40;
       @apply cursor-pointer;
-    }
-
-    legend {
-      @apply pb-15;
-    }
-
-    [type="number"] {
-      @apply w-[140px];
     }
 
     address {
@@ -247,28 +249,30 @@
     }
 
     toast-element {
-      @apply py-15 px-20 bg-dark90 text-light rounded z-max;
+      @apply p-15 z-max;
+      @apply text-sans-sm;
+      @apply bg-green text-black rounded;
+      @apply border border-black;
       @apply fixed top-15 right-15;
       @apply opacity-0 translate-x-[calc(100%_+_15px)];
-      @apply w-[260px];
-      @apply leading-tight;
-      @apply flex gap-15 items-start;
+      @apply w-[280px];
+      @apply flex gap-15 items-center;
     }
 
     toast-element.animate {
       animation-name: showToast;
-      animation-duration: 5s;
+      animation-duration: 7s;
       animation-timing-function: linear;
       animation-delay: 0.5s;
       animation-iteration-count: 1;
     }
 
     toast-element svg {
-      @apply text-light flex-shrink-0;
+      @apply flex-shrink-0;
     }
 
     toast-element[data-status="error"] {
-      @apply bg-orange;
+      @apply bg-red;
     }
 
     @keyframes showToast {

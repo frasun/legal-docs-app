@@ -1,6 +1,6 @@
 ---
-import Layout from "../../layouts/App.astro";
-import { Icon } from "astro-icon";
+import Layout, { LayoutType } from "../../layouts/App.astro";
+import Icon, { IconSize } from "@components/Icon.astro";
 import DocumentTile from "@components/DocumentTile.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
@@ -43,44 +43,35 @@ try {
 ---
 
 <Layout
-  title={pageTitle(title)}
+  pageName={pageTitle(title)}
   keywords={currentCategory?.keywords ?? undefined}
   description={currentCategory?.description ?? undefined}
+  title={title}
+  layout={documents.length ? LayoutType.container : LayoutType.centered}
 >
-  <span slot="topbar-title">{title}</span>
-  <header slot="content-header">
-    <search-documents>
-      <form method="GET" action={Astro.request.url} spellcheck="false">
-        <input
-          type="search"
-          placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
-          spellcheck="false"
-          name={SEARCH}
-          value={search ? trimWhitespace(search) : ""}
-        />
-        {
-          currentCat && (
-            <input type="hidden" name={CATEGORY} value={currentCat} />
-          )
-        }
-        <Icon name="search" width={24} height={24} />
-      </form>
+  <aside slot="topbar-aside">
+    <form method="GET" action={Astro.request.url} spellcheck="false">
+      <input
+        type="search"
+        placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
+        spellcheck="false"
+        name={SEARCH}
+        value={search ? trimWhitespace(search) : ""}
+      />
+      {currentCat && <input type="hidden" name={CATEGORY} value={currentCat} />}
+      <button type="submit">Szukaj</button>
       {
         search && (
-          <button aria-label="Wyczyść">
-            <Icon name="clear" width={18} height={18} />
+          <a href={Astro.url.pathname}>
+            <Icon name="clear" size={IconSize.sm} />
             <span>Wyczyść</span>
-          </button>
+          </a>
         )
       }
-    </search-documents>
+    </form>
     <category-selector>
-      <button>
-        <Icon name="options" width={24} height={24} />
-      </button>
-      <label for="category">Kategorie</label>
-      <select id="category">
-        <option value="">Wszystkie</option>
+      <select>
+        <option value="">Wszystkie kategorie</option>
         {
           categories.map(({ slug: id, title: name }) => (
             <option value={id} selected={id === currentCat}>
@@ -90,7 +81,7 @@ try {
         }
       </select>
     </category-selector>
-  </header>
+  </aside>
   {
     documents.length ? (
       <section>
@@ -112,79 +103,40 @@ try {
 </Layout>
 
 <style>
-  header {
-    @apply fixed top-auto bottom-0 left-0 right-0;
-    @apply border-t-[1px] border-dark40;
-    @apply bg-gray flex gap-15 px-20 py-10;
+  aside {
+    @apply flex gap-15 flex-grow flex-wrap lg:flex-nowrap;
   }
 
-  @screen md {
-    header {
-      @apply sticky top-[var(--navbar-height)];
-      @apply border-0 p-0 pb-10 gap-30;
-    }
+  aside form {
+    @apply flex gap-10 flex-grow items-center;
   }
 
-  section {
-    @apply grid md:auto-rows-fr sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-20 w-full;
-    @apply pt-10;
+  aside form input[type="search"] {
+    @apply flex-grow w-0;
   }
 
-  category-selector {
-    @apply flex gap-10 items-center;
-    @apply relative;
-  }
-
-  category-selector label {
-    @apply hidden sm:inline-block;
-  }
-
-  category-selector button {
-    @apply sm:hidden;
-    @apply absolute left-1/2 -translate-x-1/2 pointer-events-none bg-dark10;
-    @apply py-[.5rem] px-10 rounded;
-  }
-
-  @media (max-width: 639px) {
-    category-selector select {
-      @apply max-w-[24px] min-w-[24px] border-0 bg-dark10 text-transparent;
-      @apply appearance-none opacity-0;
-    }
-  }
-
-  search-documents {
-    @apply flex-grow;
-    @apply flex gap-10 items-center;
-  }
-
-  search-documents form {
-    @apply flex-grow relative;
-  }
-
-  search-documents form :global(> svg) {
-    @apply absolute left-20 top-0 translate-y-1/2;
-    @apply hidden sm:block;
-  }
-
-  search-documents input[type="search"] {
-    @apply w-full;
-    @apply sm:pl-60;
-  }
-
-  search-documents button {
+  aside form button,
+  aside form a {
     @apply btn btn-alt;
   }
 
-  search-documents button span {
+  aside form a span {
     @apply hidden sm:inline-block;
   }
 
-  search-documents button svg {
-    @apply inline-block sm:hidden;
+  section {
+    @apply col-span-12;
+    @apply grid gap-20 lg:gap-30;
+    @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6;
+    @apply pt-10;
+    @apply auto-rows-fr;
+  }
+
+  :global(main > div) {
+    @apply col-span-12;
   }
 </style>
 
 <script>
   import "@wc/CategorySelector";
-  import "@wc/SearchDocuments";
 </script>

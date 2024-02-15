@@ -1,13 +1,18 @@
 ---
-import Logo from "../images/logo.astro";
+import Badge, { BadgeSize } from "@components/Badge.astro";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
 ---
 
 <div>
   <header>
-    <a href={Astro.url.origin} aria-label="Strona główna">
-      <Logo />
-    </a>
-    <slot name="form-header" />
+    <h1>
+      <Badge size={BadgeSize.large}>{title}</Badge>
+    </h1>
   </header>
   <form spellcheck="false" method="POST" data-astro-reload>
     <slot />
@@ -15,15 +20,10 @@ import Logo from "../images/logo.astro";
   </form>
   <slot name="form-footer" />
 </div>
-<aside>
-  <a href={Astro.url.origin}>
-    <small>Wróć do strony głównej</small>
-  </a>
-</aside>
 
 <style>
   div {
-    @apply bg-white rounded-lg p-30;
+    @apply col-span-full;
     @apply flex flex-col gap-20;
     @apply w-[90%] sm:w-full max-w-[500px] mx-auto;
     @apply mt-20 sm:mt-30;
@@ -34,11 +34,11 @@ import Logo from "../images/logo.astro";
   }
 
   header :global(h1) {
-    @apply text-2xl;
+    @apply text-italic-md;
   }
 
   form {
-    @apply flex flex-col gap-10 items-center;
+    @apply flex flex-col gap-15 items-center;
   }
 
   form
@@ -57,14 +57,11 @@ import Logo from "../images/logo.astro";
   }
 
   div :global(footer) {
-    @apply mt-20 flex gap-10 sm:gap-15 items-center flex-wrap;
+    @apply mt-20 flex gap-10 sm:gap-15 items-center justify-center flex-wrap;
+    @apply text-serif-sm;
   }
 
   div :global(footer a) {
     @apply btn btn-alt;
-  }
-
-  aside {
-    @apply w-full max-w-[500px] mx-auto text-center my-20;
   }
 </style>

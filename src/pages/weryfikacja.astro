@@ -1,11 +1,12 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout, { LayoutType } from "../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import * as PARAMS from "@utils/urlParams";
 import routes from "@utils/routes";
 import { getVerificationInProgress } from "@api/users";
 import { captureError } from "@utils/sentry";
+import Hint from "@components/Hint.astro";
 
 const url = new URL(Astro.request.url);
 const emailParam = url.searchParams.get(PARAMS.EMAIL);
@@ -34,19 +35,27 @@ if (redirectUrl) {
     redirectUrl.searchParams.append(PARAMS.DRAFT, draftParam);
   }
 }
+
+const PAGE_NAME = "Weryfikacja adresu e-mail";
 ---
 
-<Layout title={pageTitle("Weryfikacja adresu e-mail")}>
+<Layout pageName={pageTitle(PAGE_NAME)} title="" layout={LayoutType.centered}>
   <verification-form email={userEmail} redirect={redirectUrl}>
-    <AuthForm>
-      <p slot="form-header">
+    <AuthForm title={PAGE_NAME}>
+      <Hint>
         Podaj kod wysłany na adres e-mail <strong>{userEmail}</strong>
-      </p>
+      </Hint>
       <input type="text" name="code" required />
       <button type="submit">Wyślij</button>
     </AuthForm>
   </verification-form>
 </Layout>
+
+<style>
+  verification-form {
+    @apply col-span-full;
+  }
+</style>
 
 <script>
   import "@wc/VerificationForm";

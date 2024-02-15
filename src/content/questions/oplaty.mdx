@@ -8,7 +8,4 @@ question: Kto będzie ponosił opłaty za media?
 import Radios from '@components/Radios.astro'
 import {billsEnum} from '@schema/umowa-najmu-lokalu'
 
-<fieldset>
-    <legend>Dopasuj odpowiedzi do stron umowy</legend>
-    <Radios selected={[frontmatter.bills.landlord, frontmatter.bills.tenant]} options={['Opłata', 'Wynajmujący', 'Najemca']} labels={billsEnum} token={['landlord', 'tenant']} fieldId="bills" />
-</fieldset>
+<Radios selected={[frontmatter.bills.landlord, frontmatter.bills.tenant]} options={['Wynajmujący', 'Najemca']} labels={billsEnum} token={['landlord', 'tenant']} fieldId="bills" />

@@ -1,0 +1,81 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Icon from "astro-icon";
+
+export enum DropdownMenuPosition {
+  left = "left",
+  right = "right",
+}
+
+interface Props extends HTMLAttributes<"div"> {
+  label: string;
+  position?: DropdownMenuPosition;
+}
+
+const { label, position = DropdownMenuPosition.left } = Astro.props;
+---
+
+<dropdown-menu {...Astro.props} data-menu-position={position}>
+  <button>
+    {label}
+    <Icon name="arrow-down" width={16} height={16} />
+  </button>
+  <div class="dropdownMenu">
+    <slot />
+  </div>
+</dropdown-menu>
+
+<style>
+  dropdown-menu {
+    @apply relative;
+  }
+
+  dropdown-menu button {
+    @apply menu-item;
+    @apply gap-5;
+  }
+
+  dropdown-menu button svg {
+    @apply transition-transform;
+  }
+
+  dropdown-menu div {
+    @apply flex-col gap-5 py-8;
+    @apply bg-[#F4F4F4] shadow-1;
+    @apply absolute top-full left-0;
+    @apply min-w-[200px] max-w-[250px];
+  }
+
+  dropdown-menu[data-open] button {
+    @apply rounded-t-sm rounded-b-[0];
+    @apply bg-black/5;
+  }
+
+  dropdown-menu[data-open] button svg {
+    @apply rotate-180;
+  }
+
+  dropdown-menu[data-open] div {
+    @apply flex;
+  }
+
+  dropdown-menu:not([data-open]) div {
+    @apply hidden;
+  }
+
+  dropdown-menu div :global(a),
+  dropdown-menu div :global(button) {
+    @apply text-sans-sm text-black;
+    @apply hover:bg-black/10;
+    @apply px-15 py-5;
+    @apply text-left;
+  }
+
+  dropdown-menu[data-menu-position="right"] div {
+    @apply right-0 left-auto;
+  }
+</style>
+
+<script>
+  import "@wc/DropdownMenu";
+</script>

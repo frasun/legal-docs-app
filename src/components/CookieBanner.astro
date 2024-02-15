@@ -12,12 +12,11 @@
 
 <style>
   cookie-banner {
-    @apply py-15 px-20 bg-light text-dark75 rounded z-max;
-    @apply fixed bottom-15 right-15;
+    @apply py-15 px-20 bg-yellow text-black/70 rounded z-max border shadow-3;
+    @apply fixed bottom-15 left-15;
     @apply w-[260px];
-    @apply leading-tight;
     @apply flex flex-col gap-15 items-start;
-    @apply text-sm;
+    @apply text-sans-md text-black;
   }
 
   cookie-banner button#accept {
@@ -25,11 +24,7 @@
   }
 
   cookie-banner button#reject {
-    @apply text-xxs underline;
-  }
-
-  cookie-banner button#reject:hover {
-    @apply text-orangeDark;
+    @apply text-black/70 hover:text-active text-sans-sm;
   }
 
   cookie-banner.animate {

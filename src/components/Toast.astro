@@ -1,5 +1,5 @@
 ---
-import { Icon } from "astro-icon";
+import Icon, { IconSize } from "@components/Icon.astro";
 import { ToastStatus } from "@utils/toasts";
 
 interface Props {
@@ -8,10 +8,10 @@ interface Props {
 }
 
 const { info, status = ToastStatus.default } = Astro.props;
-const toastIcon = status === ToastStatus.error ? "clear" : "tick";
+const toastIcon = status === ToastStatus.error ? "error" : "pass";
 ---
 
 <toast-element data-status={status}>
-  <Icon name={toastIcon} width={32} height={32} />
+  <Icon name={toastIcon} size={IconSize.xl} />
   <p>{info}</p>
 </toast-element>

@@ -1,5 +1,5 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import Layout, { LayoutType } from "src/layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import * as PARAMS from "@utils/urlParams";
@@ -16,10 +16,9 @@ if (emailParam) {
 }
 ---
 
-<Layout title={pageTitle(PAGE_TITLE)}>
+<Layout pageName={pageTitle(PAGE_TITLE)} title="" layout={LayoutType.centered}>
   <password-reset-form>
-    <AuthForm>
-      <h1 slot="form-header">{PAGE_TITLE}</h1>
+    <AuthForm title={PAGE_TITLE}>
       <InputGroup>
         <label for="email">Podaj adres e-mail konta</label>
         <input id="email" type="email" name="email" value={userEmail} />
@@ -28,6 +27,12 @@ if (emailParam) {
     </AuthForm>
   </password-reset-form>
 </Layout>
+
+<style>
+  password-reset-form {
+    @apply col-span-full;
+  }
+</style>
 
 <script>
   import "@wc/PasswordResetForm";

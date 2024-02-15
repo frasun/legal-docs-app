@@ -1,22 +1,24 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout, { LayoutType } from "../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import InputGroup, { InputType } from "@components/InputGroup.astro";
 import routes from "@utils/routes";
 import { getSession } from "auth-astro/server";
+import Hint from "@components/Hint.astro";
 
 const session = await getSession(Astro.request);
 
 if (session) {
   return Astro.redirect(routes.MY_DOCUMENTS);
 }
+
+const PAGE_TITLE = "Załóż konto";
 ---
 
-<Layout title={pageTitle("Załóż konto")}>
+<Layout pageName={pageTitle(PAGE_TITLE)} title="" layout={LayoutType.centered}>
   <sign-up-form>
-    <AuthForm>
-      <h1 slot="form-header">Załóż konto</h1>
+    <AuthForm title={PAGE_TITLE}>
       <InputGroup>
         <label for="email">Adres e-mail</label>
         <input id="email" type="email" name="email" required />
@@ -30,15 +32,15 @@ if (session) {
           required
           pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
         />
-        <small
-          >Hasło powinno mieć co najmniej 8 znaków, maksymalnie 20 znaków, w tym
-          przynajmniej jedną wielką literę i jedną cyfrę</small
-        >
+        <Hint>
+          Hasło powinno mieć pomiędzy 8 a 20 znaków, w tym przynajmniej jedną
+          wielką literę i jedną cyfrę
+        </Hint>
       </InputGroup>
       <InputGroup type={InputType.checkbox}>
         <input type="checkbox" name="tos" id="tos" required />
         <label for="tos">
-          Akceptuję warunki <a href={routes.TOS} target="_blank">regulaminu</a>
+          Akceptuję warunki <a href={routes.TOS} target="_blank">regulaminu</a>.
         </label>
       </InputGroup>
       <button type="submit">Załóż konto</button>
@@ -49,6 +51,12 @@ if (session) {
     </AuthForm>
   </sign-up-form>
 </Layout>
+
+<style>
+  sign-up-form {
+    @apply col-span-full;
+  }
+</style>
 
 <script>
   import "@wc/SignUpForm";

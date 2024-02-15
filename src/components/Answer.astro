@@ -6,9 +6,9 @@ import type { Answers, Template } from "@type";
 
 interface Props {
   data: Answers;
-  template?: Template["index"][number]["questions"][number]["slug"];
-  token?: Template["index"][number]["questions"][number]["token"];
-  type?: Template["index"][number]["questions"][number]["type"];
+  template?: Template["index"][number]["slug"];
+  token?: Template["index"][number]["token"];
+  type?: Template["index"][number]["type"];
 }
 
 const { data, template, token, type } = Astro.props;
@@ -64,6 +64,6 @@ if (!template && token) {
 
 <style>
   div {
-    @apply text-dark90 text-lg;
+    @apply text-sans-lg;
   }
 </style>

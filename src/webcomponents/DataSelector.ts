@@ -1,12 +1,10 @@
 class DataSelector extends HTMLElement {
   selector: HTMLSelectElement | null;
-  fields: NodeListOf<HTMLInputElement>;
 
   constructor() {
     super();
 
     this.selector = this.querySelector("select");
-    this.fields = this.querySelectorAll("fieldset input");
   }
 
   connectedCallback() {
@@ -21,9 +19,9 @@ class DataSelector extends HTMLElement {
   dataTypeChanged(event: Event) {
     const selectedType = (event.target as HTMLSelectElement)?.value;
 
-    Array.from(this.querySelectorAll<HTMLElement>("[data-type]")).forEach(
+    Array.from(this.querySelectorAll<HTMLElement>("[data-identity]")).forEach(
       (element) => {
-        if (element.dataset.type === selectedType) {
+        if (element.dataset.identity === selectedType) {
           element.removeAttribute("style");
         } else {
           element.style.display = "none";
@@ -51,6 +49,9 @@ class DataSelector extends HTMLElement {
       ) as HTMLInputElement;
 
       typeField.value = type;
+
+      typeField.dispatchEvent(new Event("change"));
+
       nameField.value = name;
       pinField.value = pin;
       streetField.value = street;

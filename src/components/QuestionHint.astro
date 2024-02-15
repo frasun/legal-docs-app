@@ -1,0 +1,28 @@
+---
+import Icon from "@components/Icon.astro";
+import Badge, { BadgeStyle, BadgeSize } from "@components/Badge.astro";
+
+interface Props {
+  info: string;
+}
+
+const { info } = Astro.props;
+---
+
+<header>
+  <Icon name="bulb" />
+  <Badge style={BadgeStyle.orange} size={BadgeSize.medium}>Wskazówka</Badge>
+</header>
+<p>
+  {info}
+</p>
+
+<style>
+  header {
+    @apply flex items-center gap-10 text-black;
+  }
+
+  p {
+    @apply text-serif-sm mt-10;
+  }
+</style>

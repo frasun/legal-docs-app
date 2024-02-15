@@ -304,11 +304,8 @@ export function getContentArray(element: Element) {
       case "P":
         array.push(...getPargraph(el.innerHTML));
         break;
-      case "FOOTER":
-        array.push([
-          CONTENT_TYPES.SIGNATURE,
-          trimWhitespace(el.textContent as string),
-        ]);
+      case "BR":
+        array.push([CONTENT_TYPES.LINE, ""]);
         break;
     }
   }
@@ -333,10 +330,10 @@ function getListItems(list: Element) {
 
 function getPargraph(paragraph: string | null) {
   let array: DocumentContent[] = [];
-  const lineBreakRegex = /<\s*br\s*\/?>/gi;
+  const lineBreakRegex = /\n/gi;
 
   if (paragraph) {
-    const lines = paragraph.split(lineBreakRegex);
+    const lines = cleanContent(paragraph, true).split(lineBreakRegex);
 
     for (const line of lines) {
       if (line.startsWith("\n")) {
@@ -350,9 +347,9 @@ function getPargraph(paragraph: string | null) {
   return array;
 }
 
-function cleanContent(line: string) {
+function cleanContent(line: string, replaceWithNewLine = false) {
   return line
     .replace("\n", "")
     .trim()
-    .replace(/<[^>]+>/g, "");
+    .replace(/<[^>]+>/g, replaceWithNewLine ? "\n" : "");
 }

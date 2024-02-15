@@ -1,5 +1,5 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout, { LayoutType } from "../layouts/App.astro";
 import { getSession } from "auth-astro/server";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
@@ -31,12 +31,13 @@ if (redirectUrl) {
     redirectUrl.searchParams.append(PARAMS.DRAFT, draftParam);
   }
 }
+
+const PAGE_TITLE = "Zaloguj się";
 ---
 
-<Layout title={pageTitle("Zaloguj się")}>
+<Layout pageName={pageTitle(PAGE_TITLE)} title="" layout={LayoutType.centered}>
   <login-form redirect={redirectUrl}>
-    <AuthForm>
-      <h1 slot="form-header">Zaloguj się</h1>
+    <AuthForm title={PAGE_TITLE}>
       <InputGroup>
         <label for="email">Adres e-mail</label>
         <input id="email" type="email" name="email" required />
@@ -50,8 +51,10 @@ if (redirectUrl) {
           required
           pattern="(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,20}$"
         />
-        <a href={routes.RESET_PASSWORD}>Zapomniałeś hasła?</a>
       </InputGroup>
+      <aside>
+        <a href={routes.RESET_PASSWORD}>Zapomniałeś hasła?</a>
+      </aside>
       <button type="submit">Zaloguj się</button>
       <footer slot="form-footer">
         Nie masz jeszcze konta?
@@ -60,6 +63,20 @@ if (redirectUrl) {
     </AuthForm>
   </login-form>
 </Layout>
+
+<style>
+  login-form {
+    @apply col-span-full;
+  }
+
+  a {
+    @apply text-sans-sm;
+  }
+
+  aside {
+    @apply text-right w-full;
+  }
+</style>
 
 <script>
   import "@wc/LoginForm";

@@ -1,0 +1,72 @@
+---
+import Icon from "@components/Icon.astro";
+import Security from "../images/security.astro";
+---
+
+<section>
+  <div>
+    <div>
+      <Security />
+    </div>
+    <div>
+      <h3>Twoje dane są z nami bezpieczne</h3>
+      <ul>
+        <li>
+          <Icon name="pass-fill" />Przechowujemy dane osobowe zgodnie z
+          zachowaniem najwyższych standardów bezpieczeństwa cyfrowego
+        </li>
+        <li>
+          <Icon name="pass-fill" />Dane i tożsamości zabezpieczone są
+          wieloetapowym algorytmem szyfrującym
+        </li>
+        <li>
+          <Icon name="pass-fill" />Współpracujemy z liderami branży IT w
+          zakresie infrastruktury
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    @apply border-y border-black shadow-2;
+    @apply bg-black/5;
+    @apply text-black;
+
+    @apply bg-repeat bg-[length:92px_100px];
+    background-image: url(../images/security-bg.png);
+  }
+
+  section > div {
+    @apply w-full max-w-[880px] mx-auto px-20 md:px-40 py-40 md:py-60;
+    @apply flex flex-col sm:flex-row gap-30 sm:gap-10 items-center;
+    @apply bg-[#F4F4F4];
+  }
+
+  h3 {
+    @apply text-italic-md;
+  }
+
+  li {
+    @apply flex gap-15;
+  }
+
+  li svg {
+    @apply flex-shrink-0;
+  }
+
+  section > div > div:first-child {
+    @apply px-30;
+    @apply order-2 sm:order-1;
+  }
+
+  section > div > div:last-child {
+    @apply order-1 sm:order-2;
+  }
+
+  section > div > div:last-child,
+  ul {
+    @apply flex flex-col gap-15;
+  }
+</style>

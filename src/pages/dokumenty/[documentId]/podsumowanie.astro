@@ -1,10 +1,8 @@
 ---
-import Layout from "../../../layouts/App.astro";
+import Layout, { FooterType } from "../../../layouts/App.astro";
 import Answer from "@components/Answer.astro";
 import { getSession } from "auth-astro/server";
-import ChangeNameButton from "@components/ChangeNameButton.astro";
-import ChangeNameModal from "@components/ChangeNameModal.astro";
-import Badge from "@components/Badge.astro";
+import Badge, { BadgeSize, BadgeStyle } from "@components/Badge.astro";
 import pageTitle from "@utils/pageTitle";
 import type { TemplateSummary } from "@type";
 import PaymentModal from "@components/PaymentModal.astro";
@@ -14,6 +12,7 @@ import routes from "@utils/routes";
 import { getTemplateSummary } from "@api/templates";
 import { captureError } from "@utils/sentry";
 import SaveDraft from "@components/SaveDarft.astro";
+import Progressbar from "@components/Progressbar.astro";
 
 const { documentId } = Astro.params as { documentId: string };
 
@@ -54,42 +53,32 @@ try {
 }
 ---
 
-<Layout title={pageTitle(`Podsumowanie - ${title}`)}>
-  <span slot="topbar-title"><span>{title}</span><Badge>Szkic</Badge></span>
-  {
-    isUserDocument && (
-      <ChangeNameButton
-        id={documentId}
-        title={title}
-        slot="topbar-after-title"
-      />
-    )
-  }
+<Layout
+  pageName={pageTitle(`Podsumowanie - ${title}`)}
+  title={title}
+  footer={FooterType.short}
+  highlightTitle={false}
+>
+  <Badge slot="topbar-after-title" style={BadgeStyle.blue}>szkic</Badge>
+  <aside slot="topbar-aside">
+    <Progressbar current={1} steps={1} />
+    {!isUserDocument && <SaveDraft documentId={documentId} />}
+  </aside>
   <section>
-    <h1>Podsumowanie</h1>
+    <h2>
+      <Badge size={BadgeSize.medium}>Podsumowanie</Badge>
+    </h2>
     {
-      index.map(({ title, questions }) => (
-        <>
-          <h5>{title}</h5>
-          {questions.map(({ title, slug, answer, token, type }) => (
-            <div>
-              <div>
-                <h6>{title}</h6>
-                <Answer
-                  template={answer}
-                  data={answers}
-                  token={token}
-                  type={type}
-                />
-              </div>
-              <a
-                href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${slug}`}
-              >
-                Zmień
-              </a>
-            </div>
-          ))}
-        </>
+      index.map(({ title, slug, answer, token, type }) => (
+        <div>
+          <h6>{title}</h6>
+          <Answer template={answer} data={answers} token={token} type={type} />
+          <a
+            href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${slug}`}
+          >
+            Zmień
+          </a>
+        </div>
       ))
     }
     <footer>
@@ -105,36 +94,41 @@ try {
             </show-modal>
           )
         ) : (
-          <h4>Aby wygenerować dokument wypełnij wszystkie wymagane pola</h4>
+          <Badge style={BadgeStyle.red} size={BadgeSize.large}>
+            Aby wygenerować dokument wypełnij wszystkie wymagane pola
+          </Badge>
         )
       }
       {!isUserDocument && <SaveDraft documentId={documentId} />}
     </footer>
   </section>
-  <ChangeNameModal />
-  <PaymentModal documentId={documentId} />
+  <PaymentModal documentId={documentId} slot="footer" />
 </Layout>
 <style>
   section {
-    @apply max-w-[1000px] mx-auto w-full mt-20;
+    @apply col-span-12;
   }
 
-  section h1 {
-    @apply text-2xl;
-  }
-
-  section h5 {
-    @apply mt-30 mb-10 font-sans font-bold text-sm tracking-normal text-dark55;
+  section h2 {
+    @apply py-15;
   }
 
   section > div {
-    @apply bg-white my-10 py-15 px-20 rounded-lg;
-    @apply flex items-start sm:items-center gap-10;
-    @apply flex-col sm:flex-row;
+    @apply flex items-end md:items-start gap-x-30 gap-y-10 flex-wrap md:flex-nowrap;
+    @apply flex-col md:flex-row;
+    @apply text-sans-lg;
+    @apply lg:px-10 py-15 border-t border-black/30;
   }
 
-  section > div > div {
+  section > div h6 {
+    @apply md:min-w-[25%];
+    @apply w-full md:w-auto;
+  }
+
+  section > div :global(> div) {
     @apply flex-grow;
+    @apply text-black;
+    @apply w-full md:w-auto;
   }
 
   section a {
@@ -142,7 +136,7 @@ try {
   }
 
   footer {
-    @apply pt-50;
+    @apply py-60;
     @apply flex flex-col justify-center gap-20 items-center;
   }
 
@@ -152,12 +146,14 @@ try {
 
   footer a:first-child,
   footer button,
-  show-payment-modal button {
+  show-payment-modal button,
+  submit-order {
     @apply btn btn-default btn-big;
+    @apply min-w-[280px];
   }
 
-  submit-order {
-    @apply btn btn-big btn-default;
+  aside {
+    @apply flex items-center gap-15 md:gap-30;
   }
 </style>
 

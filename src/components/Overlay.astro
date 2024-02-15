@@ -1,0 +1,59 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+export enum DropdownMenuPosition {
+  left = "left",
+  right = "right",
+}
+
+interface Props extends HTMLAttributes<"div"> {
+  position?: DropdownMenuPosition;
+}
+
+const { position = DropdownMenuPosition.right } = Astro.props;
+---
+
+<dropdown-menu {...Astro.props} data-menu-position={position}>
+  <button>
+    <slot />
+  </button>
+  <div class="dropdownMenu">
+    <slot name="overlay" />
+  </div>
+</dropdown-menu>
+
+<style>
+  dropdown-menu {
+    @apply relative;
+  }
+
+  dropdown-menu button {
+    @apply btn btn-alt;
+    @apply gap-5;
+  }
+
+  dropdown-menu div {
+    @apply flex-col gap-8 p-8;
+    @apply bg-yellow shadow-3 border rounded;
+    @apply absolute top-full left-0 mt-10;
+    @apply min-w-[200px] max-w-[250px];
+    @apply text-sans-xs text-black;
+  }
+
+  dropdown-menu[data-open] div {
+    @apply flex;
+  }
+
+  dropdown-menu:not([data-open]) div {
+    @apply hidden;
+  }
+
+  dropdown-menu[data-menu-position="right"] div {
+    @apply right-auto sm:right-0 left-1/2 sm:left-auto;
+    @apply -translate-x-1/2 sm:translate-x-0;
+  }
+</style>
+
+<script>
+  import "@wc/DropdownMenu";
+</script>

@@ -1,52 +1,34 @@
 ---
-import Progressbar from "@components/Progressbar.astro";
-import { Icon } from "astro-icon";
+import Icon, { IconSize } from "@components/Icon.astro";
 import SaveDraft from "@components/SaveDarft.astro";
 
 interface Props {
-  current: number;
-  steps: number;
   docId: string;
   draft: boolean;
 }
 
-const { current, steps, docId, draft } = Astro.props;
+const { docId, draft } = Astro.props;
 ---
 
-<div>
-  <Progressbar current={current} steps={steps} />
+<aside>
   {!draft && <SaveDraft documentId={docId} />}
-  <show-question-list>
+  <show-modal data-modal="questionIndex">
     <button aria-label="Pokaż listę pytań">
-      <Icon name="index" width={24} height={24} />
+      <Icon name="index" size={IconSize.sm} />
     </button>
-  </show-question-list>
-</div>
+  </show-modal>
+</aside>
 
 <style>
-  div {
-    @apply flex items-center gap-15;
-    @apply fixed bottom-0 left-0 right-0 px-20 py-10 border-t-[1px] border-dark40 bg-gray;
-    @apply justify-around md:justify-normal md:px-0;
-    @apply md:static md:bottom-auto md:left-auto md:right-auto md:border-0 md:bg-transparent;
+  aside {
+    @apply flex items-center gap-10 flex-wrap;
   }
 
-  div > *,
-  div :global(> div) {
-    @apply flex-grow basis-1/3 text-center;
-    @apply md:flex-grow-0 md:basis-auto md:text-left;
-  }
-
-  div button,
-  div a {
+  aside button {
     @apply btn btn-alt;
-  }
-
-  div show-question-list {
-    @apply lg:hidden;
   }
 </style>
 
 <script>
-  import "@wc/ShowQuestionList";
+  import "@wc/ShowModal";
 </script>

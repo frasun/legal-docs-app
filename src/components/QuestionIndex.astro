@@ -1,14 +1,12 @@
 ---
 import routes from "@utils/routes";
-import { Icon } from "astro-icon";
+import Icon, { IconSize } from "@components/Icon.astro";
+import Modal from "./Modal.astro";
 
 interface Props {
   index: {
+    slug: string;
     title: string;
-    questions: {
-      slug: string;
-      title: string;
-    }[];
   }[];
   current: string;
   documentId: string | number;
@@ -18,104 +16,71 @@ interface Props {
 const { index, current, documentId, documentTitle } = Astro.props;
 ---
 
-<question-list>
-  <header>
-    <h4>{documentTitle} - lista pytań</h4>
-    <button aria-label="Zakmnij listę pytań">
-      <Icon name="close" id="menuClose" width={24} height={24} />
-    </button>
-  </header>
-  <div>
+<Modal modalTitle={documentTitle} modalId="questionIndex">
+  <section>
+    <header>
+      <h6>Lista pytań</h6>
+    </header>
     {
-      index.map(({ title, questions }) => (
-        <section>
-          <h5>{title}</h5>
-          {questions.map(({ slug, title }) => {
-            if (slug === current) {
-              return <span>{title}</span>;
-            } else {
-              return (
-                <a href={`${Astro.url.origin}/dokumenty/${documentId}/${slug}`}>
-                  {title}
-                </a>
-              );
-            }
-          })}
-        </section>
+      index.map(({ slug, title }, index) => (
+        <>
+          {slug === current ? (
+            <div>
+              <span>
+                <small>{index + 1}.</small>
+                {title}
+              </span>
+            </div>
+          ) : (
+            <a href={`${Astro.url.origin}/dokumenty/${documentId}/${slug}`}>
+              <span>
+                <small>{index + 1}.</small>
+                {title}
+              </span>
+              <Icon name="arrow-right" size={IconSize.sm} />
+            </a>
+          )}
+        </>
       ))
     }
     <a
       href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.SUMMARY}`}
     >
-      Podsumowanie
+      <span>Podsumowanie</span>
+      <Icon name="arrow-right" size={IconSize.sm} />
     </a>
-  </div>
-</question-list>
+  </section>
+</Modal>
+
 <style>
-  question-list {
-    @apply fixed top-full left-0 right-0;
-    @apply bg-white flex flex-col gap-15;
-    @apply transition-transform;
-    @apply translate-y-0;
-    @apply max-h-full;
-    @apply z-max lg:z-40;
-    @apply pt-15;
+  header {
+    @apply pb-8;
   }
 
-  @screen lg {
-    question-list {
-      @apply sticky top-[var(--navbar-height)];
-      @apply min-w-[290px];
-      @apply my-20;
-      @apply rounded;
-      @apply p-20;
-      @apply transition-none;
-      @apply text-sm;
-    }
+  header h6 {
+    @apply text-sans-xs text-black/50;
   }
 
-  question-list header {
-    @apply px-20;
-    @apply flex gap-20 items-center;
-    @apply lg:hidden;
+  small {
+    @apply text-sans-xs;
   }
 
-  question-list header h4 {
-    @apply flex-grow;
+  div,
+  a {
+    @apply flex gap-10 items-center;
+    @apply border-t border-black/30;
+    @apply px-10 py-8;
   }
 
-  question-list header button {
-    @apply btn btn-alt;
-  }
-
-  question-list > div {
-    @apply flex flex-col gap-20;
-    @apply flex-grow  overflow-y-auto;
-    @apply px-20 pb-20 lg:p-0;
-  }
-
-  h5 {
-    @apply text-dark40 mb-[5px];
+  div {
+    @apply text-active;
   }
 
   span {
-    @apply text-orangeDark;
+    @apply flex-grow flex items-baseline gap-10;
   }
 
-  section {
-    @apply flex flex-col;
-  }
-
-  section a,
-  section span {
-    @apply py-[2px] px-10;
-  }
-
-  div > a:last-child {
-    @apply px-0;
+  a:hover {
+    @apply bg-black/5 text-black;
   }
 </style>
-
-<script>
-  import "@wc/QuestionList";
-</script>

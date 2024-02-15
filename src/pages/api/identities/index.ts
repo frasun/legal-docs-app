@@ -23,7 +23,10 @@ export const GET: APIRoute = async ({ request }) => {
     const urlParams = new URL(request.url).searchParams;
     const dataType = urlParams.get(DATA_TYPE) ?? undefined;
     const dataTypeFilter =
-      (dataType as entityEnum) in entityEnum ? dataType : undefined;
+      dataType && Object.values(entityEnum).includes(dataType as entityEnum)
+        ? dataType
+        : undefined;
+
     const [identities, count] = await Promise.all([
       getUserIdentities(userId as string, dataTypeFilter as entityEnum),
       getUserIdentitiesCount(userId as string),

@@ -1,11 +1,9 @@
 ---
-import Layout from "../../../layouts/App.astro";
-import { Icon } from "astro-icon";
+import Layout, { FooterType, LayoutType } from "../../../layouts/App.astro";
 import { getEntry } from "astro:content";
 import QuestionIndex from "@components/QuestionIndex.astro";
-import ChangeNameButton from "@components/ChangeNameButton.astro";
-import ChangeNameModal from "@components/ChangeNameModal.astro";
-import Badge from "@components/Badge.astro";
+import Badge, { BadgeSize, BadgeStyle } from "@components/Badge.astro";
+import QuestionHint from "@components/QuestionHint.astro";
 import pageTitle from "@utils/pageTitle";
 import QuestionAction from "@components/QuestionAction.astro";
 import type { Answers, Question } from "@type";
@@ -14,6 +12,7 @@ import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
 import { getQuestion } from "@api/templates";
 import { captureError } from "@utils/sentry";
+import Progressbar from "@components/Progressbar.astro";
 
 const { documentId, questionId } = Astro.params as {
   documentId: string;
@@ -102,77 +101,72 @@ try {
 }
 ---
 
-<Layout title={pageTitle(`${questionShort} - ${documentTitle}`)}>
-  <span slot="topbar-title">
-    <span>{documentTitle}</span><Badge>Szkic</Badge>
-  </span>
-  {
-    isUserDocument && (
-      <ChangeNameButton
-        id={documentId}
-        title={documentTitle}
-        slot="topbar-after-title"
-      />
-    )
-  }
-  <QuestionAction
+<Layout
+  pageName={pageTitle(`${questionShort} - ${documentTitle}`)}
+  title={documentTitle}
+  layout={LayoutType.centered}
+  footer={FooterType.short}
+  highlightTitle={false}
+>
+  <Badge slot="topbar-after-title" style={BadgeStyle.blue}>szkic</Badge>
+  <Progressbar
     slot="topbar-aside"
     current={currentQuestionIndex + 1}
     steps={questionIndex}
-    docId={templateId}
-    draft={draft}
   />
+  <QuestionAction slot="topbar-aside" docId={templateId} draft={draft} />
+  <header>
+    {
+      questionShort && (
+        <div>
+          <span>{currentQuestionIndex + 1}.</span>
+          <Badge size={BadgeSize.medium}>{questionShort}</Badge>
+        </div>
+      )
+    }
+    <h2>{question}</h2>
+  </header>
   <question-form
     data-document-id={documentId}
     data-next-url={!isUserDocument ? nextUrl : undefined}
     transition-persist
   >
     <form method="POST" spellcheck="false" data-astro-reload>
-      <header>
-        <h2>{question}</h2>
-        {
-          info && (
-            <p>
-              <Icon name="bulb" width={24} height={24} />
-              {info}
-            </p>
-          )
-        }
-      </header>
       {Content && <Content />}
       <footer>
-        <div>
-          <span>§{currentQuestionIndex + 1}</span>
-          {questionShort && <span>{questionShort}</span>}
-        </div>
-        <nav>
-          {
-            isUserDocument ? (
-              <>
-                <a
-                  href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.SUMMARY}`}
-                >
-                  Wróć do podsumowania
-                </a>
-                <button type="submit" disabled>
-                  Zapisz zmiany
-                </button>
-              </>
-            ) : (
-              <>
-                {prevUrl && <a href={prevUrl}>Poprzednie</a>}
-                <button type="submit">
-                  {currentQuestionIndex >= questionIndex - 1
-                    ? "Podsumowanie"
-                    : "Następne"}
-                </button>
-              </>
-            )
-          }
-        </nav>
+        {
+          isUserDocument ? (
+            <>
+              <a
+                href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}${routes.SUMMARY}`}
+              >
+                Wróć do podsumowania
+              </a>
+              <button type="submit" disabled>
+                Zapisz zmiany
+              </button>
+            </>
+          ) : (
+            <>
+              {prevUrl && <a href={prevUrl}>Poprzednie</a>}
+              <button type="submit">
+                {currentQuestionIndex >= questionIndex - 1
+                  ? "Podsumowanie"
+                  : "Następne"}
+              </button>
+            </>
+          )
+        }
       </footer>
     </form>
   </question-form>
+  {
+    info && (
+      <aside>
+        <QuestionHint info={info} />
+      </aside>
+    )
+  }
   {
     index && questionId && (
       <QuestionIndex
@@ -180,17 +174,39 @@ try {
         current={questionId}
         documentId={documentId}
         documentTitle={documentTitle}
+        slot="footer"
       />
     )
   }
-  {draft && <ChangeNameModal />}
 </Layout>
 
 <style>
+  header {
+    @apply col-span-12 xl:col-span-6 xl:col-start-4 order-1;
+    @apply flex flex-col gap-15 py-15;
+  }
+
+  header > div {
+    @apply flex items-baseline gap-10;
+  }
+
+  header > div span {
+    @apply text-sans-sm text-black;
+  }
+
+  header h2 {
+    @apply text-italic-lg lg:text-italic-xl text-black;
+    @apply pb-5;
+  }
+
   question-form {
-    @apply w-full max-w-[780px] mx-auto;
-    @apply flex flex-col justify-center min-h-full;
-    @apply py-[var(--navbar-height)];
+    @apply col-span-12 xl:col-span-6 xl:col-start-4 order-3 xl:order-2;
+    @apply pb-60;
+  }
+
+  aside {
+    @apply col-span-12 xl:col-span-3 order-2 xl:order-3;
+    @apply py-5 pb-30 xl:py-0;
   }
 
   form {
@@ -198,25 +214,11 @@ try {
   }
 
   form :global(fieldset) {
-    @apply flex flex-col gap-20;
+    @apply flex flex-col gap-15;
   }
 
   footer {
-    @apply flex flex-wrap gap-10;
-    @apply justify-between;
-    @apply my-30;
-  }
-
-  footer div {
-    @apply hidden md:flex gap-10 items-center;
-  }
-
-  footer div > span:first-child {
-    @apply px-[8px] py-[4px] bg-dark10 rounded-sm text-xs font-bold;
-  }
-
-  footer nav {
-    @apply flex flex-wrap gap-15;
+    @apply flex flex-wrap sm:flex-nowrap gap-20 items-center justify-center py-15;
   }
 
   footer a {
@@ -225,20 +227,11 @@ try {
 
   footer button[type="submit"] {
     @apply btn btn-default btn-big;
-    @apply self-end;
   }
 
-  header p {
-    @apply bg-white border-dark55 border-2 rounded-xl;
-    @apply p-20;
-    @apply flex gap-15;
-    @apply font-serif italic text-dark90;
-    @apply my-20;
-  }
-
-  header p svg {
-    @apply flex-shrink-0;
-    @apply text-orangeDark;
+  footer a,
+  footer button {
+    @apply flex-shrink w-full sm:w-1/2;
   }
 </style>
 

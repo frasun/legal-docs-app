@@ -1,3 +1,4 @@
+import { navigate } from "astro:transitions/client";
 import * as PARAMS from "@utils/urlParams";
 
 class CategorySelector extends HTMLElement {
@@ -22,7 +23,7 @@ class CategorySelector extends HTMLElement {
       }
 
       url.search = params.toString();
-      document.location = url.toString();
+      navigate(url);
     });
   }
 }

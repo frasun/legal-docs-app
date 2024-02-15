@@ -11,41 +11,38 @@ rooms: {
     garage: 0
 }
 ---
-import InputGroup from '@components/InputGroup.astro';
+import InputGroup, {InputSize} from '@components/InputGroup.astro';
 
-<fieldset class="gap-10">
-    <legend>Wypełnij pola z ilością pomieszczeń</legend>
-    <InputGroup>
-        <input type="number" value={frontmatter.rooms.room} name="room" min="0" aria-label="Ilość pokoi" />
-        <span>x pokój</span>
-    </InputGroup>
-    <InputGroup>
-        <input type="number" value={frontmatter.rooms.kitchen}  name="kitchen" min="0"  aria-label="Ilość kuchni" /> 
-        <span>x kuchnia</span>
-    </InputGroup>
-    <InputGroup>
-        <input type="number" value={frontmatter.rooms.hall} name="hall" min="0"  aria-label="Ilość przedpokoi" />
-        <span>x przedpokój</span>
-    </InputGroup>
-    <InputGroup>
-        <input type="number" value={frontmatter.rooms.bathroom} name="bathroom" min="0"  aria-label="Ilość łazienek" />
-        <span>x łazienka</span>
-    </InputGroup>
-    <InputGroup>
-        <input type="number" value={frontmatter.rooms.toilet} name="toilet" min="0"  aria-label="Ilość toalet" />
-        <span>x toaldeta</span>
-    </InputGroup>
-    <InputGroup>
-        <input type="number" value={frontmatter.rooms.balcony} name="balcony" min="0"  aria-label="Ilość balkonów" />
-        <span>x balkon</span>
-    </InputGroup>
-    <InputGroup>
-        <input type="number" value={frontmatter.rooms.wardrobe} name="wardrobe" min="0"  aria-label="Ilość garderób" />
-        <span>x garderoba</span>
-    </InputGroup>
-    <InputGroup>
-        <input type="number" value={frontmatter.rooms.garage} name="garage" min="0"  aria-label="Ilość garaży" />
-        <span>x garaż</span>
-    </InputGroup>
-    <input type="hidden" name="rooms" />
-</fieldset>
+<InputGroup size={InputSize.lg}>
+    <label for="room">Pokoje</label>
+    <input type="number" value={frontmatter.rooms.room} name="room" min="0" id="room" />
+</InputGroup>
+<InputGroup size={InputSize.lg}>
+    <label for="kitchen">Kuchnia</label>
+    <input type="number" value={frontmatter.rooms.kitchen} name="kitchen" min="0" id="kitchen" /> 
+</InputGroup>
+<InputGroup size={InputSize.lg}>
+    <label for="hall">Przedpokój</label>
+    <input type="number" value={frontmatter.rooms.hall} name="hall" min="0" id="hall" />
+</InputGroup>
+<InputGroup size={InputSize.lg}>
+    <label for="bathroom">Łazienka</label>
+    <input type="number" value={frontmatter.rooms.bathroom} name="bathroom" min="0" id="bathroom" />
+</InputGroup>
+<InputGroup size={InputSize.lg}>
+    <label for="toilet">Toaleta</label>
+    <input type="number" value={frontmatter.rooms.toilet} name="toilet" min="0" id="toilet" />
+</InputGroup>
+<InputGroup size={InputSize.lg}>
+    <label for="balcony">Balkon</label>
+    <input type="number" value={frontmatter.rooms.balcony} name="balcony" min="0" id="balcony" />
+</InputGroup>
+<InputGroup size={InputSize.lg}>
+    <label for="wardrobe">Garderoba</label>
+    <input type="number" value={frontmatter.rooms.wardrobe} name="wardrobe" min="0" id="wardrobe" />
+</InputGroup>
+<InputGroup size={InputSize.lg}>
+    <label for="garage">Garaż</label>
+    <input type="number" value={frontmatter.rooms.garage} name="garage" min="0" id="garage" />
+</InputGroup>
+<input type="hidden" name="rooms" />

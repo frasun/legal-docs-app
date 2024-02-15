@@ -1,5 +1,5 @@
 ---
-import Icon from "astro-icon";
+import Icon, { IconSize } from "@components/Icon.astro";
 
 interface Props {
   id: string;
@@ -9,12 +9,12 @@ const { id } = Astro.props;
 ---
 
 <copy-document data-document-id={id} title="Utwórz kopię">
-  <Icon name="copy-document" width={20} height={20} />
+  <Icon name="copy-document" size={IconSize.sm} />
 </copy-document>
 
 <style>
   copy-document {
-    @apply btn btn-alt;
+    @apply btn btn-alt btn-icon;
   }
 </style>
 

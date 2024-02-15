@@ -17,78 +17,43 @@ module.exports = {
 	theme: {
 		spacing: {
 			0: '0',
-			5: '.3125rem',
-			10: '.625rem',
-			15: '.9375rem',
+			5: '0.3125rem',
+			8: '0.5rem',
+			10: '0.625rem',
+			15: '0.9375rem',
 			20: '1.25rem',
 			30: '1.875rem',
 			40: '2.5rem',
-			50: '3.125rem',
-			60: '3.75rem',
-			80: '5rem'
+			60: '3.75rem'
 		},
 		colors: {
+			transparent: 'transparent',
+			active: '#EA271B',
+			black: '#282725',
 			white: '#fff',
-			white95: 'rgba(255, 255, 255, .95)',
-			white75: 'rgba(255, 255, 255, .75)',
-			light: '#FDFDFC',
-			gray: '#F5F3EE',
-			orange: '#EE544A',
-			orangeDark: '#EA271B',
-			yellow: 'rgba(255, 199, 90, 0.2)',
-			yellowDark: 'rgba(126, 90, 7, 0.9)',
-			purple: 'rgba(212, 156, 255, 0.55)',
-			purpleDark: 'rgba(73, 7, 126, 0.75)',
-			dark90: 'rgba(40, 39, 37, 0.9)',
-			dark75: 'rgba(40, 39, 37, 0.75)',
-			dark65: 'rgba(40, 39, 37, 0.65)',
-			dark55: 'rgba(40, 39, 37, 0.55)',
-			dark40: 'rgba(40, 39, 37, 0.40)',
-			dark30: 'rgba(40, 39, 37, 0.30)',
-			dark10: 'rgba(40, 39, 37, 0.1)',
-			transparent: 'rgba(255, 255, 255, 0)'
+			orange: '#FFE1B4',
+			yellow: '#FFFFB8',
+			red: '#FFC9C6',
+			green: '#C1F988',
+			blue: '#B0FAFF',
+			purple: '#F4C6FF',
 		},
 		fontFamily: {
-			sans: ['Chivo', 'ui-sans-serif', 'sans-serif'],
-			serif: ['Bitter', 'ui-serif', 'Georgia', '"Times New Roman"', 'Times', 'serif'],
-		},
-		fontSize: {
-			tiny: ['0.6875rem', { lineHeight: '1.1em' }], //11
-			xxs: ['0.8125rem', { lineHeight: '1.25em' }], //12
-			xs: ['0.875rem', { lineHeight: '1rem' }], //14
-			sm: ['0.9375rem', { lineHeight: '1.25rem' }], //15
-			base: ['1rem', { lineHeight: '1.5rem' }], //16
-			lg: ['1.0625rem', { lineHeight: '1.5rem' }], //17
-			xl: ['1.125rem', { lineHeight: '1.5rem' }], //18
-			xxl: ['1.1875rem', { lineHeight: '1.5rem' }], //19
-			'h3': ['1.3125rem', { lineHeight: '1.35' }], //21
-			'2xl': ['1.63rem', { lineHeight: '1.3' }], //24
-			'3xl': ['1.88rem'],
-			'4xl': ['2.25rem', { lineHeight: '2.5rem' }],
-			'5xl': ['3rem', { lineHeight: '1' }],
-			'6xl': ['3.75rem', { lineHeight: '1' }],
-			'7xl': ['4.5rem', { lineHeight: '1' }],
-			'8xl': ['6rem', { lineHeight: '1' }],
-			'9xl': ['8rem', { lineHeight: '1' }],
-		},
-		fontWeight: {
-			normal: '400',
-			medium: '500',
-			bold: '700',
-		},
-		letterSpacing: {
-			tighter: '-.02em',
-			tight: '-.01em',
-			normal: '0',
-			wide: '.02em'
+			sans: ['IBM Plex', 'ui-sans-serif', 'sans-serif'],
+			serif: ['Lora', 'Georgia', 'ui-serif', 'serif'],
 		},
 		borderRadius: {
 			sm: '3px',
 			DEFAULT: '6px',
-			lg: '10px',
 			xl: '15px',
-			'full': '50%'
 		},
+		boxShadow: ({ theme }) => ({
+			1: `0 1px ${theme('colors.black')}1a`,
+			2: `0 2px ${theme('colors.black')}1a`,
+			3: `0 3px ${theme('colors.black')}1a`,
+			inner: 'inset 0 1px',
+			none: 'none',
+		}),
 		container: theme => ({
 			center: true,
 			padding: {
@@ -106,54 +71,99 @@ module.exports = {
 		},
 		extend: {
 			zIndex: {
+				menu: 9998,
 				max: 9999,
+				loader: 99999
 			},
 			typography: theme => ({
 				DEFAULT: {
 					css: {
-						'--tw-prose-body': theme('colors.dark90'),
-						'--tw-prose-headings': theme('colors.dark65'),
-						'--tw-prose-bold': theme('colors.dark90'),
-						'--tw-prose-bullets': theme('colors.orange'),
-						'--tw-prose-links': theme('colors.orangeDark'),
-						maxWidth: '1000px',
+						'--tw-prose-headings': theme('colors.black'),
+						'--tw-prose-bullets': theme('colors.black'),
+						'--tw-prose-counters': theme('colors.black'),
+						'--tw-prose-body': theme('colors.black'),
+						maxWidth: 'none',
+						fontFamily: theme('fontFamily.serif').join(),
+						fontSize: '1.0625rem',
+						lineHeight: '1.47em',
+						color: `${theme('colors.black')}b3`,
 						'h1, h2, h3, h4': {
-							fontWeight: theme('fontWeight.medium'),
+							fontFamily: theme('fontFamily.serif').join(),
+							fontStyle: 'italic',
+							fontWeight: '500',
+							marginTop: '1.5em',
+							'@media (min-width: 768px)': {
+								marginTop: '1.75em',
+							}
 						},
 						h1: {
-							fontSize: theme('fontSize.2xl')
+							fontSize: '1.65rem',
+							lineHeight: '1.28em',
+							'@media (min-width: 768px)': {
+								fontSize: '1.75rem',
+							}
+						},
+						h2: {
+							fontSize: '1.5rem',
+							lineHeight: '1.3em'
+						},
+						h3: {
+							fontSize: '1.25rem',
+							lineHeight: '1.3em',
+						},
+						h4: {
+							fontSize: '1.125rem',
+							lineHeight: '1.2em',
+						},
+						'h4, h3 + h4': {
+							marginTop: '2em'
+						},
+						'strong, em': {
+							fontFamily: theme('fontFamily.serif').join(),
+							fontWeight: '700',
+							fontStyle: 'italic',
+							color: theme('colors.black')
 						},
 						a: {
-							'&:hover': {
-								color: theme('colors.dark65')
-							}
+							textDecoration: 'none'
 						}
 					}
 				},
 				document: {
 					css: {
-						'--tw-prose-headings': theme('colors.dark90'),
-						'--tw-prose-bullets': theme('colors.dark90'),
-						'--tw-prose-counters': theme('colors.dark90'),
-						'--tw-prose-hr': theme('colors.dark90'),
-						'h1, h2, h3, h4, h5, h6': {
-							fontFamily: theme('fontFamily.sans'),
-							fontWeight: theme('fontWeight.bold'),
-							fontStyle: 'normal'
-						},
+						'--tw-prose-headings': theme('colors.black'),
+						'--tw-prose-bullets': theme('colors.black'),
+						'--tw-prose-counters': theme('colors.black'),
+						'--tw-prose-body': theme('colors.black'),
 						h3: {
-							fontSize: theme('fontSize.xxl[0]'),
+							fontFamily: theme('fontFamily.serif').join(),
+							fontStyle: 'italic',
+							fontWeight: '500',
+							lineHeight: '1.28em',
+							marginTop: '1.2em',
+							fontSize: '1.25rem',
+							'@media (min-width: 768px)': {
+								fontSize: '1.75rem',
+							}
 						},
 						h4: {
-							fontSize: theme('fontSize.sm[0]')
+							fontFamily: theme('fontFamily.serif').join(),
+							fontWeight: '700',
+							fontStyle: 'italic',
+							fontSize: '0.9375rem',
+							lineHeight: '1.2em',
 						},
-						hr: {
-							width: '33%',
-							marginTop: '5em',
-							marginBottom: 0
+						'h4, h3 + h4': {
+							marginTop: '2em'
 						},
-						'hr + p': {
-							maxWidth: '33%'
+						ol: {
+							paddingLeft: '1em',
+							'@media (min-width: 768px)': {
+								paddingLeft: '2.5em'
+							}
+						},
+						'br + p': {
+							marginTop: 0
 						}
 					}
 				}
@@ -161,78 +171,193 @@ module.exports = {
 		}
 	},
 	plugins: [
-		// plugin(function({ addBase, theme }) {
-		// 	addBase({			
-		// 		'a': {
-		// 			color: theme('colors.dark55'),
-		// 			'&:hover': {
-		// 				color: theme('colors.orange')
-		// 			}
-		// 		}
-		// 	})
-		//   }),
-		plugin(function ({ addComponents, theme }) {
-			addComponents({
-				'.btn': {
-					padding: '.5rem .625rem',
-					display: 'inline-flex',
-					alignItems: 'center',
-					borderRadius: theme('borderRadius.DEFAULT'),
-					fontSize: theme('fontSize.sm'),
-					lineHeight: theme('lineHeight.tight'),
-					fontWeight: theme('fontWeight.bold'),
-					fontFamily: theme('fontFamily.sans'),
-					gap: theme('spacing.10'),
-					letterSpacing: theme('letterSpacing.tighter'),
-					color: theme('colors.white95'),
-					transitionProperty: theme('transitionProperty.DEFAULT'),
-					transitionDuration: theme('transitionDuration.DEFAULT'),
-					transitionTimingFunction: theme('transitionTimingFunction.DEFAULT'),
-					cursor: 'pointer',
-					'&:hover': {
-						backgroundColor: theme('colors.orange'),
+		plugin(function ({ addComponents, addUtilities, theme }) {
+			const textItalic = {
+				fontFamily: theme('fontFamily.serif'),
+				fontStyle: 'italic',
+				fontWeight: '500'
+			}
+			const textSerif = {
+				fontFamily: theme('fontFamily.serif'),
+				fontWeight: '500'
+			}
+			const textSerifBold = {
+				fontFamily: theme('fontFamily.serif'),
+				fontWeight: '700'
+			}
+			const textSans = {
+				fontFamily: theme('fontFamily.sans'),
+				fontWeight: '500',
+				letterSpacing: '-.01em'
+			}
+
+			const textSerifMd = {
+				fontSize: '1.0625rem',
+				lineHeight: '1.47em',
+			}
+			const textSerifSm = {
+				fontSize: '0.9375rem',
+				lineHeight: '1.2em',
+			}
+
+			const textSansSm = {
+				...textSans,
+				fontSize: '0.9375rem',
+				lineHeight: '1.33em',
+			}
+			const textSansMd = {
+				...textSans,
+				fontSize: '0.9375rem',
+				lineHeight: '1.33em',
+			}
+			const textSansXl = {
+				...textSans,
+				fontSize: '1.125rem',
+				lineHeight: '1.36em',
+			}
+
+			const textItalicLg = {
+				...textItalic,
+				fontSize: '1.75rem',
+				lineHeight: '1.28em',
+			}
+
+			addUtilities({
+				// text styles				
+				'.text-italic-xl': {
+					...textItalic,
+					fontSize: '2rem',
+					lineHeight: '1.25em',
+				},
+				'.text-italic-lg': textItalicLg,
+				'.text-italic-md': {
+					...textItalic,
+					fontSize: '1.25rem',
+					lineHeight: '1.3em',
+				},
+				'.text-italic-sm': {
+					...textItalic,
+					fontSize: '1.125rem',
+					lineHeight: '1.22em',
+				},
+				'.text-italic-xs': {
+					...textItalic,
+					fontSize: '0.9375rem',
+					lineHeight: '1.125em',
+				},
+				'.text-serif-md': {
+					...textSerif,
+					...textSerifMd
+				},
+				'.text-serif-md-bold': {
+					...textSerifBold,
+					...textSerifMd
+				},
+				'.text-serif-sm': {
+					...textSerif,
+					...textSerifSm
+				},
+				'.text-serif-sm-bold': {
+					...textSerifBold,
+					...textSerifSm
+				},
+				'.text-sans-xxl': {
+					...textSans,
+					fontSize: '1.375rem',
+					lineHeight: '1.2em',
+				},
+				'.text-sans-xl': textSansXl,
+				'.text-sans-lg': {
+					...textSans,
+					fontSize: '1rem',
+					lineHeight: '1.33em',
+				},
+				'.text-sans-md': textSansMd,
+				'.text-sans-sm': textSansSm,
+				'.text-sans-xs': {
+					...textSans,
+					fontSize: '0.8125rem',
+					lineHeight: '1.3em',
+				},
+				'.text-sans-xxs': {
+					...textSans,
+					fontSize: '0.75rem',
+					lineHeight: '1.33em',
+				},
+			}),
+				addComponents({
+					// buttons
+					'.btn': {
+						...textSansMd,
+						padding: `${theme('spacing.8')} ${theme('spacing.15')}`,
+						borderRadius: theme('borderRadius.sm'),
+						color: theme('colors.black'),
+						cursor: 'pointer',
+						border: `1px solid ${theme('colors.black')}`,
+						boxShadow: theme('boxShadow.2'),
+						transitionProperty: theme('transitionProperty.DEFAULT'),
+						transitionDuration: theme('transitionDuration.DEFAULT'),
+						transitionTimingFunction: theme('transitionTimingFunction.DEFAULT'),
+						display: 'flex',
+						gap: theme('spacing.8'),
+						alignItems: 'center',
+						justifyContent: 'center',
+						'&:disabled': {
+							opacity: .3,
+							pointerEvents: 'none'
+						},
+						'&:hover svg': {
+							color: theme('colors.active')
+						}
+					},
+					'.btn-default': {
+						backgroundColor: theme('colors.black'),
 						color: theme('colors.white'),
+						'&:hover': {
+							borderColor: theme('colors.active'),
+							backgroundColor: theme('colors.active'),
+							color: theme('colors.white'),
+						},
 					},
-					'&:active': {
-						backgroundColor: theme('colors.orangeDark')
+					'.btn-alt': {
+						backgroundColor: theme('colors.transparent'),
+						color: theme('colors.black'),
+						'&:hover': {
+							borderColor: theme('colors.active'),
+							color: theme('colors.active'),
+						},
 					},
-					'&:disabled': {
-						opacity: .3,
-						pointerEvents: 'none'
+					'.btn-big': {
+						...textSansXl,
+						padding: `${theme('spacing.8')} ${theme('spacing.20')}`,
+						borderRadius: theme('borderRadius.DEFAULT'),
+						borderWidth: '2px',
+						boxShadow: theme('boxShadow.3'),
+					},
+					'.btn-icon': {
+						padding: `${theme('spacing.8')} ${theme('spacing.10')}`,
+					},
+					// menu item
+					'.menu-item': {
+						display: 'flex',
+						alignItems: 'center',
+						gap: theme('spacing.10'),
+						padding: `${theme('spacing.10')} ${theme('spacing.10')}`,
+						borderRadius: theme('borderRadius.sm'),
+						...textSansMd,
+						color: theme('colors.black'),
+						lineHeight: '24px',
+						'&:hover': {
+							backgroundColor: `${theme('colors.black')}08`,
+						},
+						'@media (min-width: 1024px)': {
+							padding: `${theme('spacing.10')} ${theme('spacing.15')}`,
+						},
+					},
+					'.menu-item-sm': {
+						...textSansSm
 					}
-				},
-				'.btn svg': {
-					flexShrink: 0,
-					transitionProperty: theme('transitionProperty.colors'),
-					transitionDuration: theme('transitionDuration.DEFAULT'),
-					transitionTimingFunction: theme('transitionTimingFunction.DEFAULT'),
-				},
-				'.btn-default': {
-					backgroundColor: theme('colors.dark90'),
-					color: theme('colors.white95'),
-				},
-				'.btn-default svg': {
-					color: theme('colors.white75')
-				},
-				'.btn-default:hover svg': {
-					color: theme('colors.white95')
-				},
-				'.btn-alt': {
-					backgroundColor: theme('colors.dark10'),
-					color: theme('colors.dark65'),
-				},
-				'.btn-alt svg': {
-					color: theme('colors.dark75'),
-				},
-				'.btn-alt:hover svg': {
-					color: theme('colors.white95')
-				},
-				'.btn-big': {
-					fontSize: theme('fontSize.xl'),
-					padding: '.5rem 1.125rem',
-					borderRadius: theme('borderRadius.lg')
-				}
-			})
+				})
 		}),
 		require('@tailwindcss/forms')({
 			strategy: 'base'

@@ -2,6 +2,9 @@
 question: Jakie wyposażenie jest na stanie lokalu?
 equipment: ""
 ---
-Podaj elementy wysposażenia po przecinku
+import InputGroup, { InputSize } from '@components/InputGroup.astro';
 
-<textarea name="equipment" placeholder="np. Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa" maxLength={300}>{frontmatter.equipment}</textarea>
+<InputGroup size={InputSize.lg}>
+  <label for="">Podaj elementy wysposażenia po przecinku</label>
+  <textarea name="equipment" placeholder="np. Toster Philips o nr seryjnym XBSDCS89734-2342234, dwa fotele, kanapa" maxLength={300}>{frontmatter.equipment}</textarea>
+</InputGroup>

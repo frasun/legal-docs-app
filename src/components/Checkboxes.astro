@@ -1,35 +1,38 @@
 ---
-enum CheckboxSize {
-  default = "default",
-  lg = "lg",
-}
+import InputGroup, { InputType, InputSize } from "./InputGroup.astro";
 
 interface Props {
   values: string[];
   selected: string;
   token: string;
   required: boolean;
-  size?: CheckboxSize;
+  size?: InputSize;
+  label?: string;
 }
 
-const { values, selected, token, required, size = "default" } = Astro.props;
+const {
+  values,
+  selected,
+  token,
+  required,
+  size = InputSize.default,
+  label,
+} = Astro.props;
 ---
 
-<checkbox-list required={required} size={size}>
+<checkbox-list required={required} data-size={size}>
+  {label && <legend>{label}</legend>}
   {
     values.map((val, index) => (
-      <label
-        for={`cb-${index}`}
-        data-checked={selected.includes(val)}
-        data-label={val}
-      >
+      <InputGroup type={InputType.checkbox} size={InputSize.lg}>
         <input
           type="checkbox"
           id={`cb-${index}`}
           checked={selected.includes(val)}
+          data-label={val}
         />
-        {val}
-      </label>
+        <label for={`cb-${index}`}>{val}</label>
+      </InputGroup>
     ))
   }
   <input type="hidden" name={token} value={selected} data-type="array" />
@@ -37,45 +40,11 @@ const { values, selected, token, required, size = "default" } = Astro.props;
 
 <style>
   checkbox-list {
-    @apply flex flex-wrap gap-15;
+    @apply flex flex-col gap-10;
   }
 
-  label {
-    @apply bg-white rounded-xl;
-    @apply border-2 border-dark30;
-    @apply px-20 py-15;
-    @apply flex gap-15 items-start;
-    @apply font-serif italic;
-    @apply transition-colors;
-  }
-
-  label:hover {
-    @apply text-dark90;
-  }
-
-  label:not([data-checked]):hover {
-    @apply border-dark55;
-  }
-
-  label[data-checked] {
-    @apply text-dark90;
-    @apply border-dark40;
-  }
-
-  label[data-checked]:hover {
-    @apply border-dark90;
-  }
-
-  input {
-    @apply mt-[1px];
-  }
-
-  checkbox-list[size="lg"] {
-    @apply text-xl;
-  }
-
-  checkbox-list[size="lg"] label {
-    @apply p-30 gap-20;
+  checkbox-list[data-size="lg"] legend {
+    @apply text-sans-lg;
   }
 </style>
 

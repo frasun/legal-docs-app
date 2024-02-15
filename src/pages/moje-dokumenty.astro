@@ -1,16 +1,12 @@
 ---
-import Layout from "../layouts/App.astro";
-import { Icon } from "astro-icon";
-import { formatDateTime } from "@utils/date";
-import Badge, { BadgeStyle } from "@components/Badge.astro";
+import Layout, { LayoutType } from "../layouts/App.astro";
 import EmptyScreen from "@components/EmptyScreen.astro";
-import ChangeNameButton from "@components/ChangeNameButton.astro";
 import ChangeNameModal from "@components/ChangeNameModal.astro";
+import MyDocument from "@components/MyDocument.astro";
 import pageTitle from "@utils/pageTitle";
 import * as PARAMS from "@utils/urlParams";
-import DeleteDocumentButton from "@components/DeleteDocumentButton.astro";
-import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 import Pagination from "@components/Pagination.astro";
+import AccountNav from "@components/AccountNav.astro";
 import routes from "@utils/routes";
 import { getDocuments } from "@api/documents";
 import type { UserDocuments } from "@type";
@@ -39,82 +35,45 @@ try {
     return Astro.redirect(routes.NOT_FOUND);
   }
 }
-
-function getDateLabel(created: Date, modified: Date) {
-  return modified > created ? "Ostatnia zmiana" : "Utworzony";
-}
 ---
 
-<Layout title={pageTitle(PAGE_TITLE)}>
-  <span slot="topbar-title">{PAGE_TITLE}</span>
+<Layout
+  pageName={pageTitle(PAGE_TITLE)}
+  title={PAGE_TITLE}
+  layout={LayoutType.sidebar}
+>
+  <AccountNav slot="sidebar" />
   {
     Object.keys(documents).length ? (
       <>
-        <section>
-          {Object.keys(documents).map((monthYear) => (
-            <>
-              <h6>{monthYear}</h6>
-              {documents[monthYear].map(
-                ({
-                  doc,
-                  _id,
-                  title,
-                  created,
-                  draft,
-                  modified,
-                  shared,
-                  template,
-                }) => (
-                  <div>
-                    <header>
-                      <a
-                        href={`${Astro.url.origin}${routes.DOCUMENTS}/${_id}${
-                          draft ? routes.SUMMARY : routes.DOCUMENT
-                        }`}
-                      >
-                        <span>{title}</span>
-                        {draft && <Badge>Szkic</Badge>}
-                        {shared && (
-                          <Badge style={BadgeStyle.purple}>Wysłany</Badge>
-                        )}
-                      </a>
-                      <a href={`${Astro.url.origin}/dokumenty/${doc}`}>
-                        <Icon name="document" width={16} height={16} />
-                        {template}
-                      </a>
-                    </header>
-                    {draft ? (
-                      <dl>
-                        <dt>{getDateLabel(created, modified)}</dt>
-                        <dd>
-                          <time>{formatDateTime(modified)}</time>
-                        </dd>
-                      </dl>
-                    ) : (
-                      <time>{formatDateTime(modified)}</time>
-                    )}
-                    <aside>
-                      <ChangeNameButton id={_id.toString()} title={title} />
-                      <CopyDocumentButton id={_id.toString()} />
-                      <DeleteDocumentButton id={_id} />
-                    </aside>
-                  </div>
-                )
-              )}
-            </>
-          ))}
-          <Pagination
-            pages={pages}
-            currentPage={currentPage}
-            url={`${Astro.url.origin}/moje-dokumenty`}
-          />
-        </section>
+        {Object.keys(documents).map((monthYear) => (
+          <>
+            <h6>{monthYear}</h6>
+            {documents[monthYear].map(
+              ({ _id, title, created, draft, modified, shared }) => (
+                <MyDocument
+                  id={_id}
+                  title={title}
+                  created={created}
+                  draft={draft}
+                  modified={modified}
+                  shared={shared}
+                />
+              )
+            )}
+          </>
+        ))}
+        <Pagination
+          pages={pages}
+          currentPage={currentPage}
+          url={`${Astro.url.origin}/${routes.MY_DOCUMENTS}`}
+        />
       </>
     ) : (
       <EmptyScreen
-        icon="document"
+        icon="files"
         cta="Stwórz pierwszy dokument"
-        ctaUrl={`${Astro.url.origin}/dokumenty`}
+        ctaUrl={`${Astro.url.origin}/${routes.DOCUMENTS}`}
       >
         Nie masz jeszcze dokumentów
       </EmptyScreen>
@@ -124,59 +83,12 @@ function getDateLabel(created: Date, modified: Date) {
 </Layout>
 
 <style>
-  section {
-    @apply flex gap-20 flex-wrap w-full max-w-[1024px] mx-auto py-20;
-  }
-
-  section > div {
-    @apply px-20 py-15 bg-white rounded-lg w-full;
-    @apply grid grid-cols-2 sm:grid-cols-4 gap-15 items-center sm:items-start;
-  }
-
-  section > div > header {
-    @apply col-span-2;
-    @apply flex flex-col gap-[5px];
-  }
-
-  section > div > header a {
-    @apply text-sm;
-    @apply flex gap-[5px] items-center;
-    @apply text-dark55;
-  }
-
-  section > div > header a:not(:hover) span {
-    @apply text-dark90;
-  }
-
-  section > div > header a span {
-    @apply text-xl line-clamp-3;
-  }
-
-  section > div > dl dt {
-    @apply text-xs text-dark40;
-  }
-
-  section > div > dl dt:not(:first-child) {
-    @apply pt-10;
-  }
-
-  section > div > aside {
-    @apply flex gap-15 items-center justify-end self-center;
-  }
-
-  section > div > aside a {
-    @apply btn btn-alt;
-  }
-
-  section small {
-    @apply block;
-  }
-
   h6 {
-    @apply font-bold text-xs;
+    @apply text-sans-xxs uppercase;
+    @apply sm:px-10 py-10;
   }
 
-  section > div :global(change-name-button span) {
-    @apply hidden md:inline-block;
+  :global(div) + h6 {
+    @apply pt-20;
   }
 </style>

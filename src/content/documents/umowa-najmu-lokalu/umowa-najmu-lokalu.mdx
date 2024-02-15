@@ -1,42 +1,22 @@
 ---
 slug: umowa-najmu-lokalu
 index: [
-  {
-    title: Przedmiot umowy, 
-    questions: [
-      { id: adres, title: Adres, answer: adres }, 
-      { id: powierzchnia, title: Powierzchnia, answer: powierzchnia }, 
-      { id: pomieszczenia, title: Pomieszczenia, answer: pomieszczenia }, 
-      { id: instalacje, title: Instalacje, token: systems }, 
-      { id: wyposazenie-lokalu, title: Wyposażenie, token: equipment }
-    ]
-  },
-  {
-    title: Przebieg umowy, 
-    questions: [
-      { id: przeznaczenie-lokalu, title: Przeznaczenie lokalu, token: purpose },
-      { id: czynsz, title: Czynsz, answer: czynsz }, 
-      { id: oplaty, title: Oplaty, answer: oplaty }, 
-      { id: kaucja, title: Kaucja, answer: kaucja },
-      { id: naprawy, title: Naprawy, answer: naprawy }, 
-      { id: wypowiedzenie, title: Wypowiedzenie, answer: wypowiedzenie }, 
-      { id: zwrot-lokalu, title: Zwrot, answer: zwrot-lokalu },      
-    ]
-  },  
-  {
-    title: Daty i okres trwania umowy,
-    questions: [
-      { id: daty, title: Data rozpoczęcia najmu, token: start, type: date },
-      { id: data-zawarcia, title: Data zawarcia umowy, token: contractDate, type: date },
-    ]
-  },
-  {
-    title: Dane stron,
-    questions: [
-      { id: dane-najemcy, title: Dane Najemcy, answer: dane-najemcy, required: true },
-      { id: dane-wynajmujacego, title: Dane Wynajmującego,  answer: dane-wynajmujacego, required: true },      
-    ]
-  },
+  { id: adres, title: Adres, answer: adres }, 
+  { id: powierzchnia, title: Powierzchnia, answer: powierzchnia }, 
+  { id: pomieszczenia, title: Pomieszczenia, answer: pomieszczenia }, 
+  { id: instalacje, title: Instalacje, token: systems }, 
+  { id: wyposazenie-lokalu, title: Wyposażenie, token: equipment },
+  { id: przeznaczenie-lokalu, title: Przeznaczenie lokalu, token: purpose },
+  { id: czynsz, title: Czynsz, answer: czynsz }, 
+  { id: oplaty, title: Oplaty, answer: oplaty }, 
+  { id: kaucja, title: Kaucja, answer: kaucja },
+  { id: naprawy, title: Naprawy, answer: naprawy }, 
+  { id: wypowiedzenie, title: Wypowiedzenie, answer: wypowiedzenie }, 
+  { id: zwrot-lokalu, title: Zwrot, answer: zwrot-lokalu }, 
+  { id: daty, title: Data rozpoczęcia najmu, token: start, type: date },
+  { id: data-zawarcia, title: Data zawarcia umowy, token: contractDate, type: date },
+  { id: dane-najemcy, title: Dane Najemcy, answer: dane-najemcy, required: true },
+  { id: dane-wynajmujacego, title: Dane Wynajmującego,  answer: dane-wynajmujacego, required: true },
 ]
 dates: [
   start,
@@ -55,8 +35,6 @@ import getItems from '@utils/itemlist';
 import PLURALS from "@utils/plurals";
 import MdxDataDisplay from "@components/DataDisplay.astro";
 import MdxConditionalBullet from "@components/MdxConditionalBullet.astro";
-import{ getDataValue } from "@components/MdxDataValue.astro";
-import MdxSignature from "@components/MdxSignature.astro";
 
 {formatDate(frontmatter.contractDate)}, {frontmatter.landlord.city}
 
@@ -74,6 +52,7 @@ import MdxSignature from "@components/MdxSignature.astro";
   city={frontmatter.landlord.city}  
   bankAccount={frontmatter.landlord.bankAccount}
 />
+<br/>
 <MdxDataDisplay
   label="Wynajmujący"
   type={frontmatter.tenant.type}
@@ -113,9 +92,10 @@ import MdxSignature from "@components/MdxSignature.astro";
 
 #### Oświadczenia
 
-<MdxSignature>
-  Wynajmujący: {getDataValue(frontmatter.landlord.type, frontmatter.landlord.name)}
-</MdxSignature>
-<MdxSignature>
-  Najemca: {getDataValue(frontmatter.tenant.type, frontmatter.tenant.name)}
-</MdxSignature>
+<br/>
+Podpis Wynajmującego:
+<br/>
+<br/>
+Podpis Najemcy:
+<br/>
+<br/>

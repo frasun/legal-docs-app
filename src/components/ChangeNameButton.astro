@@ -1,5 +1,5 @@
 ---
-import { Icon } from "astro-icon";
+import Icon, { IconSize } from "@components/Icon.astro";
 
 interface Props {
   id: string;
@@ -10,12 +10,12 @@ const { id, title } = Astro.props;
 ---
 
 <change-name-button data-doc-id={id} data-title={title} title="Zmień nazwę">
-  <Icon name="edit" width={20} height={20} />
+  <Icon name="edit" size={IconSize.sm} />
 </change-name-button>
 
 <style>
   change-name-button {
-    @apply btn btn-alt cursor-pointer;
+    @apply btn btn-alt btn-icon;
   }
 </style>
 

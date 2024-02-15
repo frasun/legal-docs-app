@@ -1,3 +1,4 @@
+import { navigate } from "astro:transitions/client";
 import { DATA_TYPE } from "@utils/urlParams";
 
 class DataTypeSelector extends HTMLElement {
@@ -22,7 +23,7 @@ class DataTypeSelector extends HTMLElement {
       }
 
       url.search = params.toString();
-      document.location = url.toString();
+      navigate(url);
     });
   }
 }

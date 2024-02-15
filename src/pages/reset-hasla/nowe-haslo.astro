@@ -1,11 +1,12 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import Layout, { LayoutType } from "../../layouts/App.astro";
 import pageTitle from "@utils/pageTitle";
 import AuthForm from "@components/AuthForm.astro";
 import * as PARAMS from "@utils/urlParams";
 import InputGroup from "@components/InputGroup.astro";
 import routes from "@utils/routes";
 import { passwordResetInProgress } from "@db/user";
+import Hint from "@components/Hint.astro";
 
 let verificationCode, password;
 
@@ -26,13 +27,12 @@ try {
 }
 ---
 
-<Layout title={pageTitle("Ustawianie nowego hasła")}>
+<Layout pageName={pageTitle(PAGE_TITLE)} title="" layout={LayoutType.centered}>
   <new-password-form data-user-email={userEmail}>
-    <AuthForm>
-      <h1 slot="form-header">{PAGE_TITLE}</h1>
-      <h5 slot="form-header">
+    <AuthForm title={PAGE_TITLE}>
+      <Hint>
         Wysłaliśmy kod potwierdzający na adres <strong>{userEmail}</strong>
-      </h5>
+      </Hint>
       <InputGroup>
         <label for="email">Podaj kod weryfikacyjny</label>
         <input
@@ -69,6 +69,12 @@ try {
     </AuthForm>
   </new-password-form>
 </Layout>
+
+<style>
+  new-password-form {
+    @apply col-span-full;
+  }
+</style>
 
 <script>
   import "@wc/NewPasswordForm";
