@@ -27,7 +27,8 @@ const categoryList = docCategories
   .join(", ");
 ---
 
-<a href={`${Astro.url.origin}/dokumenty/${slug}`} title={title}>
+<!-- <a href={`${Astro.url.origin}/dokumenty/${slug}`} title={title}> -->
+<a href={`${Astro.url.origin}/dokumenty/umowa-najmu-lokalu`} title={title}>
   <header>
     {draft && <Badge>szkic dokumentu</Badge>}
     <h3>{title}</h3>
@@ -47,7 +48,7 @@ const categoryList = docCategories
     @apply shadow-2 hover:shadow-3;
     @apply hover:text-black;
     @apply relative;
-    @apply sm:min-h-[230px];
+    @apply min-h-[230px];
     @apply overflow-hidden;
   }
 
