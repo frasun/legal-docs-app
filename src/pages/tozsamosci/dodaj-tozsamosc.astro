@@ -22,7 +22,7 @@ const PAGE_TITLE = "Dodaj tożsamość";
 >
   <AccountNav slot="sidebar" />
   <identity-form>
-    <form method="POST" spellcheck="false">
+    <form method="POST" spellcheck="false" transition:persist data-astro-reload>
       <DataInput showBankAccount={true} />
       <footer>
         <a href={`${Astro.url.origin}/tozsamosci`}>Anuluj</a>
