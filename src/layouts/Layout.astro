@@ -29,7 +29,11 @@ const metaKeywords = keywords ?? KEYWORDS;
 const metaImage = image ?? socialImageURL;
 
 const cookies = Astro.cookies.has(BANNER_COOKIE);
-const useAnalytics = Astro.cookies.get(BANNER_COOKIE)?.boolean();
+const showCookiesBanner =
+  import.meta.env.VERCEL_ENV === "production" && !cookies;
+const useAnalytics =
+  import.meta.env.VERCEL_ENV === "production" &&
+  Astro.cookies.get(BANNER_COOKIE)?.boolean();
 
 const refererUrl = Astro.request.headers.get("referer");
 const initialLoad = refererUrl === null;
@@ -95,15 +99,11 @@ const initialLoad = refererUrl === null;
     {import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
   </head>
   <body class={initialLoad ? "opacity-0" : undefined}>
-    {import.meta.env.VERCEL_ENV === "production" && <GA /> && useAnalytics}
+    {useAnalytics && <GA />}
     <slot />
     <toast-element></toast-element>
     {import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}
-    {
-      import.meta.env.VERCEL_ENV === "production" && !cookies && (
-        <CookieBanner />
-      )
-    }
+    {showCookiesBanner && <CookieBanner />}
     <Spinner />
 
     <style>
