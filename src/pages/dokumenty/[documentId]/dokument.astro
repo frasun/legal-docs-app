@@ -104,7 +104,11 @@ if (!title) {
   >
     <Content />
   </article>
-  {session && <SharingModal contentId="#doc" documentId={documentId} />}
+  {
+    session && (
+      <SharingModal slot="footer" contentId="#doc" documentId={documentId} />
+    )
+  }
 </Layout>
 
 <style>

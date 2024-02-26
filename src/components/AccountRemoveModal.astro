@@ -2,12 +2,7 @@
 import Modal, { ModalSize } from "@components/Modal.astro";
 ---
 
-<Modal
-  slot="footer"
-  modalTitle="Usuń konto"
-  size={ModalSize.sm}
-  modalId="confirm"
->
+<Modal modalTitle="Usuń konto" size={ModalSize.sm} modalId="confirm">
   <p>Czy na pewno chcesz usunąć konto oraz wszystkie dane?</p>
   <small>Tej operacji nie da się cofnąć</small>
   <footer>

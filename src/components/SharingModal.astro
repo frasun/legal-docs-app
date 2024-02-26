@@ -11,11 +11,7 @@ interface Props {
 const { contentId, documentId } = Astro.props;
 ---
 
-<Modal
-  modalId="sharing"
-  slot="footer"
-  modalTitle="Wyślij dokument przez e-mail"
->
+<Modal modalId="sharing" modalTitle="Wyślij dokument przez e-mail">
   <send-via-email data-content-id={contentId} data-document-id={documentId}>
     <form spellcheck="false" data-astro-reload>
       <fieldset>
