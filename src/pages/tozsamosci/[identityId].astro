@@ -39,7 +39,8 @@ try {
 <Layout
   pageName={pageTitle(PAGE_TITLE)}
   title={PAGE_TITLE}
-  layout={LayoutType.sidebar}
+  grid={false}
+  sidebar={true}
 >
   <AccountNav slot="sidebar" />
   <identity-form data-identity-id={identityId}>

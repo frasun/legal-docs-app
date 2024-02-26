@@ -16,7 +16,12 @@ if (emailParam) {
 }
 ---
 
-<Layout pageName={pageTitle(PAGE_TITLE)} title="" layout={LayoutType.centered}>
+<Layout
+  pageName={pageTitle(PAGE_TITLE)}
+  title=""
+  layout={LayoutType.centered}
+  grid={false}
+>
   <password-reset-form>
     <AuthForm title={PAGE_TITLE}>
       <InputGroup>
@@ -27,12 +32,6 @@ if (emailParam) {
     </AuthForm>
   </password-reset-form>
 </Layout>
-
-<style>
-  password-reset-form {
-    @apply col-span-full;
-  }
-</style>
 
 <script>
   import "@wc/PasswordResetForm";

@@ -51,8 +51,13 @@ const { pages, currentPage, url } = Astro.props;
     @apply col-span-full;
   }
 
-  footer > small {
+  small,
+  strong {
     @apply justify-self-center text-sans-xxs;
+  }
+
+  strong {
+    @apply text-black;
   }
 
   footer > a:first-child {

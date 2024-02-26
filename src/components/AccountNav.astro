@@ -11,26 +11,20 @@ function isActive(path: string) {
 }
 ---
 
-<div>
-  <a href={routes.MY_DOCUMENTS} data-active={isActive(routes.MY_DOCUMENTS)}>
-    <Icon name="documents" />
-    Moje dokumenty
-  </a>
-  <a href={routes.IDENTITIES} data-active={isActive(routes.IDENTITIES)}>
-    <Icon name="organization" />
-    Moje tożsamości
-  </a>
-  <a href={routes.PROFILE} data-active={isActive(routes.PROFILE)}>
-    <Icon name="account" />
-    Moje konto
-  </a>
-</div>
+<a href={routes.MY_DOCUMENTS} data-active={isActive(routes.MY_DOCUMENTS)}>
+  <Icon name="documents" />
+  Moje dokumenty
+</a>
+<a href={routes.IDENTITIES} data-active={isActive(routes.IDENTITIES)}>
+  <Icon name="organization" />
+  Moje tożsamości
+</a>
+<a href={routes.PROFILE} data-active={isActive(routes.PROFILE)}>
+  <Icon name="account" />
+  Moje konto
+</a>
 
 <style>
-  div {
-    @apply flex flex-col gap-8 py-15;
-  }
-
   a {
     @apply menu-item;
   }

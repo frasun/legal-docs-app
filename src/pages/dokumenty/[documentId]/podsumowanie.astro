@@ -58,80 +58,73 @@ try {
   title={title}
   footer={FooterType.short}
   highlightTitle={false}
+  grid={false}
 >
   <Badge slot="topbar-after-title" style={BadgeStyle.blue}>szkic</Badge>
   <aside slot="topbar-aside">
     <Progressbar current={1} steps={1} />
     {!isUserDocument && <SaveDraft documentId={documentId} />}
   </aside>
-  <section>
-    <h2>
-      <Badge size={BadgeSize.medium}>Podsumowanie</Badge>
-    </h2>
+  <h2>
+    <Badge size={BadgeSize.medium}>Podsumowanie</Badge>
+  </h2>
+  {
+    index.map(({ title, slug, answer, token, type }) => (
+      <div>
+        <h6>{title}</h6>
+        <Answer template={answer} data={answers} token={token} type={type} />
+        <a
+          href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${slug}`}
+        >
+          Zmień
+        </a>
+      </div>
+    ))
+  }
+  <footer>
     {
-      index.map(({ title, slug, answer, token, type }) => (
-        <div>
-          <h6>{title}</h6>
-          <Answer template={answer} data={answers} token={token} type={type} />
-          <a
-            href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${slug}`}
-          >
-            Zmień
-          </a>
-        </div>
-      ))
-    }
-    <footer>
-      {
-        canGenerate ? (
-          session ? (
-            <submit-order data-document-id={documentId}>
-              {GENERATE}
-            </submit-order>
-          ) : (
-            <show-modal data-modal="payment">
-              <button>{GENERATE}</button>
-            </show-modal>
-          )
+      canGenerate ? (
+        session ? (
+          <submit-order data-document-id={documentId}>{GENERATE}</submit-order>
         ) : (
-          <Badge style={BadgeStyle.red} size={BadgeSize.large}>
-            Aby wygenerować dokument wypełnij wszystkie wymagane pola
-          </Badge>
+          <show-modal data-modal="payment">
+            <button>{GENERATE}</button>
+          </show-modal>
         )
-      }
-      {!isUserDocument && <SaveDraft documentId={documentId} />}
-    </footer>
-  </section>
+      ) : (
+        <Badge style={BadgeStyle.red} size={BadgeSize.large}>
+          Aby wygenerować dokument wypełnij wszystkie wymagane pola
+        </Badge>
+      )
+    }
+    {!isUserDocument && <SaveDraft documentId={documentId} />}
+  </footer>
   <PaymentModal documentId={documentId} slot="footer" />
 </Layout>
 <style>
-  section {
-    @apply col-span-12;
-  }
-
-  section h2 {
+  h2 {
     @apply py-15;
   }
 
-  section > div {
+  div {
     @apply flex items-end md:items-start gap-x-30 gap-y-10 flex-wrap md:flex-nowrap;
     @apply flex-col md:flex-row;
     @apply text-sans-lg;
     @apply lg:px-10 py-15 border-t border-black/30;
   }
 
-  section > div h6 {
+  div h6 {
     @apply md:min-w-[25%];
     @apply w-full md:w-auto;
   }
 
-  section > div :global(> div) {
+  div :global(> div) {
     @apply flex-grow;
     @apply text-black;
     @apply w-full md:w-auto;
   }
 
-  section a {
+  a {
     @apply btn btn-alt;
   }
 

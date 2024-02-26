@@ -16,7 +16,12 @@ if (session) {
 const PAGE_TITLE = "Załóż konto";
 ---
 
-<Layout pageName={pageTitle(PAGE_TITLE)} title="" layout={LayoutType.centered}>
+<Layout
+  pageName={pageTitle(PAGE_TITLE)}
+  title=""
+  layout={LayoutType.centered}
+  grid={false}
+>
   <sign-up-form>
     <AuthForm title={PAGE_TITLE}>
       <InputGroup>
@@ -51,12 +56,6 @@ const PAGE_TITLE = "Załóż konto";
     </AuthForm>
   </sign-up-form>
 </Layout>
-
-<style>
-  sign-up-form {
-    @apply col-span-full;
-  }
-</style>
 
 <script>
   import "@wc/SignUpForm";

@@ -9,7 +9,6 @@ import Badge, { BadgeSize } from "@components/Badge.astro";
 export enum LayoutType {
   container = "container",
   centered = "centered",
-  sidebar = "sidebar",
 }
 
 export enum FooterType {
@@ -26,6 +25,8 @@ export interface Props {
   layout?: LayoutType;
   footer?: FooterType;
   highlightTitle?: boolean;
+  sidebar?: boolean;
+  grid?: boolean;
 }
 
 const {
@@ -37,6 +38,8 @@ const {
   layout = LayoutType.container,
   footer = FooterType.default,
   highlightTitle = true,
+  sidebar = false,
+  grid = true,
 } = Astro.props;
 const session = await getSession(Astro.request);
 const userEmail = session?.user?.email ?? undefined;
@@ -49,69 +52,100 @@ const userEmail = session?.user?.email ?? undefined;
   image={image}
 >
   <Appbar email={userEmail} />
-  {
-    layout === LayoutType.sidebar ? (
-      <div>
+  <main data-layout={layout} data-grid={grid || undefined}>
+    {
+      sidebar && (
         <nav>
           <slot name="sidebar" />
         </nav>
-        <main data-layout={layout}>
-          <header>
-            <h1>
-              {highlightTitle ? (
-                <Badge size={BadgeSize.large}>{title}</Badge>
-              ) : (
-                title
-              )}
-              <slot name="topbar-after-title" />
-            </h1>
-            <slot name="topbar-aside" />
-          </header>
-          <slot />
-        </main>
-      </div>
-    ) : (
-      <>
-        {title !== "" && (
-          <header>
-            <h1>
-              {highlightTitle ? (
-                <Badge size={BadgeSize.large}>{title}</Badge>
-              ) : (
-                title
-              )}
-              <slot name="topbar-after-title" />
-            </h1>
-            <slot name="topbar-aside" />
-          </header>
-        )}
-        <main data-layout={layout}>
-          <slot />
-        </main>
-      </>
-    )
-  }
-  <footer data-type={footer}>
-    {
-      footer === FooterType.default ? (
-        <Footer isSignedIn={Boolean(session)} />
-      ) : (
-        <FooterCopy />
       )
     }
-    <slot name="footer" />
-  </footer>
+    {
+      title !== "" && (
+        <header>
+          <h1>
+            {highlightTitle ? (
+              <Badge size={BadgeSize.large}>{title}</Badge>
+            ) : (
+              title
+            )}
+            <slot name="topbar-after-title" />
+          </h1>
+          <slot name="topbar-aside" />
+        </header>
+      )
+    }
+    <section>
+      <slot />
+    </section>
+  </main>
 </Layout>
+<footer data-type={footer}>
+  {
+    footer === FooterType.default ? (
+      <Footer isSignedIn={Boolean(session)} />
+    ) : (
+      <FooterCopy />
+    )
+  }
+  <slot name="footer" />
+</footer>
 
 <style>
   header {
-    @apply lg:container;
-    @apply px-20 lg:px-30 py-15;
+    @apply py-15;
     @apply flex items-center flex-wrap;
     @apply bg-white;
     @apply gap-15 md:gap-30;
     @apply z-50;
-    @apply w-full min-h-[70px];
+    @apply min-h-[72px];
+  }
+
+  main {
+    @apply flex-grow;
+    @apply px-20 lg:container;
+    @apply grid grid-rows-[minmax(0,auto)_1fr] grid-cols-12;
+    @apply lg:gap-x-40;
+  }
+
+  main nav {
+    @apply col-span-3 row-span-2;
+    @apply hidden lg:flex flex-col gap-8 py-15;
+  }
+
+  main header,
+  main section {
+    @apply col-span-12;
+  }
+
+  main section {
+    @apply row-span-2;
+  }
+
+  main nav + header,
+  main nav + header + section {
+    @apply lg:col-span-9 lg:col-start-4;
+  }
+
+  main[data-layout="centered"] section {
+    @apply grid content-center;
+  }
+
+  main[data-grid] section {
+    @apply grid grid-cols-12 md:gap-x-40;
+  }
+
+  footer[data-type="default"] {
+    @apply bg-black text-white/70;
+    @apply mt-60;
+  }
+
+  footer[data-type="short"] {
+    @apply text-black/50;
+  }
+
+  footer span {
+    @apply text-sans-xxs;
   }
 
   header > h1 {
@@ -129,55 +163,5 @@ const userEmail = session?.user?.email ?? undefined;
 
   header h1 :global(> span > span:first-child) {
     @apply line-clamp-2 md:line-clamp-1;
-  }
-
-  main {
-    @apply grid grid-cols-12 md:gap-x-40 grid-flow-row auto-rows-max;
-    @apply flex-grow;
-  }
-
-  main[data-layout="container"] {
-    @apply px-20 lg:container;
-  }
-
-  main[data-layout="centered"] {
-    @apply container;
-    @apply lg:content-center;
-  }
-
-  main[data-layout="sidebar"] {
-    @apply lg:content-center;
-  }
-
-  footer[data-type="default"] {
-    @apply bg-black text-white/70;
-    @apply mt-60;
-  }
-
-  footer[data-type="short"] {
-    @apply text-black/50;
-  }
-
-  footer span {
-    @apply text-sans-xxs;
-  }
-
-  div {
-    @apply px-20 lg:container;
-    @apply grid grid-cols-12 md:gap-x-40;
-    @apply flex-grow;
-  }
-
-  div nav {
-    @apply hidden lg:flex flex-col lg:col-span-3;
-  }
-
-  div main {
-    @apply col-span-12 lg:col-span-9 lg:col-start-4;
-    @apply flex flex-col;
-  }
-
-  div main header {
-    @apply px-0;
   }
 </style>

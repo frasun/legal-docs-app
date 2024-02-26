@@ -8,16 +8,9 @@ import getTitle from "@utils/pageTitle";
   pageName={getTitle("Podana strona nie istnieje (404)")}
   title=""
   layout={LayoutType.centered}
+  grid={false}
 >
-  <div>
-    <EmptyScreen cta="Idź do strony głównej" ctaUrl={`${Astro.url.origin}`}>
-      Przykro nam, podana strona nie istnieje (404)
-    </EmptyScreen>
-  </div>
+  <EmptyScreen cta="Idź do strony głównej" ctaUrl={`${Astro.url.origin}`}>
+    Przykro nam, podana strona nie istnieje (404)
+  </EmptyScreen>
 </Layout>
-
-<style>
-  div {
-    @apply col-span-full;
-  }
-</style>

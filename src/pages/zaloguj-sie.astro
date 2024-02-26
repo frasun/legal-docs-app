@@ -35,7 +35,12 @@ if (redirectUrl) {
 const PAGE_TITLE = "Zaloguj się";
 ---
 
-<Layout pageName={pageTitle(PAGE_TITLE)} title="" layout={LayoutType.centered}>
+<Layout
+  pageName={pageTitle(PAGE_TITLE)}
+  title=""
+  layout={LayoutType.centered}
+  grid={false}
+>
   <login-form redirect={redirectUrl}>
     <AuthForm title={PAGE_TITLE}>
       <InputGroup>
@@ -65,10 +70,6 @@ const PAGE_TITLE = "Zaloguj się";
 </Layout>
 
 <style>
-  login-form {
-    @apply col-span-full;
-  }
-
   a {
     @apply text-sans-sm;
   }

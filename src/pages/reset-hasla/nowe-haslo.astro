@@ -27,7 +27,12 @@ try {
 }
 ---
 
-<Layout pageName={pageTitle(PAGE_TITLE)} title="" layout={LayoutType.centered}>
+<Layout
+  pageName={pageTitle(PAGE_TITLE)}
+  title=""
+  layout={LayoutType.centered}
+  grid={false}
+>
   <new-password-form data-user-email={userEmail}>
     <AuthForm title={PAGE_TITLE}>
       <Hint>
@@ -69,12 +74,6 @@ try {
     </AuthForm>
   </new-password-form>
 </Layout>
-
-<style>
-  new-password-form {
-    @apply col-span-full;
-  }
-</style>
 
 <script>
   import "@wc/NewPasswordForm";

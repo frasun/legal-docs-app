@@ -31,7 +31,7 @@ try {
 }
 ---
 
-<Layout pageName={pageTitle(PAGE_TITLE)} title={PAGE_TITLE}>
+<Layout pageName={pageTitle(PAGE_TITLE)} title={PAGE_TITLE} grid={false}>
   <span slot="topbar-title">{PAGE_TITLE}</span>
   {
     posts ? (
@@ -71,7 +71,6 @@ try {
 
 <style>
   div {
-    @apply col-span-full;
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-40 gap-y-20 w-full;
     @apply pb-15;
   }

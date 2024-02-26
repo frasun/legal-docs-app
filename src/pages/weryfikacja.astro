@@ -39,7 +39,12 @@ if (redirectUrl) {
 const PAGE_NAME = "Weryfikacja adresu e-mail";
 ---
 
-<Layout pageName={pageTitle(PAGE_NAME)} title="" layout={LayoutType.centered}>
+<Layout
+  pageName={pageTitle(PAGE_NAME)}
+  title=""
+  layout={LayoutType.centered}
+  grid={false}
+>
   <verification-form email={userEmail} redirect={redirectUrl}>
     <AuthForm title={PAGE_NAME}>
       <Hint>
@@ -50,12 +55,6 @@ const PAGE_NAME = "Weryfikacja adresu e-mail";
     </AuthForm>
   </verification-form>
 </Layout>
-
-<style>
-  verification-form {
-    @apply col-span-full;
-  }
-</style>
 
 <script>
   import "@wc/VerificationForm";

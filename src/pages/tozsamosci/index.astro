@@ -47,7 +47,9 @@ try {
 <Layout
   pageName={pageTitle(PAGE_TITLE)}
   title={PAGE_TITLE}
-  layout={LayoutType.sidebar}
+  grid={false}
+  sidebar={true}
+  layout={count === 0 ? LayoutType.centered : undefined}
 >
   <AccountNav slot="sidebar" />
   <aside slot="topbar-aside">
