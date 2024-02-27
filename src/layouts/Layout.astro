@@ -93,7 +93,15 @@ const useAnalytics =
     <meta property="twitter:title" content={title} />
     <title>{title}</title>
     <ViewTransitions />
-    {import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
+    {
+      import.meta.env.VERCEL_ENV !== "development" && (
+        <>
+          <link rel="preconnect" href="https://js.sentry-cdn.com" />
+          <link rel="preconnect" href="https://embed.tawk.to" />
+        </>
+      )
+    }
+    <link rel="preconnect" href="https://cdn.sanity.io" />
   </head>
   <body>
     {useAnalytics && <GA />}
@@ -113,5 +121,6 @@ const useAnalytics =
     <script>
       import "@wc/ToastElement";
     </script>
+    {import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
   </body>
 </html>
