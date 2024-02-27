@@ -102,6 +102,7 @@ const useAnalytics =
       )
     }
     <link rel="preconnect" href="https://cdn.sanity.io" />
+    <slot name="head" />
   </head>
   <body>
     {useAnalytics && <GA />}
