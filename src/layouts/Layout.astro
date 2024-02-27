@@ -34,9 +34,6 @@ const showCookiesBanner =
 const useAnalytics =
   import.meta.env.VERCEL_ENV === "production" &&
   Astro.cookies.get(BANNER_COOKIE)?.boolean();
-
-const refererUrl = Astro.request.headers.get("referer");
-const initialLoad = refererUrl === null;
 ---
 
 <!doctype html>
@@ -98,7 +95,7 @@ const initialLoad = refererUrl === null;
     <ViewTransitions />
     {import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
   </head>
-  <body class={initialLoad ? "opacity-0" : undefined}>
+  <body>
     {useAnalytics && <GA />}
     <slot />
     <toast-element></toast-element>
@@ -115,14 +112,6 @@ const initialLoad = refererUrl === null;
 
     <script>
       import "@wc/ToastElement";
-
-      document.addEventListener(
-        "astro:page-load",
-        () => {
-          document.body.classList.remove("opacity-0");
-        },
-        { once: true }
-      );
     </script>
   </body>
 </html>
