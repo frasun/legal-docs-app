@@ -202,7 +202,7 @@ module.exports = {
 
 			const textSansSm = {
 				...textSans,
-				fontSize: '0.9375rem',
+				fontSize: '0.875rem',
 				lineHeight: '1.33em',
 			}
 			const textSansMd = {

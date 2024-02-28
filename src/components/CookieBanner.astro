@@ -4,10 +4,10 @@
 
 <cookie-banner>
   <p>Strona zapisuje informacje dotyczące użytkowników w formie ciasteczek.</p>
-  <p>
+  <small>
     Informacje są niezbędne w celu poprawnego funkcjonowania serwisu. Zbieramy
     również dane analityczne w celu poprawy jakości i rozwijania produktu.
-  </p>
+  </small>
 
   <button id="accept">Rozumiem</button>
   <button id="reject">Użyj tylko niezbędnych</button>
@@ -20,6 +20,10 @@
     @apply w-[260px];
     @apply flex flex-col gap-15 items-start;
     @apply text-sans-md text-black;
+  }
+
+  small {
+    @apply text-sans-sm;
   }
 
   cookie-banner button#accept {
