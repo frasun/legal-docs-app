@@ -33,7 +33,8 @@ const showCookiesBanner =
   import.meta.env.VERCEL_ENV === "production" && !cookies;
 const useAnalytics =
   import.meta.env.VERCEL_ENV === "production" &&
-  Astro.cookies.get(BANNER_COOKIE)?.boolean();
+  (!Astro.cookies.get(BANNER_COOKIE) ||
+    Astro.cookies.get(BANNER_COOKIE)?.boolean());
 ---
 
 <!doctype html>
@@ -115,7 +116,6 @@ const useAnalytics =
     <style>
       body {
         @apply flex flex-col min-h-[100vh];
-        @apply transition-opacity;
       }
     </style>
 
