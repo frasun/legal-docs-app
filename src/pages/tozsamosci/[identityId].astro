@@ -6,88 +6,88 @@ import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
 import { getIdentity } from "@api/identities";
 import type { Identity } from "@type";
-import { captureError } from "@utils/sentry";
+// import { captureError } from "@utils/sentry";
 import AccountNav from "@components/AccountNav.astro";
 
 const { identityId } = Astro.params as { identityId: string };
 
 const PAGE_TITLE = "Edytuj tożsamość";
 let type: Identity["type"],
-  name: Identity["name"],
-  pin: Identity["pin"],
-  street: Identity["street"],
-  apt: Identity["apt"],
-  postalCode: Identity["postalCode"],
-  city: Identity["city"],
-  bankAccount: Identity["bankAccount"];
+	name: Identity["name"],
+	pin: Identity["pin"],
+	street: Identity["street"],
+	apt: Identity["apt"],
+	postalCode: Identity["postalCode"],
+	city: Identity["city"],
+	bankAccount: Identity["bankAccount"];
 
 try {
-  ({ type, name, pin, street, apt, postalCode, city, bankAccount } =
-    await getIdentity(identityId, `${Astro.request.headers.get("cookie")}`));
+	({ type, name, pin, street, apt, postalCode, city, bankAccount } =
+		await getIdentity(identityId, `${Astro.request.headers.get("cookie")}`));
 } catch (e) {
-  if (e instanceof Error) {
-    if (e.cause === 404) {
-      return Astro.redirect(routes.NOT_FOUND);
-    }
-  }
+	if (e instanceof Error) {
+		if (e.cause === 404) {
+			return Astro.redirect(routes.NOT_FOUND);
+		}
+	}
 
-  captureError(e);
-  return Astro.redirect(routes.NOT_FOUND);
+	// captureError(e);
+	return Astro.redirect(routes.NOT_FOUND);
 }
 ---
 
 <Layout
-  pageName={pageTitle(PAGE_TITLE)}
-  title={PAGE_TITLE}
-  grid={false}
-  sidebar={true}
+	pageName={pageTitle(PAGE_TITLE)}
+	title={PAGE_TITLE}
+	grid={false}
+	sidebar={true}
 >
-  <AccountNav slot="sidebar" />
-  <identity-form data-identity-id={identityId}>
-    <form method="POST" spellcheck="false" transition:persist data-astro-reload>
-      <DataInput
-        type={type}
-        name={name}
-        street={street}
-        apt={apt}
-        postalCode={postalCode}
-        city={city}
-        pin={pin}
-        bankAccount={bankAccount}
-        showBankAccount={true}
-      />
-      <footer>
-        <a href={`${Astro.url.origin}/tozsamosci`}>Anuluj</a>
-        <button type="submit">Zapisz</button>
-      </footer>
-    </form>
-  </identity-form>
+	<AccountNav slot="sidebar" />
+	<identity-form data-identity-id={identityId}>
+		<form method="POST" spellcheck="false" transition:persist data-astro-reload>
+			<DataInput
+				type={type}
+				name={name}
+				street={street}
+				apt={apt}
+				postalCode={postalCode}
+				city={city}
+				pin={pin}
+				bankAccount={bankAccount}
+				showBankAccount={true}
+			/>
+			<footer>
+				<a href={`${Astro.url.origin}/tozsamosci`}>Anuluj</a>
+				<button type="submit">Zapisz</button>
+			</footer>
+		</form>
+	</identity-form>
 </Layout>
 
 <style>
-  form {
-    @apply w-full max-w-[700px];
-  }
+	form {
+		@apply w-full max-w-[700px];
+	}
 
-  form footer {
-    @apply flex justify-between items-center gap-15 flex-wrap sm:flex-nowrap;
-    @apply my-30;
-  }
+	form footer {
+		@apply flex justify-between items-center gap-15 flex-wrap sm:flex-nowrap;
+		@apply my-30;
+	}
 
-  form footer button[type="submit"],
-  form footer a {
-    @apply btn btn-big flex-grow w-full sm:w-auto;
-  }
+	form footer button[type="submit"],
+	form footer a {
+		@apply btn btn-big flex-grow w-full sm:w-auto;
+	}
 
-  form footer a {
-    @apply btn-alt;
-  }
+	form footer a {
+		@apply btn-alt;
+	}
 
-  form footer button[type="submit"] {
-    @apply btn-default;
-  }
+	form footer button[type="submit"] {
+		@apply btn-default;
+	}
 </style>
 
 <script>
-  import "@wc/IdentityForm";
+	import "@wc/IdentityForm";
 </script>

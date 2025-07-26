@@ -10,7 +10,7 @@ import { REDIRECT } from "@utils/urlParams";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
 import { getTemplateSummary } from "@api/templates";
-import { captureError } from "@utils/sentry";
+// import { captureError } from "@utils/sentry";
 import SaveDraft from "@components/SaveDarft.astro";
 import Progressbar from "@components/Progressbar.astro";
 
@@ -20,137 +20,137 @@ const session = await getSession(Astro.request);
 const isUserDocument = UUID.isValid(documentId);
 
 let answers: TemplateSummary["answers"] = {},
-  index: TemplateSummary["index"] = [],
-  title: TemplateSummary["title"] = "",
-  canGenerate: TemplateSummary["canGenerate"] = true;
+	index: TemplateSummary["index"] = [],
+	title: TemplateSummary["title"] = "",
+	canGenerate: TemplateSummary["canGenerate"] = true;
 
 const GENERATE = "Generuj dokument";
 
 try {
-  ({ title, answers, index, canGenerate } = await getTemplateSummary(
-    documentId,
-    `${Astro.request.headers.get("cookie")}`
-  ));
+	({ title, answers, index, canGenerate } = await getTemplateSummary(
+		documentId,
+		`${Astro.request.headers.get("cookie")}`
+	));
 } catch (e) {
-  if (e instanceof Error) {
-    switch (e.cause) {
-      case 403:
-        return Astro.redirect(
-          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
-        );
+	if (e instanceof Error) {
+		switch (e.cause) {
+			case 403:
+				return Astro.redirect(
+					`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+				);
 
-      case 303:
-        return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
+			case 303:
+				return Astro.redirect(`${routes.DOCUMENTS}/${documentId}/dokument`);
 
-      case 404:
-        return Astro.redirect(routes.NOT_FOUND);
+			case 404:
+				return Astro.redirect(routes.NOT_FOUND);
 
-      default:
-        captureError(e);
-        return Astro.redirect(routes.NOT_FOUND);
-    }
-  }
+			default:
+				// captureError(e);
+				return Astro.redirect(routes.NOT_FOUND);
+		}
+	}
 }
 ---
 
 <Layout
-  pageName={pageTitle(`Podsumowanie - ${title}`)}
-  title={title}
-  footer={FooterType.short}
-  highlightTitle={false}
-  grid={false}
+	pageName={pageTitle(`Podsumowanie - ${title}`)}
+	title={title}
+	footer={FooterType.short}
+	highlightTitle={false}
+	grid={false}
 >
-  <Badge slot="topbar-after-title" style={BadgeStyle.blue}>szkic</Badge>
-  <aside slot="topbar-aside">
-    <Progressbar current={1} steps={1} />
-    {!isUserDocument && <SaveDraft documentId={documentId} />}
-  </aside>
-  <h2>
-    <Badge size={BadgeSize.medium}>Podsumowanie</Badge>
-  </h2>
-  {
-    index.map(({ title, slug, answer, token, type }) => (
-      <div>
-        <h6>{title}</h6>
-        <Answer template={answer} data={answers} token={token} type={type} />
-        <a
-          href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${slug}`}
-        >
-          Zmień
-        </a>
-      </div>
-    ))
-  }
-  <footer>
-    {
-      canGenerate ? (
-        session ? (
-          <submit-order data-document-id={documentId}>{GENERATE}</submit-order>
-        ) : (
-          <show-modal data-modal="payment">
-            <button>{GENERATE}</button>
-          </show-modal>
-        )
-      ) : (
-        <Badge style={BadgeStyle.red} size={BadgeSize.large}>
-          Aby wygenerować dokument wypełnij wszystkie wymagane pola
-        </Badge>
-      )
-    }
-    {!isUserDocument && <SaveDraft documentId={documentId} />}
-  </footer>
-  <PaymentModal documentId={documentId} slot="footer" />
+	<Badge slot="topbar-after-title" style={BadgeStyle.blue}>szkic</Badge>
+	<aside slot="topbar-aside">
+		<Progressbar current={1} steps={1} />
+		{!isUserDocument && <SaveDraft documentId={documentId} />}
+	</aside>
+	<h2>
+		<Badge size={BadgeSize.medium}>Podsumowanie</Badge>
+	</h2>
+	{
+		index.map(({ title, slug, answer, token, type }) => (
+			<div>
+				<h6>{title}</h6>
+				<Answer template={answer} data={answers} token={token} type={type} />
+				<a
+					href={`${Astro.url.origin}${routes.DOCUMENTS}/${documentId}/${slug}`}
+				>
+					Zmień
+				</a>
+			</div>
+		))
+	}
+	<footer>
+		{
+			canGenerate ? (
+				session ? (
+					<submit-order data-document-id={documentId}>{GENERATE}</submit-order>
+				) : (
+					<show-modal data-modal="payment">
+						<button>{GENERATE}</button>
+					</show-modal>
+				)
+			) : (
+				<Badge style={BadgeStyle.red} size={BadgeSize.large}>
+					Aby wygenerować dokument wypełnij wszystkie wymagane pola
+				</Badge>
+			)
+		}
+		{!isUserDocument && <SaveDraft documentId={documentId} />}
+	</footer>
+	<PaymentModal documentId={documentId} slot="footer" />
 </Layout>
 <style>
-  h2 {
-    @apply py-15;
-  }
+	h2 {
+		@apply py-15;
+	}
 
-  div {
-    @apply flex items-end md:items-start gap-x-30 gap-y-10 flex-wrap md:flex-nowrap;
-    @apply flex-col md:flex-row;
-    @apply text-sans-lg;
-    @apply lg:px-10 py-15 border-t border-black/30;
-  }
+	div {
+		@apply flex items-end md:items-start gap-x-30 gap-y-10 flex-wrap md:flex-nowrap;
+		@apply flex-col md:flex-row;
+		@apply text-sans-lg;
+		@apply lg:px-10 py-15 border-t border-black/30;
+	}
 
-  div h6 {
-    @apply md:min-w-[25%];
-    @apply w-full md:w-auto;
-  }
+	div h6 {
+		@apply md:min-w-[25%];
+		@apply w-full md:w-auto;
+	}
 
-  div :global(> div) {
-    @apply flex-grow;
-    @apply text-black;
-    @apply w-full md:w-auto;
-  }
+	div :global(> div) {
+		@apply flex-grow;
+		@apply text-black;
+		@apply w-full md:w-auto;
+	}
 
-  a {
-    @apply btn btn-alt;
-  }
+	a {
+		@apply btn btn-alt;
+	}
 
-  footer {
-    @apply py-60;
-    @apply flex flex-col justify-center gap-20 items-center;
-  }
+	footer {
+		@apply py-60;
+		@apply flex flex-col justify-center gap-20 items-center;
+	}
 
-  footer a {
-    @apply btn btn-alt;
-  }
+	footer a {
+		@apply btn btn-alt;
+	}
 
-  footer a:first-child,
-  footer button,
-  show-payment-modal button,
-  submit-order {
-    @apply btn btn-default btn-big;
-    @apply min-w-[280px];
-  }
+	footer a:first-child,
+	footer button,
+	show-payment-modal button,
+	submit-order {
+		@apply btn btn-default btn-big;
+		@apply min-w-[280px];
+	}
 
-  aside {
-    @apply flex items-center gap-15 md:gap-30;
-  }
+	aside {
+		@apply flex items-center gap-15 md:gap-30;
+	}
 </style>
 
 <script>
-  import "@wc/ShowModal";
-  import "@wc/SubmitOrder";
+	import "@wc/ShowModal";
+	import "@wc/SubmitOrder";
 </script>

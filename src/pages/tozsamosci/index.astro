@@ -7,7 +7,7 @@ import { DATA_TYPE, REDIRECT } from "@utils/urlParams";
 import { getIdentities } from "@api/identities";
 import type { UserIdentities } from "@type";
 import routes from "@utils/routes";
-import { captureError } from "@utils/sentry";
+// import { captureError } from "@utils/sentry";
 import AccountNav from "@components/AccountNav.astro";
 import MyIdentity from "@components/MyIdentity.astro";
 
@@ -18,99 +18,99 @@ const dataTypeFilter = dataType ? decodeURIComponent(dataType) : undefined;
 const ALL_IDENTITIES = "Osoby fizyczne i firmy";
 
 let identities: UserIdentities["identities"] = [],
-  count: UserIdentities["count"] = 0;
+	count: UserIdentities["count"] = 0;
 
 try {
-  ({ identities, count } = await getIdentities(
-    `${Astro.request.headers.get("cookie")}`,
-    dataTypeFilter
-  ));
+	({ identities, count } = await getIdentities(
+		`${Astro.request.headers.get("cookie")}`,
+		dataTypeFilter
+	));
 } catch (e) {
-  if (e instanceof Error) {
-    switch (e.cause) {
-      case 401:
-        return Astro.redirect(
-          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
-        );
+	if (e instanceof Error) {
+		switch (e.cause) {
+			case 401:
+				return Astro.redirect(
+					`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+				);
 
-      case 404:
-        return Astro.redirect(routes.NOT_FOUND);
+			case 404:
+				return Astro.redirect(routes.NOT_FOUND);
 
-      default:
-        captureError(e);
-        return Astro.redirect(routes.NOT_FOUND);
-    }
-  }
+			default:
+				// captureError(e);
+				return Astro.redirect(routes.NOT_FOUND);
+		}
+	}
 }
 ---
 
 <Layout
-  pageName={pageTitle(PAGE_TITLE)}
-  title={PAGE_TITLE}
-  grid={false}
-  sidebar={true}
-  layout={count === 0 ? LayoutType.centered : undefined}
+	pageName={pageTitle(PAGE_TITLE)}
+	title={PAGE_TITLE}
+	grid={false}
+	sidebar={true}
+	layout={count === 0 ? LayoutType.centered : undefined}
 >
-  <AccountNav slot="sidebar" />
-  <aside slot="topbar-aside">
-    {
-      count > 0 && (
-        <data-type-selector>
-          <select>
-            <option value="">{ALL_IDENTITIES}</option>
-            {Object.values(entityEnum).map((type) => (
-              <option value={type} selected={type === dataTypeFilter}>
-                {`${type[0].toUpperCase()}${type.slice(1)}`}
-              </option>
-            ))}
-          </select>
-        </data-type-selector>
-      )
-    }
-    <a href={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}>
-      Dodaj tożsamość
-    </a>
-  </aside>
-  {
-    count > 0 ? (
-      <>
-        {identities.length ? (
-          <div>
-            {identities.map(({ _id, name, type }) => (
-              <MyIdentity id={_id} name={name} type={type} />
-            ))}
-          </div>
-        ) : (
-          <EmptyScreen>Brak tożsamości do wyświetlenia</EmptyScreen>
-        )}
-      </>
-    ) : (
-      <EmptyScreen
-        icon="organization"
-        cta="Stwórz pierwszą tożsamość"
-        ctaUrl={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}
-      >
-        Nie masz jeszcze zapisanych tożsamości
-      </EmptyScreen>
-    )
-  }
+	<AccountNav slot="sidebar" />
+	<aside slot="topbar-aside">
+		{
+			count > 0 && (
+				<data-type-selector>
+					<select>
+						<option value="">{ALL_IDENTITIES}</option>
+						{Object.values(entityEnum).map((type) => (
+							<option value={type} selected={type === dataTypeFilter}>
+								{`${type[0].toUpperCase()}${type.slice(1)}`}
+							</option>
+						))}
+					</select>
+				</data-type-selector>
+			)
+		}
+		<a href={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}>
+			Dodaj tożsamość
+		</a>
+	</aside>
+	{
+		count > 0 ? (
+			<>
+				{identities.length ? (
+					<div>
+						{identities.map(({ _id, name, type }) => (
+							<MyIdentity id={_id} name={name} type={type} />
+						))}
+					</div>
+				) : (
+					<EmptyScreen>Brak tożsamości do wyświetlenia</EmptyScreen>
+				)}
+			</>
+		) : (
+			<EmptyScreen
+				icon="organization"
+				cta="Stwórz pierwszą tożsamość"
+				ctaUrl={`${Astro.url.origin}/tozsamosci/dodaj-tozsamosc`}
+			>
+				Nie masz jeszcze zapisanych tożsamości
+			</EmptyScreen>
+		)
+	}
 </Layout>
 
 <style>
-  aside {
-    @apply flex items-center gap-15 flex-wrap;
-  }
+	aside {
+		@apply flex items-center gap-15 flex-wrap;
+	}
 
-  aside > a {
-    @apply btn btn-default;
-  }
+	aside > a {
+		@apply btn btn-default;
+	}
 
-  section > div {
-    @apply flex flex-col gap-20;
-  }
+	section > div {
+		@apply flex flex-col gap-20;
+	}
 </style>
 
 <script>
-  import "@wc/DeleteIdentity";
-  import "@wc/DataTypeSelector";
+	import "@wc/DeleteIdentity";
+	import "@wc/DataTypeSelector";
 </script>

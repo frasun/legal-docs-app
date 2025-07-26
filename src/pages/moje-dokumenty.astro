@@ -10,87 +10,87 @@ import AccountNav from "@components/AccountNav.astro";
 import routes from "@utils/routes";
 import { getDocuments } from "@api/documents";
 import type { UserDocuments } from "@type";
-import { captureError } from "@utils/sentry";
+// import { captureError } from "@utils/sentry";
 
 const urlParams = new URL(Astro.request.url).searchParams;
 const PAGE_TITLE = "Moje dokumenty";
 const page = urlParams.get(PARAMS.PAGE) || undefined;
 
 let documents: UserDocuments["documents"],
-  pages: UserDocuments["pages"],
-  currentPage: UserDocuments["currentPage"];
+	pages: UserDocuments["pages"],
+	currentPage: UserDocuments["currentPage"];
 
 try {
-  ({ documents, pages, currentPage } = await getDocuments(
-    `${Astro.request.headers.get("cookie")}`,
-    page
-  ));
+	({ documents, pages, currentPage } = await getDocuments(
+		`${Astro.request.headers.get("cookie")}`,
+		page
+	));
 } catch (e) {
-  if (e instanceof Error && e.cause === 401) {
-    return Astro.redirect(
-      `${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
-    );
-  } else {
-    captureError(e);
-    return Astro.redirect(routes.NOT_FOUND);
-  }
+	if (e instanceof Error && e.cause === 401) {
+		return Astro.redirect(
+			`${routes.SIGN_IN}?${PARAMS.REDIRECT}=${Astro.url.pathname}`
+		);
+	} else {
+		// captureError(e);
+		return Astro.redirect(routes.NOT_FOUND);
+	}
 }
 ---
 
 <Layout
-  pageName={pageTitle(PAGE_TITLE)}
-  title={PAGE_TITLE}
-  grid={false}
-  sidebar={true}
-  layout={!Object.keys(documents).length ? LayoutType.centered : undefined}
+	pageName={pageTitle(PAGE_TITLE)}
+	title={PAGE_TITLE}
+	grid={false}
+	sidebar={true}
+	layout={!Object.keys(documents).length ? LayoutType.centered : undefined}
 >
-  <AccountNav slot="sidebar" />
-  {
-    Object.keys(documents).length ? (
-      <>
-        {Object.keys(documents).map((monthYear) => (
-          <>
-            <h6>{monthYear}</h6>
-            {documents[monthYear].map(
-              ({ _id, title, created, draft, modified, shared }) => (
-                <MyDocument
-                  id={_id}
-                  title={title}
-                  created={created}
-                  draft={draft}
-                  modified={modified}
-                  shared={shared}
-                />
-              )
-            )}
-          </>
-        ))}
-        <Pagination
-          pages={pages}
-          currentPage={currentPage}
-          url={`${Astro.url.origin}/${routes.MY_DOCUMENTS}`}
-        />
-      </>
-    ) : (
-      <EmptyScreen
-        icon="files"
-        cta="Stwórz pierwszy dokument"
-        ctaUrl={`${Astro.url.origin}/${routes.DOCUMENTS}`}
-      >
-        Nie masz jeszcze dokumentów
-      </EmptyScreen>
-    )
-  }
-  <ChangeNameModal slot="footer" />
+	<AccountNav slot="sidebar" />
+	{
+		Object.keys(documents).length ? (
+			<>
+				{Object.keys(documents).map((monthYear) => (
+					<>
+						<h6>{monthYear}</h6>
+						{documents[monthYear].map(
+							({ _id, title, created, draft, modified, shared }) => (
+								<MyDocument
+									id={_id}
+									title={title}
+									created={created}
+									draft={draft}
+									modified={modified}
+									shared={shared}
+								/>
+							)
+						)}
+					</>
+				))}
+				<Pagination
+					pages={pages}
+					currentPage={currentPage}
+					url={`${Astro.url.origin}/${routes.MY_DOCUMENTS}`}
+				/>
+			</>
+		) : (
+			<EmptyScreen
+				icon="files"
+				cta="Stwórz pierwszy dokument"
+				ctaUrl={`${Astro.url.origin}/${routes.DOCUMENTS}`}
+			>
+				Nie masz jeszcze dokumentów
+			</EmptyScreen>
+		)
+	}
+	<ChangeNameModal slot="footer" />
 </Layout>
 
 <style>
-  h6 {
-    @apply text-sans-xxs uppercase;
-    @apply sm:px-10 py-10;
-  }
+	h6 {
+		@apply text-sans-xxs uppercase;
+		@apply sm:px-10 py-10;
+	}
 
-  :global(div) + h6 {
-    @apply pt-20;
-  }
+	:global(div) + h6 {
+		@apply pt-20;
+	}
 </style>

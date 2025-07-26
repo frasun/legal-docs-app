@@ -8,127 +8,127 @@ import type { TemplateInfo } from "@type";
 import { getTemplateInfo } from "@api/templates";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
-import { captureError } from "@utils/sentry";
+// import { captureError } from "@utils/sentry";
 import { IconSize } from "@components/Icon.astro";
 import Icon from "astro-icon";
 import Badge, { BadgeStyle } from "@components/Badge.astro";
 
 let title: TemplateInfo["title"] = "",
-  keywords: TemplateInfo["keywords"],
-  description: TemplateInfo["description"],
-  body: TemplateInfo["body"],
-  posts: TemplateInfo["posts"] = null,
-  price: TemplateInfo["price"] = null,
-  firstQuestionUrl: TemplateInfo["firstQuestionUrl"] = "";
+	keywords: TemplateInfo["keywords"],
+	description: TemplateInfo["description"],
+	body: TemplateInfo["body"],
+	posts: TemplateInfo["posts"] = null,
+	price: TemplateInfo["price"] = null,
+	firstQuestionUrl: TemplateInfo["firstQuestionUrl"] = "";
 
 try {
-  ({ title, keywords, description, body, posts, price, firstQuestionUrl } =
-    await getTemplateInfo(
-      `${Astro.request.headers.get("cookie")}`,
-      Astro.params.documentId as string
-    ));
+	({ title, keywords, description, body, posts, price, firstQuestionUrl } =
+		await getTemplateInfo(
+			`${Astro.request.headers.get("cookie")}`,
+			Astro.params.documentId as string
+		));
 } catch (e) {
-  if (e instanceof Error) {
-    switch (e.cause) {
-      case 403:
-        return Astro.redirect(
-          `${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
-        );
-      case 404:
-        return Astro.redirect(routes.NOT_FOUND);
-      default:
-        captureError(e);
-        return Astro.redirect(routes.NOT_FOUND);
-    }
-  }
+	if (e instanceof Error) {
+		switch (e.cause) {
+			case 403:
+				return Astro.redirect(
+					`${routes.SIGN_IN}?${REDIRECT}=${Astro.url.pathname}`
+				);
+			case 404:
+				return Astro.redirect(routes.NOT_FOUND);
+			default:
+				// captureError(e);
+				return Astro.redirect(routes.NOT_FOUND);
+		}
+	}
 }
 ---
 
 <Layout
-  pageName={pageTitle(title)}
-  keywords={keywords ?? undefined}
-  description={description ?? undefined}
-  title={title}
+	pageName={pageTitle(title)}
+	keywords={keywords ?? undefined}
+	description={description ?? undefined}
+	title={title}
 >
-  <aside slot="topbar-aside">
-    {price && <span>{formatNumber(price)} zł</span>}
-    <a href={`${Astro.url.origin}${firstQuestionUrl}`}>Stwórz dokument</a>
-  </aside>
-  {
-    body && (
-      <>
-        <article class="prose">
-          <BlogContent content={body} />
-          <footer class="not-prose">
-            {price && <span>{formatNumber(price)} zł</span>}
-            <a href={`${Astro.url.origin}${firstQuestionUrl}`}>
-              Stwórz dokument
-            </a>
-          </footer>
-        </article>
-      </>
-    )
-  }
-  {
-    posts && (
-      <aside>
-        <header>
-          <Icon name="blog" size={IconSize.sm} />
-          <Badge style={BadgeStyle.orange}>Powiązane artykuły</Badge>
-        </header>
-        {posts.map(({ title, slug, publishedAt, mainImage }) => (
-          <BlogPost
-            title={title}
-            url={slug}
-            publishedAt={publishedAt}
-            mainImage={mainImage}
-          />
-        ))}
-      </aside>
-    )
-  }
+	<aside slot="topbar-aside">
+		{price && <span>{formatNumber(price)} zł</span>}
+		<a href={`${Astro.url.origin}${firstQuestionUrl}`}>Stwórz dokument</a>
+	</aside>
+	{
+		body && (
+			<>
+				<article class="prose">
+					<BlogContent content={body} />
+					<footer class="not-prose">
+						{price && <span>{formatNumber(price)} zł</span>}
+						<a href={`${Astro.url.origin}${firstQuestionUrl}`}>
+							Stwórz dokument
+						</a>
+					</footer>
+				</article>
+			</>
+		)
+	}
+	{
+		posts && (
+			<aside>
+				<header>
+					<Icon name="blog" size={IconSize.sm} />
+					<Badge style={BadgeStyle.orange}>Powiązane artykuły</Badge>
+				</header>
+				{posts.map(({ title, slug, publishedAt, mainImage }) => (
+					<BlogPost
+						title={title}
+						url={slug}
+						publishedAt={publishedAt}
+						mainImage={mainImage}
+					/>
+				))}
+			</aside>
+		)
+	}
 </Layout>
 
 <style>
-  aside,
-  footer {
-    @apply flex items-center flex-wrap gap-15 md:gap-30;
-  }
+	aside,
+	footer {
+		@apply flex items-center flex-wrap gap-15 md:gap-30;
+	}
 
-  aside a,
-  footer a {
-    @apply btn btn-default;
-  }
+	aside a,
+	footer a {
+		@apply btn btn-default;
+	}
 
-  footer a {
-    @apply btn-big;
-    @apply md:min-w-[260px];
-  }
+	footer a {
+		@apply btn-big;
+		@apply md:min-w-[260px];
+	}
 
-  aside span,
-  footer span {
-    @apply text-sans-xxl text-black;
-  }
+	aside span,
+	footer span {
+		@apply text-sans-xxl text-black;
+	}
 
-  article {
-    @apply col-span-12 lg:col-span-7 mt-10;
-  }
+	article {
+		@apply col-span-12 lg:col-span-7 mt-10;
+	}
 
-  article + aside {
-    @apply col-span-12 lg:col-span-4 lg:col-start-9;
-    @apply lg:flex-col gap-5 items-start;
-    @apply mt-40 lg:mt-10;
-  }
+	article + aside {
+		@apply col-span-12 lg:col-span-4 lg:col-start-9;
+		@apply lg:flex-col gap-5 items-start;
+		@apply mt-40 lg:mt-10;
+	}
 
-  article + aside header {
-    @apply flex items-center gap-10 text-black;
-  }
+	article + aside header {
+		@apply flex items-center gap-10 text-black;
+	}
 
-  footer {
-    @apply pt-40;
-  }
+	footer {
+		@apply pt-40;
+	}
 
-  article :global(h3:first-child) {
-    @apply mt-0;
-  }
+	article :global(h3:first-child) {
+		@apply mt-0;
+	}
 </style>

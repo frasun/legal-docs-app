@@ -8,70 +8,70 @@ import BlogPost from "@components/BlogPost.astro";
 import type { BlogPosts } from "@type";
 import { getPosts } from "@api/posts";
 import routes from "@utils/routes";
-import { captureError } from "@utils/sentry";
+// import { captureError } from "@utils/sentry";
 import { BlogPostSize } from "@components/BlogPost.astro";
 
 const PAGE_TITLE = "Blog";
 const page = Number(new URL(Astro.request.url).searchParams.get(PAGE)) || 1;
 
 let posts: BlogPosts["posts"],
-  pages: BlogPosts["pages"],
-  currentPage: number = 1;
+	pages: BlogPosts["pages"],
+	currentPage: number = 1;
 
 try {
-  ({ posts, pages } = await getPosts(
-    `${Astro.request.headers.get("cookie")}`,
-    page
-  ));
+	({ posts, pages } = await getPosts(
+		`${Astro.request.headers.get("cookie")}`,
+		page
+	));
 
-  currentPage = page <= pages ? page : 1;
+	currentPage = page <= pages ? page : 1;
 } catch (e) {
-  captureError(e);
-  return Astro.redirect(routes.NOT_FOUND);
+	// captureError(e);
+	return Astro.redirect(routes.NOT_FOUND);
 }
 ---
 
 <Layout pageName={pageTitle(PAGE_TITLE)} title={PAGE_TITLE} grid={false}>
-  <span slot="topbar-title">{PAGE_TITLE}</span>
-  {
-    posts ? (
-      <>
-        <div>
-          {posts.map(
-            ({ title, slug, publishedAt, mainImage, excerpt }, index) => (
-              <BlogPost
-                title={title}
-                url={slug}
-                publishedAt={publishedAt}
-                mainImage={mainImage}
-                excerpt={index === 0 && currentPage === 1 ? excerpt : undefined}
-                size={
-                  index === 0 && currentPage === 1
-                    ? BlogPostSize.xlarge
-                    : BlogPostSize.large
-                }
-                newest={index === 0 && currentPage === 1}
-              />
-            )
-          )}
-        </div>
-        {pages > 1 && (
-          <Pagination
-            pages={pages}
-            currentPage={currentPage}
-            url={`${Astro.url.origin}/blog`}
-          />
-        )}
-      </>
-    ) : (
-      <EmptyScreen>Brak artykułów do wyświetlenia</EmptyScreen>
-    )
-  }
+	<span slot="topbar-title">{PAGE_TITLE}</span>
+	{
+		posts ? (
+			<>
+				<div>
+					{posts.map(
+						({ title, slug, publishedAt, mainImage, excerpt }, index) => (
+							<BlogPost
+								title={title}
+								url={slug}
+								publishedAt={publishedAt}
+								mainImage={mainImage}
+								excerpt={index === 0 && currentPage === 1 ? excerpt : undefined}
+								size={
+									index === 0 && currentPage === 1
+										? BlogPostSize.xlarge
+										: BlogPostSize.large
+								}
+								newest={index === 0 && currentPage === 1}
+							/>
+						)
+					)}
+				</div>
+				{pages > 1 && (
+					<Pagination
+						pages={pages}
+						currentPage={currentPage}
+						url={`${Astro.url.origin}/blog`}
+					/>
+				)}
+			</>
+		) : (
+			<EmptyScreen>Brak artykułów do wyświetlenia</EmptyScreen>
+		)
+	}
 </Layout>
 
 <style>
-  div {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-40 gap-y-20 w-full;
-    @apply pb-15;
-  }
+	div {
+		@apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-40 gap-y-20 w-full;
+		@apply pb-15;
+	}
 </style>

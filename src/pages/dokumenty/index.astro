@@ -9,7 +9,7 @@ import { CATEGORY, SEARCH } from "@utils/urlParams";
 import type { TemplateShort, DocumentCategory } from "@type";
 import { getCategories, getDocumentTemplates } from "@api/templates";
 import routes from "@utils/routes";
-import { captureError } from "@utils/sentry";
+// import { captureError } from "@utils/sentry";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get(CATEGORY);
@@ -17,126 +17,126 @@ const search = url.searchParams.get(SEARCH);
 const PAGE_TITLE = "Wszystkie dokumenty";
 
 let documents: TemplateShort[],
-  categories: DocumentCategory[],
-  currentCategory: DocumentCategory | undefined,
-  title: string;
+	categories: DocumentCategory[],
+	currentCategory: DocumentCategory | undefined,
+	title: string;
 
 try {
-  [documents, categories] = await Promise.all([
-    getDocumentTemplates(
-      `${Astro.request.headers.get("cookie")}`,
-      currentCat ?? undefined,
-      search ?? undefined
-    ),
-    getCategories(),
-  ]);
+	[documents, categories] = await Promise.all([
+		getDocumentTemplates(
+			`${Astro.request.headers.get("cookie")}`,
+			currentCat ?? undefined,
+			search ?? undefined
+		),
+		getCategories(),
+	]);
 
-  currentCategory = categories.find(({ slug }) => slug === currentCat);
-  title = currentCategory
-    ? `Dokumenty w kategorii ${currentCategory.title.toLowerCase()}`
-    : PAGE_TITLE;
+	currentCategory = categories.find(({ slug }) => slug === currentCat);
+	title = currentCategory
+		? `Dokumenty w kategorii ${currentCategory.title.toLowerCase()}`
+		: PAGE_TITLE;
 } catch (e) {
-  captureError(e);
+	// captureError(e);
 
-  return Astro.redirect(routes.NOT_FOUND);
+	return Astro.redirect(routes.NOT_FOUND);
 }
 ---
 
 <Layout
-  pageName={pageTitle(title)}
-  keywords={currentCategory?.keywords ?? undefined}
-  description={currentCategory?.description ?? undefined}
-  title={title}
-  layout={documents.length ? LayoutType.container : LayoutType.centered}
+	pageName={pageTitle(title)}
+	keywords={currentCategory?.keywords ?? undefined}
+	description={currentCategory?.description ?? undefined}
+	title={title}
+	layout={documents.length ? LayoutType.container : LayoutType.centered}
 >
-  <aside slot="topbar-aside">
-    <form method="GET" action={Astro.request.url} spellcheck="false">
-      <input
-        type="search"
-        placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
-        spellcheck="false"
-        name={SEARCH}
-        value={search ? trimWhitespace(search) : ""}
-      />
-      {currentCat && <input type="hidden" name={CATEGORY} value={currentCat} />}
-      <button type="submit">Szukaj</button>
-      {
-        search && (
-          <a href={Astro.url.pathname}>
-            <Icon name="clear" size={IconSize.sm} />
-            <span>Wyczyść</span>
-          </a>
-        )
-      }
-    </form>
-    <category-selector>
-      <select>
-        <option value="">Wszystkie kategorie</option>
-        {
-          categories.map(({ slug: id, title: name }) => (
-            <option value={id} selected={id === currentCat}>
-              {name}
-            </option>
-          ))
-        }
-      </select>
-    </category-selector>
-  </aside>
-  {
-    documents.length ? (
-      <section>
-        {documents.map(({ title, slug, categories: cats, price, draft }) => (
-          <DocumentTile
-            slug={slug}
-            title={title}
-            docCategories={cats}
-            categories={categories}
-            price={price}
-            draft={draft}
-          />
-        ))}
-      </section>
-    ) : (
-      <EmptyScreen>Brak dokumentów do wyświetlenia</EmptyScreen>
-    )
-  }
+	<aside slot="topbar-aside">
+		<form method="GET" action={Astro.request.url} spellcheck="false">
+			<input
+				type="search"
+				placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
+				spellcheck="false"
+				name={SEARCH}
+				value={search ? trimWhitespace(search) : ""}
+			/>
+			{currentCat && <input type="hidden" name={CATEGORY} value={currentCat} />}
+			<button type="submit">Szukaj</button>
+			{
+				search && (
+					<a href={Astro.url.pathname}>
+						<Icon name="clear" size={IconSize.sm} />
+						<span>Wyczyść</span>
+					</a>
+				)
+			}
+		</form>
+		<category-selector>
+			<select>
+				<option value="">Wszystkie kategorie</option>
+				{
+					categories.map(({ slug: id, title: name }) => (
+						<option value={id} selected={id === currentCat}>
+							{name}
+						</option>
+					))
+				}
+			</select>
+		</category-selector>
+	</aside>
+	{
+		documents.length ? (
+			<section>
+				{documents.map(({ title, slug, categories: cats, price, draft }) => (
+					<DocumentTile
+						slug={slug}
+						title={title}
+						docCategories={cats}
+						categories={categories}
+						price={price}
+						draft={draft}
+					/>
+				))}
+			</section>
+		) : (
+			<EmptyScreen>Brak dokumentów do wyświetlenia</EmptyScreen>
+		)
+	}
 </Layout>
 
 <style>
-  aside {
-    @apply flex gap-15 flex-grow flex-wrap lg:flex-nowrap;
-  }
+	aside {
+		@apply flex gap-15 flex-grow flex-wrap lg:flex-nowrap;
+	}
 
-  aside form {
-    @apply flex gap-10 flex-grow items-center;
-  }
+	aside form {
+		@apply flex gap-10 flex-grow items-center;
+	}
 
-  aside form input[type="search"] {
-    @apply flex-grow w-0;
-  }
+	aside form input[type="search"] {
+		@apply flex-grow w-0;
+	}
 
-  aside form button,
-  aside form a {
-    @apply btn btn-alt;
-  }
+	aside form button,
+	aside form a {
+		@apply btn btn-alt;
+	}
 
-  aside form a span {
-    @apply hidden sm:inline-block;
-  }
+	aside form a span {
+		@apply hidden sm:inline-block;
+	}
 
-  section {
-    @apply col-span-12;
-    @apply grid gap-20 lg:gap-30;
-    @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6;
-    @apply pt-10;
-    @apply auto-rows-max;
-  }
+	section {
+		@apply col-span-12;
+		@apply grid gap-20 lg:gap-30;
+		@apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6;
+		@apply pt-10;
+		@apply auto-rows-max;
+	}
 
-  :global(main > div) {
-    @apply col-span-12;
-  }
+	:global(main > div) {
+		@apply col-span-12;
+	}
 </style>
 
 <script>
-  import "@wc/CategorySelector";
+	import "@wc/CategorySelector";
 </script>

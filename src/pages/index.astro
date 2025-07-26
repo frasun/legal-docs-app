@@ -20,40 +20,40 @@ const pageId = `6c91451c-fad4-46e7-984c-ed81074ed4b4`;
 let keywords: Page["keywords"], description: Page["description"];
 
 try {
-  ({ keywords, description } = await getPage(pageId));
+	({ keywords, description } = await getPage(pageId));
 } catch (e) {
-  captureError(e);
+	// captureError(e);
 }
 ---
 
 <Layout title={getTitle()} keywords={keywords} description={description}>
-  <link
-    rel="preload"
-    fetchpriority="high"
-    as="image"
-    href="/bg-main.webp"
-    type="image/webp"
-    slot="head"
-  />
-  <Appbar email={userEmail} theme={AppBarTheme.yellow} />
-  <main>
-    <Splash />
-    <HowItWorks />
-    <MostPopular />
-    <SecurityInfo />
-    <LatestPosts />
-  </main>
-  <footer>
-    <Footer />
-  </footer>
+	<link
+		rel="preload"
+		fetchpriority="high"
+		as="image"
+		href="/bg-main.webp"
+		type="image/webp"
+		slot="head"
+	/>
+	<Appbar email={userEmail} theme={AppBarTheme.yellow} />
+	<main>
+		<Splash />
+		<HowItWorks />
+		<MostPopular />
+		<SecurityInfo />
+		<LatestPosts />
+	</main>
+	<footer>
+		<Footer />
+	</footer>
 </Layout>
 
 <style>
-  main {
-    @apply flex-grow;
-  }
+	main {
+		@apply flex-grow;
+	}
 
-  footer {
-    @apply bg-black text-white/70;
-  }
+	footer {
+		@apply bg-black text-white/70;
+	}
 </style>

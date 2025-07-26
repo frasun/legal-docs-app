@@ -1,9 +1,9 @@
 ---
 import type { UserSession } from "@type";
 import {
-  deletePaymentSession,
-  deleteSessionDocument,
-  getPaymentSession,
+	deletePaymentSession,
+	deleteSessionDocument,
+	getPaymentSession,
 } from "@db/session";
 import * as PARAMS from "@utils/urlParams";
 import { UUID } from "mongodb";
@@ -12,7 +12,7 @@ import { postDocument } from "@api/documents";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
-import { captureError } from "@utils/sentry";
+// import { captureError } from "@utils/sentry";
 import { getCheckoutSession } from "@utils/stripe";
 import sendConfirmation from "@utils/email";
 
@@ -22,112 +22,112 @@ const email = urlParams.get(PARAMS.EMAIL) || undefined;
 const paymentId = urlParams.get(PARAMS.PAYMENT);
 
 let documentId = urlParams.get(PARAMS.DOCUMENT),
-  ssid: UserSession["ssid"] | undefined = undefined,
-  stripePaymentId: string | undefined,
-  modifiedId: UUID | null = null,
-  isAdmin = false,
-  title: string | undefined;
+	ssid: UserSession["ssid"] | undefined = undefined,
+	stripePaymentId: string | undefined,
+	modifiedId: UUID | null = null,
+	isAdmin = false,
+	title: string | undefined;
 
 let cookie = Astro.request.headers.get("cookie");
 
 try {
-  const session = await getSession(Astro.request);
+	const session = await getSession(Astro.request);
 
-  if (session) {
-    ssid = session?.user?.ssid;
-    isAdmin = session?.user?.role === UserRoles.admin;
-  }
+	if (session) {
+		ssid = session?.user?.ssid;
+		isAdmin = session?.user?.role === UserRoles.admin;
+	}
 
-  if (!draft && !paymentId && !isAdmin) {
-    throw new Error();
-  }
+	if (!draft && !paymentId && !isAdmin) {
+		throw new Error();
+	}
 
-  if (paymentId) {
-    const userSession = await getPaymentSession(paymentId);
+	if (paymentId) {
+		const userSession = await getPaymentSession(paymentId);
 
-    if (userSession) {
-      ({ documentId, ssid } = userSession);
-      cookie = `${cookie}; ${SESSION_COOKIE}=${ssid}`;
+		if (userSession) {
+			({ documentId, ssid } = userSession);
+			cookie = `${cookie}; ${SESSION_COOKIE}=${ssid}`;
 
-      const { stripeId } = userSession;
+			const { stripeId } = userSession;
 
-      if (stripeId) {
-        stripePaymentId = await getCheckoutSession(stripeId);
-      }
-    }
-  }
+			if (stripeId) {
+				stripePaymentId = await getCheckoutSession(stripeId);
+			}
+		}
+	}
 
-  if (documentId) {
-    ({ id: modifiedId, title } = await postDocument(
-      documentId,
-      draft,
-      email ? decodeURIComponent(email) : undefined,
-      stripePaymentId,
-      cookie
-    ));
-  }
+	if (documentId) {
+		({ id: modifiedId, title } = await postDocument(
+			documentId,
+			draft,
+			email ? decodeURIComponent(email) : undefined,
+			stripePaymentId,
+			cookie
+		));
+	}
 
-  if (ssid && documentId) {
-    await deleteSessionDocument(documentId, Astro.request, Astro.cookies);
-  }
+	if (ssid && documentId) {
+		await deleteSessionDocument(documentId, Astro.request, Astro.cookies);
+	}
 
-  if (paymentId) {
-    await deletePaymentSession(paymentId);
-  }
+	if (paymentId) {
+		await deletePaymentSession(paymentId);
+	}
 
-  if (email && modifiedId) {
-    const documentUrl = `${Astro.url.origin}${routes.DOCUMENTS}/${modifiedId}${
-      routes.DOCUMENT
-    }?${PARAMS.EMAIL}=${encodeURIComponent(email)}`;
+	if (email && modifiedId) {
+		const documentUrl = `${Astro.url.origin}${routes.DOCUMENTS}/${modifiedId}${
+			routes.DOCUMENT
+		}?${PARAMS.EMAIL}=${encodeURIComponent(email)}`;
 
-    await sendConfirmation(
-      decodeURIComponent(email),
-      { url: documentUrl, title, paymentId: stripePaymentId },
-      "document-link"
-    );
-  }
+		await sendConfirmation(
+			decodeURIComponent(email),
+			{ url: documentUrl, title, paymentId: stripePaymentId },
+			"document-link"
+		);
+	}
 
-  let redirectUrl: URL;
+	let redirectUrl: URL;
 
-  if (draft) {
-    redirectUrl = new URL(routes.MY_DOCUMENTS, Astro.url.origin);
-  } else {
-    const upsertedId = modifiedId || documentId;
-    redirectUrl = new URL(
-      `${routes.DOCUMENTS}/${upsertedId}${routes.DOCUMENT}`,
-      Astro.url.origin
-    );
+	if (draft) {
+		redirectUrl = new URL(routes.MY_DOCUMENTS, Astro.url.origin);
+	} else {
+		const upsertedId = modifiedId || documentId;
+		redirectUrl = new URL(
+			`${routes.DOCUMENTS}/${upsertedId}${routes.DOCUMENT}`,
+			Astro.url.origin
+		);
 
-    if (email) {
-      redirectUrl.searchParams.append(PARAMS.EMAIL, encodeURIComponent(email));
-    }
-  }
+		if (email) {
+			redirectUrl.searchParams.append(PARAMS.EMAIL, encodeURIComponent(email));
+		}
+	}
 
-  return Astro.redirect(redirectUrl);
+	return Astro.redirect(redirectUrl);
 } catch (e) {
-  if (e instanceof Error) {
-    switch (e.cause) {
-      case 303:
-        return Astro.redirect(
-          `${routes.DOCUMENTS}/${documentId}${routes.DOCUMENT}`
-        );
+	if (e instanceof Error) {
+		switch (e.cause) {
+			case 303:
+				return Astro.redirect(
+					`${routes.DOCUMENTS}/${documentId}${routes.DOCUMENT}`
+				);
 
-      case 401:
-        const redirectUrl = new URL(`${routes.SIGN_IN}`, Astro.url.origin);
+			case 401:
+				const redirectUrl = new URL(`${routes.SIGN_IN}`, Astro.url.origin);
 
-        redirectUrl.searchParams.append(PARAMS.REDIRECT, routes.DOCUMENT);
-        redirectUrl.searchParams.append(PARAMS.DOCUMENT, documentId as string);
-        redirectUrl.searchParams.append(PARAMS.DRAFT, "true");
+				redirectUrl.searchParams.append(PARAMS.REDIRECT, routes.DOCUMENT);
+				redirectUrl.searchParams.append(PARAMS.DOCUMENT, documentId as string);
+				redirectUrl.searchParams.append(PARAMS.DRAFT, "true");
 
-        return Astro.redirect(redirectUrl);
+				return Astro.redirect(redirectUrl);
 
-      case 404:
-        return Astro.redirect(routes.NOT_FOUND);
+			case 404:
+				return Astro.redirect(routes.NOT_FOUND);
 
-      default:
-        captureError(e);
-        return Astro.redirect(routes.NOT_FOUND);
-    }
-  }
+			default:
+				// captureError(e);
+				return Astro.redirect(routes.NOT_FOUND);
+		}
+	}
 }
 ---

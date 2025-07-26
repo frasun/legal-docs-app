@@ -3,7 +3,7 @@ import ChatWidget from "@components/ChatWidget.astro";
 import CookieBanner from "@components/CookieBanner.astro";
 import GA from "@components/GA.astro";
 import "@components/GlobalStyles.astro";
-import Sentry from "@components/Sentry.astro";
+// import Sentry from "@components/Sentry.astro";
 import Spinner from "@components/Spinner.astro";
 import { BANNER_COOKIE } from "@utils/cookies";
 import { ViewTransitions } from "astro:transitions";
@@ -94,14 +94,14 @@ const useAnalytics =
     <meta property="twitter:title" content={title} />
     <title>{title}</title>
     <ViewTransitions />
-    {
+    <!-- {
       import.meta.env.VERCEL_ENV !== "development" && (
         <>
           <link rel="preconnect" href="https://js.sentry-cdn.com" />
           <link rel="preconnect" href="https://embed.tawk.to" />
         </>
       )
-    }
+    } -->
     <link rel="preconnect" href="https://cdn.sanity.io" />
     <slot name="head" />
   </head>
@@ -122,6 +122,6 @@ const useAnalytics =
     <script>
       import "@wc/ToastElement";
     </script>
-    {import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
+    <!-- {import.meta.env.VERCEL_ENV !== "development" && <Sentry />} -->
   </body>
 </html>
