@@ -26,7 +26,7 @@
     "@sentry/node": "^7.81.1",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.9",
-    "@vercel/kv": "^1.0.1",
+    "@upstash/redis": "^1.35.1",
     "amount-to-text": "^2.0.1",
     "astro": "^4.0.6",
     "astro-icon": "^0.8.2",

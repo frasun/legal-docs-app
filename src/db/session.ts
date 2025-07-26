@@ -1,6 +1,6 @@
 import type { Answers, UserSession } from "@type";
 import { SESSION_COOKIE } from "@utils/cookies";
-import { kv } from "@vercel/kv";
+import kv from "@db/redis";
 import type { AstroCookies } from "astro";
 import { getSession } from "auth-astro/server";
 
@@ -8,137 +8,137 @@ const DOCUMENT_EXPIRATION_TIME = 3600;
 const PAYMENT_EXPIRATION_TIME = 86400;
 
 export async function storeAnswers(
-  ssid: string,
-  documentId: string,
-  answers: Answers
+	ssid: string,
+	documentId: string,
+	answers: Answers
 ) {
-  try {
-    const validatedAnswers: Answers = {};
-    const schema = await import(`../documentSchema/${documentId}.ts`);
+	try {
+		const validatedAnswers: Answers = {};
+		const schema = await import(`../documentSchema/${documentId}.ts`);
 
-    if (!schema) {
-      throw new Error("missing field schema");
-    }
+		if (!schema) {
+			throw new Error("missing field schema");
+		}
 
-    for (const [field, answer] of Object.entries(answers)) {
-      const fieldSchema = schema[field];
+		for (const [field, answer] of Object.entries(answers)) {
+			const fieldSchema = schema[field];
 
-      Object.assign(validatedAnswers, {
-        [field]: fieldSchema.parse(answer),
-      });
-    }
+			Object.assign(validatedAnswers, {
+				[field]: fieldSchema.parse(answer),
+			});
+		}
 
-    await kv.hset(`document-${ssid}-${documentId}`, validatedAnswers);
-    await kv.expire(`document-${ssid}-${documentId}`, DOCUMENT_EXPIRATION_TIME);
-  } catch (e) {
-    throw e;
-  }
+		await kv.hset(`document-${ssid}-${documentId}`, validatedAnswers);
+		await kv.expire(`document-${ssid}-${documentId}`, DOCUMENT_EXPIRATION_TIME);
+	} catch (e) {
+		throw e;
+	}
 }
 
 export async function getAnswers(
-  ssid: string,
-  documentId: string,
-  fields?: string[]
+	ssid: string,
+	documentId: string,
+	fields?: string[]
 ) {
-  try {
-    let sessionAnswers: Answers | null = null;
+	try {
+		let sessionAnswers: Answers | null = null;
 
-    if (fields && fields.length) {
-      sessionAnswers = await kv.hmget(
-        `document-${ssid}-${documentId}`,
-        ...fields
-      );
-    } else {
-      sessionAnswers = await kv.hgetall(`document-${ssid}-${documentId}`);
-    }
+		if (fields && fields.length) {
+			sessionAnswers = await kv.hmget(
+				`document-${ssid}-${documentId}`,
+				...fields
+			);
+		} else {
+			sessionAnswers = await kv.hgetall(`document-${ssid}-${documentId}`);
+		}
 
-    let answers: Answers = {};
+		let answers: Answers = {};
 
-    if (sessionAnswers) {
-      for (let [key, value] of Object.entries(sessionAnswers)) {
-        if (value !== null) {
-          answers[key] = value;
-        }
-      }
-    }
+		if (sessionAnswers) {
+			for (let [key, value] of Object.entries(sessionAnswers)) {
+				if (value !== null) {
+					answers[key] = value;
+				}
+			}
+		}
 
-    return answers;
-  } catch (e) {
-    throw e;
-  }
+		return answers;
+	} catch (e) {
+		throw e;
+	}
 }
 
 export async function getAllAnswers(ssid: string, documentId: string) {
-  try {
-    return await kv.hgetall(`document-${ssid}-${documentId}`);
-  } catch (e) {
-    throw e;
-  }
+	try {
+		return await kv.hgetall(`document-${ssid}-${documentId}`);
+	} catch (e) {
+		throw e;
+	}
 }
 
 export async function deleteSessionDocument(
-  documentId: string,
-  request: Request,
-  cookies: AstroCookies
+	documentId: string,
+	request: Request,
+	cookies: AstroCookies
 ) {
-  try {
-    const session = await getSession(request);
-    const sessionCookie = cookies.get(SESSION_COOKIE);
-    const ssid = session
-      ? session.user?.ssid
-      : sessionCookie
-      ? sessionCookie.value
-      : sessionCookie;
+	try {
+		const session = await getSession(request);
+		const sessionCookie = cookies.get(SESSION_COOKIE);
+		const ssid = session
+			? session.user?.ssid
+			: sessionCookie
+			? sessionCookie.value
+			: sessionCookie;
 
-    if (!ssid) {
-      throw new Error(undefined, { cause: 400 });
-    }
+		if (!ssid) {
+			throw new Error(undefined, { cause: 400 });
+		}
 
-    await kv.del(`document-${ssid}-${documentId}`);
-  } catch (e) {
-    throw e;
-  }
+		await kv.del(`document-${ssid}-${documentId}`);
+	} catch (e) {
+		throw e;
+	}
 }
 
 export async function createPaymentSession(
-  pid: string,
-  ssid: string,
-  documentId: string,
-  stripeId?: string
+	pid: string,
+	ssid: string,
+	documentId: string,
+	stripeId?: string
 ) {
-  try {
-    await kv.hset(`payment-${pid}`, { ssid, documentId, stripeId });
-    await kv.expire(`payment-${pid}`, PAYMENT_EXPIRATION_TIME);
-    await kv.expire(`document-${ssid}-${documentId}`, PAYMENT_EXPIRATION_TIME);
-  } catch (e) {
-    throw e;
-  }
+	try {
+		await kv.hset(`payment-${pid}`, { ssid, documentId, stripeId });
+		await kv.expire(`payment-${pid}`, PAYMENT_EXPIRATION_TIME);
+		await kv.expire(`document-${ssid}-${documentId}`, PAYMENT_EXPIRATION_TIME);
+	} catch (e) {
+		throw e;
+	}
 }
 
 export async function getPaymentSession(
-  pid: string
+	pid: string
 ): Promise<UserSession | null> {
-  try {
-    const session = (await kv.hgetall(`payment-${pid}`)) as {
-      documentId: string;
-      ssid: string;
-      stripeId?: string;
-    };
+	try {
+		const session = (await kv.hgetall(`payment-${pid}`)) as {
+			documentId: string;
+			ssid: string;
+			stripeId?: string;
+		};
 
-    if (!session) {
-      throw new Error(undefined, { cause: 404 });
-    }
+		if (!session) {
+			throw new Error(undefined, { cause: 404 });
+		}
 
-    return session;
-  } catch (e) {
-    throw e;
-  }
+		return session;
+	} catch (e) {
+		throw e;
+	}
 }
 
 export async function deletePaymentSession(pid: string) {
-  try {
-    await kv.del(`payment-${pid}`);
-  } catch (e) {
-    throw e;
-  }
+	try {
+		await kv.del(`payment-${pid}`);
+	} catch (e) {
+		throw e;
+	}
 }
