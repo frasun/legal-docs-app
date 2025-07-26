@@ -11,7 +11,7 @@ import BlogContent from "@components/BlogContent.astro";
 import { getPost } from "@api/posts";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
-// import { captureError } from "@utils/sentry";
+import { captureError } from "@utils/sentry";
 import Icon, { IconSize } from "@components/Icon.astro";
 
 const PAGE_TITLE = "Blog";
@@ -52,7 +52,7 @@ try {
 				return Astro.redirect(routes.NOT_FOUND);
 
 			default:
-				// captureError(e);
+				captureError(e);
 				return Astro.redirect(routes.NOT_FOUND);
 		}
 	}

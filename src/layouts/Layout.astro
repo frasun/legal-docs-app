@@ -3,22 +3,22 @@ import ChatWidget from "@components/ChatWidget.astro";
 import CookieBanner from "@components/CookieBanner.astro";
 import GA from "@components/GA.astro";
 import "@components/GlobalStyles.astro";
-// import Sentry from "@components/Sentry.astro";
+import Sentry from "@components/Sentry.astro";
 import Spinner from "@components/Spinner.astro";
 import { BANNER_COOKIE } from "@utils/cookies";
 import { ViewTransitions } from "astro:transitions";
 
 export interface Props {
-  title: string;
-  keywords?: string;
-  description?: string;
-  image?: string;
+	title: string;
+	keywords?: string;
+	description?: string;
+	image?: string;
 }
 
 const { title, keywords, description, image } = Astro.props;
 
 const DESC =
-  "Przystępne i precyzyjne dokumenty prawne z pomocą wirtualnego prawnika! Generuj, podpisuj i przechowuj dokumenty prawne.";
+	"Przystępne i precyzyjne dokumenty prawne z pomocą wirtualnego prawnika! Generuj, podpisuj i przechowuj dokumenty prawne.";
 const KEYWORDS = "umowa, dokument prawny, generuj umowę, generuj dokument";
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.url.origin);
@@ -30,98 +30,98 @@ const metaImage = image ?? socialImageURL;
 
 const cookies = Astro.cookies.has(BANNER_COOKIE);
 const showCookiesBanner =
-  import.meta.env.VERCEL_ENV === "production" && !cookies;
+	import.meta.env.VERCEL_ENV === "production" && !cookies;
 const useAnalytics =
-  import.meta.env.VERCEL_ENV === "production" &&
-  (!Astro.cookies.get(BANNER_COOKIE) ||
-    Astro.cookies.get(BANNER_COOKIE)?.boolean());
+	import.meta.env.VERCEL_ENV === "production" &&
+	(!Astro.cookies.get(BANNER_COOKIE) ||
+		Astro.cookies.get(BANNER_COOKIE)?.boolean());
 ---
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href=`${Astro.url.origin}/favicon/apple-touch-icon.png`
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href=`${Astro.url.origin}/favicon/favicon-32x32.png`
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href=`${Astro.url.origin}/favicon/favicon-16x16.png`
-    />
-    <link rel="manifest" href=`${Astro.url.origin}/favicon/site.webmanifest` />
-    <link
-      rel="mask-icon"
-      href=`${Astro.url.origin}/favicon/safari-pinned-tab.svg`
-      color="#282725"
-    />
-    <link rel="shortcut icon" href=`${Astro.url.origin}/favicon/favicon.ico` />
-    <link rel="canonical" href={canonicalURL} />
-    <meta name="msapplication-TileColor" content="#f5f3ee" />
-    <meta
-      name="msapplication-config"
-      content=`${Astro.url.origin}/favicon/browserconfig.xml`
-    />
-    <meta name="theme-color" content="#f5f3ee" />
-    <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={metaDescription} />
-    <meta name="keywords" content={metaKeywords} />
-    <meta property="og:site_name" content="Prawniczek" />
-    <meta property="og:url" content={Astro.url} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={metaDescription} />
-    <meta property="og:image" content={metaImage} />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1024" />
-    <meta property="og:image:height" content="706" />
-    <meta property="twitter:image" content={socialImageURL} />
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:description" content={metaDescription} />
-    <meta property="twitter:title" content={title} />
-    <title>{title}</title>
-    <ViewTransitions />
-    <!-- {
-      import.meta.env.VERCEL_ENV !== "development" && (
-        <>
-          <link rel="preconnect" href="https://js.sentry-cdn.com" />
-          <link rel="preconnect" href="https://embed.tawk.to" />
-        </>
-      )
-    } -->
-    <link rel="preconnect" href="https://cdn.sanity.io" />
-    <slot name="head" />
-  </head>
-  <body>
-    {useAnalytics && <GA />}
-    <slot />
-    <toast-element></toast-element>
-    {import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}
-    {showCookiesBanner && <CookieBanner />}
-    <Spinner />
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href=`${Astro.url.origin}/favicon/apple-touch-icon.png`
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href=`${Astro.url.origin}/favicon/favicon-32x32.png`
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href=`${Astro.url.origin}/favicon/favicon-16x16.png`
+		/>
+		<link rel="manifest" href=`${Astro.url.origin}/favicon/site.webmanifest` />
+		<link
+			rel="mask-icon"
+			href=`${Astro.url.origin}/favicon/safari-pinned-tab.svg`
+			color="#282725"
+		/>
+		<link rel="shortcut icon" href=`${Astro.url.origin}/favicon/favicon.ico` />
+		<link rel="canonical" href={canonicalURL} />
+		<meta name="msapplication-TileColor" content="#f5f3ee" />
+		<meta
+			name="msapplication-config"
+			content=`${Astro.url.origin}/favicon/browserconfig.xml`
+		/>
+		<meta name="theme-color" content="#f5f3ee" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={metaDescription} />
+		<meta name="keywords" content={metaKeywords} />
+		<meta property="og:site_name" content="Prawniczek" />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={metaDescription} />
+		<meta property="og:image" content={metaImage} />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:width" content="1024" />
+		<meta property="og:image:height" content="706" />
+		<meta property="twitter:image" content={socialImageURL} />
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:description" content={metaDescription} />
+		<meta property="twitter:title" content={title} />
+		<title>{title}</title>
+		<ViewTransitions />
+		{
+			import.meta.env.VERCEL_ENV !== "development" && (
+				<>
+					<link rel="preconnect" href="https://js.sentry-cdn.com" />
+					<link rel="preconnect" href="https://embed.tawk.to" />
+				</>
+			)
+		}
+		<link rel="preconnect" href="https://cdn.sanity.io" />
+		<slot name="head" />
+	</head>
+	<body>
+		{useAnalytics && <GA />}
+		<slot />
+		<toast-element></toast-element>
+		{import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}
+		{showCookiesBanner && <CookieBanner />}
+		<Spinner />
 
-    <style>
-      body {
-        @apply flex flex-col min-h-[100vh];
-      }
-    </style>
+		<style>
+			body {
+				@apply flex flex-col min-h-[100vh];
+			}
+		</style>
 
-    <script>
-      import "@wc/ToastElement";
-    </script>
-    <!-- {import.meta.env.VERCEL_ENV !== "development" && <Sentry />} -->
-  </body>
+		<script>
+			import "@wc/ToastElement";
+		</script>
+		{import.meta.env.VERCEL_ENV !== "development" && <Sentry />}
+	</body>
 </html>

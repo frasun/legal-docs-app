@@ -8,7 +8,7 @@ import type { TemplateInfo } from "@type";
 import { getTemplateInfo } from "@api/templates";
 import { REDIRECT } from "@utils/urlParams";
 import routes from "@utils/routes";
-// import { captureError } from "@utils/sentry";
+import { captureError } from "@utils/sentry";
 import { IconSize } from "@components/Icon.astro";
 import Icon from "astro-icon";
 import Badge, { BadgeStyle } from "@components/Badge.astro";
@@ -37,7 +37,7 @@ try {
 			case 404:
 				return Astro.redirect(routes.NOT_FOUND);
 			default:
-				// captureError(e);
+				captureError(e);
 				return Astro.redirect(routes.NOT_FOUND);
 		}
 	}

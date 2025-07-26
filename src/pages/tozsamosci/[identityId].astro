@@ -6,7 +6,7 @@ import routes from "@utils/routes";
 import { REDIRECT } from "@utils/urlParams";
 import { getIdentity } from "@api/identities";
 import type { Identity } from "@type";
-// import { captureError } from "@utils/sentry";
+import { captureError } from "@utils/sentry";
 import AccountNav from "@components/AccountNav.astro";
 
 const { identityId } = Astro.params as { identityId: string };
@@ -31,7 +31,7 @@ try {
 		}
 	}
 
-	// captureError(e);
+	captureError(e);
 	return Astro.redirect(routes.NOT_FOUND);
 }
 ---

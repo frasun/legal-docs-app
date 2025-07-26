@@ -22,7 +22,7 @@ let keywords: Page["keywords"], description: Page["description"];
 try {
 	({ keywords, description } = await getPage(pageId));
 } catch (e) {
-	// captureError(e);
+	captureError(e);
 }
 ---
 

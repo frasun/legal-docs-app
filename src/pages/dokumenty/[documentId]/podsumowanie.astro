@@ -10,7 +10,7 @@ import { REDIRECT } from "@utils/urlParams";
 import { UUID } from "mongodb";
 import routes from "@utils/routes";
 import { getTemplateSummary } from "@api/templates";
-// import { captureError } from "@utils/sentry";
+import { captureError } from "@utils/sentry";
 import SaveDraft from "@components/SaveDarft.astro";
 import Progressbar from "@components/Progressbar.astro";
 
@@ -46,7 +46,7 @@ try {
 				return Astro.redirect(routes.NOT_FOUND);
 
 			default:
-				// captureError(e);
+				captureError(e);
 				return Astro.redirect(routes.NOT_FOUND);
 		}
 	}

@@ -5,7 +5,7 @@ import BlogContent from "@components/BlogContent.astro";
 import { getPage } from "@api/pages";
 import routes from "@utils/routes";
 import type { Page } from "@type";
-// import { captureError } from "@utils/sentry";
+import { captureError } from "@utils/sentry";
 
 const pageId = `2041bad6-bf46-450d-a5c6-2dd2afa09501`;
 let title: Page["title"] | undefined, body: Page["body"];
@@ -13,7 +13,7 @@ let title: Page["title"] | undefined, body: Page["body"];
 try {
 	({ title, body } = await getPage(pageId));
 } catch (e) {
-	// captureError(e);
+	captureError(e);
 	return Astro.redirect(routes.NOT_FOUND);
 }
 ---

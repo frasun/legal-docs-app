@@ -12,7 +12,7 @@ import { postDocument } from "@api/documents";
 import { SESSION_COOKIE } from "@utils/cookies";
 import { getSession } from "auth-astro/server";
 import { UserRoles } from "@db/user";
-// import { captureError } from "@utils/sentry";
+import { captureError } from "@utils/sentry";
 import { getCheckoutSession } from "@utils/stripe";
 import sendConfirmation from "@utils/email";
 
@@ -125,7 +125,7 @@ try {
 				return Astro.redirect(routes.NOT_FOUND);
 
 			default:
-				// captureError(e);
+				captureError(e);
 				return Astro.redirect(routes.NOT_FOUND);
 		}
 	}

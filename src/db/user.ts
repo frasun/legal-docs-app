@@ -1,5 +1,4 @@
 import bcrypt from "bcryptjs";
-// import { kv } from "@vercel/kv";
 import kv from "@db/redis";
 import errors from "@utils/errors";
 import mongodb from "@db/mongodb";
