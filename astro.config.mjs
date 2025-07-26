@@ -6,6 +6,7 @@ import mdx from "@astrojs/mdx";
 import auth from "auth-astro";
 import { sanityIntegration } from "@sanity/astro";
 import * as Sentry from "@sentry/node";
+import react from "@astrojs/react";
 
 // populate env vars to process.env *astro hack
 const localEnv = loadEnv(import.meta.env.MODE, process.cwd(), "");
@@ -40,6 +41,7 @@ export default defineConfig({
 			apiVersion: "2023-10-02",
 			useCdn: import.meta.env.MODE === "production",
 		}),
+		react(),
 	],
 	output: "server",
 	adapter: vercel(),

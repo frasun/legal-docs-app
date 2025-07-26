@@ -1,18 +1,20 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@components/*": ["src/components/*"],
-      "@content/*": ["src/content/*"],
-      "@utils/*": ["src/utils/*"],
-      "@schema/*": ["src/documentSchema/*"],
-      "@type": ["src/types.ts"],
-      "@db/*": ["src/db/*"],
-      "@wc/*": ["src/webcomponents/*"],
-      "@api/*": ["src/api/*"],
-      "@stores/*": ["src/stores/*"]
-    },
-    "importsNotUsedAsValues": "remove"
-  }
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@components/*": ["src/components/*"],
+			"@content/*": ["src/content/*"],
+			"@utils/*": ["src/utils/*"],
+			"@schema/*": ["src/documentSchema/*"],
+			"@type": ["src/types.ts"],
+			"@db/*": ["src/db/*"],
+			"@wc/*": ["src/webcomponents/*"],
+			"@api/*": ["src/api/*"],
+			"@stores/*": ["src/stores/*"]
+		},
+		"importsNotUsedAsValues": "remove",
+		"jsx": "react-jsx",
+		"jsxImportSource": "react"
+	}
 }
