@@ -6,7 +6,7 @@ import * as PARAMS from "@utils/urlParams";
 import routes from "@utils/routes";
 
 interface Props {
-  documentId: string;
+	documentId: string;
 }
 
 const { documentId } = Astro.props;
@@ -15,120 +15,120 @@ const redirectAfterSignUp = `${routes.SIGN_UP}?${PARAMS.REDIRECT}=${routes.DOCUM
 ---
 
 <Modal
-  modalId="payment"
-  modalTitle="Zaloguj się, aby skorzystać z dodatkowych funkcjonalności"
-  size={ModalSize.lg}
+	modalId="payment"
+	modalTitle="Zaloguj się, aby skorzystać z dodatkowych funkcjonalności"
+	size={ModalSize.lg}
 >
-  <aside slot="aside">
-    <h2>Za chwilę przekierujemy Cię na stronę płatności</h2>
-    <PaymentLogos />
-  </aside>
-  <section>
-    <ul>
-      <li>
-        <Icon name="pass-fill" />Dostęp do wszystkich utworzonych dokumentów w
-        jednym miejscu
-      </li>
-      <li>
-        <Icon name="pass-fill" />Zapisywanie tożsamości stron do użycia w
-        dokumentach
-      </li>
-      <li>
-        <Icon name="pass-fill" />Udostępnianie dokumentów przez e-mail
-      </li>
-      <li>
-        <Icon name="pass-fill" />Tworzenie szkiców dokumentów
-      </li>
-      <li>
-        <Icon name="pass-fill" />Tworzenie nowych dokumentów na podstawie
-        zapisanych szablonów
-      </li>
-    </ul>
-    <div>
-      <a href={redirectAfterSignIn}>Zaloguj się</a>
-      lub
-      <a href={redirectAfterSignUp}>Załóż konto</a>
-    </div>
-    <footer>
-      <h4>Możesz również dokonać zakupu bez konta użytkownika</h4>
-      <order-form data-document-id={documentId}>
-        <form method="POST" spellcheck="false">
-          <input
-            type="email"
-            name="email"
-            placeholder="Podaj adres e-mail"
-            required
-          />
-          <button type="submit">Kup bez konta</button>
-        </form>
-      </order-form>
-    </footer>
-  </section>
+	<aside slot="aside">
+		<h2>Za chwilę przekierujemy Cię na stronę płatności</h2>
+		<PaymentLogos />
+	</aside>
+	<section>
+		<ul>
+			<li>
+				<Icon name="pass-fill" />Dostęp do wszystkich utworzonych dokumentów w
+				jednym miejscu
+			</li>
+			<li>
+				<Icon name="pass-fill" />Zapisywanie tożsamości stron do użycia w
+				dokumentach
+			</li>
+			<li>
+				<Icon name="pass-fill" />Udostępnianie dokumentów przez e-mail
+			</li>
+			<li>
+				<Icon name="pass-fill" />Tworzenie szkiców dokumentów
+			</li>
+			<li>
+				<Icon name="pass-fill" />Tworzenie nowych dokumentów na podstawie
+				zapisanych szablonów
+			</li>
+		</ul>
+		<div>
+			<a href={redirectAfterSignIn}>Zaloguj się</a>
+			lub
+			<a href={redirectAfterSignUp}>Załóż konto</a>
+		</div>
+		<footer>
+			<h4>Możesz również dokonać zakupu bez konta użytkownika</h4>
+			<order-form data-document-id={documentId}>
+				<form method="POST" spellcheck="false">
+					<input
+						type="email"
+						name="email"
+						placeholder="Podaj adres e-mail"
+						required
+					/>
+					<button type="submit">Kup bez konta</button>
+				</form>
+			</order-form>
+		</footer>
+	</section>
 </Modal>
 
 <style>
-  section {
-    @apply flex flex-col gap-30;
-  }
+	section {
+		@apply flex flex-col gap-30;
+	}
 
-  ul {
-    @apply flex flex-col gap-10;
-  }
+	ul {
+		@apply flex flex-col gap-10;
+	}
 
-  ul li {
-    @apply flex gap-15 items-center;
-  }
+	ul li {
+		@apply flex gap-15 items-center;
+	}
 
-  ul li svg {
-    @apply flex-shrink-0;
-  }
+	ul li svg {
+		@apply flex-shrink-0;
+	}
 
-  section > div {
-    @apply flex gap-10 items-baseline flex-wrap justify-center;
-    @apply text-black/50;
-  }
+	section > div {
+		@apply flex gap-10 items-baseline flex-wrap justify-center;
+		@apply text-black/50;
+	}
 
-  section > div a {
-    @apply btn btn-default btn-big flex-grow;
-  }
+	section > div a {
+		@apply btn btn-default btn-big flex-grow;
+	}
 
-  footer {
-    @apply flex flex-col gap-10;
-  }
+	footer {
+		@apply flex flex-col gap-10;
+	}
 
-  footer button {
-    @apply btn btn-alt flex-shrink-0;
-  }
+	footer button {
+		@apply btn btn-alt flex-shrink-0;
+	}
 
-  footer form {
-    @apply flex items-center gap-15 flex-wrap;
-  }
+	footer form {
+		@apply flex items-center gap-15 flex-wrap;
+	}
 
-  footer form input {
-    @apply min-w-[150px] md:min-w-0 w-auto flex-grow;
-  }
+	footer form input {
+		@apply min-w-[150px] md:min-w-0 w-auto flex-grow;
+	}
 
-  footer h4 {
-    @apply text-italic-xs;
-  }
+	footer h4 {
+		@apply text-italic-xs;
+	}
 
-  aside {
-    @apply flex flex-col gap-15 md:gap-30;
-    @apply items-start justify-center;
-    @apply px-20 md:px-40 py-20 md:py-30;
-    @apply bg-gradient-to-br from-yellow to-white;
-  }
+	aside {
+		@apply flex flex-col gap-15 md:gap-30;
+		@apply items-start justify-center;
+		@apply px-20 md:px-40 py-20 md:py-30;
+		@apply bg-gradient-to-br from-yellow to-white;
+	}
 
-  aside h2 {
-    @apply text-italic-md md:text-italic-lg;
-    @apply pr-60 md:pr-0;
-  }
+	aside h2 {
+		@apply text-italic-md md:text-italic-lg;
+		@apply pr-60 md:pr-0;
+	}
 
-  aside :global(h6) {
-    @apply text-black/70;
-  }
+	aside :global(h6) {
+		@apply text-black/70;
+	}
 </style>
 
 <script>
-  import "@wc/OrderForm";
+	import "@wc/OrderForm";
 </script>

@@ -12,104 +12,103 @@ import CookieUtil from "cookie";
 import { SESSION_COOKIE } from "@utils/cookies";
 
 export const GET: APIRoute = async ({ request, params }) => {
-  try {
-    if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
-      throw new Error(undefined, { cause: 401 });
-    }
+	try {
+		if (request.headers.get("x-api-key") !== import.meta.env.API_KEY) {
+			throw new Error(undefined, { cause: 401 });
+		}
 
-    const { templateId } = params as {
-      templateId: string;
-    };
+		const { templateId } = params as {
+			templateId: string;
+		};
 
-    const cookie = request.headers.get("cookie");
-    const session = await getSession(request);
-    const isUserDocument = UUID.isValid(templateId);
+		const cookie = request.headers.get("cookie");
+		const session = await getSession(request);
+		const isUserDocument = UUID.isValid(templateId);
 
-    let doc: UserDocument["doc"] = templateId,
-      answers: UserDocument["answers"] = {},
-      index: Template["index"],
-      draft: UserDocument["draft"] = true,
-      title: UserDocument["title"] | undefined,
-      templateTitle: UserDocument["title"] = "",
-      dateFields: Template["dateFields"],
-      canGenerate: boolean = false;
+		let doc: UserDocument["doc"] = templateId,
+			answers: UserDocument["answers"] = {},
+			index: Template["index"],
+			draft: UserDocument["draft"] = true,
+			title: UserDocument["title"] | undefined,
+			templateTitle: UserDocument["title"] = "",
+			dateFields: Template["dateFields"],
+			canGenerate: boolean = false;
 
-    if (isUserDocument) {
-      if (!session) {
-        throw new Error(undefined, { cause: 403 });
-      }
+		if (isUserDocument) {
+			if (!session) {
+				throw new Error(undefined, { cause: 403 });
+			}
 
-      const userId = session?.user?.id as string;
+			const userId = session?.user?.id as string;
 
-      ({ doc, answers, draft, title } = await getDocumentSummary(
-        templateId,
-        userId
-      ));
+			({ doc, answers, draft, title } = await getDocumentSummary(
+				templateId,
+				userId
+			));
 
-      if (!draft) {
-        throw new Error(undefined, { cause: 303 });
-      }
-    }
+			if (!draft) {
+				throw new Error(undefined, { cause: 303 });
+			}
+		}
 
-    ({
-      index,
-      title: templateTitle,
-      dateFields,
-    } = await getTemplate(cookie, doc));
+		({
+			index,
+			title: templateTitle,
+			dateFields,
+		} = await getTemplate(cookie, doc));
 
-    if (!isUserDocument) {
-      for (let { slug } of index) {
-        const questionEntry = await getEntry("questions", slug);
+		if (!isUserDocument) {
+			for (let { slug } of index) {
+				const questionEntry = await getEntry("questions", slug);
 
-        if (!questionEntry) {
-          throw new Error(undefined, { cause: 400 });
-        }
+				if (!questionEntry) {
+					throw new Error(undefined, { cause: 400 });
+				}
 
-        const {
-          data: { info, question, ...defaultAnswers },
-        } = questionEntry;
+				const {
+					data: { info, question, ...defaultAnswers },
+				} = questionEntry;
 
-        answers = { ...defaultAnswers, ...answers };
-      }
+				answers = { ...defaultAnswers, ...answers };
+			}
 
-      // get session answers
-      const cookies = CookieUtil.parse(cookie || "");
-      const ssid = session ? session.user?.ssid : cookies[SESSION_COOKIE];
+			// get session answers
+			const cookies = CookieUtil.parse(cookie || "");
+			const ssid = session ? session.user?.ssid : cookies[SESSION_COOKIE];
 
-      if (ssid) {
-        const sessionAnswers = await getAnswers(ssid, templateId);
+			if (ssid) {
+				const sessionAnswers = await getAnswers(ssid, templateId);
 
-        answers = { ...answers, ...sessionAnswers };
-      }
+				answers = { ...answers, ...sessionAnswers };
+			}
 
-      // fill in current date
-      if (dateFields) {
-        for (let field of dateFields) {
-          answers[field] = answers[field] || new Date();
-        }
-      }
-    }
+			// fill in current date
+			if (dateFields) {
+				for (let field of dateFields) {
+					answers[field] = answers[field] || new Date();
+				}
+			}
+		}
 
-    canGenerate = await validateAnswers(doc, answers);
+		canGenerate = await validateAnswers(doc, answers);
 
-    return new Response(
-      JSON.stringify({
-        title: title ?? templateTitle,
-        answers,
-        index,
-        canGenerate,
-      }),
-      {
-        status: 200,
-        headers,
-      }
-    );
-  } catch (e) {
-    console.log(e);
-    const { message, status } = parseError(e);
-    return new Response(JSON.stringify(message), {
-      status,
-      headers,
-    });
-  }
+		return new Response(
+			JSON.stringify({
+				title: title ?? templateTitle,
+				answers,
+				index,
+				canGenerate,
+			}),
+			{
+				status: 200,
+				headers,
+			}
+		);
+	} catch (e) {
+		const { message, status } = parseError(e);
+		return new Response(JSON.stringify(message), {
+			status,
+			headers,
+		});
+	}
 };

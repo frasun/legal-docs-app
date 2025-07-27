@@ -3,33 +3,33 @@ import routes from "@utils/routes";
 import Icon from "@components/Icon.astro";
 
 function isActive(path: string) {
-  const cleanUrl = Astro.url.pathname.replace(/\/+$/, "");
-  const urlSegments = cleanUrl.split("/");
-  const currentPath = urlSegments[urlSegments.length - 1];
+	const cleanUrl = Astro.url.pathname.replace(/\/+$/, "");
+	const urlSegments = cleanUrl.split("/");
+	const currentPath = urlSegments[urlSegments.length - 1];
 
-  return path.includes(currentPath);
+	return path.includes(currentPath);
 }
 ---
 
 <a href={routes.MY_DOCUMENTS} data-active={isActive(routes.MY_DOCUMENTS)}>
-  <Icon name="documents" />
-  Moje dokumenty
+	<Icon name="documents" />
+	Moje dokumenty
 </a>
 <a href={routes.IDENTITIES} data-active={isActive(routes.IDENTITIES)}>
-  <Icon name="organization" />
-  Moje tożsamości
+	<Icon name="organization" />
+	Moje tożsamości
 </a>
 <a href={routes.PROFILE} data-active={isActive(routes.PROFILE)}>
-  <Icon name="account" />
-  Moje konto
+	<Icon name="account" />
+	Moje konto
 </a>
 
 <style>
-  a {
-    @apply menu-item;
-  }
+	a {
+		@apply menu-item;
+	}
 
-  a[data-active] {
-    @apply text-active pointer-events-none;
-  }
+	a[data-active="true"] {
+		@apply text-active pointer-events-none;
+	}
 </style>

@@ -1,6 +1,6 @@
 ---
 import Layout, { FooterType, LayoutType } from "../../../layouts/App.astro";
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 import QuestionIndex from "@components/QuestionIndex.astro";
 import Badge, { BadgeSize, BadgeStyle } from "@components/Badge.astro";
 import QuestionHint from "@components/QuestionHint.astro";
@@ -62,7 +62,7 @@ try {
 		throw new Error(undefined, { cause: 500 });
 	}
 
-	({ remarkPluginFrontmatter: qData, Content } = await questionEntry.render());
+	({ remarkPluginFrontmatter: qData, Content } = await render(questionEntry));
 
 	// replace default answers in mdx
 	for (let key of Object.keys(qData)) {

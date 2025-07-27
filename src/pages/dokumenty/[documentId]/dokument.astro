@@ -1,6 +1,6 @@
 ---
 import Layout, { FooterType } from "../../../layouts/App.astro";
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 import { getUserDocument } from "@db/document";
 import { getSession } from "auth-astro/server";
 import Icon, { IconSize } from "@components/Icon.astro";
@@ -23,25 +23,25 @@ const emailParam = urlParams.get(PARAMS.EMAIL);
 let data, title, docTitle;
 
 const userId = session
-  ? session.user?.id
-  : emailParam
-    ? decodeURIComponent(emailParam)
-    : undefined;
+	? session.user?.id
+	: emailParam
+		? decodeURIComponent(emailParam)
+		: undefined;
 
 if (!userId) {
-  return Astro.redirect(routes.NOT_FOUND);
+	return Astro.redirect(routes.NOT_FOUND);
 }
 
 if (UUID.isValid(documentId)) {
-  data = await getUserDocument(documentId, userId);
+	data = await getUserDocument(documentId, userId);
 
-  if (!data || data.draft) {
-    return Astro.redirect(routes.NOT_FOUND);
-  }
+	if (!data || data.draft) {
+		return Astro.redirect(routes.NOT_FOUND);
+	}
 
-  title = data.title;
+	title = data.title;
 } else {
-  return Astro.redirect(routes.NOT_FOUND);
+	return Astro.redirect(routes.NOT_FOUND);
 }
 
 const { answers, doc: docId, created, modified, shared, sharedWith } = data;
@@ -49,106 +49,106 @@ const { answers, doc: docId, created, modified, shared, sharedWith } = data;
 const document = await getEntry("documents", docId);
 
 if (!document) {
-  return Astro.redirect(routes.NOT_FOUND);
+	return Astro.redirect(routes.NOT_FOUND);
 }
 
-const { remarkPluginFrontmatter: qData, Content } = await document.render();
+const { remarkPluginFrontmatter: qData, Content } = await render(document);
 
 for (let key of Object.keys(answers)) {
-  qData[key] = answers[key];
+	qData[key] = answers[key];
 }
 
 ({ title: docTitle } = await getDocumentInfo(docId, Boolean(session)));
 
 if (!title) {
-  title = docTitle;
+	title = docTitle;
 }
 ---
 
 <Layout
-  pageName={pageTitle(String(title))}
-  title={title}
-  footer={FooterType.short}
+	pageName={pageTitle(String(title))}
+	title={title}
+	footer={FooterType.short}
 >
-  <aside slot="topbar-aside">
-    <download-pdf data-content-id="#doc">
-      <button>Pobierz</button>
-    </download-pdf>
-    {
-      session && shared && sharedWith && sharedWith.length ? (
-        <Overlay>
-          <Icon name="email" size={IconSize.sm} />
-          <Badge style={BadgeStyle.orange}>{sharedWith.length}</Badge>
-          <div slot="overlay">
-            <time>Wysłany {formatDateTime(shared)} do </time>
-            {sharedWith.map((email) => (
-              <div>
-                <Icon name="pass" size={IconSize.sm} />
-                {email}
-              </div>
-            ))}
-          </div>
-        </Overlay>
-      ) : (
-        <show-modal data-modal="sharing">
-          <button>Wyślij</button>
-        </show-modal>
-      )
-    }
-  </aside>
-  <article
-    id="doc"
-    class="prose prose-document"
-    data-title={title}
-    data-template={docTitle}
-  >
-    <Content />
-  </article>
-  {
-    session && (
-      <SharingModal slot="footer" contentId="#doc" documentId={documentId} />
-    )
-  }
+	<aside slot="topbar-aside">
+		<download-pdf data-content-id="#doc">
+			<button>Pobierz</button>
+		</download-pdf>
+		{
+			session && shared && sharedWith && sharedWith.length ? (
+				<Overlay>
+					<Icon name="email" size={IconSize.sm} />
+					<Badge style={BadgeStyle.orange}>{sharedWith.length}</Badge>
+					<div slot="overlay">
+						<time>Wysłany {formatDateTime(shared)} do </time>
+						{sharedWith.map((email) => (
+							<div>
+								<Icon name="pass" size={IconSize.sm} />
+								{email}
+							</div>
+						))}
+					</div>
+				</Overlay>
+			) : (
+				<show-modal data-modal="sharing">
+					<button>Wyślij</button>
+				</show-modal>
+			)
+		}
+	</aside>
+	<article
+		id="doc"
+		class="prose prose-document"
+		data-title={title}
+		data-template={docTitle}
+	>
+		<Content />
+	</article>
+	{
+		session && (
+			<SharingModal slot="footer" contentId="#doc" documentId={documentId} />
+		)
+	}
 </Layout>
 
 <style>
-  article {
-    @apply bg-white border border-black/70 rounded-sm;
-    @apply px-20 py-30 lg:px-40 lg:py-60;
-    @apply col-span-12 lg:col-span-10 lg:col-start-2;
-    @apply mt-15 lg:mt-30 mb-60;
-    @apply shadow-2;
+	article {
+		@apply bg-white border border-black/70 rounded-sm;
+		@apply px-20 py-30 lg:px-40 lg:py-60;
+		@apply col-span-12 lg:col-span-10 lg:col-start-2;
+		@apply mt-15 lg:mt-30 mb-60;
+		@apply shadow-2;
 
-    counter-reset: section;
-  }
+		counter-reset: section;
+	}
 
-  article :global(h4::before) {
-    counter-increment: section;
-    content: "\00A7" counter(section) ". ";
-  }
+	article :global(h4::before) {
+		counter-increment: section;
+		content: "\00A7" counter(section) ". ";
+	}
 
-  aside {
-    @apply flex gap-10 items-center;
-  }
+	aside {
+		@apply flex gap-10 items-center;
+	}
 
-  button,
-  show-modal button {
-    @apply btn btn-alt;
-  }
+	button,
+	show-modal button {
+		@apply btn btn-alt;
+	}
 
-  download-pdf button {
-    @apply btn btn-default;
-  }
+	download-pdf button {
+		@apply btn btn-default;
+	}
 
-  aside :global(.dropdownMenu > div) {
-    @apply flex flex-col gap-5;
-  }
+	aside :global(.dropdownMenu > div) {
+		@apply flex flex-col gap-5;
+	}
 
-  aside :global(.dropdownMenu > div div) {
-    @apply flex gap-10 items-center;
-  }
+	aside :global(.dropdownMenu > div div) {
+		@apply flex gap-10 items-center;
+	}
 </style>
 <script>
-  import "@wc/ShowModal";
-  import "@wc/DownloadPdf";
+	import "@wc/ShowModal";
+	import "@wc/DownloadPdf";
 </script>

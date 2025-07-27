@@ -1,69 +1,69 @@
 ---
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 import formatDate from "@utils/date";
 import { EMPTY } from "@utils/constants";
 import type { Answers, Template } from "@type";
 
 interface Props {
-  data: Answers;
-  template?: Template["index"][number]["slug"];
-  token?: Template["index"][number]["token"];
-  type?: Template["index"][number]["type"];
+	data: Answers;
+	template?: Template["index"][number]["slug"];
+	token?: Template["index"][number]["token"];
+	type?: Template["index"][number]["type"];
 }
 
 const { data, template, token, type } = Astro.props;
 
 if (!data) {
-  return;
+	return;
 }
 
 let CompiledContent;
 let textContent;
 
 if (template) {
-  try {
-    const answer = await getEntry("answers", template);
+	try {
+		const answer = await getEntry("answers", template);
 
-    if (!answer) return;
+		if (!answer) return;
 
-    const { remarkPluginFrontmatter: aData, Content } = await answer.render();
+		const { remarkPluginFrontmatter: aData, Content } = await render(answer);
 
-    for (let key of Object.keys(aData)) {
-      if (data[key]) {
-        aData[key] = data[key];
-      }
-    }
+		for (let key of Object.keys(aData)) {
+			if (data[key]) {
+				aData[key] = data[key];
+			}
+		}
 
-    CompiledContent = Content;
-  } catch {}
+		CompiledContent = Content;
+	} catch {}
 }
 
 if (!template && token) {
-  const value = data[token];
+	const value = data[token];
 
-  if (type === "date") {
-    textContent = formatDate(value);
-  } else {
-    textContent = value;
-  }
+	if (type === "date") {
+		textContent = formatDate(value);
+	} else {
+		textContent = value;
+	}
 
-  if (Array.isArray(value)) {
-    textContent = value.join(", ");
-  }
+	if (Array.isArray(value)) {
+		textContent = value.join(", ");
+	}
 
-  if (!value || !value.length) {
-    textContent = EMPTY;
-  }
+	if (!value || !value.length) {
+		textContent = EMPTY;
+	}
 }
 ---
 
 <div>
-  {CompiledContent && <CompiledContent />}
-  {textContent && textContent}
+	{CompiledContent && <CompiledContent />}
+	{textContent && textContent}
 </div>
 
 <style>
-  div {
-    @apply text-sans-lg;
-  }
+	div {
+		@apply text-sans-lg;
+	}
 </style>
