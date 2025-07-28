@@ -1,7 +1,17 @@
 ---
 import Badge, { BadgeSize, BadgeStyle } from "@components/Badge/badge";
-import DocumentTile from "@components/DocumentTile";
+import TemplateList from "@components/TemplateList";
 import routes from "@utils/routes";
+
+const templates = [
+	{
+		title: "Umowa najmu lokalu",
+		slug: `${Astro.url.origin}/dokumenty/umowa-najmu-lokalu`,
+		categories: ["nieruchomosci"],
+		price: 31.99,
+		draft: false,
+	},
+];
 ---
 
 <section>
@@ -10,12 +20,7 @@ import routes from "@utils/routes";
 			Najpopularniejsze dokumenty
 		</Badge>
 	</h2>
-	<DocumentTile
-		slug={`${Astro.url.origin}/dokumenty/umowa-najmu-lokalu`}
-		title="Umowa najmu lokalu"
-		categories={["nieruchomosci"]}
-		price={20.99}
-	/>
+	<TemplateList templates={templates} />
 	<footer>
 		<a href={routes.DOCUMENTS}>Zobacz wszystkie dokumenty</a>
 	</footer>

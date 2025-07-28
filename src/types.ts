@@ -50,6 +50,7 @@ export interface TemplateInfo extends DocumentInfo {
 	firstQuestionUrl: string;
 }
 
+/** Short version of document template */
 export interface TemplateShort {
 	/** Title of the document */
 	title: DocumentInfo["title"];

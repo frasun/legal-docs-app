@@ -1,8 +1,6 @@
 ---
 import Layout, { LayoutType } from "../../layouts/App.astro";
 import Icon, { IconSize } from "@components/Icon.astro";
-import DocumentTile from "@components/DocumentTile";
-import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
@@ -10,6 +8,7 @@ import type { TemplateShort, DocumentCategory } from "@type";
 import { getCategories, getDocumentTemplates } from "@api/templates";
 import routes from "@utils/routes";
 import { captureError } from "@utils/sentry";
+import TemplateList from "@components/TemplateList";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get(CATEGORY);
@@ -99,23 +98,7 @@ try {
 			</select>
 		</category-selector>
 	</aside>
-	{
-		documents.length ? (
-			<section>
-				{documents.map(({ title, categories, price, draft, slug }) => (
-					<DocumentTile
-						slug={slug}
-						title={title}
-						categories={categories}
-						price={price}
-						draft={draft}
-					/>
-				))}
-			</section>
-		) : (
-			<EmptyScreen>Brak dokumentów do wyświetlenia</EmptyScreen>
-		)
-	}
+	<TemplateList templates={documents} />
 </Layout>
 
 <style>
@@ -138,14 +121,6 @@ try {
 
 	aside form a span {
 		@apply hidden sm:inline-block;
-	}
-
-	section {
-		@apply col-span-12;
-		@apply grid gap-20 lg:gap-30;
-		@apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6;
-		@apply pt-10;
-		@apply auto-rows-max;
 	}
 
 	:global(main > div) {

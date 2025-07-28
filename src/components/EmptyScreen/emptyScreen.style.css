@@ -1,0 +1,5 @@
+.empty-screen {
+	svg path {
+		@apply fill-black;
+	}
+}
