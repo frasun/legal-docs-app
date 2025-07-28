@@ -1,6 +1,6 @@
 ---
 import Badge, { BadgeSize, BadgeStyle } from "@components/Badge/badge";
-import TemplateList from "@components/TemplateList";
+import TemplateGrid from "@components/TemplateGrid";
 import routes from "@utils/routes";
 
 const templates = [
@@ -20,7 +20,7 @@ const templates = [
 			Najpopularniejsze dokumenty
 		</Badge>
 	</h2>
-	<TemplateList templates={templates} />
+	<TemplateGrid templates={templates} />
 	<footer>
 		<a href={routes.DOCUMENTS}>Zobacz wszystkie dokumenty</a>
 	</footer>

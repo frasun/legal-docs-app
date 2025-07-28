@@ -6,7 +6,7 @@ import "@components/GlobalStyles.astro";
 import Sentry from "@components/Sentry.astro";
 import Spinner from "@components/Spinner.astro";
 import { BANNER_COOKIE } from "@utils/cookies";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 
 export interface Props {
 	title: string;
@@ -93,7 +93,7 @@ const useAnalytics =
 		<meta property="twitter:description" content={metaDescription} />
 		<meta property="twitter:title" content={title} />
 		<title>{title}</title>
-		<ViewTransitions />
+		<ClientRouter />
 		{
 			import.meta.env.VERCEL_ENV !== "development" && (
 				<>
@@ -106,7 +106,7 @@ const useAnalytics =
 		<slot name="head" />
 	</head>
 	<body>
-		{useAnalytics && <GA />}
+		{import.meta.env.VERCEL_ENV === "production" && useAnalytics && <GA />}
 		<slot />
 		<toast-element></toast-element>
 		{import.meta.env.VERCEL_ENV === "production" && <ChatWidget />}

@@ -1,31 +1,49 @@
+import { useEffect, useState } from "react";
+import TemplateGrid from "@components/TemplateGrid";
 import type { TemplateShort } from "@type";
-import DocumentTile from "@components/TemplateTile";
-import EmptyScreen from "@components/EmptyScreen/EmptyScreen";
+import EmptyScreen from "@components/EmptyScreen/emptyScreen";
 
-interface Props {
-	/** Available document templates */
-	templates: TemplateShort[];
-}
+export default () => {
+	const [templates, setTemplates] = useState<TemplateShort[]>([]);
+	const [loading, setLoading] = useState(true);
 
-export default function ({ templates }: Props) {
+	useEffect(() => {
+		const controller = new AbortController();
+
+		const fetchTemplates = async (aborted: boolean) => {
+			if (aborted) return;
+
+			try {
+				const fetchTemplates = await fetch(
+					new URL("/api/templates", document.location.origin)
+				);
+
+				setLoading(true);
+
+				const templates: TemplateShort[] = await fetchTemplates.json();
+
+				if (templates) {
+					setTemplates(templates);
+				}
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchTemplates(controller.signal.aborted);
+
+		return () => controller.abort();
+	}, []);
+
 	return (
 		<>
 			{templates.length ? (
-				<section className="col-span-12 grid gap-20 lg:gap-30 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6 pt-10 auto-rows-max">
-					{templates.map(({ title, categories, price, draft, slug }) => (
-						<DocumentTile
-							slug={slug}
-							title={title}
-							categories={categories}
-							price={price}
-							draft={draft}
-							key={slug}
-						/>
-					))}
-				</section>
+				<TemplateGrid templates={templates} />
+			) : loading ? (
+				<p>loading</p>
 			) : (
 				<EmptyScreen>Brak dokumentów do wyświetlenia</EmptyScreen>
 			)}
 		</>
 	);
-}
+};
