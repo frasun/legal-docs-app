@@ -7,150 +7,155 @@ import type { User } from "@db/user";
 export type Answers = Record<string, any>;
 
 export interface Post {
-  title: string;
-  publishedAt?: string | null;
-  slug: string;
-  mainImage?: ImageAsset | null;
-  body?: PortableTextBlock[];
-  excerpt?: string;
-  keywords?: string | null;
-  description?: string | null;
-  documents?: Pick<TemplateInfo, "title" | "slug">[] | null;
-  memberContent?: boolean;
+	title: string;
+	publishedAt?: string | null;
+	slug: string;
+	mainImage?: ImageAsset | null;
+	body?: PortableTextBlock[];
+	excerpt?: string;
+	keywords?: string | null;
+	description?: string | null;
+	documents?: Pick<TemplateInfo, "title" | "slug">[] | null;
+	memberContent?: boolean;
 }
 
 export type PostShort = Pick<
-  Post,
-  "title" | "publishedAt" | "slug" | "mainImage"
+	Post,
+	"title" | "publishedAt" | "slug" | "mainImage"
 >;
 
 export interface DocumentCategory {
-  title: string;
-  slug: string;
-  keywords?: string | null;
-  description?: string | null;
-  showOnIndex: boolean;
+	title: string;
+	slug: string;
+	keywords?: string | null;
+	description?: string | null;
+	showOnIndex: boolean;
 }
 
 export interface DocumentInfo {
-  title: string;
-  draft: boolean;
-  slug: string;
-  body?: PortableTextBlock[];
-  memberContent: boolean;
-  keywords?: string | null;
-  description?: string | null;
-  posts: PostShort[] | null;
-  categories: DocumentCategory[];
-  priceId: string;
+	title: string;
+	draft: boolean;
+	slug: string;
+	body?: PortableTextBlock[];
+	memberContent: boolean;
+	keywords?: string | null;
+	description?: string | null;
+	posts: PostShort[] | null;
+	categories: DocumentCategory[];
+	priceId: string;
 }
 
 export interface TemplateInfo extends DocumentInfo {
-  price: number | null;
-  firstQuestionUrl: string;
+	price: number | null;
+	firstQuestionUrl: string;
 }
 
 export interface TemplateShort {
-  title: DocumentInfo["title"];
-  slug: DocumentInfo["slug"];
-  price: number;
-  categories: DocumentCategory["slug"][];
-  draft: DocumentInfo["draft"];
+	/** Title of the document */
+	title: DocumentInfo["title"];
+	/** Document slut */
+	slug: DocumentInfo["slug"];
+	/** Document price */
+	price: number;
+	/** Document categories  */
+	categories: DocumentCategory["slug"][];
+	/** Document publish status */
+	draft: DocumentInfo["draft"];
 }
 
 export interface Template {
-  title: DocumentInfo["title"];
-  index: {
-    title: string;
-    slug: string;
-    token?: string;
-    answer?: string;
-    type?: string;
-  }[];
-  encryptedFields?: string[];
-  dateFields?: string[];
+	title: DocumentInfo["title"];
+	index: {
+		title: string;
+		slug: string;
+		token?: string;
+		answer?: string;
+		type?: string;
+	}[];
+	encryptedFields?: string[];
+	dateFields?: string[];
 }
 
 export interface TemplateSummary {
-  title: Template["title"];
-  index: Template["index"];
-  answers: Answers;
-  canGenerate: boolean;
+	title: Template["title"];
+	index: Template["index"];
+	answers: Answers;
+	canGenerate: boolean;
 }
 
 export interface Page {
-  title: string;
-  body?: PortableTextBlock[];
-  keywords?: string;
-  description?: string;
+	title: string;
+	body?: PortableTextBlock[];
+	keywords?: string;
+	description?: string;
 }
 
 export interface BlogPosts {
-  posts: Pick<
-    Post,
-    "title" | "publishedAt" | "mainImage" | "excerpt" | "slug"
-  >[];
-  pages: number;
+	posts: Pick<
+		Post,
+		"title" | "publishedAt" | "mainImage" | "excerpt" | "slug"
+	>[];
+	pages: number;
 }
 
 export interface Address {
-  street: string;
-  apt?: string | number;
-  postalCode: string;
-  city: string;
+	street: string;
+	apt?: string | number;
+	postalCode: string;
+	city: string;
 }
 
 export interface Identity extends Address {
-  type: entityEnum;
-  name: string;
-  pin: string;
-  bankAccount?: string;
+	type: entityEnum;
+	name: string;
+	pin: string;
+	bankAccount?: string;
 }
 
 export interface UserIdentity extends Identity {
-  _id: string;
+	_id: string;
 }
 
 export interface UserIdentities {
-  identities: UserIdentity[];
-  count: number;
+	identities: UserIdentity[];
+	count: number;
 }
 
 export interface UserDocument extends MyDocument {
-  template: string;
+	template: string;
 }
 
 export interface UserDocuments {
-  documents: Record<string, UserDocument[]>;
-  pages: number;
-  currentPage: number;
+	documents: Record<string, UserDocument[]>;
+	pages: number;
+	currentPage: number;
 }
 
 export interface Question {
-  question: string;
-  questionShort?: string;
-  info?: string;
-  answers: Answers;
-  nextId: string;
-  prevId: string | null;
-  currentQuestionIndex: number;
-  documentTitle: Template["title"];
-  templateId: string;
-  draft: boolean;
-  index: Template["index"];
-  questionIndex: number;
+	question: string;
+	questionShort?: string;
+	info?: string;
+	answers: Answers;
+	nextId: string;
+	prevId: string | null;
+	currentQuestionIndex: number;
+	documentTitle: Template["title"];
+	templateId: string;
+	draft: boolean;
+	index: Template["index"];
+	questionIndex: number;
 }
 
 export interface UserSession {
-  documentId: string;
-  ssid: string;
-  stripeId?: string;
+	documentId: string;
+	ssid: string;
+	stripeId?: string;
 }
 
 export interface UserProfile {
-  email: User["email"];
-  created: User["created"];
-  documents: number;
-  drafts: number;
-  identities: number;
+	email: User["email"];
+	created: User["created"];
+	documents: number;
+	drafts: number;
+	identities: number;
 }

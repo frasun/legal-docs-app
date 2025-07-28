@@ -1,66 +1,66 @@
 ---
-import Badge, { BadgeSize } from "@components/Badge.astro";
+import Badge, { BadgeSize } from "@components/Badge/badge";
 
 interface Props {
-  title: string;
+	title: string;
 }
 
 const { title } = Astro.props;
 ---
 
 <div>
-  <header>
-    <h1>
-      <Badge size={BadgeSize.large}>{title}</Badge>
-    </h1>
-  </header>
-  <form spellcheck="false" method="POST" data-astro-reload>
-    <slot />
-    <slot name="after-submit" />
-  </form>
-  <slot name="form-footer" />
+	<header>
+		<h1>
+			<Badge size={BadgeSize.large}>{title}</Badge>
+		</h1>
+	</header>
+	<form spellcheck="false" method="POST" data-astro-reload>
+		<slot />
+		<slot name="after-submit" />
+	</form>
+	<slot name="form-footer" />
 </div>
 
 <style>
-  div {
-    @apply flex flex-col gap-20;
-    @apply w-[90%] sm:w-full max-w-[500px] mx-auto;
-    @apply mt-20 sm:mt-30;
-  }
+	div {
+		@apply flex flex-col gap-20;
+		@apply w-[90%] sm:w-full max-w-[500px] mx-auto;
+		@apply mt-20 sm:mt-30;
+	}
 
-  header {
-    @apply flex flex-col gap-20;
-  }
+	header {
+		@apply flex flex-col gap-20;
+	}
 
-  header :global(h1) {
-    @apply text-italic-md;
-  }
+	header :global(h1) {
+		@apply text-italic-md;
+	}
 
-  form {
-    @apply flex flex-col gap-15 items-center;
-  }
+	form {
+		@apply flex flex-col gap-15 items-center;
+	}
 
-  form
-    :global(
-      div,
-      input[type="text"],
-      input[type="password"],
-      input[type="email"]
-    ) {
-    @apply w-full;
-  }
+	form
+		:global(
+			div,
+			input[type="text"],
+			input[type="password"],
+			input[type="email"]
+		) {
+		@apply w-full;
+	}
 
-  form :global(button[type="submit"]) {
-    @apply btn btn-big btn-default;
-    @apply mt-20;
-  }
+	form :global(button[type="submit"]) {
+		@apply btn btn-big btn-default;
+		@apply mt-20;
+	}
 
-  div :global(footer) {
-    @apply mt-20 flex gap-10 sm:gap-15 items-center justify-center flex-wrap;
-    @apply text-serif-sm;
-  }
+	div :global(footer) {
+		@apply mt-20 flex gap-10 sm:gap-15 items-center justify-center flex-wrap;
+		@apply text-serif-sm;
+	}
 
-  div :global(footer a) {
-    @apply btn btn-alt;
-  }
+	div :global(footer a) {
+		@apply btn btn-alt;
+	}
 </style>

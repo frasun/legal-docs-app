@@ -20,7 +20,7 @@ interface Props {
   size?: BadgeSize;
 }
 
-const { style = BadgeStyle.default, size = BadgeStyle.default } = Astro.props;
+const { style = BadgeStyle.default, size = BadgeSize.default } = Astro.props;
 ---
 
 <span data-style={style} data-size={size}>

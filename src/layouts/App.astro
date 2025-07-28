@@ -4,164 +4,164 @@ import { getSession } from "auth-astro/server";
 import Appbar from "@components/Appbar.astro";
 import FooterCopy from "@components/FooterCopy.astro";
 import Footer from "@components/Footer.astro";
-import Badge, { BadgeSize } from "@components/Badge.astro";
+import Badge, { BadgeSize } from "@components/Badge/badge";
 
 export enum LayoutType {
-  container = "container",
-  centered = "centered",
+	container = "container",
+	centered = "centered",
 }
 
 export enum FooterType {
-  default = "default",
-  short = "short",
+	default = "default",
+	short = "short",
 }
 
 export interface Props {
-  title: string;
-  keywords?: string;
-  description?: string;
-  image?: string;
-  pageName: string;
-  layout?: LayoutType;
-  footer?: FooterType;
-  highlightTitle?: boolean;
-  sidebar?: boolean;
-  grid?: boolean;
+	title: string;
+	keywords?: string;
+	description?: string;
+	image?: string;
+	pageName: string;
+	layout?: LayoutType;
+	footer?: FooterType;
+	highlightTitle?: boolean;
+	sidebar?: boolean;
+	grid?: boolean;
 }
 
 const {
-  title,
-  description,
-  keywords,
-  image,
-  pageName,
-  layout = LayoutType.container,
-  footer = FooterType.default,
-  highlightTitle = true,
-  sidebar = false,
-  grid = true,
+	title,
+	description,
+	keywords,
+	image,
+	pageName,
+	layout = LayoutType.container,
+	footer = FooterType.default,
+	highlightTitle = true,
+	sidebar = false,
+	grid = true,
 } = Astro.props;
 const session = await getSession(Astro.request);
 const userEmail = session?.user?.email ?? undefined;
 ---
 
 <Layout
-  title={pageName}
-  description={description}
-  keywords={keywords}
-  image={image}
+	title={pageName}
+	description={description}
+	keywords={keywords}
+	image={image}
 >
-  <Appbar email={userEmail} />
-  <main data-layout={layout} data-grid={grid || undefined}>
-    {
-      sidebar && (
-        <nav>
-          <slot name="sidebar" />
-        </nav>
-      )
-    }
-    {
-      title !== "" && (
-        <header>
-          <h1>
-            {highlightTitle ? (
-              <Badge size={BadgeSize.large}>{title}</Badge>
-            ) : (
-              title
-            )}
-            <slot name="topbar-after-title" />
-          </h1>
-          <slot name="topbar-aside" />
-        </header>
-      )
-    }
-    <section>
-      <slot />
-    </section>
-  </main>
+	<Appbar email={userEmail} />
+	<main data-layout={layout} data-grid={grid || undefined}>
+		{
+			sidebar && (
+				<nav>
+					<slot name="sidebar" />
+				</nav>
+			)
+		}
+		{
+			title !== "" && (
+				<header>
+					<h1>
+						{highlightTitle ? (
+							<Badge size={BadgeSize.large}>{title}</Badge>
+						) : (
+							title
+						)}
+						<slot name="topbar-after-title" />
+					</h1>
+					<slot name="topbar-aside" />
+				</header>
+			)
+		}
+		<section>
+			<slot />
+		</section>
+	</main>
 </Layout>
 <footer data-type={footer}>
-  {
-    footer === FooterType.default ? (
-      <Footer isSignedIn={Boolean(session)} />
-    ) : (
-      <FooterCopy />
-    )
-  }
+	{
+		footer === FooterType.default ? (
+			<Footer isSignedIn={Boolean(session)} />
+		) : (
+			<FooterCopy />
+		)
+	}
 </footer>
 <slot name="footer" />
 
 <style>
-  header {
-    @apply py-15;
-    @apply flex items-center flex-wrap;
-    @apply bg-white;
-    @apply gap-15 md:gap-30;
-    @apply z-50;
-    @apply min-h-[72px];
-  }
+	header {
+		@apply py-15;
+		@apply flex items-center flex-wrap;
+		@apply bg-white;
+		@apply gap-15 md:gap-30;
+		@apply z-50;
+		@apply min-h-[72px];
+	}
 
-  main {
-    @apply flex-grow;
-    @apply px-20 lg:container;
-    @apply grid grid-rows-[minmax(0,auto)_1fr] grid-cols-12;
-    @apply lg:gap-x-40;
-  }
+	main {
+		@apply flex-grow;
+		@apply px-20 lg:container;
+		@apply grid grid-rows-[minmax(0,auto)_1fr] grid-cols-12;
+		@apply lg:gap-x-40;
+	}
 
-  main nav {
-    @apply col-span-3 row-span-2;
-    @apply hidden lg:flex flex-col gap-8 py-15;
-  }
+	main nav {
+		@apply col-span-3 row-span-2;
+		@apply hidden lg:flex flex-col gap-8 py-15;
+	}
 
-  main header,
-  main section {
-    @apply col-span-12;
-  }
+	main header,
+	main section {
+		@apply col-span-12;
+	}
 
-  main section {
-    @apply row-span-2;
-  }
+	main section {
+		@apply row-span-2;
+	}
 
-  main nav + header,
-  main nav + header + section {
-    @apply lg:col-span-9 lg:col-start-4;
-  }
+	main nav + header,
+	main nav + header + section {
+		@apply lg:col-span-9 lg:col-start-4;
+	}
 
-  main[data-layout="centered"] section {
-    @apply grid content-center;
-  }
+	main[data-layout="centered"] section {
+		@apply grid content-center;
+	}
 
-  main[data-grid] section {
-    @apply grid grid-cols-12 md:gap-x-40;
-  }
+	main[data-grid] section {
+		@apply grid grid-cols-12 md:gap-x-40;
+	}
 
-  footer[data-type="default"] {
-    @apply bg-black text-white/70;
-    @apply mt-60;
-  }
+	footer[data-type="default"] {
+		@apply bg-black text-white/70;
+		@apply mt-60;
+	}
 
-  footer[data-type="short"] {
-    @apply text-black/50;
-  }
+	footer[data-type="short"] {
+		@apply text-black/50;
+	}
 
-  footer span {
-    @apply text-sans-xxs;
-  }
+	footer span {
+		@apply text-sans-xxs;
+	}
 
-  header > h1 {
-    @apply flex-grow flex gap-5 items-center;
-  }
+	header > h1 {
+		@apply flex-grow flex gap-5 items-center;
+	}
 
-  header h1 {
-    @apply text-italic-md text-black;
-  }
+	header h1 {
+		@apply text-italic-md text-black;
+	}
 
-  header h1 :global(> span) {
-    @apply flex items-center gap-5;
-    @apply flex-wrap md:flex-nowrap;
-  }
+	header h1 :global(> span) {
+		@apply flex items-center gap-5;
+		@apply flex-wrap md:flex-nowrap;
+	}
 
-  header h1 :global(> span > span:first-child) {
-    @apply line-clamp-2 md:line-clamp-1;
-  }
+	header h1 :global(> span > span:first-child) {
+		@apply line-clamp-2 md:line-clamp-1;
+	}
 </style>

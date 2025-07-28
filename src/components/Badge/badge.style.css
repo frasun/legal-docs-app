@@ -1,0 +1,35 @@
+.badge[data-style="yellow"] {
+	@apply bg-yellow;
+}
+
+.badge[data-style="purple"] {
+	@apply bg-purple;
+}
+
+.badge[data-style="orange"] {
+	@apply bg-orange;
+}
+
+.badge[data-style="blue"] {
+	@apply bg-blue;
+}
+
+.badge[data-style="red"] {
+	@apply bg-red;
+}
+
+.badge[data-style="green"] {
+	@apply bg-green;
+}
+
+.badge[data-size="md"] {
+	@apply text-italic-sm;
+}
+
+.badge[data-size="lg"] {
+	@apply text-italic-md;
+}
+
+.badge[data-size="xlg"] {
+	@apply text-italic-lg;
+}

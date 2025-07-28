@@ -3,93 +3,93 @@ import ChangeNameButton from "@components/ChangeNameButton.astro";
 import DeleteDocumentButton from "@components/DeleteDocumentButton.astro";
 import CopyDocumentButton from "@components/CopyDocumentButton.astro";
 import { formatDateTime } from "@utils/date";
-import Badge, { BadgeStyle } from "@components/Badge.astro";
+import Badge, { BadgeStyle } from "@components/Badge/badge";
 import routes from "@utils/routes";
 import Icon, { IconSize } from "@components/Icon.astro";
 import type { UserDocument } from "@type";
 
 function getDateLabel(created: Date, modified: Date) {
-  return modified > created ? "Ostatnia zmiana" : "Utworzony";
+	return modified > created ? "Ostatnia zmiana" : "Utworzony";
 }
 
 interface Props {
-  id: UserDocument["_id"];
-  draft: UserDocument["draft"];
-  title: UserDocument["title"];
-  shared: UserDocument["shared"];
-  created: UserDocument["created"];
-  modified: UserDocument["modified"];
+	id: UserDocument["_id"];
+	draft: UserDocument["draft"];
+	title: UserDocument["title"];
+	shared: UserDocument["shared"];
+	created: UserDocument["created"];
+	modified: UserDocument["modified"];
 }
 
 const { id, draft, title, shared, created, modified } = Astro.props;
 ---
 
 <div>
-  <a
-    href={`${Astro.url.origin}${routes.DOCUMENTS}/${id}${
-      draft ? routes.SUMMARY : routes.DOCUMENT
-    }`}
-  >
-    <Icon
-      name={draft ? "document-draft" : shared ? "document-sent" : "document"}
-      size={IconSize.sm}
-    />
-    {draft && <Badge style={BadgeStyle.blue}>szkic</Badge>}
-    {shared && <Badge style={BadgeStyle.purple}>wysłany</Badge>}
-    {title}
-  </a>
-  {
-    draft ? (
-      <dl>
-        <dt>{getDateLabel(created, modified)}:</dt>
-        <dd>
-          <time>{formatDateTime(modified)}</time>
-        </dd>
-      </dl>
-    ) : (
-      <time>{formatDateTime(modified)}</time>
-    )
-  }
-  <aside>
-    <ChangeNameButton id={id.toString()} title={title} />
-    <CopyDocumentButton id={id.toString()} />
-    <DeleteDocumentButton id={id} />
-  </aside>
+	<a
+		href={`${Astro.url.origin}${routes.DOCUMENTS}/${id}${
+			draft ? routes.SUMMARY : routes.DOCUMENT
+		}`}
+	>
+		<Icon
+			name={draft ? "document-draft" : shared ? "document-sent" : "document"}
+			size={IconSize.sm}
+		/>
+		{draft && <Badge style={BadgeStyle.blue}>szkic</Badge>}
+		{shared && <Badge style={BadgeStyle.purple}>wysłany</Badge>}
+		{title}
+	</a>
+	{
+		draft ? (
+			<dl>
+				<dt>{getDateLabel(created, modified)}:</dt>
+				<dd>
+					<time>{formatDateTime(modified)}</time>
+				</dd>
+			</dl>
+		) : (
+			<time>{formatDateTime(modified)}</time>
+		)
+	}
+	<aside>
+		<ChangeNameButton id={id.toString()} title={title} />
+		<CopyDocumentButton id={id.toString()} />
+		<DeleteDocumentButton id={id} />
+	</aside>
 </div>
 
 <style>
-  div {
-    @apply flex gap-x-40 gap-y-10 items-center sm:px-10 py-15 flex-wrap md:flex-nowrap;
-    @apply border-t border-black/30;
-  }
+	div {
+		@apply flex gap-x-40 gap-y-10 items-center sm:px-10 py-15 flex-wrap md:flex-nowrap;
+		@apply border-t border-black/30;
+	}
 
-  div > a {
-    @apply text-sans-lg text-black hover:text-active text-ellipsis flex-grow;
-    @apply flex items-center gap-10;
-    @apply w-full md:w-auto;
-  }
+	div > a {
+		@apply text-sans-lg text-black hover:text-active text-ellipsis flex-grow;
+		@apply flex items-center gap-10;
+		@apply w-full md:w-auto;
+	}
 
-  div > a svg {
-    @apply text-black/70;
-    @apply flex-shrink-0;
-  }
+	div > a svg {
+		@apply text-black/70;
+		@apply flex-shrink-0;
+	}
 
-  dl,
-  time {
-    @apply flex-shrink-0;
-    @apply text-sans-xs;
-    @apply flex-grow md:flex-grow-0 md:w-[150px];
-  }
+	dl,
+	time {
+		@apply flex-shrink-0;
+		@apply text-sans-xs;
+		@apply flex-grow md:flex-grow-0 md:w-[150px];
+	}
 
-  dt {
-    @apply text-sans-xxs;
-  }
+	dt {
+		@apply text-sans-xxs;
+	}
 
-  dl {
-    @apply flex md:flex-col gap-5;
-  }
+	dl {
+		@apply flex md:flex-col gap-5;
+	}
 
-  div > aside {
-    @apply flex gap-10;
-  }
+	div > aside {
+		@apply flex gap-10;
+	}
 </style>

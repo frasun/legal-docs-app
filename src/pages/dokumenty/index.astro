@@ -1,7 +1,7 @@
 ---
 import Layout, { LayoutType } from "../../layouts/App.astro";
 import Icon, { IconSize } from "@components/Icon.astro";
-import DocumentTile from "@components/DocumentTile.astro";
+import DocumentTile from "@components/DocumentTile";
 import EmptyScreen from "@components/EmptyScreen.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
@@ -21,6 +21,17 @@ let documents: TemplateShort[],
 	currentCategory: DocumentCategory | undefined,
 	title: string;
 
+const getCategoryName = (slug: string) => {
+	const ct = categories.find(({ slug: id }) => id === slug);
+
+	return ct ? ct.title.toLowerCase() : "";
+};
+
+const getCategoryList = (docCategories: string[]) =>
+	docCategories
+		.sort((a, b) => a.localeCompare(b))
+		.map((id) => getCategoryName(id));
+
 try {
 	[documents, categories] = await Promise.all([
 		getDocumentTemplates(
@@ -30,6 +41,12 @@ try {
 		),
 		getCategories(),
 	]);
+
+	documents.map(({ categories: cats, ...props }) => ({
+		...props,
+		categories: getCategoryList(cats),
+		slug: `${Astro.url.origin}/dokumenty/umowa-najmu-lokalu`,
+	}));
 
 	currentCategory = categories.find(({ slug }) => slug === currentCat);
 	title = currentCategory
@@ -85,11 +102,10 @@ try {
 	{
 		documents.length ? (
 			<section>
-				{documents.map(({ title, slug, categories: cats, price, draft }) => (
+				{documents.map(({ title, categories, price, draft, slug }) => (
 					<DocumentTile
 						slug={slug}
 						title={title}
-						docCategories={cats}
 						categories={categories}
 						price={price}
 						draft={draft}

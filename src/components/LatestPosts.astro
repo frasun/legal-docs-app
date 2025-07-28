@@ -3,65 +3,65 @@ import BlogPost, { BlogPostSize } from "@components/BlogPost.astro";
 import type { BlogPosts } from "@type";
 import { getPosts } from "@api/posts";
 import routes from "@utils/routes";
-import Badge, { BadgeSize, BadgeStyle } from "@components/Badge.astro";
+import Badge, { BadgeSize, BadgeStyle } from "@components/Badge/badge";
 
 const limit = 4;
 
 let posts: BlogPosts["posts"] = [];
 
 try {
-  ({ posts } = await getPosts(
-    `${Astro.request.headers.get("cookie")}`,
-    1,
-    limit,
-    false
-  ));
+	({ posts } = await getPosts(
+		`${Astro.request.headers.get("cookie")}`,
+		1,
+		limit,
+		false
+	));
 } catch (e) {
-  return Astro.redirect(routes.NOT_FOUND);
+	return Astro.redirect(routes.NOT_FOUND);
 }
 ---
 
 {
-  posts.length && (
-    <section>
-      <h2>
-        <Badge size={BadgeSize.large} style={BadgeStyle.orange}>
-          Najnowsze wpisy na blogu
-        </Badge>
-      </h2>
-      <div>
-        {posts.map(({ title, slug, publishedAt, mainImage, excerpt }) => (
-          <BlogPost
-            title={title}
-            url={slug}
-            publishedAt={publishedAt}
-            mainImage={mainImage}
-            size={BlogPostSize.large}
-          />
-        ))}
-      </div>
-      <footer>
-        <a href={routes.BLOG}>Zobacz wszystkie wpisy</a>
-      </footer>
-    </section>
-  )
+	posts.length && (
+		<section>
+			<h2>
+				<Badge size={BadgeSize.large} style={BadgeStyle.orange}>
+					Najnowsze wpisy na blogu
+				</Badge>
+			</h2>
+			<div>
+				{posts.map(({ title, slug, publishedAt, mainImage, excerpt }) => (
+					<BlogPost
+						title={title}
+						url={slug}
+						publishedAt={publishedAt}
+						mainImage={mainImage}
+						size={BlogPostSize.large}
+					/>
+				))}
+			</div>
+			<footer>
+				<a href={routes.BLOG}>Zobacz wszystkie wpisy</a>
+			</footer>
+		</section>
+	)
 }
 
 <style>
-  section {
-    @apply px-20 py-40 lg:container;
-  }
+	section {
+		@apply px-20 py-40 lg:container;
+	}
 
-  section div {
-    @apply grid sm:grid-cols-2 gap-20 lg:gap-x-40;
-    @apply pt-20;
-  }
+	section div {
+		@apply grid sm:grid-cols-2 gap-20 lg:gap-x-40;
+		@apply pt-20;
+	}
 
-  footer {
-    @apply flex justify-center py-10;
-  }
+	footer {
+		@apply flex justify-center py-10;
+	}
 
-  footer a {
-    @apply btn btn-alt;
-  }
+	footer a {
+		@apply btn btn-alt;
+	}
 </style>

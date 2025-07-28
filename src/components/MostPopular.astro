@@ -1,46 +1,43 @@
 ---
-import Badge, { BadgeSize, BadgeStyle } from "@components/Badge.astro";
-import DocumentTile from "@components/DocumentTile.astro";
+import Badge, { BadgeSize, BadgeStyle } from "@components/Badge/badge";
+import DocumentTile from "@components/DocumentTile";
 import routes from "@utils/routes";
 ---
 
 <section>
-  <h2>
-    <Badge size={BadgeSize.large} style={BadgeStyle.green}>
-      Najpopularniejsze dokumenty
-    </Badge>
-  </h2>
-  <DocumentTile
-    slug="umowa-najmu-lokalu"
-    title="Umowa najmu lokalu"
-    docCategories={["nieruchomosci"]}
-    categories={[
-      { title: "Nieruchomości", slug: "nieruchomosci", showOnIndex: true },
-    ]}
-    price={20.99}
-  />
-  <footer>
-    <a href={routes.DOCUMENTS}>Zobacz wszystkie dokumenty</a>
-  </footer>
+	<h2>
+		<Badge size={BadgeSize.large} style={BadgeStyle.green}>
+			Najpopularniejsze dokumenty
+		</Badge>
+	</h2>
+	<DocumentTile
+		slug={`${Astro.url.origin}/dokumenty/umowa-najmu-lokalu`}
+		title="Umowa najmu lokalu"
+		categories={["nieruchomosci"]}
+		price={20.99}
+	/>
+	<footer>
+		<a href={routes.DOCUMENTS}>Zobacz wszystkie dokumenty</a>
+	</footer>
 </section>
 
 <style>
-  section {
-    @apply px-20 lg:container py-30;
-    @apply grid gap-20 lg:gap-30;
-    @apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6;
-  }
+	section {
+		@apply px-20 lg:container py-30;
+		@apply grid gap-20 lg:gap-30;
+		@apply grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6;
+	}
 
-  h2,
-  footer {
-    @apply sm:col-span-2 md:col-span-3 lg:col-span-4 xl:col-span-5 xxl:col-span-6;
-  }
+	h2,
+	footer {
+		@apply sm:col-span-2 md:col-span-3 lg:col-span-4 xl:col-span-5 xxl:col-span-6;
+	}
 
-  footer {
-    @apply flex justify-center py-10;
-  }
+	footer {
+		@apply flex justify-center py-10;
+	}
 
-  footer a {
-    @apply btn btn-default;
-  }
+	footer a {
+		@apply btn btn-default;
+	}
 </style>
