@@ -6,6 +6,8 @@ import Loading from "@components/Loading";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
 import TemplateCategorySelector from "./TemplateCategorySelector";
 import TemplateSearch from "./TemplateSearch";
+import { navigate } from "astro:transitions/client";
+import routes from "@utils/routes";
 
 interface fetchProps {
 	aborted?: boolean;
@@ -45,6 +47,8 @@ export default () => {
 			const templates: TemplateShort[] = await response.json();
 
 			setTemplates(templates);
+		} catch {
+			navigate(routes.NOT_FOUND);
 		} finally {
 			setLoading(false);
 		}
@@ -61,7 +65,9 @@ export default () => {
 			const categories: DocumentCategory[] = await response.json();
 
 			setCategories(categories);
-		} catch {}
+		} catch {
+			navigate(routes.NOT_FOUND);
+		}
 	};
 
 	/**
