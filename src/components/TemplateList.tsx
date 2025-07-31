@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import TemplateGrid from "@components/TemplateGrid";
 import type { DocumentCategory, TemplateShort } from "@type";
 import EmptyScreen from "@components/EmptyScreen/emptyScreen";
@@ -8,6 +8,7 @@ import TemplateCategorySelector from "./TemplateCategorySelector";
 import TemplateSearch from "./TemplateSearch";
 import { navigate } from "astro:transitions/client";
 import routes from "@utils/routes";
+import Badge, { BadgeSize } from "./Badge/badge";
 
 interface fetchProps {
 	aborted?: boolean;
@@ -126,25 +127,26 @@ export default () => {
 	};
 
 	return (
-		<>
-			<header>
-				<h1>{title}</h1>
+		<div className="col-span-12">
+			<header className="col-span-12 py-15 flex items-center flex-wrap bg-white gap-15 md:gap-30 z-50 min-h-[72px]">
+				<h1 className="flex-grow flex gap-5 items-center text-italic-md text-black">
+					<Badge size={BadgeSize.large}>{title}</Badge>
+				</h1>
+				<aside className="flex gap-15 flex-grow flex-wrap lg:flex-nowrap">
+					<TemplateSearch search={search} onSearchChange={fetchSearch} />
+					<TemplateCategorySelector
+						categories={categories}
+						onCategoryChange={fetchCategory}
+						selectedCategory={currentCat}
+					/>
+				</aside>
 			</header>
-			<TemplateSearch search={search} onSearchChange={fetchSearch} />
-			<TemplateCategorySelector
-				categories={categories}
-				onCategoryChange={fetchCategory}
-				selectedCategory={currentCat}
-			/>
-			{loading ? (
-				<Loading />
-			) : templates.length ? (
-				<>
-					<TemplateGrid templates={templates} />
-				</>
+			{loading && <Loading />}
+			{templates.length && categories.length ? (
+				<TemplateGrid templates={templates} categories={categories} />
 			) : (
 				<EmptyScreen>{EMPTY_TEXT}</EmptyScreen>
 			)}
-		</>
+		</div>
 	);
 };

@@ -11,7 +11,7 @@ interface Props {
 const DEBOUNCE = 500;
 
 export default ({ search = "", onSearchChange }: Props) => {
-	const [searchValue, setSearchValue] = useState(search);
+	const [searchValue, setSearchValue] = useState(trimWhitespace(search));
 
 	useEffect(() => {
 		if (!onSearchChange) return;
@@ -24,16 +24,23 @@ export default ({ search = "", onSearchChange }: Props) => {
 	}, [searchValue]);
 
 	return (
-		<>
+		<form
+			method="GET"
+			spellCheck="false"
+			className="flex gap-10 flex-grow items-center"
+			onSubmit={(e) => e.preventDefault()}
+		>
 			<input
 				type="search"
+				name="s"
 				placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
 				spellCheck="false"
 				value={searchValue}
 				onChange={(event: ChangeEvent<HTMLInputElement>) =>
 					setSearchValue(event.target.value)
 				}
+				className="flex-grow w-0"
 			/>
-		</>
+		</form>
 	);
 };

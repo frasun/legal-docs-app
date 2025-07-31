@@ -50,27 +50,6 @@ try {
 	description={currentCategory?.description ?? undefined}
 	title=""
 >
-	<aside slot="topbar-aside">
-		<form method="GET" action={Astro.request.url} spellcheck="false">
-			<input
-				type="search"
-				placeholder="Wyszukaj dokument lub sprawę np. umowa najmu, testament"
-				spellcheck="false"
-				name={SEARCH}
-				value={search ? trimWhitespace(search) : ""}
-			/>
-			{currentCat && <input type="hidden" name={CATEGORY} value={currentCat} />}
-			<button type="submit">Szukaj</button>
-			{
-				search && (
-					<a href={Astro.url.pathname}>
-						<Icon name="clear" size={IconSize.sm} />
-						<span>Wyczyść</span>
-					</a>
-				)
-			}
-		</form>
-	</aside>
 	<TemplateList client:load />
 </Layout>
 

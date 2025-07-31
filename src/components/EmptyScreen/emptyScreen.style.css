@@ -1,4 +1,6 @@
 .empty-screen {
+	@apply h-full;
+
 	svg path {
 		@apply fill-black;
 	}
