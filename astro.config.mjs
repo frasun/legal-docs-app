@@ -41,7 +41,11 @@ export default defineConfig({
 			apiVersion: "2023-10-02",
 			useCdn: import.meta.env.MODE === "production",
 		}),
-		react(),
+		react({
+			babel: {
+				plugins: ["babel-plugin-react-compiler"],
+			},
+		}),
 	],
 	output: "server",
 	adapter: vercel(),

@@ -1,21 +1,21 @@
 ---
-import Layout, { LayoutType } from "../../layouts/App.astro";
+import Layout from "../../layouts/App.astro";
 import Icon, { IconSize } from "@components/Icon.astro";
 import trimWhitespace from "@utils/whitespace";
 import pageTitle from "@utils/pageTitle";
 import { CATEGORY, SEARCH } from "@utils/urlParams";
-import type { TemplateShort, DocumentCategory } from "@type";
-import { getCategories, getDocumentTemplates } from "@api/templates";
+import type { DocumentCategory } from "@type";
+import { getCategories } from "@api/templates";
 import routes from "@utils/routes";
 import { captureError } from "@utils/sentry";
 import TemplateList from "@components/TemplateList";
+
 const url = new URL(Astro.request.url);
-const currentCat = url.searchParams.get(CATEGORY);
-const search = url.searchParams.get(SEARCH);
+const currentCat = url.searchParams.get(CATEGORY) || undefined;
+const search = url.searchParams.get(SEARCH) || undefined;
 const PAGE_TITLE = "Wszystkie dokumenty";
 
-let documents: TemplateShort[],
-	categories: DocumentCategory[],
+let categories: DocumentCategory[],
 	currentCategory: DocumentCategory | undefined,
 	title: string;
 
@@ -31,21 +31,6 @@ const getCategoryList = (docCategories: string[]) =>
 		.map((id) => getCategoryName(id));
 
 try {
-	// [documents, categories] = await Promise.all([
-	// 	getDocumentTemplates(
-	// 		`${Astro.request.headers.get("cookie")}`,
-	// 		currentCat ?? undefined,
-	// 		search ?? undefined
-	// 	),
-	// 	getCategories(),
-	// ]);
-
-	// documents.map(({ categories: cats, ...props }) => ({
-	// 	...props,
-	// 	categories: getCategoryList(cats),
-	// 	slug: `${Astro.url.origin}/dokumenty/umowa-najmu-lokalu`,
-	// }));
-
 	categories = await getCategories();
 
 	currentCategory = categories.find(({ slug }) => slug === currentCat);
@@ -63,7 +48,7 @@ try {
 	pageName={pageTitle(title)}
 	keywords={currentCategory?.keywords ?? undefined}
 	description={currentCategory?.description ?? undefined}
-	title={title}
+	title=""
 >
 	<aside slot="topbar-aside">
 		<form method="GET" action={Astro.request.url} spellcheck="false">
@@ -85,18 +70,6 @@ try {
 				)
 			}
 		</form>
-		<category-selector>
-			<select>
-				<option value="">Wszystkie kategorie</option>
-				{
-					categories.map(({ slug: id, title: name }) => (
-						<option value={id} selected={id === currentCat}>
-							{name}
-						</option>
-					))
-				}
-			</select>
-		</category-selector>
 	</aside>
 	<TemplateList client:load />
 </Layout>
@@ -127,7 +100,3 @@ try {
 		@apply col-span-12;
 	}
 </style>
-
-<script>
-	import "@wc/CategorySelector";
-</script>

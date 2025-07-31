@@ -60,6 +60,7 @@
 		"@testing-library/user-event": "^14.6.1",
 		"@types/bcryptjs": "^2.4.6",
 		"@types/cookie": "^0.5.4",
+		"babel-plugin-react-compiler": "^19.1.0-rc.2",
 		"global-jsdom": "^26.0.0",
 		"jsdom": "^26.1.0",
 		"svgo": "^2.8.0"
