@@ -9,6 +9,8 @@ import { getCategories } from "@api/templates";
 import routes from "@utils/routes";
 import { captureError } from "@utils/sentry";
 import TemplateList from "@components/TemplateList";
+import TemplateCategorySelector from "@components/TemplateCategorySelector";
+import TemplateSearch from "@components/TemplateSearch";
 
 const url = new URL(Astro.request.url);
 const currentCat = url.searchParams.get(CATEGORY) || undefined;
@@ -18,17 +20,6 @@ const PAGE_TITLE = "Wszystkie dokumenty";
 let categories: DocumentCategory[],
 	currentCategory: DocumentCategory | undefined,
 	title: string;
-
-const getCategoryName = (slug: string) => {
-	const ct = categories.find(({ slug: id }) => id === slug);
-
-	return ct ? ct.title.toLowerCase() : "";
-};
-
-const getCategoryList = (docCategories: string[]) =>
-	docCategories
-		.sort((a, b) => a.localeCompare(b))
-		.map((id) => getCategoryName(id));
 
 try {
 	categories = await getCategories();
@@ -48,9 +39,22 @@ try {
 	pageName={pageTitle(title)}
 	keywords={currentCategory?.keywords ?? undefined}
 	description={currentCategory?.description ?? undefined}
-	title=""
+	title={title}
 >
-	<TemplateList client:load />
+	<aside slot="topbar-aside">
+		<TemplateSearch search={search} client:load />
+		<TemplateCategorySelector
+			categories={categories}
+			selectedCategory={currentCat}
+			client:load
+		/>
+	</aside>
+	<TemplateList
+		client:load
+		categories={categories}
+		search={search}
+		category={currentCat}
+	/>
 </Layout>
 
 <style>
