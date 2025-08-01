@@ -1,29 +1,23 @@
 import type { DocumentCategory } from "@type";
-import { CATEGORY, SEARCH } from "@utils/urlParams";
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { CATEGORY } from "@utils/urlParams";
+import { navigate } from "astro:transitions/client";
+import { useRef, type ChangeEvent } from "react";
 
 interface Props {
+	/** A collection of category data */
 	categories: DocumentCategory[];
+	/** Selected category slug / id */
 	selectedCategory?: DocumentCategory["slug"];
+	/** Trigger callback on selected category change */
 	onCategoryChange?: (categoryId: DocumentCategory["slug"]) => void;
 }
 
 export default ({
 	categories = [],
-	selectedCategory,
+	selectedCategory = "",
 	onCategoryChange,
 }: Props) => {
-	const [searchValue, setSearchValue] = useState<string>();
-	const submitRef = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		const url = new URL(document.location.href);
-		const searchParam = url.searchParams.get(SEARCH);
-
-		if (searchParam) {
-			setSearchValue(searchParam);
-		}
-	}, []);
+	const formRef = useRef<HTMLFormElement>(null);
 
 	const changeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
 		const { value } = event.target;
@@ -31,12 +25,26 @@ export default ({
 		if (onCategoryChange) {
 			onCategoryChange(value);
 		} else {
-			submitRef.current?.click();
+			formRef.current && handleSubmit(new FormData(formRef.current));
 		}
 	};
 
+	const handleSubmit = (formData: FormData) => {
+		const category = formData.get(CATEGORY)?.toString();
+		const hasCategory = category || category === "";
+		const url = new URL(document.location.href);
+
+		if (hasCategory) {
+			url.searchParams.set(CATEGORY, category);
+		} else {
+			url.searchParams.delete(CATEGORY);
+		}
+
+		navigate(url.href);
+	};
+
 	return (
-		<form method="GET" onSubmit={(e) => onCategoryChange && e.preventDefault()}>
+		<form action={handleSubmit} ref={formRef}>
 			<select
 				name={CATEGORY}
 				onChange={changeCategory}
@@ -49,8 +57,6 @@ export default ({
 					</option>
 				))}
 			</select>
-			{searchValue && <input type="hidden" name={SEARCH} value={searchValue} />}
-			<input type="submit" ref={submitRef} style={{ display: "none" }} />
 		</form>
 	);
 };
