@@ -1,4 +1,5 @@
-import { CATEGORY, SEARCH } from "@utils/urlParams";
+import { SEARCH } from "@utils/urlParams";
+import { navigate } from "astro:transitions/client";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
@@ -12,19 +13,12 @@ const DEBOUNCE = 500;
 
 export default ({ search = "", onSearchChange }: Props) => {
 	const [searchValue, setSearchValue] = useState<string>(search);
-	const [categoryParam, setCategoryParam] = useState<string>();
 	const init = useRef(false);
-	const submitRef = useRef<HTMLInputElement>(null);
+	const formRef = useRef<HTMLFormElement>(null);
 
-	useEffect(() => {
-		const url = new URL(document.location.href);
-		const category = url.searchParams.get(CATEGORY);
-
-		if (category) {
-			setCategoryParam(category);
-		}
-	}, []);
-
+	/**
+	 * Debounce propagation of changes to onSearchChange or as form submission
+	 */
 	useEffect(() => {
 		if (!init.current) {
 			init.current = true;
@@ -35,19 +29,41 @@ export default ({ search = "", onSearchChange }: Props) => {
 			if (onSearchChange) {
 				onSearchChange(searchValue);
 			} else {
-				submitRef.current?.click();
+				formRef.current && handleSubmit(new FormData(formRef.current));
 			}
 		}, DEBOUNCE);
 
 		return () => clearTimeout(emitChange);
 	}, [searchValue]);
 
+	/**
+	 * Handle form submission - navigate to url with params
+	 *
+	 * @param formData Submitted form fields.
+	 */
+	const handleSubmit = (formData: FormData) => {
+		const search = formData.get(SEARCH);
+		const url = new URL(document.location.href);
+
+		if (search === null) return;
+
+		const query = search.toString();
+
+		if (query.length) {
+			url.searchParams.set(SEARCH, query);
+		} else {
+			url.searchParams.delete(SEARCH);
+		}
+
+		navigate(url.href);
+	};
+
 	return (
 		<form
-			method="GET"
+			action={handleSubmit}
 			spellCheck="false"
-			className="flex gap-10 flex-grow items-center"
-			onSubmit={(e) => onSearchChange && e.preventDefault()}
+			className="flex gap-10 flex-grow items-center max-w-[300px]"
+			ref={formRef}
 		>
 			<input
 				type="search"
@@ -58,10 +74,6 @@ export default ({ search = "", onSearchChange }: Props) => {
 				onChange={(e) => setSearchValue(e.target.value)}
 				className="flex-grow w-0"
 			/>
-			{categoryParam && (
-				<input type="hidden" name={CATEGORY} value={categoryParam} />
-			)}
-			<input type="submit" ref={submitRef} style={{ display: "none" }} />
 		</form>
 	);
 };

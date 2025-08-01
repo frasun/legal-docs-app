@@ -30,12 +30,15 @@ export default ({
 	};
 
 	const handleSubmit = (formData: FormData) => {
-		const category = formData.get(CATEGORY)?.toString();
-		const hasCategory = category || category === "";
+		const category = formData.get(CATEGORY);
 		const url = new URL(document.location.href);
 
-		if (hasCategory) {
-			url.searchParams.set(CATEGORY, category);
+		if (category === null) return;
+
+		const cat = category.toString();
+
+		if (cat.length) {
+			url.searchParams.set(CATEGORY, cat);
 		} else {
 			url.searchParams.delete(CATEGORY);
 		}
