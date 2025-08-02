@@ -1,34 +1,49 @@
 ---
 import Icon, { IconSize } from "@components/Icon.astro";
 import SaveDraft from "@components/SaveDarft.astro";
+import QuestionIndexModal from "./QuestionIndexModal";
+import type { Question } from "@type";
 
 interface Props {
-  docId: string;
-  draft: boolean;
+	docId: string;
+	draft: boolean;
+	documentTitle: string;
+	index: Question["index"];
+	current: string;
+	documentId: string;
 }
 
-const { docId, draft } = Astro.props;
+const { docId, draft, documentTitle, index, current, documentId } = Astro.props;
 ---
 
 <aside>
-  {!draft && <SaveDraft documentId={docId} />}
-  <show-modal data-modal="questionIndex">
-    <button aria-label="Pokaż listę pytań">
-      <Icon name="index" size={IconSize.sm} />
-    </button>
-  </show-modal>
+	{!draft && <SaveDraft documentId={docId} />}
+	<show-modal data-modal="questionIndex">
+		<button aria-label="Pokaż listę pytań">
+			<Icon name="index" size={IconSize.sm} />
+		</button>
+	</show-modal>
+	<QuestionIndexModal
+		title={documentTitle}
+		index={index}
+		current={current}
+		documentId={documentId}
+		client:idle
+	>
+		<Icon name="index" size={IconSize.sm} />
+	</QuestionIndexModal>
 </aside>
 
 <style>
-  aside {
-    @apply flex items-center gap-10 flex-wrap;
-  }
+	aside {
+		@apply flex items-center gap-10 flex-wrap;
+	}
 
-  aside button {
-    @apply btn btn-alt;
-  }
+	aside button {
+		@apply btn btn-alt;
+	}
 </style>
 
 <script>
-  import "@wc/ShowModal";
+	import "@wc/ShowModal";
 </script>

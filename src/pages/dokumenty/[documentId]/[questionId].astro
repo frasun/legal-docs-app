@@ -114,7 +114,15 @@ try {
 		current={currentQuestionIndex + 1}
 		steps={questionIndex}
 	/>
-	<QuestionAction slot="topbar-aside" docId={templateId} draft={draft} />
+	<QuestionAction
+		slot="topbar-aside"
+		docId={templateId}
+		draft={draft}
+		index={index}
+		documentTitle={documentTitle}
+		current={questionId}
+		documentId={documentId}
+	/>
 	<header>
 		{
 			questionShort && (
