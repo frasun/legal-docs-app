@@ -21,6 +21,7 @@ export default ({ categories: categoryList, search, category }: Props) => {
 	const [templates, setTemplates] = useState<Promise<TemplateShort[]>>();
 	const deferredTemplates = useDeferredValue(templates);
 	const searchQuery = useStore($templateSearch);
+	const isFetching = deferredTemplates !== templates;
 
 	useEffect(() => {
 		const query = "string" === typeof searchQuery ? searchQuery : search;
@@ -31,7 +32,10 @@ export default ({ categories: categoryList, search, category }: Props) => {
 	return deferredTemplates ? (
 		<ErrorBoundary FallbackComponent={Error}>
 			<Suspense fallback={<Loading />}>
-				<TemplateGrid templatesPromise={deferredTemplates} />
+				<TemplateGrid
+					templatesPromise={deferredTemplates}
+					style={{ opacity: isFetching ? 0.5 : 1 }}
+				/>
 			</Suspense>
 		</ErrorBoundary>
 	) : (
