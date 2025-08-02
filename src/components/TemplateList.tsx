@@ -1,12 +1,12 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useDeferredValue, useEffect, useState } from "react";
 import TemplateGrid from "@components/TemplateGrid";
 import type { DocumentCategory, TemplateShort } from "@type";
 import Loading from "@components/Loading";
 import { ErrorBoundary } from "react-error-boundary";
-import EmptyScreen from "./EmptyScreen/emptyScreen";
 import fetchTemplates from "@api/client/templates";
-
-import { StrictMode } from "react";
+import { useStore } from "@nanostores/react";
+import { $templateSearch } from "@stores/searchTemplates";
+import Error from "@components/Error";
 
 interface Props {
 	/** A collection of category data */
@@ -19,17 +19,19 @@ interface Props {
 
 export default ({ categories: categoryList, search, category }: Props) => {
 	const [templates, setTemplates] = useState<Promise<TemplateShort[]>>();
+	const deferredTemplates = useDeferredValue(templates);
+	const searchQuery = useStore($templateSearch);
 
 	useEffect(() => {
-		setTemplates(fetchTemplates({ category, search, categoryList }));
-	}, []);
+		const query = "string" === typeof searchQuery ? searchQuery : search;
 
-	return templates ? (
-		<ErrorBoundary
-			fallback={<EmptyScreen>Brak elementów do wyświetlenia</EmptyScreen>}
-		>
+		setTemplates(fetchTemplates({ category, search: query, categoryList }));
+	}, [searchQuery]);
+
+	return deferredTemplates ? (
+		<ErrorBoundary FallbackComponent={Error}>
 			<Suspense fallback={<Loading />}>
-				<TemplateGrid templatesPromise={templates} />
+				<TemplateGrid templatesPromise={deferredTemplates} />
 			</Suspense>
 		</ErrorBoundary>
 	) : (

@@ -1,5 +1,6 @@
 import { CATEGORY, SEARCH } from "@utils/urlParams";
 import type { DocumentCategory, TemplateShort } from "@type";
+import { displayError } from "@stores/toast";
 
 interface fetchProps {
 	category?: string;
@@ -55,12 +56,10 @@ const fetchTemplates = async ({
 			const response = await fetch(requestUrl);
 			const templates: TemplateShort[] = await response.json();
 
-			if (!templates.length) reject();
-
 			resolve(mapTemplateData(templates, categoryList));
 		} catch {
-			// @todo: Show toast.
-			console.log("request error");
+			displayError();
+			reject();
 		}
 	});
 };

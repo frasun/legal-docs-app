@@ -1,5 +1,5 @@
+import * as SearchTemplates from "@stores/searchTemplates";
 import { SEARCH } from "@utils/urlParams";
-import { navigate } from "astro:transitions/client";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 	onSearchChange?: (search: string) => void;
 }
 
-const DEBOUNCE = 500;
+const DEBOUNCE = 250;
 
 export default ({ search = "", onSearchChange }: Props) => {
 	const [searchValue, setSearchValue] = useState<string>(search);
@@ -43,19 +43,16 @@ export default ({ search = "", onSearchChange }: Props) => {
 	 */
 	const handleSubmit = (formData: FormData) => {
 		const search = formData.get(SEARCH);
-		const url = new URL(document.location.href);
 
 		if (search === null) return;
 
 		const query = search.toString();
 
 		if (query.length) {
-			url.searchParams.set(SEARCH, query);
+			SearchTemplates.setQuery(query);
 		} else {
-			url.searchParams.delete(SEARCH);
+			SearchTemplates.resetQuery();
 		}
-
-		navigate(url.href);
 	};
 
 	return (
