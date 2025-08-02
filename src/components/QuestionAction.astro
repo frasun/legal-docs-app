@@ -28,7 +28,7 @@ const { docId, draft, documentTitle, index, current, documentId } = Astro.props;
 		index={index}
 		current={current}
 		documentId={documentId}
-		client:idle
+		client:only
 	>
 		<Icon name="index" size={IconSize.sm} />
 	</QuestionIndexModal>

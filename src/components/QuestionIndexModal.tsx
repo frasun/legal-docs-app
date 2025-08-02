@@ -4,6 +4,7 @@ import { useState, type PropsWithChildren } from "react";
 import { createPortal } from "react-dom";
 import CloseIcon from "../icons/ts/close";
 import ArrowIcon from "../icons/ts/arrow";
+import { AnimatePresence, motion } from "motion/react";
 
 interface QuestionModal {
 	index: Question["index"];
@@ -73,6 +74,26 @@ const Item = ({ slug, title, current, index, documentId }: ItemProps) => (
 	</>
 );
 
+const backdropAnimation = {
+	visible: { opacity: 1, transition: { when: "beforeChildren" } },
+	hidden: { opacity: 0, transition: { when: "afterChildren" } },
+};
+
+const modalAnimation = {
+	visible: {
+		y: "-50%",
+		x: "-50%",
+		ease: "easeIn",
+		duration: 0.4,
+	},
+	hidden: {
+		y: "-200vh",
+		x: "-50%",
+		ease: "easeIn",
+		duration: 0.4,
+	},
+};
+
 export default ({
 	title,
 	index,
@@ -90,17 +111,20 @@ export default ({
 			>
 				{children || "Pokaż listę pytań"}
 			</button>
-			{isVisible &&
-				createPortal(
-					<Modal modalTitle={title} onClose={() => setIsVisibile(false)}>
-						<QuestionList
-							index={index}
-							documentId={documentId}
-							current={current}
-						/>
-					</Modal>,
-					document.body
-				)}
+			{createPortal(
+				<Modal
+					modalTitle={title}
+					onClose={() => setIsVisibile(false)}
+					isOpen={isVisible}
+				>
+					<QuestionList
+						index={index}
+						documentId={documentId}
+						current={current}
+					/>
+				</Modal>,
+				document.body
+			)}
 		</>
 	);
 };
@@ -108,39 +132,56 @@ export default ({
 interface ModalProps {
 	modalTitle?: string;
 	onClose?: () => void;
+	isOpen: boolean;
 }
 
 const Modal = ({
 	modalTitle,
 	children,
 	onClose,
+	isOpen,
 }: PropsWithChildren<ModalProps>) => {
 	const handleClose = () => {
 		onClose && onClose();
 	};
+
 	return (
-		<>
-			<div className="transition-transform duration-300 -translate-y-1/2 modal-open fixed w-[90%] m-auto max-w-[550px] max-h-[90%] overflow-y-auto z-max top-[50%] left-[50%] -translate-x-1/2 flex flex-col md:flex-row justify-start md:justify-center bg-yellow rounded-sm border border-black shadow-3 -translate-y-[200vh] text-sans-md text-black">
-				<section className="flex-grow flex flex-col gap-15 px-20 py-30">
-					<button
-						onClick={handleClose}
-						aria-label="Zamknij"
-						className="absolute top-15 right-15 z-50 btn btn-alt btn-icon"
+		<AnimatePresence>
+			{isOpen && (
+				<>
+					<motion.div
+						key="modal"
+						initial={modalAnimation.hidden}
+						animate={modalAnimation.visible}
+						exit={modalAnimation.hidden}
+						className="transition-transform duration-300 -translate-y-1/2 fixed w-[90%] m-auto max-w-[550px] max-h-[90%] overflow-y-auto z-max top-[50%] left-[50%] -translate-x-1/2 flex flex-col md:flex-row justify-start md:justify-center bg-yellow rounded-sm border border-black shadow-3 text-sans-md text-black"
 					>
-						<CloseIcon />
-					</button>
-					{modalTitle && (
-						<header className="pr-60 text-italic-md w-full text-black">
-							<h3>{modalTitle}</h3>
-						</header>
-					)}
-					{children}
-				</section>
-			</div>
-			<div
-				className="fixed left-0 top-0 right-0 bottom-0 bg-black/10 opacity-0 cursor-n-resize z-menu transition-opacity opacity-100"
-				onClick={handleClose}
-			></div>
-		</>
+						<section className="flex-grow flex flex-col gap-15 px-20 py-30">
+							<button
+								onClick={handleClose}
+								aria-label="Zamknij"
+								className="absolute top-15 right-15 z-50 btn btn-alt btn-icon"
+							>
+								<CloseIcon />
+							</button>
+							{modalTitle && (
+								<header className="pr-60 text-italic-md w-full text-black">
+									<h3>{modalTitle}</h3>
+								</header>
+							)}
+							{children}
+						</section>
+					</motion.div>
+					<motion.div
+						key="backdrop"
+						initial={backdropAnimation.hidden}
+						animate={backdropAnimation.visible}
+						exit={backdropAnimation.hidden}
+						className="fixed left-0 top-0 right-0 bottom-0 bg-black/10 opacity-0 cursor-n-resize z-menu transition-opacity opacity-100"
+						onClick={handleClose}
+					/>
+				</>
+			)}
+		</AnimatePresence>
 	);
 };
