@@ -9,20 +9,25 @@ import Footer from "@components/Footer.astro";
 import getTitle from "@utils/pageTitle";
 import LatestPosts from "@components/LatestPosts.astro";
 import { getSession } from "auth-astro/server";
-import type { Page } from "@type";
+import type { DocumentCategory, Page } from "@type";
 import captureError from "@utils/sentry";
 import { getPage } from "@api/pages";
+import { getCategories } from "@api/templates";
+import routes from "@utils/routes";
 
 const session = await getSession(Astro.request);
 const userEmail = session?.user?.email ?? undefined;
 
 const pageId = `6c91451c-fad4-46e7-984c-ed81074ed4b4`;
 let keywords: Page["keywords"], description: Page["description"];
+let categories: DocumentCategory[];
 
 try {
 	({ keywords, description } = await getPage(pageId));
+	categories = await getCategories();
 } catch (e) {
 	captureError(e);
+	return Astro.redirect(routes.NOT_FOUND);
 }
 ---
 
@@ -37,9 +42,9 @@ try {
 	/>
 	<Appbar email={userEmail} theme={AppBarTheme.yellow} />
 	<main>
-		<Splash />
+		<Splash categories={categories} />
 		<HowItWorks />
-		<MostPopular />
+		<MostPopular categories={categories} />
 		<SecurityInfo />
 		<LatestPosts />
 	</main>

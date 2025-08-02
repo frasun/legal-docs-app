@@ -2,56 +2,58 @@
 import Search from "./Search.astro";
 import Categories from "./Categories.astro";
 import Icon from "astro-icon";
+
+const { categories } = Astro.props;
 ---
 
 <section>
-  <div>
-    <div>
-      <h1>Stwórz dokumenty prawne z pomocą wirtualnego prawnika</h1>
-      <Search />
-      <Categories />
-    </div>
-    <Icon name="p" width={298} height={418} />
-  </div>
+	<div>
+		<div>
+			<h1>Stwórz dokumenty prawne z pomocą wirtualnego prawnika</h1>
+			<Search />
+			<Categories categories={categories} />
+		</div>
+		<Icon name="p" width={298} height={418} />
+	</div>
 </section>
 
 <style>
-  section {
-    @apply bg-gradient-to-t from-yellow/30 to-yellow;
-    @apply border-b border-black shadow-2;
-  }
+	section {
+		@apply bg-gradient-to-t from-yellow/30 to-yellow;
+		@apply border-b border-black shadow-2;
+	}
 
-  section > div {
-    @apply px-20 lg:container;
-    @apply flex items-center;
-    @apply sm:min-h-[550px];
-    @apply relative;
-    @apply pt-30 pb-20 sm:py-40;
-  }
+	section > div {
+		@apply px-20 lg:container;
+		@apply flex items-center;
+		@apply sm:min-h-[550px];
+		@apply relative;
+		@apply pt-30 pb-20 sm:py-40;
+	}
 
-  @screen lg {
-    section > div {
-      @apply bg-no-repeat bg-right-bottom bg-[length:866px];
+	@screen lg {
+		section > div {
+			@apply bg-no-repeat bg-right-bottom bg-[length:866px];
 
-      background-image: url(/bg-main.webp);
-    }
-  }
+			background-image: url(/bg-main.webp);
+		}
+	}
 
-  section > div > div {
-    @apply flex flex-col gap-15 sm:gap-30;
-    @apply md:w-2/3 mx-auto lg:w-1/2 lg:mx-0;
-    @apply px-0 lg:pl-20;
-    @apply relative z-10;
-  }
+	section > div > div {
+		@apply flex flex-col gap-15 sm:gap-30;
+		@apply md:w-2/3 mx-auto lg:w-1/2 lg:mx-0;
+		@apply px-0 lg:pl-20;
+		@apply relative z-10;
+	}
 
-  h1 {
-    @apply text-italic-lg sm:text-italic-xl text-black;
-  }
+	h1 {
+		@apply text-italic-lg sm:text-italic-xl text-black;
+	}
 
-  section > div > svg {
-    @apply absolute;
-    @apply top-1/2 -translate-y-1/2;
-    @apply left-20;
-    @apply z-0;
-  }
+	section > div > svg {
+		@apply absolute;
+		@apply top-1/2 -translate-y-1/2;
+		@apply left-20;
+		@apply z-0;
+	}
 </style>

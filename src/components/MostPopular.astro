@@ -1,17 +1,14 @@
 ---
 import Badge, { BadgeSize, BadgeStyle } from "@components/Badge/badge";
-import TemplateGrid from "@components/TemplateGrid";
 import routes from "@utils/routes";
+import MostPopularTemplates from "@components/MostPopular.tsx";
+import type { DocumentCategory } from "@type";
 
-const templates = [
-	{
-		title: "Umowa najmu lokalu",
-		slug: `${Astro.url.origin}/dokumenty/umowa-najmu-lokalu`,
-		categories: ["nieruchomosci"],
-		price: 31.99,
-		draft: false,
-	},
-];
+type Props = {
+	categories: DocumentCategory[];
+};
+
+const { categories } = Astro.props;
 ---
 
 <section>
@@ -20,7 +17,7 @@ const templates = [
 			Najpopularniejsze dokumenty
 		</Badge>
 	</h2>
-	<TemplateGrid templates={templates} />
+	<MostPopularTemplates limit="4" categories={categories} client:load />
 	<footer>
 		<a href={routes.DOCUMENTS}>Zobacz wszystkie dokumenty</a>
 	</footer>

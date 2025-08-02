@@ -1,43 +1,39 @@
 ---
 import CategoryBlock from "@components/CategoryBlock.astro";
 import { CATEGORY } from "@utils/urlParams";
-import { getCategories } from "@api/templates";
 import type { DocumentCategory } from "@type";
-import routes from "@utils/routes";
 
-let categories: DocumentCategory[];
+type Props = {
+	categories: DocumentCategory[];
+};
 
-try {
-  categories = await getCategories();
-} catch {
-  return Astro.redirect(routes.NOT_FOUND);
-}
+const { categories } = Astro.props;
 ---
 
 <section>
-  <h4>Przeglądaj dokumenty w kategoriach:</h4>
-  <div>
-    {
-      categories.map(({ title: name, slug: id }) => (
-        <CategoryBlock
-          title={name}
-          href={`${Astro.url.origin}/dokumenty?${CATEGORY}=${id}`}
-        />
-      ))
-    }
-  </div>
+	<h4>Przeglądaj dokumenty w kategoriach:</h4>
+	<div>
+		{
+			categories.map(({ title: name, slug: id }) => (
+				<CategoryBlock
+					title={name}
+					href={`${Astro.url.origin}/dokumenty?${CATEGORY}=${id}`}
+				/>
+			))
+		}
+	</div>
 </section>
 
 <style>
-  section {
-    @apply flex flex-col gap-15 py-10;
-  }
+	section {
+		@apply flex flex-col gap-15 py-10;
+	}
 
-  div {
-    @apply grid sm:grid-cols-2 gap-x-30 gap-y-10 py-8;
-  }
+	div {
+		@apply grid sm:grid-cols-2 gap-x-30 gap-y-10 py-8;
+	}
 
-  h4 {
-    @apply text-sans-sm;
-  }
+	h4 {
+		@apply text-sans-sm;
+	}
 </style>

@@ -5,7 +5,8 @@ import { displayError } from "@stores/toast";
 interface fetchProps {
 	category?: string;
 	search?: string;
-	categoryList: DocumentCategory[];
+	categoryList?: DocumentCategory[];
+	limit?: number;
 }
 
 const getCategoryName = (slug: string, categoryList: DocumentCategory[]) => {
@@ -39,7 +40,8 @@ const mapTemplateData = (
 const fetchTemplates = async ({
 	category,
 	search,
-	categoryList,
+	categoryList = [],
+	limit,
 }: fetchProps) => {
 	const requestUrl = new URL("/api/templates", document.location.origin);
 
@@ -55,13 +57,20 @@ const fetchTemplates = async ({
 		try {
 			const response = await fetch(requestUrl);
 			const templates: TemplateShort[] = await response.json();
+			const templatesToUse = limit
+				? shuffle(templates).slice(0, limit)
+				: templates;
 
-			resolve(mapTemplateData(templates, categoryList));
+			resolve(mapTemplateData(templatesToUse, categoryList));
 		} catch {
 			displayError();
 			reject();
 		}
 	});
 };
+
+function shuffle(array: any[]) {
+	return array.sort(() => Math.random() - 0.5);
+}
 
 export default fetchTemplates;

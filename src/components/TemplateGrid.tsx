@@ -20,7 +20,7 @@ export default ({ templatesPromise, style }: Props) => {
 				>
 					{templates.map(({ title, categories, price, draft, slug }) => (
 						<DocumentTile
-							slug={slug}
+							slug={`${document.location.origin}/dokumenty/${slug}`}
 							title={title}
 							categories={categories}
 							price={price}
