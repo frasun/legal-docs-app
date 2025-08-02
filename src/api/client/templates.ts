@@ -63,7 +63,6 @@ const fetchTemplates = async ({
 
 			resolve(mapTemplateData(templatesToUse, categoryList));
 		} catch {
-			displayError();
 			reject();
 		}
 	});

@@ -2,11 +2,12 @@ import { Suspense, useDeferredValue, useEffect, useState } from "react";
 import TemplateGrid from "@components/TemplateGrid";
 import type { DocumentCategory, TemplateShort } from "@type";
 import Loading from "@components/Loading";
-import { ErrorBoundary } from "react-error-boundary";
+import { withErrorBoundary } from "react-error-boundary";
 import fetchTemplates from "@api/client/templates";
 import { useStore } from "@nanostores/react";
 import { $templateSearch } from "@stores/searchTemplates";
 import Error from "@components/Error";
+import { displayError } from "@stores/toast";
 
 interface Props {
 	/** A collection of category data */
@@ -17,7 +18,11 @@ interface Props {
 	category?: string;
 }
 
-export default ({ categories: categoryList, search, category }: Props) => {
+const TemplateList = ({
+	categories: categoryList,
+	search,
+	category,
+}: Props) => {
 	const [templates, setTemplates] = useState<Promise<TemplateShort[]>>();
 	const deferredTemplates = useDeferredValue(templates);
 	const searchQuery = useStore($templateSearch);
@@ -30,15 +35,18 @@ export default ({ categories: categoryList, search, category }: Props) => {
 	}, [searchQuery]);
 
 	return deferredTemplates ? (
-		<ErrorBoundary FallbackComponent={Error}>
-			<Suspense fallback={<Loading />}>
-				<TemplateGrid
-					templatesPromise={deferredTemplates}
-					style={{ opacity: isFetching ? 0.5 : 1 }}
-				/>
-			</Suspense>
-		</ErrorBoundary>
+		<Suspense fallback={<Loading />}>
+			<TemplateGrid
+				templatesPromise={deferredTemplates}
+				style={{ opacity: isFetching ? 0.5 : 1 }}
+			/>
+		</Suspense>
 	) : (
 		<></>
 	);
 };
+
+export default withErrorBoundary(TemplateList, {
+	FallbackComponent: Error,
+	onError: () => displayError(),
+});
