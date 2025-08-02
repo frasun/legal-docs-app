@@ -1,5 +1,6 @@
 import * as SearchTemplates from "@stores/searchTemplates";
 import { SEARCH } from "@utils/urlParams";
+import useDeffered from "@utils/useDeffered";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
@@ -9,32 +10,18 @@ interface Props {
 	onSearchChange?: (search: string) => void;
 }
 
-const DEBOUNCE = 250;
-
 export default ({ search = "", onSearchChange }: Props) => {
 	const [searchValue, setSearchValue] = useState<string>(search);
-	const init = useRef(false);
 	const formRef = useRef<HTMLFormElement>(null);
+	const defferedSearchValue = useDeffered(searchValue);
 
-	/**
-	 * Debounce propagation of changes to onSearchChange or as form submission
-	 */
 	useEffect(() => {
-		if (!init.current) {
-			init.current = true;
-			return;
+		if (onSearchChange) {
+			onSearchChange(defferedSearchValue);
+		} else {
+			formRef.current && handleSubmit(new FormData(formRef.current));
 		}
-
-		const emitChange = setTimeout(() => {
-			if (onSearchChange) {
-				onSearchChange(searchValue);
-			} else {
-				formRef.current && handleSubmit(new FormData(formRef.current));
-			}
-		}, DEBOUNCE);
-
-		return () => clearTimeout(emitChange);
-	}, [searchValue]);
+	}, [defferedSearchValue]);
 
 	/**
 	 * Handle form submission - navigate to url with params
